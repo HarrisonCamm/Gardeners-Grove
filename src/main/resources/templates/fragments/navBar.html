@@ -12,11 +12,7 @@
         <li><a class="navLink" th:href="@{view-user-profile}">View Profile</a></li>
         <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>
         <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
-        <li>
-            <form th:action="@{/logout}" method="post">
-                <input class="navLink" type="submit" value="Log Out">
-            </form>
-        </li>
+        <li><a class="navLink" th:href="@{logout}">Logout</a></li>
     </ul>
 </body>
 

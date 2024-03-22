@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
@@ -41,5 +42,10 @@ public class MainController {
         model.addAttribute("name", name);
         model.addAttribute("user", currentUser);
         return "mainTemplate";
+    }
+
+    @GetMapping("/logout")
+    public void logout(HttpServletRequest request, Model model) throws ServletException {
+        request.logout(); // TODO: possible security risk/exploit
     }
 }
