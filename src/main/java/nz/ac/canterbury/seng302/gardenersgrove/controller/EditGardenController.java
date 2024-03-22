@@ -37,11 +37,11 @@ public class EditGardenController {
      * @param model Spring Boot model
      * @return HTML ThymeLeaf template file name
      */
-    @GetMapping("/Edit Garden")
+    @GetMapping("/edit-garden")
     public String form(@RequestParam("gardenID") Long gardenID,
                        Model model) throws ResponseStatusException {
-        logger.info("GET /Edit Garden");
-        RedirectService.addEndpoint("/Edit Garden?gardenID=" + gardenID);
+        logger.info("GET /edit-garden");
+        RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
 
         Optional<Garden> result = gardenService.findGarden(gardenID);
         if (result.isEmpty())
@@ -58,12 +58,12 @@ public class EditGardenController {
      * @param model Model part of MVC pattern
      * @return Redirect object
      */
-    @PutMapping("/Edit Garden")
+    @PutMapping("/edit-garden")
     public String submitForm(@RequestParam("gardenID") Long gardenID,
                              @ModelAttribute Garden garden,
                              BindingResult bindingResult,
                              Model model) throws ResponseStatusException {
-        logger.info("PUT /Edit Garden");
+        logger.info("PUT /edit-garden");
 
         Optional<Garden> result = gardenService.findGarden(gardenID);
         if (result.isEmpty())
@@ -82,7 +82,7 @@ public class EditGardenController {
             return "editGardenTemplate";
         } else {
             gardenService.addGarden(garden);
-            return "redirect:/View Garden?gardenID=" + garden.getId();
+            return "redirect:/view-garden?gardenID=" + garden.getId();
         }
     }
 

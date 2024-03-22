@@ -43,18 +43,18 @@ public class CreatePlantController {
         this.gardenService = gardenService;
     }
 
-    @GetMapping("/Create Plant")
+    @GetMapping("/create-plant")
     public String form(@RequestParam(name = "gardenID") Long gardenID,
                        @ModelAttribute Plant plant,
                        Model model) {
-        logger.info("GET /Create Plant");
+        logger.info("GET /create-plant");
 
         if (gardenService.findGarden(gardenID).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
         }
         //Plant plant = new Plant(null, null);
 
-        RedirectService.addEndpoint("/Create Plant?gardenID=" + gardenID);
+        RedirectService.addEndpoint("/create-plant?gardenID=" + gardenID);
 
         model.addAttribute("gardenID", gardenID); // Add gardenID to the model
         model.addAttribute("gardens", gardenService.getGardens());
@@ -80,14 +80,14 @@ public class CreatePlantController {
     /**
      * Submits the form when the user clicks "Create Plant" on the form.
      */
-    @PostMapping("/Create Plant")
+    @PostMapping("/create-plant")
     public String submitForm(
             @RequestParam("gardenID") Long gardenID,
             @RequestParam("plantDatePlanted") String datePlanted,
             @ModelAttribute("plant") Plant plant,
             BindingResult bindingResult,
             Model model) throws Exception {
-        logger.info("POST /Create Plant");
+        logger.info("POST /create-plant");
 
         //Validates input fields
         checkName(plant.getName(), bindingResult);
@@ -125,7 +125,7 @@ public class CreatePlantController {
             return "createPlantFormTemplate";
         } else {
             plantService.addPlant(plant);
-            return "redirect:/View Garden?gardenID=" + plant.getGarden().getId();
+            return "redirect:/view-garden?gardenID=" + plant.getGarden().getId();
         }
     }
 

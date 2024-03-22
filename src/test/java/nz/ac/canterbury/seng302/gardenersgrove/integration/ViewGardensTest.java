@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration;
 
 import nz.ac.canterbury.seng302.gardenersgrove.controller.AutocompleteController;
-import nz.ac.canterbury.seng302.gardenersgrove.service.AutocompleteService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
@@ -33,7 +32,7 @@ public class ViewGardensTest {
 
     @Test
     public void GetPage_FromAnywhere_Ok() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/View Gardens"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/view-gardens"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

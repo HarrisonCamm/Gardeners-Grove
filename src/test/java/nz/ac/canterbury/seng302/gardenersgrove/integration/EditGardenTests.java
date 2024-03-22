@@ -54,14 +54,14 @@ public class EditGardenTests {
 
     @Test
     public void RequestPage_NoFields_Failure() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/Edit Garden"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/edit-garden"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
         verify(gardenService, times(0)).findGarden(any(Long.class));
     }
 
     @Test
     public void RequestPage_InvalidID_Failure() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/Edit Garden")
+        mockMvc.perform(MockMvcRequestBuilders.get("/edit-garden")
                     .param("gardenID", "0"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
         verify(gardenService).findGarden(0L);
@@ -76,7 +76,7 @@ public class EditGardenTests {
     public void PutForm_WithValidFields_Success(Long gardenID, String gardenName, String gardenSize) throws Exception {
         Location testLocation = new Location("123 test street", "test", "test", "test", "test");
         when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(new Garden(gardenName, testLocation, gardenSize)));
-        mockMvc.perform(MockMvcRequestBuilders.put("/Edit Garden")
+        mockMvc.perform(MockMvcRequestBuilders.put("/edit-garden")
                     .param("gardenID", gardenID.toString())
                     .param("name", gardenName)
                     .param("location.streetAddress", testLocation.getStreetAddress())
@@ -86,7 +86,7 @@ public class EditGardenTests {
                     .param("location.country", testLocation.getCountry())
                     .param("size", gardenSize))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/View Garden?gardenID=*"));
+                .andExpect(redirectedUrlPattern("/view-garden?gardenID=*"));
         verify(gardenService).findGarden(gardenID);
     }
 
@@ -104,7 +104,7 @@ public class EditGardenTests {
         Location newLocation = new Location("123 test street", "test", "test", "test", "test");
         Location oldLocation = newLocation;
         when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(new Garden(oldName, oldLocation, oldSize)));
-        mockMvc.perform(MockMvcRequestBuilders.put("/Edit Garden")
+        mockMvc.perform(MockMvcRequestBuilders.put("/edit-garden")
                         .param("gardenID", gardenID.toString())
                         .param("name", newName)
                         .param("location.streetAddress", newLocation.getStreetAddress())
@@ -130,12 +130,12 @@ public class EditGardenTests {
         Location location = new Location("123 test street", "test", "test", "test", "test");
         Garden garden = new Garden(name, location, size);
         when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(garden));
-        RedirectService.addEndpoint("/View Garden?gardenID=" + gardenID);
-        RedirectService.addEndpoint("/Edit Garden?gardenID=" + gardenID);
+        RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
+        RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/Cancel"))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/View Garden?gardenID=" + gardenID));
+                .andExpect(redirectedUrlPattern("/view-garden?gardenID=" + gardenID));
         verify(gardenService, never()).addGarden(any(Garden.class));
 
         Optional<Garden> foundOpt = gardenService.findGarden(gardenID);

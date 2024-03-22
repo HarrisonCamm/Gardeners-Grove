@@ -7,8 +7,8 @@
 </head>
 <body>
     <ul class="navBar">
-        <li><a class="navLink" th:href="@{Create Garden}">Create a Garden</a></li>
-        <li><a class="navLink" th:href="@{View Gardens}">View Gardens</a></li>
+        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>
+        <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
     </ul>
     <div class="wrapper">
         <div class="container">
@@ -20,7 +20,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="garden : ${gardens}">
-                    <td><a class="gardenLink" th:href="@{'/View Garden?gardenID=' + ${garden.id}}"><span th:text="${garden.name}"> Name </span></a></td>
+                    <td><a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}"><span th:text="${garden.name}"> Name </span></a></td>
                 </tr>
                 </tbody>
             </table>
@@ -43,9 +43,9 @@
             </div>
 
             <br />
-            <a class="button" th:href="@{'/Edit Garden?gardenID=' + ${gardenID}}" >Edit</a>
+            <a class="button" th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" >Edit</a>
             <br />
-            <a class="button" th:href="@{'/Create Plant?gardenID=' + ${gardenID}}" >Add new plant</a>
+            <a class="button" th:href="@{'/create-plant?gardenID=' + ${gardenID}}" >Add new plant</a>
             <br />
             <div class="plantContainer">
                 <table >
@@ -65,7 +65,7 @@
                         <td th:text="${plant.count}"></td>
                         <td th:text="${plant.description}"></td>
                         <td th:text="${#dates.format(plant.datePlanted, 'dd/MM/yyyy')}"></td>
-                        <td><a class="button" th:href="@{'/Edit Plant?plantID=' + ${plant.id}}">Edit</a></td>
+                        <td><a class="button" th:href="@{'/edit-plant?plantID=' + ${plant.id}}">Edit</a></td>
                     </tr>
                     </tbody>
                 </table>

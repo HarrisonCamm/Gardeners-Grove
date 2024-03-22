@@ -7,15 +7,15 @@
 </head>
 <body>
     <ul class="navBar">
-        <li><a class="navLink" th:href="@{/Create Garden}">Create a Garden</a></li>
-        <li><a class="navLink" th:href="@{/View Gardens}">View Gardens</a></li>
+        <li><a class="navLink" th:href="@{/create-garden}">Create a Garden</a></li>
+        <li><a class="navLink" th:href="@{/view-gardens}">View Gardens</a></li>
     </ul>
 
     <br/>
 
     <div class="formContainer">
         <h1>Edit Plant</h1>
-        <form th:action="@{/Edit Plant}" method="post" th:object="${plant}">
+        <form th:action="@{/edit-plant}" method="post" th:object="${plant}">
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="plantID" th:value="${plantID}">
             <div class="formRow">

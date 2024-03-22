@@ -8,8 +8,8 @@
 
 <body>
     <ul class="navBar">
-        <li><a class="navLink" th:href="@{Create Garden}">Create a Garden</a></li>
-        <li><a class="navLink" th:href="@{View Gardens}">View Gardens</a></li>
+        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>
+        <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
     </ul>
     <div class="wrapper">
         <div class="container">
@@ -21,7 +21,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="garden : ${gardens}">
-                    <td><a class="gardenLink" th:href="@{'/View Garden?gardenID=' + ${garden.id}}"><span th:text="${garden.name}"> Name </span></a></td>
+                    <td><a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}"><span th:text="${garden.name}"> Name </span></a></td>
                 </tr>
                 </tbody>
             </table>
@@ -29,7 +29,7 @@
         <br/>
         <div class="formContainer">
             <h1>Edit Garden</h1>
-            <form th:action="@{'/Edit Garden?gardenID=' + ${id}}" method="post" th:object="${garden}">
+            <form th:action="@{'/edit-garden?gardenID=' + ${id}}" method="post" th:object="${garden}">
                 <input type="hidden" name="_method" value="PUT">
                 <div class="formRow">
                     <label for="name"> Garden Name: </label>

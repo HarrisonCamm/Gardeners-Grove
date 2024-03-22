@@ -21,12 +21,12 @@ public class ViewGardensController {
     @Autowired
     public ViewGardensController(GardenService gardenService) { this.gardenService = gardenService; }
 
-    @GetMapping("/View Gardens")
+    @GetMapping("/view-gardens")
     public String view(Model model,
                        HttpServletRequest req,
                        HttpSession session) {
-        logger.info("GET /View Gardens");
-        RedirectService.addEndpoint("/View Gardens");
+        logger.info("GET /view-gardens");
+        RedirectService.addEndpoint("/view-gardens");
 
         model.addAttribute("gardens", gardenService.getGardens());
         return "viewGardensTemplate";

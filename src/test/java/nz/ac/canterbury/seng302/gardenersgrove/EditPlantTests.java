@@ -49,7 +49,7 @@ public class EditPlantTests {
 
     @Test
     public void RequestPage_NoID_Failure() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/Edit Plant"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/edit-plant"))
                 .andExpect(status().isBadRequest());
         verify(plantService, never()).findPlant(any(Long.class));
         verify(plantService, never()).getPlants();
@@ -58,7 +58,7 @@ public class EditPlantTests {
     @Test
     public void RequestPage_InvalidID_Failure() throws Exception {
         final Long id = 0L;
-        mockMvc.perform(MockMvcRequestBuilders.get("/Edit Plant")
+        mockMvc.perform(MockMvcRequestBuilders.get("/edit-plant")
                         .param("plantID", id.toString()))
                 .andExpect(status().isNotFound());
         verify(plantService).findPlant(id);
@@ -71,7 +71,7 @@ public class EditPlantTests {
         plant.setId(id);
         when(plantService.findPlant(id)).thenReturn(Optional.of(plant));
 
-        mockMvc.perform(get("/Edit Plant")
+        mockMvc.perform(get("/edit-plant")
                         .param("plantID", id.toString()))
                 .andExpect(status().isOk());
         verify(plantService).findPlant(id);
@@ -90,7 +90,7 @@ public class EditPlantTests {
         Plant newPlant = new Plant(testGarden, plantName, count, description, date);
         when(plantService.findPlant(plantID)).thenReturn(Optional.of(oldPlant));
 
-        mockMvc.perform(put("/Edit Plant")
+        mockMvc.perform(put("/edit-plant")
                         .param("plantID", plantID.toString())
                         .param("plantName", plantName)
                         .param("plantCount", count)

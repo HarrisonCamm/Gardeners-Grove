@@ -40,7 +40,7 @@ public class CreateGardenController {
 //    public String redirect() {
 //        logger.info("GET /");
 //        RedirectService.addEndpoint("/");
-//        return "redirect:/Create Garden";
+//        return "redirect:/create-garden";
 //    }
 
     /**
@@ -48,15 +48,15 @@ public class CreateGardenController {
      * @param model Spring Boot model
      * @return HTML ThymeLeaf template file name
      */
-    @GetMapping("/Create Garden")
+    @GetMapping("/create-garden")
     public String form(@ModelAttribute Garden garden,
                        Model model) {
-        logger.info("GET /Create Garden");
+        logger.info("GET /create-garden");
 
         Location gardenLocation = new Location("", "", "", "", "");
         garden.setLocation(gardenLocation); //avoiding NullPointException
 
-        RedirectService.addEndpoint("/Create Garden");
+        RedirectService.addEndpoint("/create-garden");
 
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
@@ -77,11 +77,11 @@ public class CreateGardenController {
      * @param model Model part of MVC pattern
      * @return Redirect object
      */
-    @PostMapping("/Create Garden")
+    @PostMapping("/create-garden")
     public String submitForm(@ModelAttribute Garden garden,
                              BindingResult bindingResult,
                              Model model) {
-        logger.info("POST /Create Garden");
+        logger.info("POST /create-garden");
 
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
@@ -98,7 +98,7 @@ public class CreateGardenController {
             //TODO figure out how to not have duplicate locations. Probably next sprint tbh
             locationService.addLocation(garden.getLocation());
             gardenService.addGarden(garden);
-            return "redirect:/View Garden?gardenID=" +garden.getId();
+            return "redirect:/view-garden?gardenID=" +garden.getId();
         }
     }
 

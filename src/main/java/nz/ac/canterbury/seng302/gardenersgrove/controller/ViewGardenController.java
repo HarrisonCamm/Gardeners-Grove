@@ -3,7 +3,6 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
-import nz.ac.canterbury.seng302.gardenersgrove.repository.GardenRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
@@ -33,11 +32,11 @@ public class ViewGardenController {
         this.plantService  = plantService;
     }
 
-    @GetMapping("/View Garden")
+    @GetMapping("/view-garden")
     public String viewGarden(@RequestParam("gardenID") Long gardenID,
                              Model model) throws ResponseStatusException {
-        logger.info("GET /View Garden");
-        RedirectService.addEndpoint("/View Garden?gardenID=" + gardenID);
+        logger.info("GET /view-garden");
+        RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
 
         List<Plant> plants = new ArrayList<>();
         for (var plant : plantService.getPlants()) {

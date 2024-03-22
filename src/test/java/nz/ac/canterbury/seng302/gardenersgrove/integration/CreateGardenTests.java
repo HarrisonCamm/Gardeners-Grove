@@ -1,15 +1,12 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration;
 
-import com.sun.source.tree.ModuleTree;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.CreateGardenController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,7 +30,7 @@ public class CreateGardenTests {
 
     @Test
     public void RequestPage_NoFields_Success() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/Create Garden"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/create-garden"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -44,7 +41,7 @@ public class CreateGardenTests {
             "Bob, ''",
     })
     public void PostForm_WithValidFields_Success(String gardenName, String gardenSize) throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/Create Garden")
+        mockMvc.perform(MockMvcRequestBuilders.post("/create-garden")
                         .param("name", gardenName)
                         .param("location.streetAddress", "test")
                         .param("location.suburb", "test")
@@ -64,7 +61,7 @@ public class CreateGardenTests {
             "myGarden, -1"
     })
     public void PostForm_WithInvalidFields_ErrorsShown(String gardenName, String gardenSize) throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/Create Garden")
+        mockMvc.perform(MockMvcRequestBuilders.post("/create-garden")
                         .param("name", gardenName)
                         .param("location.streetAddress", "test")
                         .param("location.suburb", "test")

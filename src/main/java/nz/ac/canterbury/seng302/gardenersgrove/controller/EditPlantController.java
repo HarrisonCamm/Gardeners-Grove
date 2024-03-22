@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
@@ -16,7 +15,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.thymeleaf.util.DateUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,11 +36,11 @@ public class EditPlantController {
         this.gardenService = gardenService;
     }
 
-    @GetMapping("/Edit Plant")
+    @GetMapping("/edit-plant")
     public String form(@RequestParam("plantID") Long plantID,
                        Model model) {
-        logger.info("GET /Edit Plant");
-        RedirectService.addEndpoint("/Edit Plant?plantID=" + plantID);
+        logger.info("GET /edit-plant");
+        RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
         Optional<Plant> found = plantService.findPlant(plantID);
         if (found.isEmpty()) {
@@ -67,13 +65,13 @@ public class EditPlantController {
     /**
      * Submits the form when the user clicks "Create Plant" on the form.
      */
-    @PutMapping("/Edit Plant")
+    @PutMapping("/edit-plant")
     public String submitForm(@RequestParam("plantID") Long plantID,
                              @RequestParam("datePlanted") String datePlanted,
                              @ModelAttribute("plant") Plant newPlant,
                              BindingResult bindingResult,
                              Model model) throws Exception {
-        logger.info("PUT /Edit Plant");
+        logger.info("PUT /edit-plant");
 
         bindingResult = new BeanPropertyBindingResult(newPlant, "plant");
 
@@ -107,7 +105,7 @@ public class EditPlantController {
             return "editPlantFormTemplate";
         } else {
             plantService.addPlant(plant);
-            return "redirect:/View Garden?gardenID=" + plant.getGarden().getId();
+            return "redirect:/view-garden?gardenID=" + plant.getGarden().getId();
         }
     }
 

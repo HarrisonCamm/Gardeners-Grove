@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
@@ -8,12 +7,10 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.AutocompleteService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -63,7 +60,7 @@ public class CreatePlantTests {
         when(plantService.findPlant(any(Long.class))).thenReturn(Optional.ofNullable(testPlant));
         when(gardenService.findGarden(any(Long.class))).thenReturn(Optional.ofNullable(testGarden));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/Create Plant")
+        mockMvc.perform(MockMvcRequestBuilders.get("/create-plant")
                 .queryParam("gardenID", String.valueOf(1L))) // Any number will do
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -74,7 +71,7 @@ public class CreatePlantTests {
         when(plantService.findPlant(any(Long.class))).thenReturn(Optional.ofNullable(testPlant));
         when(gardenService.findGarden(any(Long.class))).thenReturn(Optional.ofNullable(null));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/Create Plant")
+        mockMvc.perform(MockMvcRequestBuilders.get("/create-plant")
                 .queryParam("gardenID", String.valueOf(1L))) // Any number will do
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
@@ -88,7 +85,7 @@ public class CreatePlantTests {
         when(plantService.findPlant(any(Long.class))).thenReturn(Optional.ofNullable(testPlant));
         when(gardenService.findGarden(any(Long.class))).thenReturn(Optional.ofNullable(testGarden));
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/Create Plant")
+        mockMvc.perform(MockMvcRequestBuilders.post("/create-plant")
                 .queryParam("gardenID", String.valueOf(1L))
                 .queryParam("plantDatePlanted", "2021-01-01")
                 .param("name", name)
@@ -108,7 +105,7 @@ public class CreatePlantTests {
         when(plantService.findPlant(any(Long.class))).thenReturn(Optional.ofNullable(testPlant));
         when(gardenService.findGarden(any(Long.class))).thenReturn(Optional.ofNullable(testGarden));
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/Create Plant")
+        mockMvc.perform(MockMvcRequestBuilders.post("/create-plant")
                 .queryParam("gardenID", String.valueOf(1L))
                 .queryParam("plantDatePlanted", "2021-01-01")
                 .param("name", name)
