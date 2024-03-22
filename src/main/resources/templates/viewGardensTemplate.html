@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Gardens</title>
+    <link href="/css/gardenStyles.css" rel="stylesheet">
+</head>
+<body>
+    <ul class="navBar">
+        <li><a class="navLink" th:href="@{Create Garden}">Create a Garden</a></li>
+        <li><a class="navLink" th:href="@{/View Gardens}">View Gardens</a></li>
+    </ul>
+    <div class="wrapper">
+        <div class="container">
+            <table class="sideBar">
+                <thead>
+                <tr>
+                    <th>Gardens</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="garden : ${gardens}">
+                    <td><a class="gardenLink" th:href="@{'/View Garden?gardenID=' + ${garden.id}}"><span th:text="${garden.name}"> Name </span></a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="gardenTable">
+            <table>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Size</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="garden : ${gardens}">
+                    <td><span th:text="${garden.name}"> Name </span></a></td>
+                    <td><span th:text="${garden.location.streetAddress}"> Location </span></td>
+                    <td><span th:text="${garden.size}"> Size </span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

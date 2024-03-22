@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Garden</title>
+    <link href="/css/gardenStyles.css" rel="stylesheet">
+</head>
+<body>
+    <ul class="navBar">
+        <li><a class="navLink" th:href="@{Create Garden}">Create a Garden</a></li>
+        <li><a class="navLink" th:href="@{View Gardens}">View Gardens</a></li>
+    </ul>
+    <div class="wrapper">
+        <div class="container">
+            <table class="sideBar">
+                <thead>
+                <tr>
+                    <th>Gardens</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="garden : ${gardens}">
+                    <td><a class="gardenLink" th:href="@{'/View Garden?gardenID=' + ${garden.id}}"><span th:text="${garden.name}"> Name </span></a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="gardenContainer">
+            <div class="containerRow">
+                <label> Garden Name: </label>
+                <h3 th:text="${gardenName}">  </h3>
+            </div>
+
+            <br/>
+            <div class="containerRow">
+                <label>Garden Location: </label>
+                <h3 th:text="${gardenLocation}">  </h3>
+            </div>
+            <br/>
+            <div class="containerRow" th:classappend="${gardenSize == '' ? 'disabled' : ''}">
+                <label>Garden Size: </label>
+                <h3 th:text="${gardenSize}"></h3>
+            </div>
+
+            <br />
+            <a class="button" th:href="@{'/Edit Garden?gardenID=' + ${gardenID}}" >Edit</a>
+            <br />
+            <a class="button" th:href="@{'/Create Plant?gardenID=' + ${gardenID}}" >Add new plant</a>
+            <br />
+            <div class="plantContainer">
+                <table >
+                    <thead>
+                    <tr>
+                        <th>Picture</th>
+                        <th>Plant Name</th>
+                        <th>Count</th>
+                        <th>Description</th>
+                        <th>Date Planted</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="plant : ${plants}">
+                        <td><img th:src="@{/images/leaves-80x80.png}" alt=""></td>
+                        <td th:text="${plant.name}"></td>
+                        <td th:text="${plant.count}"></td>
+                        <td th:text="${plant.description}"></td>
+                        <td th:text="${#dates.format(plant.datePlanted, 'dd/MM/yyyy')}"></td>
+                        <td><a class="button" th:href="@{'/Edit Plant?plantID=' + ${plant.id}}">Edit</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

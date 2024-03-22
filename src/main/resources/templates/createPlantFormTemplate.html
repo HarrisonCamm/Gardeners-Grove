@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Plant</title>
+    <link href="/css/gardenStyles.css" rel="stylesheet">
+</head>
+<body>
+    <ul class="navBar">
+        <li><a class="navLink" th:href="@{Create Garden}">Create a Garden</a></li>
+        <li><a class="navLink" th:href="@{View Gardens}">View Gardens</a></li>
+    </ul>
+<!--    <h1>Create Plant</h1>-->
+    <br/>
+    <div class="formContainer">
+        <h1>Create Plant</h1>
+        <form th:action="@{Create Plant}" method="post" th:object="${plant}">
+            <input type="hidden" name="gardenID" th:value="${gardenID}">
+            <div class="formRow">
+                <label for="plantName"> Name: </label>
+                <input type="text" id="plantName" placeholder="Name" th:field="*{name}">
+            </div>
+            <div class="formRow">
+                <label for="plantCount"> Count: </label>
+                <input type="text" id="plantCount" placeholder="Count" th:field="*{count}">
+            </div>
+            <div class="formRow">
+                <label for="plantDescription"> Description: </label>
+                <input type="text" id="plantDescription" placeholder="Description" th:field="*{description}">
+            </div>
+            <div class="formRow">
+                <label for="plantDatePlanted"> Date Planted: </label>
+
+                <input type="date" name="plantDatePlanted" id="plantDatePlanted">
+            </div>
+            <br/>
+            <button type="submit">Create</button>
+            <div class="errors" th:if="${#fields.hasErrors('global')}">
+                <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
+            </div>
+        </form>
+    </div>
+    <br/>
+    <form th:action="@{/Cancel}" method="get">
+        <button type="submit">Cancel</button>
+    </form>
+</body>
+</html>
+
+<!--<script>-->
+<!--    $('#date').datepicker({ dateFormat: 'dd-mm-yy' })-->
+<!--</script>-->
