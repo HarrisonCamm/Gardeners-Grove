@@ -43,9 +43,4 @@ public class MainController {
         model.addAttribute("user", currentUser);
         return "mainTemplate";
     }
-
-    @GetMapping("/logout")
-    public void logout(HttpServletRequest request, Model model) throws ServletException {
-        request.logout(); // TODO: possible security risk/exploit
-    }
 }

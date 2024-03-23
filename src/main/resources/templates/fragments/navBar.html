@@ -1,19 +1,21 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-
-<head th:fragment="headerfiles">
-    <meta charset="UTF-8"/>
-    <link th:href="@{/css/navBar.css}" rel="stylesheet">
+<head>
+    <!-- CSS for the NavBar -->
+    <link rel="stylesheet" th:href="@{/css/navBar.css}" />
 </head>
-
 <body>
-    <ul th:fragment="navBar" class="navBar">
-        <li><a class="navLink" th:href="@{main}">Main</a></li>
-        <li><a class="navLink" th:href="@{view-user-profile}">View Profile</a></li>
-        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>
-        <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
-        <li><a class="navLink" th:href="@{logout}">Logout</a></li>
-    </ul>
+<ul th:fragment="navBar" class="navBar">
+    <li><a class="navLink" th:href="@{main}">Main</a></li>
+    <li><a class="navLink" th:href="@{view-user-profile}">View Profile</a></li>
+    <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>
+    <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
+    <!-- Logout form button -->
+    <li>
+        <form th:action="@{/logout}" method="post" class="navBar-form">
+            <input type="submit" value="Log Out" class="navBar-form-input">
+        </form>
+    </li>
+</ul>
 </body>
-
 </html>
