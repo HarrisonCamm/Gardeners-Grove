@@ -1,0 +1,27 @@
+/* Navbar styles */
+.navBar {
+    list-style-type: none;
+    margin: 0;
+    padding: 14px 16px;
+    background-color: #333;
+    overflow: hidden;
+}
+
+/* List item styles */
+li {
+    display: inline;
+}
+
+/* Navigation link styles */
+.navLink {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    display: inline;
+}
+
+.navLink:hover {
+    background-color: #000;
+}
