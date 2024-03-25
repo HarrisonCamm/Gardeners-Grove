@@ -124,6 +124,11 @@ li {
     color: red;
 }
 
+.error {
+    border: 1px solid red;
+    outline: 1px solid red;
+}
+
 .autocomplete-items {
     position: relative;
     border: 3px solid rgba(0, 0, 0, 0.1);

@@ -20,7 +20,7 @@ public class GardenValidator {
         if (validateWithRegex("^$", name)) { //The garden name is empty
             return new ObjectError("gardenNameError", "Garden name cannot by empty");
         } else if (!validateWithRegex("^[a-zA-Z0-9\\.\\-\\'\\s]*$", name)) {
-            return new ObjectError("gardenLocationError", "Garden name must only " +
+            return new ObjectError("gardenNameError", "Garden name must only " +
                     "include letters, numbers, spaces, dots, hyphens\n" +
                     "or apostrophes");
         }

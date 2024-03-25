@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -53,7 +54,7 @@ public class CreateGardenController {
                        Model model) {
         logger.info("GET /create-garden");
 
-        Location gardenLocation = new Location("", "", "", "", "");
+        Location gardenLocation = new Location("", "", "", "", ""); //Bad code warning
         garden.setLocation(gardenLocation); //avoiding NullPointException
 
         RedirectService.addEndpoint("/create-garden");
@@ -93,6 +94,9 @@ public class CreateGardenController {
 
         if (bindingResult.hasErrors()) {
             // If there are validation errors, return to the form page
+            for (ObjectError error : bindingResult.getAllErrors()) {
+                model.addAttribute(error.getObjectName(), true);
+            }
             return "createGardenFormTemplate";
         } else {
             //TODO figure out how to not have duplicate locations. Probably next sprint tbh
