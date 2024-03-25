@@ -18,7 +18,7 @@ import java.net.http.HttpResponse;
 public class AutocompleteController {
 
     private static long lastRequestTime = 0;
-    private static final long DEBOUNCE_DELAY_MILLIS = 1000; // Adjust debounce delay as needed
+    private static final long DEBOUNCE_DELAY_MILLIS = 250; // Adjust debounce delay as needed
 
     private final AutocompleteService autocompleteService;
 
