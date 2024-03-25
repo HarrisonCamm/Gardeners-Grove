@@ -140,29 +140,32 @@
 
 
             <!-- Change Password Section -->
-            <label for="changePasswordButton"> Password: </label>
+            <label>Password:</label>
             <br/>
-            <!-- Change Password Button -->
-            <button type="button" id="changePasswordButton" onclick="showChangePasswordForm()">Change Password</button>
-            <!-- Cancel Change Password Button -->
-            <button type="button" id="cancelChangePasswordButton" onclick="hideChangePasswordForm()" style="display: none;">Cancel</button>
-            <!-- Change Password Fragment -->
-            <div th:replace="fragments/changePasswordForm :: changePasswordForm"></div>
-            <!-- Script to show/hide the change password form -->
-            <script>
-                function showChangePasswordForm() {
-                    document.getElementById('changePasswordForm').style.display = 'block';
-                    document.getElementById('cancelChangePasswordButton').style.display = 'inline-block';
-                }
+            <!-- Change Password Button, Make Change Password Form Appear-->
+            <form action="/toggle-change-password" method="post">
+                <button type="submit">Change Password</button>
+            </form>
+            <!-- Change Password Fragment Placeholder -->
+            <div th:if="${showChangePasswordForm}" id="changePasswordFragment" style="display: none;">
+                <br/>
+                <label for="oldPassword">Old Password:</label>
+                <input type="password" id="oldPassword" th:name="oldPassword" required>
+                <br/>
+                <label for="newPassword">New Password:</label>
+                <input type="password" id="newPassword" th:name="newPassword" required>
+                <br/>
+                <label for="retypePassword">Retype Password:</label>
+                <input type="password" id="retypePassword" th:name="retypePassword" required>
+                <br/>
+                <button type="submit">Submit</button>
+                <button type="cancel">Cancel</button>
+            </div>
 
-                function hideChangePasswordForm() {
-                    document.getElementById('changePasswordForm').style.display = 'none';
-                    document.getElementById('cancelChangePasswordButton').style.display = 'none';
-                }
-            </script>
 
 
 
+            <br/>
             <label for="dateOfBirth"> Date of birth: </label>
             <br/>
             <input type="text" class="form-control" id="dateOfBirth"

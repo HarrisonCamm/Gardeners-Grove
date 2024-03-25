@@ -67,6 +67,33 @@ public class EditProfileController {
         model.addAttribute("email", currentUser.getEmail());
         model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
 
+        // Initially, do not show the change password form
+        model.addAttribute("showChangePasswordForm", false);
+
+        return "editUserProfileTemplate";
+    }
+
+    @PostMapping("/toggle-change-password")
+    public String toggleChangePasswordForm(Model model, HttpServletRequest request) {
+
+        logger.info("POST /toggle-change-password");
+
+        // Show the change password form
+        model.addAttribute("showChangePasswordForm", true);
+
+        // Get the current user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        User currentUser = userService.getUserByEmail(currentPrincipalName);
+
+        // Ensure users details are still displayed
+        model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
+        model.addAttribute("firstName", currentUser.getFirstName());
+        model.addAttribute("lastName", currentUser.getLastName());
+        model.addAttribute("noLastName", currentUser.getNoLastName());
+        model.addAttribute("email", currentUser.getEmail());
+        model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
+
         return "editUserProfileTemplate";
     }
 
