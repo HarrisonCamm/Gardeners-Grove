@@ -6,9 +6,11 @@
         <!-- Navbar styling -->
         <link href="/css/navBar.css" rel="stylesheet">
         <style>
-            body {
+            .content {
                 padding-top: 10%;
                 align-items: center;
+                justify-content: center;
+                display: flex;
             }
             .centre {
                 justify-content: center;
@@ -25,8 +27,10 @@
                 text-align: center;
             }
             @media only screen and (orientation: portrait) {
-                body {
+                .content {
                     padding-top: 25%; /* Decrease top padding for vertical screens */
+                    justify-content: center;
+                    display: flex;
                 }
 
                 h1 {
@@ -42,25 +46,27 @@
             }
         </style>
     </head>
-    <body class="centre">
+    <body>
     <!-- Navigation Bar Fragment -->
     <ul th:insert="/fragments/navBar.html :: navBar"></ul>
-        <div>
-            <h1>Main Page</h1>
-            <br/>
-            <!-- View Profile button -->
-            <div class="centre">
-                <div>
-                    <a th:href="@{/view-user-profile}">
-                        <button type="button">My Profile</button>
-                    </a>
-                </div>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <!-- Logout button -->
-                <div>
-                    <form th:action="@{/logout}" method="post">
-                        <input type="submit" value="Log Out" class="form">
-                    </form>
+        <div class="content">
+            <div>
+                <h1>Main Page</h1>
+                <br/>
+                <!-- View Profile button -->
+                <div class="centre">
+                    <div>
+                        <a th:href="@{/view-user-profile}">
+                            <button type="button">My Profile</button>
+                        </a>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <!-- Logout button -->
+                    <div>
+                        <form th:action="@{/logout}" method="post">
+                            <input type="submit" value="Log Out" class="form">
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

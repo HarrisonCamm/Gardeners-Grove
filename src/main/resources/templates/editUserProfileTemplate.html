@@ -6,7 +6,7 @@
     <!-- Navbar styling -->
     <link href="/css/navBar.css" rel="stylesheet">
 <style>
-    body {
+    .content {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -98,92 +98,94 @@
 <body>
 <!-- Navigation Bar Fragment -->
 <ul th:insert="/fragments/navBar.html :: navBar"></ul>
-<div>
-    <h2>Edit Profile</h2>
+<div class="content">
     <div>
-        <form th:action="@{/edit-user-profile}" method="post" novalidate>
-            <label for="firstName"> First Name: </label>
-            <br/>
-            <input type="text" class="form-control" id="firstName"
-                   th:name="firstName" th:value="${firstName}" data-cy="firstName"
-                   th:class="${firstNameError != null ? 'error' : 'form-control'}" autofocus>
-            <br/>
-            <div th:if="${firstNameError}" class="error-message" th:text="${firstNameError}"></div>
-            <br/>
-            <label for="lastName"> Last Name: </label>
-            <br/>
-            <input type="text" class="form-control" id="lastName"
-                   th:name="lastName" th:value="${lastName}" th:disabled="${noLastName}" data-cy="lastName"
-                   th:class="${lastNameError != null ? 'error' : 'form-control'}" autofocus>
-            <br/>
-            <div th:if="${lastNameError}" class="error-message" th:text="${lastNameError}"></div>
-            <label for="noLastName">I have no surname</label>
-            <input type="checkbox" class="checkbox" id="noLastName" th:name="noLastName" th:value="${noLastName}"
-                   th:checked="${noLastName}" onchange="toggleLastNameField()" />
-            <script>
-                function toggleLastNameField() {
-                    // Check the checkbox state and enable/disable the last name field accordingly
-                    let checkbox = document.getElementById('noLastName');
-                    let lastNameField = document.getElementById('lastName');
-                    lastNameField.value = "";
-                    lastNameField.disabled = checkbox.checked;
-                    checkbox.value = checkbox.checked;
-                }
-            </script>
-            <br/>
-            <br/>
-            <label for="email"> Email: </label>
-            <br/>
-            <input type="text" class="form-control" id="email"
-                   th:name="email" th:value="${email}" data-cy="email"
-                   th:class="${registrationEmailError != null ? 'error' : 'form-control'}" autofocus>
-            <br/>
-            <!-- Display error message if there is an error with the email existing-->
-            <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
-            <br/>
-            <label for="dateOfBirth"> Date of birth: </label>
-            <br/>
-            <input type="text" class="form-control" id="dateOfBirth"
-                   th:name="dateOfBirth" th:value="${dateOfBirth}"
-                   placeholder="DD/MM/YYYY"
-                   th:class="${ageError != null ? 'error' : 'form-control'}"
-                   data-cy="dateOfBirth" autofocus
-                   oninput="formatDateOfBirth(this)">
-            <script>
-                function formatDateOfBirth(input) {
-                    let formattedValue = input.value.replace(/[^\d/]/g, '');
+        <h2>Edit Profile</h2>
+        <div>
+            <form th:action="@{/edit-user-profile}" method="post" novalidate>
+                <label for="firstName"> First Name: </label>
+                <br/>
+                <input type="text" class="form-control" id="firstName"
+                       th:name="firstName" th:value="${firstName}" data-cy="firstName"
+                       th:class="${firstNameError != null ? 'error' : 'form-control'}" autofocus>
+                <br/>
+                <div th:if="${firstNameError}" class="error-message" th:text="${firstNameError}"></div>
+                <br/>
+                <label for="lastName"> Last Name: </label>
+                <br/>
+                <input type="text" class="form-control" id="lastName"
+                       th:name="lastName" th:value="${lastName}" th:disabled="${noLastName}" data-cy="lastName"
+                       th:class="${lastNameError != null ? 'error' : 'form-control'}" autofocus>
+                <br/>
+                <div th:if="${lastNameError}" class="error-message" th:text="${lastNameError}"></div>
+                <label for="noLastName">I have no surname</label>
+                <input type="checkbox" class="checkbox" id="noLastName" th:name="noLastName" th:value="${noLastName}"
+                       th:checked="${noLastName}" onchange="toggleLastNameField()" />
+                <script>
+                    function toggleLastNameField() {
+                        // Check the checkbox state and enable/disable the last name field accordingly
+                        let checkbox = document.getElementById('noLastName');
+                        let lastNameField = document.getElementById('lastName');
+                        lastNameField.value = "";
+                        lastNameField.disabled = checkbox.checked;
+                        checkbox.value = checkbox.checked;
+                    }
+                </script>
+                <br/>
+                <br/>
+                <label for="email"> Email: </label>
+                <br/>
+                <input type="text" class="form-control" id="email"
+                       th:name="email" th:value="${email}" data-cy="email"
+                       th:class="${registrationEmailError != null ? 'error' : 'form-control'}" autofocus>
+                <br/>
+                <!-- Display error message if there is an error with the email existing-->
+                <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
+                <br/>
+                <label for="dateOfBirth"> Date of birth: </label>
+                <br/>
+                <input type="text" class="form-control" id="dateOfBirth"
+                       th:name="dateOfBirth" th:value="${dateOfBirth}"
+                       placeholder="DD/MM/YYYY"
+                       th:class="${ageError != null ? 'error' : 'form-control'}"
+                       data-cy="dateOfBirth" autofocus
+                       oninput="formatDateOfBirth(this)">
+                <script>
+                    function formatDateOfBirth(input) {
+                        let formattedValue = input.value.replace(/[^\d/]/g, '');
 
-                    let matches = formattedValue.match(/\//g);
-                    if (matches && matches.length > 2) {
-                        formattedValue = formattedValue.substring(0, formattedValue.lastIndexOf('/'));
-                    }
+                        let matches = formattedValue.match(/\//g);
+                        if (matches && matches.length > 2) {
+                            formattedValue = formattedValue.substring(0, formattedValue.lastIndexOf('/'));
+                        }
 
-                    if (formattedValue.length > 2 && formattedValue.charAt(2) !== '/') {
-                        formattedValue = formattedValue.slice(0, 2) + '/' + formattedValue.slice(2);
-                    }
-                    if (formattedValue.length > 5 && formattedValue.charAt(5) !== '/') {
-                        formattedValue = formattedValue.slice(0, 5) + '/' + formattedValue.slice(5);
-                    }
+                        if (formattedValue.length > 2 && formattedValue.charAt(2) !== '/') {
+                            formattedValue = formattedValue.slice(0, 2) + '/' + formattedValue.slice(2);
+                        }
+                        if (formattedValue.length > 5 && formattedValue.charAt(5) !== '/') {
+                            formattedValue = formattedValue.slice(0, 5) + '/' + formattedValue.slice(5);
+                        }
 
-                    if (formattedValue.length > 10) {
-                        formattedValue = formattedValue.slice(0, 10);
+                        if (formattedValue.length > 10) {
+                            formattedValue = formattedValue.slice(0, 10);
+                        }
+                        input.value = formattedValue;
                     }
-                    input.value = formattedValue;
-                }
-            </script>
-            <br/>
-            <div th:if="${ageError}" class="error-message" th:text="${ageError}"></div>
-            <br/>
-            <div class="buttons">
-                <button type="submit" id="submitButton">Submit</button>
-                &nbsp;
-                <a th:href="@{/view-user-profile}" id="cancelButton">
-                    <button type="button">Cancel</button>
-                </a>
-            </div>
-            <br/>
-            <br/>
-        </form>
+                </script>
+                <br/>
+                <div th:if="${ageError}" class="error-message" th:text="${ageError}"></div>
+                <br/>
+                <div class="buttons">
+                    <button type="submit" id="submitButton">Submit</button>
+                    &nbsp;
+                    <a th:href="@{/view-user-profile}" id="cancelButton">
+                        <button type="button">Cancel</button>
+                    </a>
+                </div>
+                <br/>
+                <br/>
+            </form>
+        </div>
     </div>
 </div>
 </body>
