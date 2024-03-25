@@ -137,6 +137,32 @@
             <!-- Display error message if there is an error with the email existing-->
             <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
             <br/>
+
+
+            <!-- Change Password Section -->
+            <label for="changePasswordButton"> Password: </label>
+            <br/>
+            <!-- Change Password Button -->
+            <button type="button" id="changePasswordButton" onclick="showChangePasswordForm()">Change Password</button>
+            <!-- Cancel Change Password Button -->
+            <button type="button" id="cancelChangePasswordButton" onclick="hideChangePasswordForm()" style="display: none;">Cancel</button>
+            <!-- Change Password Fragment -->
+            <div th:replace="fragments/changePasswordForm :: changePasswordForm"></div>
+            <!-- Script to show/hide the change password form -->
+            <script>
+                function showChangePasswordForm() {
+                    document.getElementById('changePasswordForm').style.display = 'block';
+                    document.getElementById('cancelChangePasswordButton').style.display = 'inline-block';
+                }
+
+                function hideChangePasswordForm() {
+                    document.getElementById('changePasswordForm').style.display = 'none';
+                    document.getElementById('cancelChangePasswordButton').style.display = 'none';
+                }
+            </script>
+
+
+
             <label for="dateOfBirth"> Date of birth: </label>
             <br/>
             <input type="text" class="form-control" id="dateOfBirth"
