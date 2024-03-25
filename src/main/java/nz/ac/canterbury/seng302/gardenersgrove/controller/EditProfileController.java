@@ -44,10 +44,12 @@ public class EditProfileController {
         this.userRepository = newUserRepository;
         this.authenticationManager = authenticationManager;
     }
+
     /**
      * Gets form to be displayed, includes the ability to display results of previous form when linked to from POST form
+     *
      * @param request previous name entered into form to be displayed
-     * @param model (map-like) representation of name, language and isJava boolean for use in thymeleaf
+     * @param model   (map-like) representation of name, language and isJava boolean for use in thymeleaf
      * @return thymeleaf demoFormTemplate
      */
     @GetMapping("/edit-user-profile")
@@ -73,29 +75,33 @@ public class EditProfileController {
         return "editUserProfileTemplate";
     }
 
-    @PostMapping("/toggle-change-password")
-    public String toggleChangePasswordForm(Model model, HttpServletRequest request) {
-
-        logger.info("POST /toggle-change-password");
-
-        // Show the change password form
-        model.addAttribute("showChangePasswordForm", true);
-
-        // Get the current user
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        User currentUser = userService.getUserByEmail(currentPrincipalName);
-
-        // Ensure users details are still displayed
-        model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
-        model.addAttribute("firstName", currentUser.getFirstName());
-        model.addAttribute("lastName", currentUser.getLastName());
-        model.addAttribute("noLastName", currentUser.getNoLastName());
-        model.addAttribute("email", currentUser.getEmail());
-        model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
-
-        return "editUserProfileTemplate";
-    }
+//    @PostMapping("/toggle-change-password")
+//    public String changePassword(@RequestParam(name = "firstName") String firstName,
+//                             @RequestParam(name = "lastName", required = false) String lastName,
+//                             @RequestParam(name = "noLastName", required = false) boolean noLastName,
+//                             @RequestParam(name = "email") String email,
+//                             @RequestParam(name = "dateOfBirth", required = false) String dateOfBirth,
+//                             Model model, HttpServletRequest request) {
+//
+//        logger.info("POST /toggle-change-password");
+//
+//        // Show the change password form
+//        model.addAttribute("showChangePasswordForm", true);
+//
+//        // Get the current user
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String currentPrincipalName = authentication.getName();
+//        User currentUser = userService.getUserByEmail(currentPrincipalName);
+//
+//        // Ensure users details are still displayed
+//        model.addAttribute("firstName", firstName);
+//        model.addAttribute("lastName", lastName);
+//        model.addAttribute("noLastName", noLastName);
+//        model.addAttribute("email", email);
+//        model.addAttribute("dateOfBirth", dateOfBirth);
+//
+//        return "editUserProfileTemplate";
+//    }
 
     /**
      * Posts a form response with name and favourite language
@@ -112,6 +118,7 @@ public class EditProfileController {
                              @RequestParam(name="noLastName", required=false) boolean noLastName,
                              @RequestParam(name="email") String email,
                              @RequestParam(name="dateOfBirth", required = false) String dateOfBirth,
+                             @RequestParam(name="showChangePasswordForm", required=false) boolean showChangePasswordForm,
                              Model model, HttpServletRequest request) {
         logger.info("POST /edit-user-profile");
 
@@ -132,20 +139,28 @@ public class EditProfileController {
         Long userId = currentUser.getUserId();
 
         model.addAttribute("userId", userId);
-
         model.addAttribute("firstName", firstName);
         model.addAttribute("lastName", lastName);
         model.addAttribute("noLastName", noLastName);
         model.addAttribute("email", email);
         model.addAttribute("dateOfBirth", dateOfBirth);
 
+        // Check if the date of birth is empty or null
         String formattedDateOfBirth;
-        if (dateOfBirth.isEmpty()) {
+        if (dateOfBirth == null || dateOfBirth.isEmpty()) {
             formattedDateOfBirth = "";
         } else {
             formattedDateOfBirth = convertDateFormat(dateOfBirth);
         }
 
+        // Check if the user clicked the change password button
+        if (showChangePasswordForm) {
+            // Display the change password form; by default, it is hidden
+            model.addAttribute("showChangePasswordForm", true);
+            return "editUserProfileTemplate";
+        }
+
+        // Begin Validation
 
         // Check if email already exists
         if (userService.emailExists(email) && !Objects.equals(email, currentUser.getEmail())) {
@@ -172,13 +187,13 @@ public class EditProfileController {
         if (!noLastName && lastName.isEmpty()) {
             model.addAttribute("lastNameError", "Last name cannot be empty");
         }
-        if (!dateOfBirth.isEmpty() && !checkDateValidity(formattedDateOfBirth)) {
+        if (!formattedDateOfBirth.isEmpty() && !checkDateValidity(formattedDateOfBirth)) {
             model.addAttribute("ageError", "Date in not in valid format, DD/MM/YYYY");
         }
-        if (!dateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) < 13) {
+        if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) < 13) {
             model.addAttribute("ageError", "You must be 13 years old or older to create an account");
         }
-        if (!dateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) > 120) {
+        if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) > 120) {
             model.addAttribute("ageError", "The maximum age allowed is 120 years");
         }
         if (model.containsAttribute("registrationEmailError") || model.containsAttribute("firstNameError")

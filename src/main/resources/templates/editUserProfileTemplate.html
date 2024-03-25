@@ -143,11 +143,12 @@
             <label>Password:</label>
             <br/>
             <!-- Change Password Button, Make Change Password Form Appear-->
-            <form action="/toggle-change-password" method="post">
+            <form action="/edit-user-profile" method="post" novalidate>
+                <input type="hidden" name="showChangePasswordForm" value="true" />
                 <button type="submit">Change Password</button>
             </form>
-            <!-- Change Password Fragment Placeholder -->
-            <div th:if="${showChangePasswordForm}" id="changePasswordFragment" style="display: none;">
+            <!-- Change Password Placeholder -->
+            <div th:if="${showChangePasswordForm}" id="changePasswordForm" th:style="'display:' + (${showChangePasswordForm} ? 'block' : 'none')">
                 <br/>
                 <label for="oldPassword">Old Password:</label>
                 <input type="password" id="oldPassword" th:name="oldPassword" required>
@@ -158,10 +159,9 @@
                 <label for="retypePassword">Retype Password:</label>
                 <input type="password" id="retypePassword" th:name="retypePassword" required>
                 <br/>
-                <button type="submit">Submit</button>
+                <button type="submit">Change Password</button>
                 <button type="cancel">Cancel</button>
             </div>
-
 
 
 
