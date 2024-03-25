@@ -33,26 +33,36 @@
                 <input type="text" id="name" placeholder="Garden Name" th:field="*{name}">
             </div>
             <br/>
-            <div class="formRow" id="locationContainer">
-                <label id="gardenLocationLabel">Garden Location:</label>
-                <br/>
-                <label for="streetAddress" id="streetAddressLabel">Street Address: </label>
-                <input type="text" id="streetAddress" placeholder="Street Address" th:field="*{location.streetAddress}">
-                <br/>
-                <label for="suburb" id="suburbLabel">Suburb: </label>
-                <input type="text" id="suburb" placeholder="Suburb" th:field="*{location.suburb}">
-                <br/>
-                <label for="city" id="cityLabel">City </label>
-                <input type="text" id="city" placeholder="City" th:field="*{location.city}">
-                <br/>
-                <label for="postcode" id="postcodeLabel">Postcode: </label>
-                <input type="text" id="postcode" placeholder="Postcode" th:field="*{location.postcode}">
-                <br/>
-                <label for="country" id="countryLabel">Country: </label>
-                <input type="text" id="country" placeholder="Country" th:field="*{location.country}">
-            </div>
+            <table class="locationTable" id="locationContainer">
+                <tr>
+                    <th>Location</th>
+                    <th><div class="formRow" id="autocompleteContainer"></div></th>
+                </tr>
+                <tr>
+                    <td><ul id="suggestions"></ul></td>
+                </tr>
+                <tr>
+                    <td><label for="streetAddress" id="streetAddressLabel">Street Address: </label></td>
+                    <td><input type="text" id="streetAddress" placeholder="Street Address" th:field="*{location.streetAddress}"></td>
+                </tr>
+                <tr>
+                    <td><label for="suburb" id="suburbLabel">Suburb: </label></td>
+                    <td><input type="text" id="suburb" placeholder="Suburb" th:field="*{location.suburb}"></td>
+                </tr>
+                <tr>
+                    <td><label for="city" id="cityLabel">City </label></td>
+                    <td><input type="text" id="city" placeholder="City" th:field="*{location.city}"></td>
+                </tr>
+                <tr>
+                    <td><label for="postcode" id="postcodeLabel">Postcode: </label></td>
+                    <td><input type="text" id="postcode" placeholder="Postcode" th:field="*{location.postcode}"></td>
+                </tr>
+                <tr>
+                    <td><label for="country" id="countryLabel">Country: </label></td>
+                    <td><input type="text" id="country" placeholder="Country" th:field="*{location.country}"></td>
+                </tr>
+            </table>
 
-            <ul id="suggestions"></ul>
 
             <br/>
             <div class="formRow">
@@ -82,9 +92,6 @@
 
         const inputContainerElement = document.createElement("div");
 
-        //getting the garden label
-        const locationLabel = document.getElementById("gardenLocationLabel");
-
         inputContainerElement.setAttribute("class", "input-container");
         containerElement.appendChild(inputContainerElement);
 
@@ -97,7 +104,6 @@
         inputContainerElement.appendChild(inputElement);
 
         // Associate the label with the input element
-        locationLabel.setAttribute('for', 'addressInput');
 
         inputElement.setAttribute("placeholder", options.placeholder);
 
@@ -205,7 +211,7 @@
     // Call the addressAutocomplete function after the DOM has loaded
     window.addEventListener('DOMContentLoaded', function () {
         // Get the container element where you want to add the address autocomplete input
-        const containerElement = document.getElementById('locationContainer');
+        const containerElement = document.getElementById('autocompleteContainer');
 
         // Define a callback function to handle the selected address data
         function handleAddressSelection(data) {
