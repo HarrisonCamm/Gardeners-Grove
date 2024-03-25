@@ -36,9 +36,9 @@
             <table class="locationTable" id="locationContainer">
                 <tr>
                     <th>Location</th>
-                    <th><div class="formRow" id="autocompleteContainer"></div></th>
                 </tr>
                 <tr>
+                    <th><div id="autocompleteContainer"></div></th>
                     <td><ul id="suggestions"></ul></td>
                 </tr>
                 <tr>
@@ -149,10 +149,12 @@
 
                 closeDropDownList(); //close any of results div
 
+                const suggestionsElement = document.getElementById('suggestions');
+
                 /*create a DIV element that will contain the items (values):*/
                 const autocompleteItemsElement = document.createElement("div");
                 autocompleteItemsElement.setAttribute("class", "autocomplete-items");
-                inputContainerElement.appendChild(autocompleteItemsElement);
+                suggestionsElement.appendChild(autocompleteItemsElement);
 
                 if (json.length === 0) { //if there were no results
                     const messageElement = document.createElement("div");
@@ -177,16 +179,17 @@
                         });
                     });
                 }
-
             }).catch(error => {
                 console.error(error.message);
             });
         });
 
         function closeDropDownList() {
-            const autocompleteItemsElement = inputContainerElement.querySelector(".autocomplete-items");
+            const suggestionsElement = document.getElementById('suggestions');
+            const autocompleteItemsElement = suggestionsElement.querySelector(".autocomplete-items");
+
             if (autocompleteItemsElement) {
-                inputContainerElement.removeChild(autocompleteItemsElement);
+                suggestionsElement.removeChild(autocompleteItemsElement);
             }
 
             focusedItemIndex = -1;
