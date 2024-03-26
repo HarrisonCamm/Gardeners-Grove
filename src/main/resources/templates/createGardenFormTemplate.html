@@ -51,7 +51,7 @@
                 </tr>
                 <tr>
                     <td><label for="city" id="cityLabel">City </label></td>
-                    <td><input type="text" id="city" placeholder="City" th:field="*{location.city}" th:classappend="${gardenLocationError} ? 'error' : ''"></td>
+                    <td><input type="text" id="city" placeholder="City" th:field="*{location.city}" th:classappend="${gardenCityError} ? 'error' : ''"></td>
                 </tr>
                 <tr>
                     <td><label for="postcode" id="postcodeLabel">Postcode: </label></td>
@@ -59,7 +59,7 @@
                 </tr>
                 <tr>
                     <td><label for="country" id="countryLabel">Country: </label></td>
-                    <td><input type="text" id="country" placeholder="Country" th:field="*{location.country}" th:classappend="${gardenLocationError} ? 'error' : ''"></td>
+                    <td><input type="text" id="country" placeholder="Country" th:field="*{location.country}" th:classappend="${gardenCountryError} ? 'error' : ''"></td>
                 </tr>
             </table>
             <br/>

@@ -119,9 +119,14 @@ public class CreateGardenController {
             bindingResult.addError(nameError);
         }
 
-        ObjectError locationError = validateGardenLocation(gardenLocation);
-        if (locationError != null) {
-            bindingResult.addError(locationError);
+        ObjectError locationCityError = validateGardenLocation(gardenLocation, true);
+        if (locationCityError != null) {
+            bindingResult.addError(locationCityError);
+        }
+
+        ObjectError locationCountryError = validateGardenLocation(gardenLocation, false);
+        if (locationCountryError != null) {
+            bindingResult.addError(locationCountryError);
         }
 
         ObjectError sizeError = validateSize(gardenSize);

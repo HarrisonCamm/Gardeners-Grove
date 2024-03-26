@@ -39,36 +39,36 @@
                 <table class="locationTable" id="locationContainer">
                     <tr>
                         <th>Location</th>
+                        <th><div id="autocompleteContainer"></div></th>
                     </tr>
                     <tr>
-                        <th><div id="autocompleteContainer"></div></th>
-                        <td><ul id="suggestions"></ul></td>
+                        <td colspan="2"><ul id="suggestions"></ul></td>
                     </tr>
                     <tr>
                         <td><label for="streetAddress" id="streetAddressLabel">Street Address: </label></td>
-                        <td><input type="text" id="streetAddress" placeholder="Street Address" th:field="*{location.streetAddress}"></td>
+                        <td><input type="text" id="streetAddress" placeholder="Street Address" th:field="*{location.streetAddress}" th:value="*{location.streetAddress}" ></td>
                     </tr>
                     <tr>
                         <td><label for="suburb" id="suburbLabel">Suburb: </label></td>
-                        <td><input type="text" id="suburb" placeholder="Suburb" th:field="*{location.suburb}"></td>
+                        <td><input type="text" id="suburb" placeholder="Suburb" th:field="*{location.suburb}" th:value="*{location.suburb}" ></td>
                     </tr>
                     <tr>
                         <td><label for="city" id="cityLabel">City </label></td>
-                        <td><input type="text" id="city" placeholder="City" th:field="*{location.city}"></td>
+                        <td><input type="text" id="city" placeholder="City" th:field="*{location.city}"th:value="*{location.city}"  th:classappend="${gardenCityError} ? 'error' : ''"></td>
                     </tr>
                     <tr>
                         <td><label for="postcode" id="postcodeLabel">Postcode: </label></td>
-                        <td><input type="text" id="postcode" placeholder="Postcode" th:field="*{location.postcode}"></td>
+                        <td><input type="text" id="postcode" placeholder="Postcode" th:field="*{location.postcode}" th:value="*{location.postcode}" ></td>
                     </tr>
                     <tr>
                         <td><label for="country" id="countryLabel">Country: </label></td>
-                        <td><input type="text" id="country" placeholder="Country" th:field="*{location.country}"></td>
+                        <td><input type="text" id="country" placeholder="Country" th:field="*{location.country}" th:value="*{location.country}" th:classappend="${gardenCountryError} ? 'error' : ''"></td>
                     </tr>
                 </table>
                 <br/>
                 <div class="formRow">
                     <label for="size"> Garden Size: </label>
-                    <input type="text" id="size" placeholder="Garden Size" th:value="*{size}" th:field="*{size}">
+                    <input type="text" id="size" placeholder="Garden Size" th:value="*{size}" th:field="*{size}" th:classappend="${gardenSizeError} ? 'error' : ''">
                 </div>
                 <br/>
                 <br/>

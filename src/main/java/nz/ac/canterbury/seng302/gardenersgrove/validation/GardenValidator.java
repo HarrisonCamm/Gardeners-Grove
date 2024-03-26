@@ -32,9 +32,19 @@ public class GardenValidator {
      * @param location garden location object
      * @return object error if there is an error otherwise null
      */
-    public static ObjectError validateGardenLocation(Location location) {
-        if (location.getCity().isEmpty() || location.getCountry().isEmpty()) {
-            return new ObjectError("gardenLocationError", "City and Country are required");
+    public static ObjectError validateGardenLocation(Location location, boolean isCity) {
+        if (isCity) {
+            if (validateWithRegex("^$", location.getCity())) {
+                return new ObjectError("gardenCityError", "City cannot be empty");
+            } else if (!validateWithRegex("^[a-zA-Z\\s]*$", location.getCity())) {
+                return new ObjectError("gardenLocationError", "City must only include letters and spaces");
+            }
+        } else {
+            if (validateWithRegex("^$", location.getCountry())) {
+                return new ObjectError("gardenCountryError", "Country cannot be empty");
+            } else if (!validateWithRegex("^[a-zA-Z\\s]*$", location.getCountry())) {
+                return new ObjectError("gardenLocationError", "Country must only include letters and spaces");
+            }
         }
         return null;
     }
