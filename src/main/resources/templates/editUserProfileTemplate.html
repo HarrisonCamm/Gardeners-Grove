@@ -148,7 +148,7 @@
             <button type="button" id="changePasswordButton" onclick="toggleChangePasswordForm(true)">Change Password</button>
 
             <!-- Hidden Change Password Form -->
-            <div id="changePasswordForm" style="display: none;">
+            <div id="changePasswordForm" style="display: none;" th:name="changePasswordForm" th:value="${changePasswordForm}" data-cy="changePasswordForm">
                 <!-- Old Password Field -->
                 <label for="oldPassword">Old Password:</label>
                 <br/>

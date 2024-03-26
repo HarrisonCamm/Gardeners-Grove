@@ -1,8 +1,9 @@
 function toggleChangePasswordForm(showForm) {
-    var changePasswordButton = document.getElementById('changePasswordButton');
-    var changePasswordForm = document.getElementById('changePasswordForm');
+    let changePasswordButton = document.getElementById('changePasswordButton');
+    let changePasswordForm = document.getElementById('changePasswordForm');
 
     changePasswordForm.value = showForm;
+    console.log(changePasswordForm.value);
 
     if (changePasswordForm.value) {
         changePasswordForm.style.display = 'block';
@@ -17,7 +18,7 @@ function toggleChangePasswordForm(showForm) {
 
 // When the page loads, check the saved status and set the visibility of the "Change Password" form
 window.onload = function() {
-    var changePasswordForm = document.getElementById('changePasswordForm');
+    //var changePasswordForm = document.getElementById('changePasswordForm');
     var changePasswordButton = document.getElementById('changePasswordButton');
     var savedStatus = localStorage.getItem('changePasswordFormStatus');
 

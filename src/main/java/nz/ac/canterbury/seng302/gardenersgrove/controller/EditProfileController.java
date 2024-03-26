@@ -112,6 +112,8 @@ public class EditProfileController {
         model.addAttribute("email", email);
         model.addAttribute("dateOfBirth", dateOfBirth);
 
+        logger.info(String.valueOf(changePasswordForm));
+
         // Check if the date of birth is empty or null
         String formattedDateOfBirth;
         if (dateOfBirth == null || dateOfBirth.isEmpty()) {
