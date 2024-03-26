@@ -52,6 +52,9 @@
                 <tr>
                     <td><label for="city" id="cityLabel">City </label></td>
                     <td><input type="text" id="city" placeholder="City" th:field="*{location.city}" th:classappend="${gardenCityError} ? 'error' : ''"></td>
+                    <td th:if="${gardenCityError}">
+                        <p class="errors" th:text="${gardenCityError}"></p>
+                    </td>
                 </tr>
                 <tr>
                     <td><label for="postcode" id="postcodeLabel">Postcode: </label></td>
@@ -70,7 +73,7 @@
             <br/>
             <button type="submit">Create</button>
             <div class="errors" th:if="${#fields.hasErrors('global')}">
-                <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
+                <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="errors"></p>
             </div>
         </form>
         <form th:action="@{/Cancel}" method="get">
