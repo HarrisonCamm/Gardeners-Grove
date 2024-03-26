@@ -174,7 +174,9 @@
                 <br/>
 
                 <!-- Cancel and Re-show Change Password Button -->
-                <button type="button" id="submitNewPasswordButton" style="margin-left: 10px;">Change Password</button>
+                <a th:href="@{/edit-user-profile}">
+                    <button type="button" id="submitNewPasswordButton" style="margin-left: 10px;">Change Password</button>
+                </a>
                 <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
             </div>
             <!-- End Change Password Section -->

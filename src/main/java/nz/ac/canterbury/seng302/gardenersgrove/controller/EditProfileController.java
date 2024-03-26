@@ -84,7 +84,10 @@ public class EditProfileController {
                              @RequestParam(name="lastName", required=false) String lastName,
                              @RequestParam(name="noLastName", required=false) boolean noLastName,
                              @RequestParam(name="email") String email,
-                             @RequestParam(name="changePasswordForm" , required = false) boolean changePasswordForm,
+                             @RequestParam(name="changePasswordForm", required=false) boolean changePasswordForm,
+                             @RequestParam(name="oldPassword", required = false) String oldPassword,
+                             @RequestParam(name="newPassword", required = false) String newPassword,
+                             @RequestParam(name="retypePassword", required = false) String retypePassword,
                              @RequestParam(name="dateOfBirth", required = false) String dateOfBirth,
                              Model model, HttpServletRequest request) {
 
@@ -104,7 +107,7 @@ public class EditProfileController {
 
         logger.info("User retrieved from session: " + currentUser);
 
-        // Setting model attributes to be persistent in the form instead of clearing
+        // Pre-populate the model with submitted values to persist them in case of an error
         model.addAttribute("firstName", firstName);
         model.addAttribute("lastName", lastName);
         model.addAttribute("noLastName", noLastName);
@@ -114,15 +117,33 @@ public class EditProfileController {
 
         logger.info(String.valueOf(changePasswordForm));
 
-        // Check if the date of birth is empty or null
+        // Begin Validation
+        // Password change validations
+        // Are only required if the user has chosen to change their password (CHECK THIS)
+        if (oldPassword != null && !oldPassword.isEmpty() && newPassword != null && !newPassword.isEmpty()) {
+            // Verify old password matches
+            if (currentUser.getPassword() == oldPassword) {
+                model.addAttribute("oldPasswordError", "Your old password is incorrect");
+            }
+
+            // Check if new passwords match
+            if (!newPassword.equals(retypePassword)) {
+                model.addAttribute("passwordMatchError", "The new passwords do not match");
+            }
+
+            // Validate new password strength
+            if (!RegisterFormController.isPasswordValid(newPassword)) { // Assuming isPasswordValid method is static and accessible
+                model.addAttribute("newPasswordError", "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            }
+        }
+
+        // Check the date of birth and format it to empty string or dd/mm/yyyy
         String formattedDateOfBirth;
         if (dateOfBirth == null || dateOfBirth.isEmpty()) {
             formattedDateOfBirth = "";
         } else {
             formattedDateOfBirth = convertDateFormat(dateOfBirth);
         }
-
-        // Begin Validation
 
         // Check if email already exists
         if (userService.emailExists(email) && !Objects.equals(email, currentUser.getEmail())) {
