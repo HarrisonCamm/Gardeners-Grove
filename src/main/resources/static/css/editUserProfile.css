@@ -1,0 +1,11 @@
+#changePasswordForm button {
+    margin-top: 10px;
+    margin-right: 5px; /* Adjust as needed */
+}
+
+/* Additional styling for alignment and spacing */
+#changePasswordForm {
+    margin-top: 20px;
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+}

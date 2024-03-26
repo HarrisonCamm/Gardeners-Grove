@@ -75,34 +75,6 @@ public class EditProfileController {
         return "editUserProfileTemplate";
     }
 
-//    @PostMapping("/toggle-change-password")
-//    public String changePassword(@RequestParam(name = "firstName") String firstName,
-//                             @RequestParam(name = "lastName", required = false) String lastName,
-//                             @RequestParam(name = "noLastName", required = false) boolean noLastName,
-//                             @RequestParam(name = "email") String email,
-//                             @RequestParam(name = "dateOfBirth", required = false) String dateOfBirth,
-//                             Model model, HttpServletRequest request) {
-//
-//        logger.info("POST /toggle-change-password");
-//
-//        // Show the change password form
-//        model.addAttribute("showChangePasswordForm", true);
-//
-//        // Get the current user
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String currentPrincipalName = authentication.getName();
-//        User currentUser = userService.getUserByEmail(currentPrincipalName);
-//
-//        // Ensure users details are still displayed
-//        model.addAttribute("firstName", firstName);
-//        model.addAttribute("lastName", lastName);
-//        model.addAttribute("noLastName", noLastName);
-//        model.addAttribute("email", email);
-//        model.addAttribute("dateOfBirth", dateOfBirth);
-//
-//        return "editUserProfileTemplate";
-//    }
-
     /**
      * Posts a form response with name and favourite language
      * @param firstName first name if user
@@ -118,7 +90,6 @@ public class EditProfileController {
                              @RequestParam(name="noLastName", required=false) boolean noLastName,
                              @RequestParam(name="email") String email,
                              @RequestParam(name="dateOfBirth", required = false) String dateOfBirth,
-                             @RequestParam(name="showChangePasswordForm", required=false) boolean showChangePasswordForm,
                              Model model, HttpServletRequest request) {
         logger.info("POST /edit-user-profile");
 
@@ -151,13 +122,6 @@ public class EditProfileController {
             formattedDateOfBirth = "";
         } else {
             formattedDateOfBirth = convertDateFormat(dateOfBirth);
-        }
-
-        // Check if the user clicked the change password button
-        if (showChangePasswordForm) {
-            // Display the change password form; by default, it is hidden
-            model.addAttribute("showChangePasswordForm", true);
-            return "editUserProfileTemplate";
         }
 
         // Begin Validation
@@ -248,8 +212,6 @@ public class EditProfileController {
             return false;
             // Handle the case where the date string doesn't match the expected format
         }
-
-
     }
 
     public static int calculateAge(String dateOfBirth) {
@@ -283,5 +245,4 @@ public class EditProfileController {
             return yyyy + "-" + mm + "-" + dd;
         }
     }
-
 }

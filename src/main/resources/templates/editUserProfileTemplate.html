@@ -3,6 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
     <title>Edit profile</title>
+    <link rel="stylesheet" type="text/css" th:href="@{css/userEditProfile.css}" />
+    <script th:src="@{js/editUserProfile.js}"></script>
 <style>
     body {
         display: flex;
@@ -142,28 +144,28 @@
             <!-- Change Password Section -->
             <label>Password:</label>
             <br/>
-            <!-- Change Password Button, Make Change Password Form Appear-->
-            <form action="/edit-user-profile" method="post" novalidate>
-                <input type="hidden" name="showChangePasswordForm" value="true" />
-                <button type="submit">Change Password</button>
-            </form>
-            <!-- Change Password Placeholder -->
-            <div th:if="${showChangePasswordForm}" id="changePasswordForm" th:style="'display:' + (${showChangePasswordForm} ? 'block' : 'none')">
-                <br/>
+
+            <!-- Change Password Button -->
+            <button type="button" id="changePasswordButton" onclick="toggleChangePasswordForm(true)">Change Password</button>
+
+            <!-- Hidden Change Password Form -->
+            <div id="changePasswordForm" style="display: none;">
                 <label for="oldPassword">Old Password:</label>
-                <input type="password" id="oldPassword" th:name="oldPassword" required>
+                <br/>
+                <input type="password" class="form-control" id="oldPassword" name="oldPassword">
                 <br/>
                 <label for="newPassword">New Password:</label>
-                <input type="password" id="newPassword" th:name="newPassword" required>
                 <br/>
-                <label for="retypePassword">Retype Password:</label>
-                <input type="password" id="retypePassword" th:name="retypePassword" required>
+                <input type="password" class="form-control" id="newPassword" name="newPassword">
                 <br/>
-                <button type="submit">Change Password</button>
-                <button type="cancel">Cancel</button>
+                <label for="retypePassword">Retype New Password:</label>
+                <br/>
+                <input type="password" class="form-control" id="retypePassword" name="retypePassword">
+                <br/>
+                <!-- Cancel and Re-show Change Password Button -->
+                <button type="button" id="submitNewPasswordButton" style="margin-left: 10px;">Change Password</button>
+                <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
             </div>
-
-
 
             <br/>
             <label for="dateOfBirth"> Date of birth: </label>
