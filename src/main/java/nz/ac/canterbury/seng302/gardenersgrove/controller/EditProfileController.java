@@ -33,9 +33,7 @@ public class EditProfileController {
     Logger logger = LoggerFactory.getLogger(EditProfileController.class);
 
     private final UserService userService;
-
     private UserRepository userRepository;
-
     private final AuthenticationManager authenticationManager;
 
     @Autowired
@@ -57,7 +55,6 @@ public class EditProfileController {
 
         logger.info("GET /edit-user-profile");
 
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
         User currentUser = userService.getUserByEmail(currentPrincipalName);
@@ -67,10 +64,8 @@ public class EditProfileController {
         model.addAttribute("lastName", currentUser.getLastName());
         model.addAttribute("noLastName", currentUser.getNoLastName());
         model.addAttribute("email", currentUser.getEmail());
+        model.addAttribute("changePasswordForm", false); // Hide the change password form initially
         model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
-
-        // Initially, do not show the change password form
-        model.addAttribute("showChangePasswordForm", false);
 
         return "editUserProfileTemplate";
     }
@@ -89,8 +84,10 @@ public class EditProfileController {
                              @RequestParam(name="lastName", required=false) String lastName,
                              @RequestParam(name="noLastName", required=false) boolean noLastName,
                              @RequestParam(name="email") String email,
+                             @RequestParam(name="changePasswordForm" , required = false) boolean changePasswordForm,
                              @RequestParam(name="dateOfBirth", required = false) String dateOfBirth,
                              Model model, HttpServletRequest request) {
+
         logger.info("POST /edit-user-profile");
 
         if (lastName == null) {
@@ -107,12 +104,11 @@ public class EditProfileController {
 
         logger.info("User retrieved from session: " + currentUser);
 
-        Long userId = currentUser.getUserId();
-
-        model.addAttribute("userId", userId);
+        // Setting model attributes to be persistent in the form instead of clearing
         model.addAttribute("firstName", firstName);
         model.addAttribute("lastName", lastName);
         model.addAttribute("noLastName", noLastName);
+        model.addAttribute("changePasswordForm", changePasswordForm);
         model.addAttribute("email", email);
         model.addAttribute("dateOfBirth", dateOfBirth);
 

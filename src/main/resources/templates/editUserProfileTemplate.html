@@ -144,30 +144,43 @@
             <!-- Change Password Section -->
             <label>Password:</label>
             <br/>
-
             <!-- Change Password Button -->
             <button type="button" id="changePasswordButton" onclick="toggleChangePasswordForm(true)">Change Password</button>
 
             <!-- Hidden Change Password Form -->
             <div id="changePasswordForm" style="display: none;">
+                <!-- Old Password Field -->
                 <label for="oldPassword">Old Password:</label>
                 <br/>
-                <input type="password" class="form-control" id="oldPassword" name="oldPassword">
+                <input type="password" id="oldPassword" name="oldPassword" class="form-control">
+                <!-- Placeholder for Incorrect Old Password Error -->
+                <div class="error-message" th:if="${oldPasswordError}" th:text="${oldPasswordError}"></div>
                 <br/>
+
+                <!-- New Password Field -->
                 <label for="newPassword">New Password:</label>
                 <br/>
-                <input type="password" class="form-control" id="newPassword" name="newPassword">
+                <input type="password" id="newPassword" name="newPassword" class="form-control">
+                <!-- Placeholder for New Password Validation Error -->
+                <div class="error-message" th:if="${newPasswordError}" th:text="${newPasswordError}"></div>
                 <br/>
+
+                <!-- Retype New Password Field -->
                 <label for="retypePassword">Retype New Password:</label>
                 <br/>
-                <input type="password" class="form-control" id="retypePassword" name="retypePassword">
+                <input type="password" id="retypePassword" name="retypePassword" class="form-control">
+                <!-- Placeholder for Password Match Error -->
+                <div class="error-message" th:if="${passwordMatchError}" th:text="${passwordMatchError}"></div>
                 <br/>
+
                 <!-- Cancel and Re-show Change Password Button -->
                 <button type="button" id="submitNewPasswordButton" style="margin-left: 10px;">Change Password</button>
                 <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
             </div>
-
+            <!-- End Change Password Section -->
             <br/>
+
+            <!-- Date of Birth Section -->
             <label for="dateOfBirth"> Date of birth: </label>
             <br/>
             <input type="text" class="form-control" id="dateOfBirth"
