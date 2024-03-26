@@ -50,9 +50,8 @@ public class PlantValidator {
      * @return True if the input is a positive number, otherwise false
      */
     private static boolean isPositiveNumber(String input) {
-        // Regex to match a string that contains only digits and at most one comma or dot,
-        // If a comma or dot is present, it must be followed by at least one digit
-        String regex = "^[0-9]+([.,][0-9]+)?$";
+        // Regex to match a string that contains only numerical digits,
+        String regex = "^[0-9]+$";
         return Pattern.matches(regex, input);
     }
 

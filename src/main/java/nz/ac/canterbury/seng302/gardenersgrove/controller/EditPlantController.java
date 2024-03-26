@@ -94,7 +94,7 @@ public class EditPlantController {
         }
         plant.setDatePlanted(date);
         plant.setName(newPlant.getName());
-        plant.setCount(newPlant.getCount().replace(',', '.'));
+        plant.setCount(newPlant.getCount());
         plant.setDescription(newPlant.getDescription());
 
         model.addAttribute("plantID", plantID); // Add gardenID to the model
