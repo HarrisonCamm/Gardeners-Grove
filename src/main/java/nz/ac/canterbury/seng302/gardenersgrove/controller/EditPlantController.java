@@ -72,6 +72,8 @@ public class EditPlantController {
                              BindingResult bindingResult,
                              Model model) throws Exception {
         logger.info("PUT /edit-plant");
+        RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
+
 
         bindingResult = new BeanPropertyBindingResult(newPlant, "plant");
 
@@ -102,7 +104,8 @@ public class EditPlantController {
 
         if (bindingResult.hasErrors()) {
             // If there are validation errors, return to the form page
-            return "editPlantFormTemplate";
+            return "redirect:/edit-plant?plantID=" + plantID;
+//            return "editPlantFormTemplate";
         } else {
             plantService.addPlant(plant);
             return "redirect:/view-garden?gardenID=" + plant.getGarden().getId();
