@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.lang.reflect.Field;
+
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.GardenValidator.*;
 
 /**
@@ -94,8 +96,8 @@ public class CreateGardenController {
 
         if (bindingResult.hasErrors()) {
             // If there are validation errors, return to the form page
-            for (ObjectError error : bindingResult.getAllErrors()) {
-                model.addAttribute(error.getObjectName(), true);
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                model.addAttribute(error.getField() + "Error", error.getDefaultMessage());
             }
             return "createGardenFormTemplate";
         } else {
@@ -114,22 +116,22 @@ public class CreateGardenController {
      * @param bindingResult Object to add errors to for Thyme leaf
      */
     public void checkFields(String gardenName, Location gardenLocation, String gardenSize, BindingResult bindingResult) {
-        ObjectError nameError = validateGardenName(gardenName);
+        FieldError nameError = validateGardenName(gardenName);
         if (nameError != null) {
             bindingResult.addError(nameError);
         }
 
-        ObjectError locationCityError = validateGardenLocation(gardenLocation, true);
+        FieldError locationCityError = validateGardenLocation(gardenLocation, true);
         if (locationCityError != null) {
             bindingResult.addError(locationCityError);
         }
 
-        ObjectError locationCountryError = validateGardenLocation(gardenLocation, false);
+        FieldError locationCountryError = validateGardenLocation(gardenLocation, false);
         if (locationCountryError != null) {
             bindingResult.addError(locationCountryError);
         }
 
-        ObjectError sizeError = validateSize(gardenSize);
+        FieldError sizeError = validateSize(gardenSize);
         if (sizeError != null) {
             bindingResult.addError(sizeError);
         }

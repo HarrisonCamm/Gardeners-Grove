@@ -52,8 +52,8 @@
                 <tr>
                     <td><label for="city" id="cityLabel">City </label></td>
                     <td><input type="text" id="city" placeholder="City" th:field="*{location.city}" th:classappend="${gardenCityError} ? 'error' : ''"></td>
-                    <td th:if="${gardenCityError}">
-                        <p class="errors" th:text="${gardenCityError}"></p>
+                    <td th:if="${#fields.hasErrors('location.city')}">
+                        <p class="errors" th:text="${location.cityError}"></p>
                     </td>
                 </tr>
                 <tr>
