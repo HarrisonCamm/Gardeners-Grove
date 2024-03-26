@@ -34,10 +34,10 @@ public class LostPasswordFormController {
      * @param model (map-like) representation of name, language and isJava boolean for use in thymeleaf
      * @return thymeleaf lostPasswordFormTemplate
      */
-    @GetMapping("/lost-password")
+    @GetMapping("/lost-password-form")
     public String form(@RequestParam(name = "email", required = false) String email,
                        Model model) {
-        logger.info("GET /lost-password");
+        logger.info("GET /lost-password-form");
         model.addAttribute("email", email);
         return "lostPasswordFormTemplate";
     }
@@ -49,11 +49,11 @@ public class LostPasswordFormController {
      *              with values being set to relevant parameters provided
      * @return thymeleaf lostPasswordFormTemplate and popup message
      */
-    @PostMapping("/lost-password")
+    @PostMapping("/lost-password-form")
     public String submitForm(@RequestParam(name="email") String email,
                              HttpServletRequest request,
                              Model model) {
-        logger.info("POST /lost-password");
+        logger.info("POST /lost-password-form");
 
         model.addAttribute("email", email);
 
@@ -70,7 +70,7 @@ public class LostPasswordFormController {
             // Email has not been used / todo check this
 
             // todo send email
-            return "redirect:/lost-password"; // todo implement popup confirmation message
+            return "redirect:/lost-password-form"; // todo implement popup confirmation message
         }
     }
 

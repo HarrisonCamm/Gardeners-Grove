@@ -63,7 +63,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request ->
                     // Allow "/", "/register", and "/login" to anyone (permitAll)
                     // Authenticated and non-Authenticated users can access these pages
-                    request.requestMatchers("/", "/register-form", "/sign-in-form", "/home")
+                    request.requestMatchers("/", "/register-form", "/sign-in-form", "/home", "/lost-password-form")
                     .permitAll()
                     // Could change .permitAll() to .anonymous() to give access to these pages only to non-Authenticated users
 
