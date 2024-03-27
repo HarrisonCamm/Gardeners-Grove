@@ -30,7 +30,8 @@
         <form th:action="@{/create-garden}" method="post" th:object="${garden}">
             <div class="formRow">
                 <label for="name"> Garden Name: </label>
-                <input type="text" id="name" placeholder="Garden Name" th:field="*{name}" th:classappend="${gardenNameError} ? 'error' : ''">
+                <input type="text" id="name" placeholder="Garden Name" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
+                <p th:if="${#fields.hasErrors('name')}" class="errors" th:text="${nameError}"></p>
             </div>
             <br/>
             <table class="locationTable" id="locationContainer">
@@ -51,9 +52,9 @@
                 </tr>
                 <tr>
                     <td><label for="city" id="cityLabel">City </label></td>
-                    <td><input type="text" id="city" placeholder="City" th:field="*{location.city}" th:classappend="${gardenCityError} ? 'error' : ''"></td>
-                    <td th:if="${#fields.hasErrors('location.city')}">
-                        <p class="errors" th:text="${location.cityError}"></p>
+                    <td>
+                        <input type="text" id="city" placeholder="City" th:field="*{location.city}" th:classappend="${location_cityError} ? 'error' : ''">
+                        <p th:if="${#fields.hasErrors('location.city')}" class="errors" th:text="${location_cityError}"></p>
                     </td>
                 </tr>
                 <tr>
@@ -62,13 +63,17 @@
                 </tr>
                 <tr>
                     <td><label for="country" id="countryLabel">Country: </label></td>
-                    <td><input type="text" id="country" placeholder="Country" th:field="*{location.country}" th:classappend="${gardenCountryError} ? 'error' : ''"></td>
+                    <td>
+                        <input type="text" id="country" placeholder="Country" th:field="*{location.country}" th:classappend="${location_countryError} ? 'error' : ''">
+                        <p th:if="${#fields.hasErrors('location.country')}" class="errors" th:text="${location_countryError}"></p>
+                    </td>
                 </tr>
             </table>
             <br/>
             <div class="formRow">
                 <label for="size"> Garden Size: </label>
-                <input type="text" id="size" placeholder="Garden Size" th:field="*{size}" th:classappend="${gardenSizeError} ? 'error' : ''">
+                <input type="text" id="size" placeholder="Garden Size" th:field="*{size}" th:classappend="${sizeError} ? 'error' : ''">
+                <p th:if="${#fields.hasErrors('size')}" class="errors" th:text="${sizeError}"></p>
             </div>
             <br/>
             <button type="submit">Create</button>

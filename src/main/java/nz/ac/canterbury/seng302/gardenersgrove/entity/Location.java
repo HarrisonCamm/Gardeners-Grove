@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
 import jakarta.persistence.*;
+import org.springframework.validation.FieldError;
 
 @Entity
 public class Location {
@@ -16,6 +17,8 @@ public class Location {
     private String city;
     private String postcode;
     private String country;
+    private FieldError cityError;
+    private FieldError countryError;
 
 
     public Location(String streetAddress, String suburb, String city, String postcode, String country) {
@@ -83,5 +86,21 @@ public class Location {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public FieldError getCityError() {
+        return cityError;
+    }
+
+    public void setCityError(FieldError cityError) {
+        this.cityError = cityError;
+    }
+
+    public FieldError getCountryError() {
+        return countryError;
+    }
+
+    public void setCountryError(FieldError countryError) {
+        this.countryError = countryError;
     }
 }

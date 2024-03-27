@@ -89,6 +89,7 @@ public class CreateGardenController {
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
         Location gardenLocation = garden.getLocation();
+
         // Perform validation
         checkFields(gardenName, gardenLocation, gardenSize, bindingResult);
 
@@ -97,7 +98,7 @@ public class CreateGardenController {
         if (bindingResult.hasErrors()) {
             // If there are validation errors, return to the form page
             for (FieldError error : bindingResult.getFieldErrors()) {
-                model.addAttribute(error.getField() + "Error", error.getDefaultMessage());
+                model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());
             }
             return "createGardenFormTemplate";
         } else {
@@ -124,11 +125,13 @@ public class CreateGardenController {
         FieldError locationCityError = validateGardenLocation(gardenLocation, true);
         if (locationCityError != null) {
             bindingResult.addError(locationCityError);
+            gardenLocation.setCityError(locationCityError);
         }
 
         FieldError locationCountryError = validateGardenLocation(gardenLocation, false);
         if (locationCountryError != null) {
             bindingResult.addError(locationCountryError);
+            gardenLocation.setCountryError(locationCountryError);
         }
 
         FieldError sizeError = validateSize(gardenSize);
@@ -157,8 +160,4 @@ public class CreateGardenController {
 
         model.addAttribute("gardens", gardenService.getGardens());
     }
-
-
-
-
 }

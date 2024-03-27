@@ -122,6 +122,8 @@ li {
 /* Error message styles */
 .errors {
     color: red;
+    font-size: 0.8em;
+    margin: 3px;
 }
 
 .error {
