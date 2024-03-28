@@ -38,14 +38,6 @@ public class CreateGardenController {
         this.locationService = locationService;
     }
 
-
-//    @GetMapping("/")
-//    public String redirect() {
-//        logger.info("GET /");
-//        RedirectService.addEndpoint("/");
-//        return "redirect:/create-garden";
-//    }
-
     /**
      * If the form has been previously filled, load the attributes back from the previous POST request
      * @param model Spring Boot model
@@ -100,6 +92,8 @@ public class CreateGardenController {
             for (FieldError error : bindingResult.getFieldErrors()) {
                 model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());
             }
+
+            model.addAttribute("garden", garden);
             return "createGardenFormTemplate";
         } else {
             //TODO figure out how to not have duplicate locations. Probably next sprint tbh

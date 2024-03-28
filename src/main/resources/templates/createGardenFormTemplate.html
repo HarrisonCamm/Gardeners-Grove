@@ -30,7 +30,7 @@
         <form th:action="@{/create-garden}" method="post" th:object="${garden}">
             <div class="formRow">
                 <label for="name"> Garden Name: </label>
-                <input type="text" id="name" placeholder="Garden Name" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
+                <input type="text" id="name" placeholder="Garden Name" th:field="*{name}" th:value="*{name}" th:classappend="${nameError} ? 'error' : ''">
                 <p th:if="${#fields.hasErrors('name')}" class="errors" th:text="${nameError}"></p>
             </div>
             <br/>
@@ -40,39 +40,37 @@
                     <th><div id="autocompleteContainer"></div></th>
                 </tr>
                 <tr>
-                    <td colspan="2"><ul id="suggestions"></ul></td>
-                </tr>
-                <tr>
                     <td><label for="streetAddress" id="streetAddressLabel">Street Address: </label></td>
-                    <td><input type="text" id="streetAddress" placeholder="Street Address" th:field="*{location.streetAddress}"></td>
+                    <td><input type="text" id="streetAddress" placeholder="Street Address" th:value="*{location.streetAddress}" th:field="*{location.streetAddress}"></td>
                 </tr>
                 <tr>
                     <td><label for="suburb" id="suburbLabel">Suburb: </label></td>
-                    <td><input type="text" id="suburb" placeholder="Suburb" th:field="*{location.suburb}"></td>
+                    <td><input type="text" id="suburb" placeholder="Suburb" th:value="*{location.suburb}" th:field="*{location.suburb}"></td>
                 </tr>
                 <tr>
                     <td><label for="city" id="cityLabel">City </label></td>
                     <td>
-                        <input type="text" id="city" placeholder="City" th:field="*{location.city}" th:classappend="${location_cityError} ? 'error' : ''">
+                        <input type="text" id="city" placeholder="City" th:value="*{location.city}" th:field="*{location.city}" th:classappend="${location_cityError} ? 'error' : ''">
                         <p th:if="${#fields.hasErrors('location.city')}" class="errors" th:text="${location_cityError}"></p>
                     </td>
                 </tr>
                 <tr>
                     <td><label for="postcode" id="postcodeLabel">Postcode: </label></td>
-                    <td><input type="text" id="postcode" placeholder="Postcode" th:field="*{location.postcode}"></td>
+                    <td><input type="text" id="postcode" placeholder="Postcode" th:value="*{location.postcode}" th:field="*{location.postcode}"></td>
                 </tr>
                 <tr>
                     <td><label for="country" id="countryLabel">Country: </label></td>
                     <td>
-                        <input type="text" id="country" placeholder="Country" th:field="*{location.country}" th:classappend="${location_countryError} ? 'error' : ''">
+                        <input type="text" id="country" placeholder="Country" th:value="*{location.country}" th:field="*{location.country}" th:classappend="${location_countryError} ? 'error' : ''">
                         <p th:if="${#fields.hasErrors('location.country')}" class="errors" th:text="${location_countryError}"></p>
                     </td>
                 </tr>
             </table>
+            <ul id="suggestions"></ul>
             <br/>
             <div class="formRow">
                 <label for="size"> Garden Size: </label>
-                <input type="text" id="size" placeholder="Garden Size" th:field="*{size}" th:classappend="${sizeError} ? 'error' : ''">
+                <input type="text" id="size" placeholder="Garden Size" th:value="*{size}" th:field="*{size}" th:classappend="${sizeError} ? 'error' : ''">
                 <p th:if="${#fields.hasErrors('size')}" class="errors" th:text="${sizeError}"></p>
             </div>
             <br/>
@@ -228,7 +226,9 @@
             for (let i = 0; i < inputArray.length; i++) {
                 switch (inputArray[i].id) {
                     case 'streetAddress':
-                        inputArray[i].value = handleField(data.housenumber) + ' ' + handleField(data.street);
+                        let houseNumber = handleField(data.housenumber);
+                        let street = handleField(data.street);
+                        inputArray[i].value = houseNumber && street ? houseNumber + ' ' + street : houseNumber + street;
                         break;
                     case 'suburb':
                         inputArray[i].value = handleField(data.suburb);
