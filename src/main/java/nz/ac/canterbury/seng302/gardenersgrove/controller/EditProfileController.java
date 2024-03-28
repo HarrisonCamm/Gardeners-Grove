@@ -64,7 +64,7 @@ public class EditProfileController {
         model.addAttribute("lastName", currentUser.getLastName());
         model.addAttribute("noLastName", currentUser.getNoLastName());
         model.addAttribute("email", currentUser.getEmail());
-        model.addAttribute("changePasswordForm", false); // Hide the change password form initially
+        model.addAttribute("changePasswordFormInput", false); // Hide the change password form initially
         model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
 
         return "editUserProfileTemplate";
@@ -84,7 +84,7 @@ public class EditProfileController {
                              @RequestParam(name="lastName", required=false) String lastName,
                              @RequestParam(name="noLastName", required=false) boolean noLastName,
                              @RequestParam(name="email") String email,
-                             @RequestParam(name="changePasswordForm", required=false) boolean changePasswordForm,
+                             @RequestParam(name="changePasswordFormInput", required=false) boolean changePasswordFormInput,
                              @RequestParam(name="oldPassword", required = false) String oldPassword,
                              @RequestParam(name="newPassword", required = false) String newPassword,
                              @RequestParam(name="retypePassword", required = false) String retypePassword,
@@ -111,11 +111,10 @@ public class EditProfileController {
         model.addAttribute("firstName", firstName);
         model.addAttribute("lastName", lastName);
         model.addAttribute("noLastName", noLastName);
-        model.addAttribute("changePasswordForm", changePasswordForm);
+        model.addAttribute("changePasswordFormInput", changePasswordFormInput);
         model.addAttribute("email", email);
         model.addAttribute("dateOfBirth", dateOfBirth);
 
-        logger.info(String.valueOf(changePasswordForm));
 
         // Begin Validation
         // Password change validations

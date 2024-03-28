@@ -3,7 +3,6 @@
 <head>
     <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
     <title>Edit profile</title>
-    <link rel="stylesheet" type="text/css" th:href="@{css/userEditProfile.css}" />
     <script th:src="@{js/editUserProfile.js}"></script>
 <style>
     body {
@@ -142,13 +141,17 @@
 
 
             <!-- Change Password Section -->
-            <label>Password:</label>
-            <br/>
-            <!-- Change Password Button -->
-            <button type="button" id="changePasswordButton" onclick="toggleChangePasswordForm(true)">Change Password</button>
+            <div id="passwordContainer" th:hidden="${changePasswordFormInput}">
+                <label id="passwordLabel">Password:</label>
+                <br/>
+                <!-- Change Password Button -->
+                <button type="button" id="changePasswordButton" onclick="toggleChangePasswordForm(true)">Change Password</button>
+                <br/>
+            </div>
 
+            <input type="hidden" id="changePasswordFormInput" th:name="changePasswordFormInput" th:value="${changePasswordFormInput}" >
             <!-- Hidden Change Password Form -->
-            <div id="changePasswordForm" style="display: none;" th:name="changePasswordForm" th:value="${changePasswordForm}" data-cy="changePasswordForm">
+            <div id="changePasswordForm" th:hidden="${!changePasswordFormInput}">
                 <!-- Old Password Field -->
                 <label for="oldPassword">Old Password:</label>
                 <br/>
@@ -156,13 +159,14 @@
                 <!-- Placeholder for Incorrect Old Password Error -->
                 <div class="error-message" th:if="${oldPasswordError}" th:text="${oldPasswordError}"></div>
                 <br/>
-
+                <br/>
                 <!-- New Password Field -->
                 <label for="newPassword">New Password:</label>
                 <br/>
                 <input type="password" id="newPassword" name="newPassword" class="form-control">
                 <!-- Placeholder for New Password Validation Error -->
                 <div class="error-message" th:if="${newPasswordError}" th:text="${newPasswordError}"></div>
+                <br/>
                 <br/>
 
                 <!-- Retype New Password Field -->
@@ -172,12 +176,16 @@
                 <!-- Placeholder for Password Match Error -->
                 <div class="error-message" th:if="${passwordMatchError}" th:text="${passwordMatchError}"></div>
                 <br/>
+                <br/>
 
                 <!-- Cancel and Re-show Change Password Button -->
-                <a th:href="@{/edit-user-profile}">
-                    <button type="button" id="submitNewPasswordButton" style="margin-left: 10px;">Change Password</button>
-                </a>
-                <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
+                <div class="buttons">
+                    <a th:href="@{/edit-user-profile}">
+                        <button type="button" id="submitNewPasswordButton">Change Password</button>
+                    </a>
+                    &nbsp;
+                    <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
+                </div>
             </div>
             <!-- End Change Password Section -->
             <br/>
