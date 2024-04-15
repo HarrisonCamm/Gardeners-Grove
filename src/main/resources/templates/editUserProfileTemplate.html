@@ -144,7 +144,7 @@
             <div id="passwordContainer" th:hidden="${changePasswordFormInput}">
                 <label id="passwordLabel">Password:</label>
                 <br/>
-                <!-- Change Password Button -->
+                <!-- Display Change Password Form Button -->
                 <button type="button" id="changePasswordButton" onclick="toggleChangePasswordForm(true)">Change Password</button>
                 <br/>
             </div>
@@ -178,7 +178,7 @@
                 <br/>
                 <br/>
 
-                <!-- Cancel and Re-show Change Password Button -->
+                <!-- Submit Changed Password and Cancel Change Password Buttons -->
                 <div class="buttons">
                     <a th:href="@{/edit-user-profile}">
                         <button type="button" id="submitNewPasswordButton">Change Password</button>

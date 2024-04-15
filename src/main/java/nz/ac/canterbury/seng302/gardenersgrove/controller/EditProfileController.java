@@ -116,7 +116,8 @@ public class EditProfileController {
         model.addAttribute("dateOfBirth", dateOfBirth);
 
 
-        // Begin Validation
+        // Begin Validations
+
         // Password change validations
         // Are only required if the user has chosen to change their password (CHECK THIS)
         if (oldPassword != null && !oldPassword.isEmpty() && newPassword != null && !newPassword.isEmpty()) {
@@ -136,6 +137,7 @@ public class EditProfileController {
             }
         }
 
+        // User details validations
         // Check the date of birth and format it to empty string or dd/mm/yyyy
         String formattedDateOfBirth;
         if (dateOfBirth == null || dateOfBirth.isEmpty()) {
