@@ -184,7 +184,7 @@ public class EditProfileController {
                 || model.containsAttribute("lastNameError") || model.containsAttribute("ageError")) {
             return "editUserProfileTemplate";
         } else {
-            // Email has not been used
+            // Email has not been used, update user details
             currentUser = userService.updateUser(currentUser, firstName, lastName, noLastName, email, dateOfBirth);
             model.addAttribute("displayName", firstName + " " + lastName);
 
@@ -265,4 +265,6 @@ public class EditProfileController {
             return yyyy + "-" + mm + "-" + dd;
         }
     }
+
+
 }
