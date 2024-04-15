@@ -112,96 +112,121 @@ public class EditProfileController {
         model.addAttribute("lastName", lastName);
         model.addAttribute("noLastName", noLastName);
         model.addAttribute("changePasswordFormInput", changePasswordFormInput);
+        model.addAttribute("oldPassword", oldPassword);
+        model.addAttribute("newPassword", newPassword);
+        model.addAttribute("retypePassword", retypePassword);
         model.addAttribute("email", email);
         model.addAttribute("dateOfBirth", dateOfBirth);
 
-
         // Begin Validations
 
-        // Password change validations
-        // Are only required if the user has chosen to change their password (CHECK THIS)
-        if (oldPassword != null && !oldPassword.isEmpty() && newPassword != null && !newPassword.isEmpty()) {
-            // Verify old password matches
-            if (currentUser.getPassword() == oldPassword) {
-                model.addAttribute("oldPasswordError", "Your old password is incorrect");
+        // Change Password Validations
+        if (changePasswordFormInput) {
+            // Only perform password validation when change password form open (changePasswordFormInput == true)
+
+            // Check if the old password is empty
+            if (oldPassword == null || oldPassword.isEmpty() || newPassword == null || newPassword.isEmpty() || retypePassword == null || retypePassword.isEmpty()) {
+                if (oldPassword == null || oldPassword.isEmpty()) {
+                    model.addAttribute("oldPasswordError", "Old password is required.");
+                } else {
+                    // Attempt to validate the user with the provided old password
+                    Optional<User> validatedUser = userService.validateUser(currentUser.getEmail(), oldPassword);
+
+                    // If the Optional is empty, the old password does not match
+                    if (!validatedUser.isPresent()) {
+                        model.addAttribute("oldPasswordError", "Your old password is incorrect");
+                    }
+                }
+
+            // Check if the new password is empty
+            if (newPassword == null || newPassword.isEmpty()) {
+                model.addAttribute("newPasswordError", "New password is required.");
+            } else {
+                // Validate the new password strength
+                if (!isPasswordValid(newPassword)) {
+                    model.addAttribute("newPasswordError", "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+                }
             }
 
-            // Check if new passwords match
-            if (!newPassword.equals(retypePassword)) {
-                model.addAttribute("passwordMatchError", "The new passwords do not match");
+            // Check if the retyped password is empty
+            if (retypePassword == null || retypePassword.isEmpty()) {
+                model.addAttribute("passwordMatchError", "Retyping the new password is required.");
+            } else {
+                // Check if the new password and retype password match
+                if (!newPassword.equals(retypePassword)) {
+                    model.addAttribute("passwordMatchError", "The new passwords do not match");
+                }
             }
-
-            // Validate new password strength
-            if (!RegisterFormController.isPasswordValid(newPassword)) { // Assuming isPasswordValid method is static and accessible
-                model.addAttribute("newPasswordError", "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
-            }
-        }
-
-        // User details validations
-        // Check the date of birth and format it to empty string or dd/mm/yyyy
-        String formattedDateOfBirth;
-        if (dateOfBirth == null || dateOfBirth.isEmpty()) {
-            formattedDateOfBirth = "";
-        } else {
-            formattedDateOfBirth = convertDateFormat(dateOfBirth);
-        }
-
-        // Check if email already exists
-        if (userService.emailExists(email) && !Objects.equals(email, currentUser.getEmail())) {
-            model.addAttribute("registrationEmailError", "This email address is already in use");
-        }
-        if (email.isEmpty() ||!isEmailValid(email)){
-            model.addAttribute("registrationEmailError", "Email address must be in the form ‘jane@doe.nz’");
-        }
-        if (firstName.length() > 64) {
-            model.addAttribute("firstNameError", "First name must be 64 characters long or less");
-        }
-        if (!isNameValid(firstName)) {
-            model.addAttribute("firstNameError", "First name must only include letters, spaces, hyphens or apostrophes");
-        }
-        if (firstName.isEmpty()) {
-            model.addAttribute("firstNameError", "First name cannot be empty");
-        }
-        if (lastName.length() > 64) {
-            model.addAttribute("lastNameError", "Last name must be 64 characters long or less");
-        }
-        if (!isNameValid(lastName) && !lastName.isEmpty()) {
-            model.addAttribute("lastNameError", "Last name must only include letters, spaces, hyphens or apostrophes");
-        }
-        if (!noLastName && lastName.isEmpty()) {
-            model.addAttribute("lastNameError", "Last name cannot be empty");
-        }
-        if (!formattedDateOfBirth.isEmpty() && !checkDateValidity(formattedDateOfBirth)) {
-            model.addAttribute("ageError", "Date in not in valid format, DD/MM/YYYY");
-        }
-        if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) < 13) {
-            model.addAttribute("ageError", "You must be 13 years old or older to create an account");
-        }
-        if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) > 120) {
-            model.addAttribute("ageError", "The maximum age allowed is 120 years");
-        }
-        if (model.containsAttribute("registrationEmailError") || model.containsAttribute("firstNameError")
-                || model.containsAttribute("lastNameError") || model.containsAttribute("ageError")) {
-            return "editUserProfileTemplate";
-        } else {
-            // Email has not been used, update user details
-            currentUser = userService.updateUser(currentUser, firstName, lastName, noLastName, email, dateOfBirth);
-            model.addAttribute("displayName", firstName + " " + lastName);
-
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(currentUser.getEmail(), currentUser.getPassword(), currentUser.getAuthorities());
-            // Authenticate the token properly with the CustomAuthenticationProvider
-            Authentication authenticationToken = authenticationManager.authenticate(token);
-            // Check if the authentication is actually authenticated (in this example any username/password is accepted so this should never be false)
-            if(authenticationToken.isAuthenticated()) {
-                // Add the authentication to the current security context (Stateful)
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                // Add the token to the request session (needed so the authentication can be properly used)
-                request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-            }
-
-            return "redirect:/view-user-profile";
         }
     }
+
+    // User details validations
+    // Check the date of birth and format it to empty string or dd/mm/yyyy
+    String formattedDateOfBirth;
+    if (dateOfBirth == null || dateOfBirth.isEmpty()) {
+        formattedDateOfBirth = "";
+    } else {
+        formattedDateOfBirth = convertDateFormat(dateOfBirth);
+    }
+
+    // Check if email already exists
+    if (userService.emailExists(email) && !Objects.equals(email, currentUser.getEmail())) {
+        model.addAttribute("registrationEmailError", "This email address is already in use");
+    }
+    if (email.isEmpty() ||!isEmailValid(email)){
+        model.addAttribute("registrationEmailError", "Email address must be in the form ‘jane@doe.nz’");
+    }
+    if (firstName.length() > 64) {
+        model.addAttribute("firstNameError", "First name must be 64 characters long or less");
+    }
+    if (!isNameValid(firstName)) {
+        model.addAttribute("firstNameError", "First name must only include letters, spaces, hyphens or apostrophes");
+    }
+    if (firstName.isEmpty()) {
+        model.addAttribute("firstNameError", "First name cannot be empty");
+    }
+    if (lastName.length() > 64) {
+        model.addAttribute("lastNameError", "Last name must be 64 characters long or less");
+    }
+    if (!isNameValid(lastName) && !lastName.isEmpty()) {
+        model.addAttribute("lastNameError", "Last name must only include letters, spaces, hyphens or apostrophes");
+    }
+    if (!noLastName && lastName.isEmpty()) {
+        model.addAttribute("lastNameError", "Last name cannot be empty");
+    }
+    if (!formattedDateOfBirth.isEmpty() && !checkDateValidity(formattedDateOfBirth)) {
+        model.addAttribute("ageError", "Date in not in valid format, DD/MM/YYYY");
+    }
+    if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) < 13) {
+        model.addAttribute("ageError", "You must be 13 years old or older to create an account");
+    }
+    if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) > 120) {
+        model.addAttribute("ageError", "The maximum age allowed is 120 years");
+    }
+    if (model.containsAttribute("registrationEmailError") || model.containsAttribute("firstNameError")
+            || model.containsAttribute("lastNameError") || model.containsAttribute("ageError")
+            || model.containsAttribute("oldPasswordError") || model.containsAttribute("newPasswordError")
+            || model.containsAttribute("passwordMatchError")) {
+        return "editUserProfileTemplate";
+    } else {
+        // Email has not been used, update user details
+        currentUser = userService.updateUser(currentUser, firstName, lastName, noLastName, email, dateOfBirth);
+        model.addAttribute("displayName", firstName + " " + lastName);
+
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(currentUser.getEmail(), currentUser.getPassword(), currentUser.getAuthorities());
+        // Authenticate the token properly with the CustomAuthenticationProvider
+        Authentication authenticationToken = authenticationManager.authenticate(token);
+        // Check if the authentication is actually authenticated (any username/password is accepted so this should never be false)
+        if(authenticationToken.isAuthenticated()) {
+            // Add the authentication to the current security context (Stateful)
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            // Add the token to the request session (needed so the authentication can be properly used)
+            request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+        }
+
+        return "redirect:/view-user-profile";
+    }
+}
 
     private boolean isNameValid(String name) {
         // Regex to check for a valid name including non-English characters
@@ -266,5 +291,12 @@ public class EditProfileController {
         }
     }
 
-
+    public static boolean isPasswordValid(String password) {
+        String specialCharacters = "[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]+";
+        return password.length() >= 8 &&
+                password.matches(".*\\d.*") &&
+                password.matches(".*[A-Z].*") &&
+                password.matches(".*[a-z].*") &&
+                Pattern.compile(specialCharacters).matcher(password).find();
+    }
 }
