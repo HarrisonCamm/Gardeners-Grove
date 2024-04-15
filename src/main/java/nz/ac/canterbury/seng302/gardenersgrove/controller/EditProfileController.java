@@ -211,6 +211,12 @@ public class EditProfileController {
     } else {
         // Email has not been used, update user details
         currentUser = userService.updateUser(currentUser, firstName, lastName, noLastName, email, dateOfBirth);
+
+        // If the change password form is open, and the password fields are valid (which they are if reaching this stage, update the password
+        if (changePasswordFormInput) {
+            userService.updateUserPassword(currentUser, newPassword);
+        }
+
         model.addAttribute("displayName", firstName + " " + lastName);
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(currentUser.getEmail(), currentUser.getPassword(), currentUser.getAuthorities());
