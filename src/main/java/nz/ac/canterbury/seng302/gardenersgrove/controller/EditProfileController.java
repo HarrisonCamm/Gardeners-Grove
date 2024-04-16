@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,10 @@ public class EditProfileController {
         this.userRepository = newUserRepository;
         this.authenticationManager = authenticationManager;
     }
+
+    @Autowired
+    private MailService mailService;
+
 
     /**
      * Gets form to be displayed, includes the ability to display results of previous form when linked to from POST form
@@ -215,6 +220,14 @@ public class EditProfileController {
         // If the change password form is open, and the password fields are valid (which they are if reaching this stage, update the password
         if (changePasswordFormInput) {
             userService.updateUserPassword(currentUser, newPassword);
+            // send user confirmation email of password change
+            String emailAddress = currentUser.getEmail();
+            String emailSubject = "Password Change Confirmation";
+            String emailText = "Dear " + currentUser.getFirstName() + ",\n\n" +
+                    "Your password has been successfully updated. If you did not make this change, please contact support immediately.\n\n" +
+                    "Best,\n" +
+                    "The Gardener's Grove Team";
+            mailService.sendSimpleMessage(emailAddress, emailSubject, emailText);
         }
 
         model.addAttribute("displayName", firstName + " " + lastName);
