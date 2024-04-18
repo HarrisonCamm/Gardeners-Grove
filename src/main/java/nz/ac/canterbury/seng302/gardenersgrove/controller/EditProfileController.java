@@ -217,7 +217,7 @@ public class EditProfileController {
         // Email has not been used, update user details
         currentUser = userService.updateUser(currentUser, firstName, lastName, noLastName, email, dateOfBirth);
 
-        // If the change password form is open, and the password fields are valid (which they are if reaching this stage, update the password
+        // If the change password form is open, and the password fields are valid (which they are if reaching this stage), update the password
         if (changePasswordFormInput) {
             userService.updateUserPassword(currentUser, newPassword);
             // send user confirmation email of password change
@@ -227,8 +227,17 @@ public class EditProfileController {
                     "Your password has been successfully updated. If you did not make this change, please contact support immediately.\n\n" +
                     "Best,\n" +
                     "The Gardener's Grove Team";
-            mailService.sendSimpleMessage(emailAddress, emailSubject, emailText);
+
+            // Try to send the email
+            try {
+                mailService.sendSimpleMessage(emailAddress, emailSubject, emailText);
+            } catch (Exception e) {
+                // Log the error
+                logger.error("Failed to send password change confirmation email to " + emailAddress, e);
+                // TODO display an error message
+            }
         }
+
 
         model.addAttribute("displayName", firstName + " " + lastName);
 
