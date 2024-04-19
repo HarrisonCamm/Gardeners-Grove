@@ -67,7 +67,7 @@ public class ConfirmRegistrationController {
         model.addAttribute("registrationCode", registrationCode);
 
         if (Objects.equals(registrationCode, "123")) {
-            return "redirect:/view-user-profile";
+            return "redirect:/sign-in-form";
         } else {
             return "confirmRegistrationTemplate";
         }
