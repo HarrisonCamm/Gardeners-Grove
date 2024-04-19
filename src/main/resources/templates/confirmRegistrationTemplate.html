@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm Registration</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 5%;
+        }
+        button, label {
+            font-size: 120%;
+        }
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .error, .form-control {
+            width: 300px;
+            font-size: 100%;
+        }
+        h2 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h2>Confirm Registration</h2>
+
+    <form th:action="@{/confirm-registration}" method="post" novalidate>
+        <label for="registrationCode"> Registration Code: </label>
+        <br/>
+        <input type="text" class="form-control" id="registrationCode"
+               th:name="registrationCode" th:value="${registrationCode}" data-cy="registrationCode"
+               autofocus>
+        <br/>
+        <br/>
+<!--        <div th:if="${firstNameError}" class="error-message" th:text="${firstNameError}"></div>-->
+        <div class="buttons">
+            <button type="submit" id="submitButton">Confirm</button>
+        </div>
+    </form>
+
+</div>
+
+</body>
+</html>

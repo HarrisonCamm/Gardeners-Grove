@@ -53,6 +53,7 @@ public class RegisterFormController {
         return "registerFormTemplate";
     }
 
+
     /**
      * Posts a form response with name and favourite language
      * @param firstName first name if user
@@ -161,7 +162,7 @@ public class RegisterFormController {
             request.getSession().setAttribute("user", newUser);
 
             model.addAttribute("displayName", firstName + " " + lastName);
-            return "redirect:/view-user-profile";
+            return "redirect:/confirm-registration";
         }
     }
     private boolean isNameValid(String name) {
