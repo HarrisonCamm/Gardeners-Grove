@@ -231,6 +231,10 @@ public class EditProfileController {
             // Try to send the email
             try {
                 mailService.sendSimpleMessage(emailAddress, emailSubject, emailText);
+                // Close password form
+                model.addAttribute("changePasswordFormInput", false);
+                // Allow user to continue to edit other details
+                return "editUserProfileTemplate";
             } catch (Exception e) {
                 // Log the error
                 logger.error("Failed to send password change confirmation email to " + emailAddress, e);
