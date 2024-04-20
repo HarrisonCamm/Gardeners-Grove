@@ -14,6 +14,10 @@
             width: 300px;
             font-size: 100%;
         }
+        .message {
+            width: 300px;
+            font-size: 101%;
+        }
         .error {
             border-radius: 2px;
             border: 1px solid red;
@@ -57,6 +61,10 @@
                 width: 540px;
                 border: 2px solid;
                 border-radius: 2px;
+            }
+            .message {
+                font-size: 182%;
+                width: 540px;
             }
             .form-control[disabled] {
                 border-color: #ccc;
@@ -102,6 +110,9 @@
     <div>
         <!-- the 'novalidate' disables the default HTML5 validation -->
         <form id="signInForm" th:action="@{/sign-in-form}" method="post" novalidate>
+            <div>
+                <p class="message" id="message" th:text="${message}"></p>
+            </div>
             <label for="email"> Email: </label>
             <br/>
             <!-- Email input box -->
@@ -145,6 +156,18 @@
                 emailInput.value = localStorage.getItem('email');
                 // Clear the email from the local storage
                 localStorage.removeItem('email');
+            }
+
+            let message = localStorage.getItem('message');
+            let messageElement = document.getElementById("message");
+            if (message) {
+                // Set the message to the h4 element
+                messageElement.innerText = message;
+                // Clear the message from the local storage
+                localStorage.removeItem('message');
+            } else {
+                // If there's no message, hide the h4 element
+                messageElement.style.display = 'none';
             }
         });
     function validateForm() {

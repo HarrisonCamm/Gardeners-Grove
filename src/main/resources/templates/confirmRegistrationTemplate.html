@@ -40,9 +40,14 @@
         <br/>
 
         <div class="buttons">
-            <button type="submit" id="submitButton">Confirm</button>
+            <button type="submit" onclick="storeMessage()" id="submitButton">Confirm</button>
         </div>
     </form>
+    <script>
+        function storeMessage() {
+            localStorage.setItem('message',"Your account has been activated, please log in");
+        }
+    </script>
 
 </div>
 
