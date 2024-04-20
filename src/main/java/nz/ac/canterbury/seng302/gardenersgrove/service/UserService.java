@@ -31,6 +31,10 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         // Updates users password to the encrypted one
         user.setPassword(encodedPassword);
+        return saveUser(user);
+    }
+
+    public User saveUser(User user) {
         return userRepository.save(user);
     }
 

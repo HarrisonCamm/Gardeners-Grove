@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.TemporaryUser;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.TemporaryUserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
@@ -32,11 +36,16 @@ public class RegisterFormController {
     Logger logger = LoggerFactory.getLogger(RegisterFormController.class);
 
     private final UserService userService;
+    private final TemporaryUserService temporaryUserService;
     private final AuthenticationManager authenticationManager;
+    private static SecureRandom secureRandom = new SecureRandom();
 
     @Autowired
-    public RegisterFormController(UserService userService, AuthenticationManager authenticationManager) {
+    public RegisterFormController(UserService userService,
+                                  TemporaryUserService temporaryUserService,
+                                  AuthenticationManager authenticationManager) {
         this.userService = userService;
+        this.temporaryUserService = temporaryUserService;
         this.authenticationManager = authenticationManager;
     }
     /**
@@ -144,24 +153,9 @@ public class RegisterFormController {
             // Email has not been used
 
             // Create new user
-            User newUser = new User(firstName, lastName, noLastName, email, password, dateOfBirth);
+            TemporaryUser newUser = new TemporaryUser(1L, firstName, lastName, noLastName, email, password, dateOfBirth);
+            temporaryUserService.addTempUser(newUser);
 
-            // Grant user role
-            newUser.grantAuthority("ROLE_USER");
-
-            // Register user
-            userService.addUser(newUser);
-
-            // Auto-login security stuff
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, password);
-            Authentication authentication = authenticationManager.authenticate(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-
-            // Set the authenticated user in the session
-            request.getSession().setAttribute("user", newUser);
-
-            model.addAttribute("displayName", firstName + " " + lastName);
             return "redirect:/confirm-registration";
         }
     }

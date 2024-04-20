@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.TemporaryUser;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.TemporaryUserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -32,24 +35,25 @@ public class ConfirmRegistrationController {
     Logger logger = LoggerFactory.getLogger(ConfirmRegistrationController.class);
 
     private final UserService userService;
+    private final TemporaryUserService temporaryUserService;
     private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public ConfirmRegistrationController(UserService userService, AuthenticationManager authenticationManager) {
+    public ConfirmRegistrationController(UserService userService,
+                                         TemporaryUserService temporaryUserService,
+                                         AuthenticationManager authenticationManager) {
         this.userService = userService;
+        this.temporaryUserService = temporaryUserService;
         this.authenticationManager = authenticationManager;
     }
     /**
      * Gets form to be displayed, includes the ability to display results of previous form when linked to from POST form
-     * @param displayName previous name entered into form to be displayed
      * @param model (map-like) representation of name, language and isJava boolean for use in thymeleaf
      * @return thymeleaf demoFormTemplate
      */
     @GetMapping("/confirm-registration")
-    public String form(@RequestParam(name="displayName", required = false, defaultValue = "") String displayName,
-                       Model model) {
+    public String form(Model model) {
         logger.info("GET /confirm-registration");
-        model.addAttribute("displayName", displayName);
         return "confirmRegistrationTemplate";
     }
     /**
@@ -67,6 +71,36 @@ public class ConfirmRegistrationController {
         model.addAttribute("registrationCode", registrationCode);
 
         if (Objects.equals(registrationCode, "123")) {
+
+            TemporaryUser tempUser = temporaryUserService.getUserById(1L);
+            logger.info(String.valueOf(tempUser));
+            String firstName = tempUser.getFirstName();
+            String lastName = tempUser.getLastName();
+            boolean noLastName = tempUser.getNoLastName();
+            String email = tempUser.getEmail();
+            String password = tempUser.getPassword();
+            String dateOfBirth = tempUser.getDateOfBirth();
+
+            temporaryUserService.deleteTemporaryUserById(1L);
+            User newUser = new User(firstName, lastName, noLastName, email, password, dateOfBirth);
+
+            // Grant user role
+            newUser.grantAuthority("ROLE_USER");
+
+            // Register user
+            userService.saveUser(newUser);
+
+            // Auto-login security stuff
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, password);
+            Authentication authentication = authenticationManager.authenticate(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+
+            // Set the authenticated user in the session
+            request.getSession().setAttribute("user", newUser);
+
+            model.addAttribute("displayName", firstName + " " + lastName);
+
             return "redirect:/sign-in-form";
         } else {
             return "confirmRegistrationTemplate";
