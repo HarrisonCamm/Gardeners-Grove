@@ -69,11 +69,11 @@ public class ConfirmRegistrationController {
                              Model model) {
         logger.info("POST /confirm-registration");
         model.addAttribute("registrationCode", registrationCode);
+        TemporaryUser tempUser = temporaryUserService.getUserById(1L);
+        int code = tempUser.getCode();
 
-        if (Objects.equals(registrationCode, "123")) {
+        if (Objects.equals(registrationCode, String.valueOf(code))) {
 
-            TemporaryUser tempUser = temporaryUserService.getUserById(1L);
-            logger.info(String.valueOf(tempUser));
             String firstName = tempUser.getFirstName();
             String lastName = tempUser.getLastName();
             boolean noLastName = tempUser.getNoLastName();

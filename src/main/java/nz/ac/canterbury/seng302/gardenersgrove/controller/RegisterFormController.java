@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 /**
@@ -155,13 +156,21 @@ public class RegisterFormController {
             return "registerFormTemplate";
         } else {
             // Email has not been used
+            Random random = new Random();
 
+            // Generate a random 6-digit number
+            int code = random.nextInt(900000) + 100000;
             // Create new user
-            TemporaryUser newUser = new TemporaryUser(1L, firstName, lastName, noLastName, email, password, dateOfBirth);
+            TemporaryUser newUser = new TemporaryUser(1L, firstName, lastName, noLastName, email, password, dateOfBirth, code);
             temporaryUserService.addTempUser(newUser);
             // send user confirmation email of password change
-            String emailSubject = "Confirm Gardener's Grove Account Registration";
-            String emailText = "The code for confirming your new account is 123. If you are not the intended recipient of this email please delete it.";
+            String emailSubject = "Your Account Registration Code";
+            String emailText = "Dear " + firstName + ",\n\n" +
+                    "Thank you for choosing to join Gardener's Grove! To complete your registration, please use the following code:\n\n" +
+                    "Registration Code: " + code + "\n\n" +
+                    "Please enter this code in the registration form to activate your account.\n\n" +
+                    "If you did not request this code or have any questions, please contact our support team.\n\n" +
+                    "Welcome to Gardener's Grove! Happy gardening!";
             // Try to send the email
             try {
                 mailService.sendSimpleMessage(email, emailSubject, emailText);
