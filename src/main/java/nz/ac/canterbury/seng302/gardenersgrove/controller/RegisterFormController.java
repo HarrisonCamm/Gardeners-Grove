@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.TemporaryUser;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.TemporaryUserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
@@ -38,7 +39,6 @@ public class RegisterFormController {
     private final UserService userService;
     private final TemporaryUserService temporaryUserService;
     private final AuthenticationManager authenticationManager;
-    private static SecureRandom secureRandom = new SecureRandom();
 
     @Autowired
     public RegisterFormController(UserService userService,
@@ -48,6 +48,10 @@ public class RegisterFormController {
         this.temporaryUserService = temporaryUserService;
         this.authenticationManager = authenticationManager;
     }
+
+    @Autowired
+    private MailService mailService;
+
     /**
      * Gets form to be displayed, includes the ability to display results of previous form when linked to from POST form
      * @param displayName previous name entered into form to be displayed
@@ -155,6 +159,18 @@ public class RegisterFormController {
             // Create new user
             TemporaryUser newUser = new TemporaryUser(1L, firstName, lastName, noLastName, email, password, dateOfBirth);
             temporaryUserService.addTempUser(newUser);
+            // send user confirmation email of password change
+            String emailSubject = "Confirm Gardener's Grove Account Registration";
+            String emailText = "The code for confirming your new account is 123. If you are not the intended recipient of this email please delete it.";
+            // Try to send the email
+            try {
+                mailService.sendSimpleMessage(email, emailSubject, emailText);
+            } catch (Exception e) {
+                // Log the error
+                logger.error("Failed to send confirmation code to " + email, e);
+                // TODO display an error message
+            }
+
 
             return "redirect:/confirm-registration";
         }
