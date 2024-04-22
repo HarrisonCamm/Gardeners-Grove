@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import jakarta.validation.Valid;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
@@ -73,7 +74,7 @@ public class CreateGardenController {
      * @return Redirect object
      */
     @PostMapping("/create-garden")
-    public String submitForm(@ModelAttribute Garden garden,
+    public String submitForm(@Valid @ModelAttribute Garden garden,
                              BindingResult bindingResult,
                              Model model) {
         logger.info("POST /create-garden");
@@ -92,9 +93,8 @@ public class CreateGardenController {
             for (FieldError error : bindingResult.getFieldErrors()) {
                 model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());
             }
-
             model.addAttribute("garden", garden);
-            return "createGardenFormTemplate";
+            return this.form(garden, model);
         } else {
             //TODO figure out how to not have duplicate locations. Probably next sprint tbh
             locationService.addLocation(garden.getLocation());
