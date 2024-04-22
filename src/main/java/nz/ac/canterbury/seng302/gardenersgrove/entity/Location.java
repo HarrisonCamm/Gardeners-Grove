@@ -17,9 +17,6 @@ public class Location {
     private String city;
     private String postcode;
     private String country;
-    private FieldError cityError;
-    private FieldError countryError;
-
 
     public Location(String streetAddress, String suburb, String city, String postcode, String country) {
         this.streetAddress = streetAddress;
@@ -52,10 +49,6 @@ public class Location {
         return streetAddress;
     }
 
-    public void setStreetAddress(String streetAddress) {
-        this.streetAddress = streetAddress;
-    }
-
     public String getSuburb() {
         return suburb;
     }
@@ -86,21 +79,5 @@ public class Location {
 
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    public FieldError getCityError() {
-        return cityError;
-    }
-
-    public void setCityError(FieldError cityError) {
-        this.cityError = cityError;
-    }
-
-    public FieldError getCountryError() {
-        return countryError;
-    }
-
-    public void setCountryError(FieldError countryError) {
-        this.countryError = countryError;
     }
 }
