@@ -2,11 +2,16 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,7 +34,13 @@ public class EditGardenController {
     private final GardenService gardenService;
 
 //    @Autowired
-    public EditGardenController(GardenService gardenService) { this.gardenService = gardenService; }
+//    private final UserService userService;
+
+//    @Autowired
+    public EditGardenController(GardenService gardenService) {
+        this.gardenService = gardenService;
+//        this.userService = userService;
+    }
 
     /**
      * If the form has been previously filled, load the attributes back from the previous POST request
@@ -40,6 +51,10 @@ public class EditGardenController {
     @GetMapping("/edit-garden")
     public String form(@RequestParam("gardenID") Long gardenID,
                        Model model) throws ResponseStatusException {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String currentPrincipalName = authentication.getName();
+//        User currentUser = userService.getUserByEmail(currentPrincipalName);
+
         logger.info("GET /edit-garden");
         RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
 

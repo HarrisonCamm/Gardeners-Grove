@@ -4,10 +4,8 @@ import nz.ac.canterbury.seng302.gardenersgrove.controller.AutocompleteController
 import nz.ac.canterbury.seng302.gardenersgrove.controller.CreateGardenController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -29,6 +28,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 
+import org.springframework.security.test.context.support.WithMockUser;
+
 @WebMvcTest
 public class EditGardenTests {
 
@@ -37,6 +38,15 @@ public class EditGardenTests {
 
     @MockBean
     private GardenService gardenService;
+
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    private UserRepository userRepository;
+
+    @MockBean
+    private AuthenticationManager authenticationManager;
 
     @MockBean
     private AutocompleteController autocompleteController;
@@ -53,6 +63,7 @@ public class EditGardenTests {
     }
 
     @Test
+//    @WithMockUser
     public void RequestPage_NoFields_Failure() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/edit-garden"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
