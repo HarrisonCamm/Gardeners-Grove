@@ -57,19 +57,18 @@ public class LostPasswordFormController {
 
         model.addAttribute("email", email);
 
-        // Check if email already exists
-//        if (userService.emailExists(email)) { // todo delete this?
-//            model.addAttribute("lostPasswordEmailError", "This email address is already in use");
-//        }
         if (email.isEmpty() || !isEmailValid(email)) {
             model.addAttribute("lostPasswordEmailError", "Email address must be in the form ‘jane@doe.nz’");
         }
         if (model.containsAttribute("lostPasswordEmailError")) {
             return "lostPasswordFormTemplate";
         } else {
-            // Email has not been used / todo check this
+            // Email is valid
 
-            // todo send email
+            // todo send email if email is known
+            if (userService.emailExists(email)) {
+                // send email here
+            }
             return "redirect:/lost-password-form"; // todo implement popup confirmation message
         }
     }
