@@ -18,7 +18,7 @@ public class ValidatorTests {
 
     @Test
     public void ValidatingGardenLocation_EmptyCountryAndCity_Invalid() {
-        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", "", "", ""));
+        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", "", "", ""), true);
         assertNotNull(objectError);
     }
 
@@ -32,7 +32,7 @@ public class ValidatorTests {
     @ParameterizedTest
     @CsvSource({"#Location, ''", "'', &&Location", "'', ''"})
     public void ValidatingGardenLocation_NonEmptyStrings_Invalid(String city, String country) {
-        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", "", country, city));
+        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", "", country, city), true);
         assertNotNull(objectError);
     }
 

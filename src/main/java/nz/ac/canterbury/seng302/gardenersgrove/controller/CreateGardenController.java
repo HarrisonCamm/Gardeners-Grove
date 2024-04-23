@@ -10,11 +10,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.GardenValidator.*;
 
@@ -35,14 +37,6 @@ public class CreateGardenController {
         this.locationService = locationService;
     }
 
-
-//    @GetMapping("/")
-//    public String redirect() {
-//        logger.info("GET /");
-//        RedirectService.addEndpoint("/");
-//        return "redirect:/create-garden";
-//    }
-
     /**
      * If the form has been previously filled, load the attributes back from the previous POST request
      * @param model Spring Boot model
@@ -53,7 +47,7 @@ public class CreateGardenController {
                        Model model) {
         logger.info("GET /create-garden");
 
-        Location gardenLocation = new Location("", "", "", "", "");
+        Location gardenLocation = new Location("", "", "", "", ""); //Bad code warning
         garden.setLocation(gardenLocation); //avoiding NullPointException
 
         RedirectService.addEndpoint("/create-garden");
@@ -78,21 +72,29 @@ public class CreateGardenController {
      * @return Redirect object
      */
     @PostMapping("/create-garden")
-    public String submitForm(@ModelAttribute Garden garden,
-                             BindingResult bindingResult,
+    public String submitForm(@RequestParam(name="name") String gardenName,
+                             @RequestParam(name="location.streetAddress", required = false) String streetAddress,
+                            @RequestParam(name="location.suburb", required = false) String suburb,
+                            @RequestParam(name="location.city") String city,
+                            @RequestParam(name="location.postcode", required = false) String postcode,
+                            @RequestParam(name="location.country") String country,
+                            @RequestParam(name="size", required = false) String gardenSize,
                              Model model) {
         logger.info("POST /create-garden");
+        Location gardenLocation = new Location(streetAddress, suburb, city, postcode, country);
+        Garden garden = new Garden(gardenName, gardenLocation, gardenSize);
 
-        String gardenName = garden.getName();
-        String gardenSize = garden.getSize();
-        Location gardenLocation = garden.getLocation();
         // Perform validation
-        checkFields(gardenName, gardenLocation, gardenSize, bindingResult);
+        ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize);
 
         addAttributes(model, gardenName, gardenLocation, gardenSize);
 
-        if (bindingResult.hasErrors()) {
+        if (!errors.isEmpty()) {
             // If there are validation errors, return to the form page
+            for (FieldError error : errors) {
+                model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());
+            }
+            model.addAttribute("garden", garden);
             return "createGardenFormTemplate";
         } else {
             //TODO figure out how to not have duplicate locations. Probably next sprint tbh
@@ -104,26 +106,35 @@ public class CreateGardenController {
 
     /**
      * Checks the garden name, location and size for errors
-     * @param gardenName Garden name
+     *
+     * @param gardenName     Garden name
      * @param gardenLocation Garden location
-     * @param gardenSize Garden size
-     * @param bindingResult Object to add errors to for Thyme leaf
+     * @param gardenSize     Garden size
      */
-    public void checkFields(String gardenName, Location gardenLocation, String gardenSize, BindingResult bindingResult) {
-        ObjectError nameError = validateGardenName(gardenName);
+    public ArrayList<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize) {
+
+        ArrayList<FieldError> errors = new ArrayList<>();
+
+        FieldError nameError = validateGardenName(gardenName);
         if (nameError != null) {
-            bindingResult.addError(nameError);
+            errors.add(nameError);
         }
 
-        ObjectError locationError = validateGardenLocation(gardenLocation);
-        if (locationError != null) {
-            bindingResult.addError(locationError);
+        FieldError locationCityError = validateGardenLocation(gardenLocation, true);
+        if (locationCityError != null) {
+            errors.add(locationCityError);
         }
 
-        ObjectError sizeError = validateSize(gardenSize);
+        FieldError locationCountryError = validateGardenLocation(gardenLocation, false);
+        if (locationCountryError != null) {
+            errors.add(locationCountryError);
+        }
+
+        FieldError sizeError = validateSize(gardenSize);
         if (sizeError != null) {
-            bindingResult.addError(sizeError);
+            errors.add(sizeError);
         }
+        return errors;
     }
 
     /**
@@ -146,8 +157,4 @@ public class CreateGardenController {
 
         model.addAttribute("gardens", gardenService.getGardens());
     }
-
-
-
-
 }

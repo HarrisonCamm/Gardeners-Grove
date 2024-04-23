@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.validation;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import java.util.regex.Matcher;
@@ -15,14 +16,11 @@ public class GardenValidator {
      * @param name garden name
      * @return object error if there is an error otherwise null
      */
-    public static ObjectError validateGardenName(String name) {
-        //TODO avoid magic numbers
+    public static FieldError validateGardenName(String name) {
         if (validateWithRegex("^$", name)) { //The garden name is empty
-            return new ObjectError("gardenNameError", "Garden name cannot by empty");
+            return new FieldError("garden", "name", "Garden name cannot be empty");
         } else if (!validateWithRegex("^[a-zA-Z0-9\\.\\-\\'\\s]*$", name)) {
-            return new ObjectError("gardenLocationError", "Garden name must only " +
-                    "include letters, numbers, spaces, dots, hyphens\n" +
-                    "or apostrophes");
+            return new FieldError("garden", "name", "Garden name must only include letters, numbers, spaces, dots, hyphens, or apostrophes");
         }
         return null;
     }
@@ -32,9 +30,19 @@ public class GardenValidator {
      * @param location garden location object
      * @return object error if there is an error otherwise null
      */
-    public static ObjectError validateGardenLocation(Location location) {
-        if (location.getCity().isEmpty() || location.getCountry().isEmpty()) {
-            return new ObjectError("gardenLocationError", "City and Country are required");
+    public static FieldError validateGardenLocation(Location location, boolean isCity) {
+        if (isCity) {
+            if (validateWithRegex("^$", location.getCity())) {
+                return new FieldError("garden", "location.city", "City cannot be empty");
+            } else if (!validateWithRegex("^[a-zA-Z\\s]*$", location.getCity())) {
+                return new FieldError("garden", "location.city", "City must only include letters and spaces");
+            }
+        } else {
+            if (validateWithRegex("^$", location.getCountry())) {
+                return new FieldError("garden", "location.country", "Country cannot be empty");
+            } else if (!validateWithRegex("^[a-zA-Z\\s]*$", location.getCountry())) {
+                return new FieldError("garden", "location.country", "Country must only include letters and spaces");
+            }
         }
         return null;
     }
@@ -44,10 +52,9 @@ public class GardenValidator {
      * @param size garden size
      * @return object error if there is an error otherwise null
      */
-    public static ObjectError validateSize(String size) {
-        //TODO avoid magic numbers
+    public static FieldError validateSize(String size) {
         if (!size.isEmpty() && !validateWithRegex("[0-9]*[\\.,]?[0-9]*$", size)) {
-            return new ObjectError("gardenSizeError", "Garden size must be a positive number");
+            return new FieldError("garden", "size", "Garden size must be a positive number");
         }
         return null;
     }
