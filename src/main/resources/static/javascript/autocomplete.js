@@ -171,7 +171,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Options for the address autocomplete function (e.g., placeholder text)
     const options = {
-        placeholder: "Enter an address here"
+        placeholder: "Enter an address..." //TODO change to something else
     };
 
     // Call the addressAutocomplete function with the container element, callback, and options
