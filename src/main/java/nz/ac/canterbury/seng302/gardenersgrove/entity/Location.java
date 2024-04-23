@@ -49,6 +49,10 @@ public class Location {
         return streetAddress;
     }
 
+    public void setStreetAddress(String streetAddress) {
+        this.streetAddress = streetAddress;
+    }
+
     public String getSuburb() {
         return suburb;
     }
