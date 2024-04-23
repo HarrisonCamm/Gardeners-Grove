@@ -62,7 +62,7 @@ public class PlantValidator {
      */
     private static boolean isValidPlantName(String name) {
         // Regular expression to match alphanumeric characters, spaces, dots, commas, hyphens, and apostrophes
-        String regex = "^[a-zA-Z0-9\\s.,'-]+$";
+        String regex = "^[\\p{L}0-9\\s.,'-]+$";
         return Pattern.matches(regex, name);
     }
 }

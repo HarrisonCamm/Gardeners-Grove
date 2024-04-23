@@ -72,8 +72,6 @@ public class EditPlantController {
                              BindingResult bindingResult,
                              Model model) throws Exception {
         logger.info("PUT /edit-plant");
-        RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
-
         Optional<Plant> found = plantService.findPlant(plantID);
         if (found.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant with ID " + plantID + " not found");
