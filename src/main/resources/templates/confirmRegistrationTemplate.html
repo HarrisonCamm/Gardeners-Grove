@@ -37,6 +37,7 @@
                th:name="registrationCode" th:value="${registrationCode}" data-cy="registrationCode"
                autofocus>
         <br/>
+        <div th:if="${signupCodeError}" class="error-message" th:text="${signupCodeError}"></div>
         <br/>
 
         <div class="buttons">

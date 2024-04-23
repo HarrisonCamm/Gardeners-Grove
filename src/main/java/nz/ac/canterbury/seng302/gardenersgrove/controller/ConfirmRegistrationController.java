@@ -103,6 +103,7 @@ public class ConfirmRegistrationController {
 
             return "redirect:/sign-in-form";
         } else {
+            model.addAttribute("signupCodeError", "Signup code invalid");
             return "confirmRegistrationTemplate";
         }
 
