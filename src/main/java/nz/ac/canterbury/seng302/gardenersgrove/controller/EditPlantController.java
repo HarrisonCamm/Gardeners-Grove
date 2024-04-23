@@ -51,7 +51,7 @@ public class EditPlantController {
         String date = "";
         if (plant.getDatePlanted() != null) {
             date = new SimpleDateFormat("yyyy-MM-dd").format(plant.getDatePlanted());
-//            date = plant.getDatePlanted().toString();
+
         }
 
         model.addAttribute("plantID", plantID); // Add gardenID to the model
@@ -74,9 +74,6 @@ public class EditPlantController {
         logger.info("PUT /edit-plant");
         RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
-
-//        bindingResult = new BeanPropertyBindingResult(newPlant, "plant");
-
         Optional<Plant> found = plantService.findPlant(plantID);
         if (found.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant with ID " + plantID + " not found");
@@ -89,10 +86,12 @@ public class EditPlantController {
         checkCount(newPlant.getCount(), bindingResult);
 
         Date date = null;
-        try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(datePlanted);
-        } catch (Exception e) {
-            bindingResult.addError(new ObjectError(datePlanted, "Date is not valid"));
+        if (datePlanted != null && !datePlanted.trim().isEmpty()) {
+            try {
+                date = new SimpleDateFormat("yyyy-MM-dd").parse(datePlanted);
+            } catch (Exception e) {
+                bindingResult.addError(new ObjectError(datePlanted, "Date should be in the format dd/mm/yyyy"));
+            }
         }
         plant.setDatePlanted(date);
         plant.setName(newPlant.getName());
@@ -100,11 +99,11 @@ public class EditPlantController {
         plant.setDescription(newPlant.getDescription());
 
         model.addAttribute("plantID", plantID); // Add gardenID to the model
-        model.addAttribute("datePlanted", new SimpleDateFormat("yyyy-MM-dd").format(date));
+
+        //Ternary operator to assign null date or assign a formatted date
+        model.addAttribute("datePlanted", (date != null) ? new SimpleDateFormat("yyyy-MM-dd").format(date) : "");
 
         if (bindingResult.hasErrors()) {
-            // If there are validation errors, return to the form page
-//            return "redirect:/edit-plant?plantID=" + plantID;
             return "editPlantFormTemplate";
         } else {
             plantService.addPlant(plant);

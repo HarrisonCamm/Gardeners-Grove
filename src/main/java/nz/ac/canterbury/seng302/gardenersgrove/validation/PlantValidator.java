@@ -51,7 +51,7 @@ public class PlantValidator {
      */
     private static boolean isPositiveNumber(String input) {
         // Regex to match a string that contains only numerical digits,
-        String regex = "^[0-9]+$";
+        String regex = "^[0-9]*$";
         return Pattern.matches(regex, input);
     }
 
