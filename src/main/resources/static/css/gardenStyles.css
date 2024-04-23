@@ -1,7 +1,7 @@
 /* General styles */
 body {
     background-color: #b5ffbe;
-    text-align: center;
+    /*text-align: center;*/
     font-family: Verdana, sans-serif;
 }
 
@@ -44,13 +44,18 @@ li {
 .formContainer {
     flex: 1;
     padding-left: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 5%;
 }
 
-/* Form row styles */
-.formRow {
-    margin-top: 50px;
-    margin-bottom: 50px;
-}
+/*!* Form row styles *!*/
+/*.formRow {*/
+/*    margin: auto;*/
+/*    width: 0;*/
+/*    text-align: left;*/
+/*}*/
 
 /* Green button styles */
 .button {
@@ -119,16 +124,25 @@ li {
     opacity: 0;
 }
 
-/* Error message styles */
-.errors {
-    color: red;
-    font-size: 0.8em;
-    margin: 3px;
-}
-
 .error {
     border: 1px solid red;
     outline: 1px solid red;
+}
+
+.error:focus {
+    outline: 2px solid red;
+}
+
+.error-message {
+    color: red;
+    display: block;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+h2 {
+    text-align: center;
 }
 
 .autocomplete-items {
@@ -167,6 +181,15 @@ li {
 .locationTable {
     margin: auto;
 }
+
+input {
+    width: 300px;
+    font-size: 100%;
+}
+
+/*label {*/
+/*    width: 300px;*/
+/*}*/
 
 
 
