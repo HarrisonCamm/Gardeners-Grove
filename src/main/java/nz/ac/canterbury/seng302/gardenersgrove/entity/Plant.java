@@ -28,7 +28,7 @@ public class Plant {
     private String description;
 
     @Column
-    @DateTimeFormat(pattern = "dd/MM/YYYY")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date datePlanted;
 
     /**
@@ -59,7 +59,7 @@ public class Plant {
         this.name = name;
         this.count = count;
         this.description = description;
-        this.datePlanted = new SimpleDateFormat("dd/MM/yyyy").parse(datePlanted);
+        this.datePlanted = new SimpleDateFormat("yyyy-MM-dd").parse(datePlanted);
     }
 
     // Setter for id

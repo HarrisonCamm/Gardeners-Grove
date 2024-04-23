@@ -75,7 +75,7 @@ public class EditPlantController {
         RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
 
-        bindingResult = new BeanPropertyBindingResult(newPlant, "plant");
+//        bindingResult = new BeanPropertyBindingResult(newPlant, "plant");
 
         Optional<Plant> found = plantService.findPlant(plantID);
         if (found.isEmpty()) {
@@ -104,8 +104,8 @@ public class EditPlantController {
 
         if (bindingResult.hasErrors()) {
             // If there are validation errors, return to the form page
-            return "redirect:/edit-plant?plantID=" + plantID;
-//            return "editPlantFormTemplate";
+//            return "redirect:/edit-plant?plantID=" + plantID;
+            return "editPlantFormTemplate";
         } else {
             plantService.addPlant(plant);
             return "redirect:/view-garden?gardenID=" + plant.getGarden().getId();
