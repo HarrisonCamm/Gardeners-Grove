@@ -57,13 +57,13 @@ public class Plant {
      * @param description Plant description
      * @param datePlanted Plant date planted
      */
-    public Plant(Garden garden, String name, String count, String description, String datePlanted) throws ParseException {
+    public Plant(Garden garden, String name, String count, String description, String datePlanted, String picture) throws ParseException {
         this.garden = garden;
         this.name = name;
         this.count = count;
         this.description = description;
         this.datePlanted = new SimpleDateFormat("dd/MM/yyyy").parse(datePlanted);
-        this.picture = "leaves-160x160.png";
+        this.picture = picture;
     }
 
     // Setter for id

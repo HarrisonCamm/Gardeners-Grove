@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 
+import jakarta.servlet.http.HttpServletResponse;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
@@ -34,11 +35,19 @@ public class ViewGardenController {
     }
 
     @GetMapping("/view-garden")
-    public String viewGarden(@RequestParam("gardenID") Long gardenID,
-                             Model model) throws ResponseStatusException {
+    public String viewGarden(@RequestParam("gardenID") Long gardenID, Model model, HttpServletResponse response) {
+        // Add cache control headers
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
+        response.setHeader("Pragma", "no-cache"); // HTTP 1.0
+        response.setDateHeader("Expires", 0); // Proxies
+
         logger.info("GET /view-garden");
         RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
 
+        return addAttributes(gardenID, model, plantService, gardenService);
+    }
+
+    static String addAttributes(@RequestParam("gardenID") Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
         List<Plant> plants = new ArrayList<>();
         for (var plant : plantService.getPlants()) {
             if (plant.getGarden().getId().equals(gardenID)) {

@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static nz.ac.canterbury.seng302.gardenersgrove.controller.ViewGardenController.addAttributes;
+
 @Controller
 public class AddPlantPictureController {
 
@@ -48,9 +50,12 @@ public class AddPlantPictureController {
 
         // Write the picture to file system
         Plant plant = plantService.findPlant(plantID).get();
-        plant.setPicture(file.getOriginalFilename());
+
+        plant.setPicture(file.getOriginalFilename()); // Set the new image
 
         Path path = Paths.get("src/main/resources/static/images/" + file.getOriginalFilename());
+
+        plantService.addPlant(plant);
 
         // Write the file to the file system
         try {
@@ -61,24 +66,7 @@ public class AddPlantPictureController {
         }
 
         // Add the attributes to the model
-        List<Plant> plants = new ArrayList<>(); //TODO duplicate code
-        for (var p : plantService.getPlants()) {
-            if (p.getGarden().getId().equals(gardenID)) {
-                plants.add(p);
-            }
-        }
-        model.addAttribute("gardens", gardenService.getGardens());
-        model.addAttribute("plants", plants);
-
-        Optional<Garden> garden = gardenService.findGarden(gardenID);
-        if (garden.isPresent()) { // if the garden ID exists
-            model.addAttribute("gardenID", gardenID);
-            model.addAttribute("gardenName", garden.get().getName());
-            model.addAttribute("gardenLocation", garden.get().getLocation().getStreetAddress());
-            model.addAttribute("gardenSize", garden.get().getSize());
-            return "viewGardenDetailsTemplate";
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " does not exist");
-        }
+        addAttributes(gardenID, model, plantService, gardenService);
+        return "redirect:/view-garden?gardenID=" + gardenID;
     }
 }

@@ -1,38 +1,50 @@
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', () => {
 
-    document.getElementById('fileInput').addEventListener('change', function(event) {
-        var file = event.target.files[0];
+    // Select all file inputs
+    const fileInputs = document.querySelectorAll('.fileInput');
+    console.log(fileInputs.length)
 
-        // Get the parent tr element
-        var tr = event.target.closest('tr');
+    // Attach the event listener to each file input individually
+    fileInputs.forEach(fileInput => {
+        fileInput.addEventListener('change', function(event) {
+            console.log('File input changed: ' + event.target.files[0].name);
 
-        // Find the "Edit" button within the tr element
-        var editButton = tr.querySelector('a[href*="edit-plant?plantID="]');
+            const file = event.target.files[0];
 
-        // Extract the plantId from the href attribute
-        var plantId = editButton.href.split('=')[1];
+            // Get the parent tr element of the current file input
+            const tr = event.target.parentNode.parentNode.parentNode;
+            console.log(tr);
 
-        // Find the "View" button within the tr element for the garden
-        var viewButton = tr.querySelector('a[href*="view-garden?gardenID="]');
+            // Find the "Edit" button within the tr element
+            const editButton = tr.querySelector('a[href*="edit-plant?plantID="]');
 
-        // Extract the gardenId from the href attribute
-        var gardenId = viewButton.href.split('=')[1];
+            // Extract the plantId from the href attribute
+            const plantId = editButton.href.split('=')[1];
 
-        console.log('plantId: ' + plantId);
-        console.log('gardenId: ' + gardenId);
-        console.log('file: ' + file);
+            // Find the "View" button within the tr element for the garden
+            const currentUrl = window.location.href;
 
-        // Create a new FormData instance
-        var formData = new FormData();
+            // Extract the gardenId from the href attribute
+            const gardenId = currentUrl.split('=')[1];
 
-        // Append the file, plantId, and gardenId to the FormData instance
-        formData.append('file', file);
-        formData.append('plantId', plantId);
-        formData.append('gardenId', gardenId);
+            console.log('Plant ID: ' + plantId);
+            console.log('Garden ID: ' + gardenId);
 
-        fetch('/add-plant-picture', {
-            method: 'POST',
-            body: formData
-        })
+            // Create a new FormData instance
+            const formData = new FormData();
+
+            // Append the file, plantId, and gardenId to the FormData instance
+            formData.append('file', file);
+            formData.append('plantId', plantId);
+            formData.append('gardenId', gardenId);
+
+            fetch('/add-plant-picture', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error(error));
+        });
     });
 });

@@ -59,12 +59,12 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="plant : ${plants}">
+                    <tr th:each="plant : ${plants}" class="plant-row">
                         <td>
                             <div style="position: relative;">
-                                <img th:src="@{'/uploads/' + ${plant.picture}}" alt="">
-                                <label class="image_picker" for="fileInput">+</label>
-                                <input th:value="imagePath" id="fileInput"  type="file" style="display: none;">
+                                <img class="image" th:src="@{'/images/' + ${plant.picture}}" alt="">
+                                <label class="image_picker" th:for="${'fileInput' + plant.id}">+</label>
+                                <input th:value="imagePath" class="fileInput" th:id="${'fileInput' + plant.id}" type="file" style="display: none;">
                             </div>
                         </td>
                         <td th:text="${plant.name}"></td>

@@ -173,5 +173,10 @@ li {
     border: solid black 1px;
 }
 
+.image {
+    width: 80px;
+    height: 80px;
+}
+
 
 

@@ -86,8 +86,8 @@ public class EditPlantTests {
     })
     public void OnForm_ValidValues_PlantRecordAdded(
             Long plantID, String plantName, String count, String date, String description) throws Exception {
-        Plant oldPlant = new Plant(testGarden, "default plant", "1", "a regular plant", "1/1/1111");
-        Plant newPlant = new Plant(testGarden, plantName, count, description, date);
+        Plant oldPlant = new Plant(testGarden, "default plant", "1", "a regular plant", "1/1/1111", "default.png");
+        Plant newPlant = new Plant(testGarden, plantName, count, description, date, "default.png");
         when(plantService.findPlant(plantID)).thenReturn(Optional.of(oldPlant));
 
         mockMvc.perform(put("/edit-plant")

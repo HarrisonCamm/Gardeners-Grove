@@ -94,6 +94,8 @@ public class CreatePlantController {
         checkDescription(plant.getDescription(), bindingResult);
         checkCount(plant.getCount(), bindingResult);
 
+        plant.setPicture("leaves-80x80.png"); // Set default picture
+
         Garden ownerGarden = null;
         Optional<Garden> found = gardenService.findGarden(gardenID);
         if (found.isEmpty()) {
