@@ -9,6 +9,20 @@ import java.util.regex.Pattern;
  * This class provides utility methods for validating user information.
  */
 public class UserValidator {
+    /**
+     * Formats a name by trimming leading and trailing white spaces.
+     * If the input name is null, it returns an empty string.
+     *
+     * @param name the name to be formatted
+     * @return the formatted name, or an empty string if the input name is null
+     */
+    public static String formatName(String name) {
+        if (name == null) {
+            return "";
+        } else {
+            return name.trim();
+        }
+    }
 
     /**
      * Validates a user's name.
@@ -24,7 +38,7 @@ public class UserValidator {
 
     /**
      * Validates a user's email.
-     *
+     * Checks for valid email format, length, whitespace and consecutive dots.
      * @param email The email to validate.
      * @return true if the email is valid, false otherwise.
      */
@@ -32,6 +46,36 @@ public class UserValidator {
         boolean isValid = email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$") && !email.contains("..");
         boolean isWithinSqlLimit = email.length() <= 255;
         return isValid && isWithinSqlLimit;
+    }
+
+    /**
+     * Converts a date from dd/mm/yyyy format to yyyy-mm-dd format.
+     * If the input date is null or empty, it returns an empty string.
+     *
+     * @param dateInput The date to convert.
+     * @return The converted date.
+     */
+    public static String convertDateFormat(String dateInput) {
+        // If the date is null or empty, return an empty string
+        if (dateInput == null || dateInput.isEmpty()) {
+            return "";
+        }
+        // Convert the date to the correct format
+        String[] parts = dateInput.split("/");
+        if (dateInput.length() < 10) {
+            return "0000-00-00";
+        } else {
+            String yyyy = parts[2];
+            String mm = parts[1];
+            String dd = parts[0];
+            if (mm.length() == 1) {
+                mm = "0" + mm;
+            }
+            if (dd.length() == 1) {
+                dd = "0" + dd;
+            }
+            return yyyy + "-" + mm + "-" + dd;
+        }
     }
 
     /**
@@ -64,30 +108,6 @@ public class UserValidator {
             age--;
         }
         return age;
-    }
-
-    /**
-     * Converts a date from dd/mm/yyyy format to yyyy-mm-dd format.
-     *
-     * @param dateInput The date to convert.
-     * @return The converted date.
-     */
-    public static String convertDateFormat(String dateInput) {
-        String[] parts = dateInput.split("/");
-        if (dateInput.length() < 10) {
-            return "0000-00-00";
-        } else {
-            String yyyy = parts[2];
-            String mm = parts[1];
-            String dd = parts[0];
-            if (mm.length() == 1) {
-                mm = "0" + mm;
-            }
-            if (dd.length() == 1) {
-                dd = "0" + dd;
-            }
-            return yyyy + "-" + mm + "-" + dd;
-        }
     }
 
     /**

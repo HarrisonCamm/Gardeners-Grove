@@ -74,13 +74,23 @@ public class EditProfileController {
     }
 
     /**
-     * Posts a form response with name and favourite language
-     * @param firstName first name if user
-     * @param lastName last name if user
-     * @param email email if user
-     * @param model (map-like) representation of name, language and isJava boolean for use in thymeleaf,
-     *              with values being set to relevant parameters provided
-     * @return thymeleaf demoFormTemplate
+     * Handles the submission of the edit user profile form.
+     * This method processes form inputs for user profile updates, including personal information and password changes.
+     * It performs validations on the provided inputs such as name validity, email format, and password criteria.
+     * If any validation fails, it returns to the form with error messages; otherwise, it updates the user's information.
+     *
+     * @param firstName The first name of the user, mandatory.
+     * @param lastName The last name of the user, optional.
+     * @param noLastName A boolean flag to indicate if the user has no last name.
+     * @param email The email address of the user, used for contact and login.
+     * @param changePasswordFormInput A flag indicating whether the password change form was triggered.
+     * @param oldPassword The user's current password, required for password change validation.
+     * @param newPassword The user's new password to be set, must meet security criteria.
+     * @param retypePassword The new password retyped for confirmation.
+     * @param dateOfBirth The user's date of birth in the format DD/MM/YYYY.
+     * @param model The Spring MVC model used to pass attributes to the view.
+     * @param request The HttpServletRequest object, providing request information for HTTP servlets.
+     * @return The name of the view to be rendered, depending on the result of the form submission.
      */
     @PostMapping("/edit-user-profile")
     public String submitForm(@RequestParam(name="firstName") String firstName,
@@ -96,13 +106,9 @@ public class EditProfileController {
 
         logger.info("POST /edit-user-profile");
 
-        if (lastName == null) {
-            lastName = "";
-        }
-
-        // Trim the names to remove leading and trailing white spaces
-        firstName = firstName.trim();
-        lastName = lastName.trim();
+        // Format first and last names
+        firstName = formatName(firstName);
+        lastName = formatName(lastName);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -163,14 +169,10 @@ public class EditProfileController {
         }
     }
 
-    // User details validations
-    // Check the date of birth and format it to empty string or dd/mm/yyyy
-    String formattedDateOfBirth;
-    if (dateOfBirth == null || dateOfBirth.isEmpty()) {
-        formattedDateOfBirth = "";
-    } else {
-        formattedDateOfBirth = convertDateFormat(dateOfBirth);
-    }
+    // Format and convert the data of birth
+    String formattedDateOfBirth = convertDateFormat(dateOfBirth);
+
+    // Begin User Details Validations
 
     // Check if email already exists
     if (userService.emailExists(email) && !Objects.equals(email, currentUser.getEmail())) {
@@ -206,13 +208,15 @@ public class EditProfileController {
     if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) > 120) {
         model.addAttribute("ageError", "The maximum age allowed is 120 years");
     }
+
+    // Check for errors, if error thrown display error message
     if (model.containsAttribute("registrationEmailError") || model.containsAttribute("firstNameError")
             || model.containsAttribute("lastNameError") || model.containsAttribute("ageError")
             || model.containsAttribute("oldPasswordError") || model.containsAttribute("newPasswordError")
             || model.containsAttribute("passwordMatchError")) {
         return "editUserProfileTemplate";
     } else {
-        // Email has not been used, update user details
+        // No errors, continue with updating user details
         currentUser = userService.updateUser(currentUser, firstName, lastName, noLastName, email, dateOfBirth);
 
         // If the change password form is open, and the password fields are valid (which they are if reaching this stage), update the password
@@ -231,7 +235,7 @@ public class EditProfileController {
                 mailService.sendSimpleMessage(emailAddress, emailSubject, emailText);
                 // Close password form
                 model.addAttribute("changePasswordFormInput", false);
-                // Allow user to continue to edit other details
+                // Password updated, allow user to continue to edit other details
                 return "editUserProfileTemplate";
             } catch (Exception e) {
                 // Log the error
@@ -240,6 +244,7 @@ public class EditProfileController {
             }
         }
 
+        // Display the user's full name
         model.addAttribute("displayName", firstName + " " + lastName);
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(currentUser.getEmail(), currentUser.getPassword(), currentUser.getAuthorities());
@@ -252,8 +257,8 @@ public class EditProfileController {
             // Add the token to the request session (needed so the authentication can be properly used)
             request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
         }
-
+        // Redirect to the user profile page after successful update of user details
         return "redirect:/view-user-profile";
     }
-}
+    }
 }
