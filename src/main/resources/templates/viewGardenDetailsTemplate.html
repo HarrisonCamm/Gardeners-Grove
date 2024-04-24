@@ -62,7 +62,7 @@
                     <tr th:each="plant : ${plants}">
                         <td>
                             <div style="position: relative;">
-                                <img th:src="@{/images/leaves-80x80.png}" alt="">
+                                <img th:src="@{'/uploads/' + ${plant.picture}}" alt="">
                                 <label class="image_picker" for="fileInput">+</label>
                                 <input th:value="imagePath" id="fileInput"  type="file" style="display: none;">
                             </div>

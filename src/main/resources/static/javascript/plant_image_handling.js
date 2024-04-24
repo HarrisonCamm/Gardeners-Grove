@@ -12,15 +12,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
         // Extract the plantId from the href attribute
         var plantId = editButton.href.split('=')[1];
 
+        // Find the "View" button within the tr element for the garden
+        var viewButton = tr.querySelector('a[href*="view-garden?gardenID="]');
+
+        // Extract the gardenId from the href attribute
+        var gardenId = viewButton.href.split('=')[1];
+
         console.log('plantId: ' + plantId);
+        console.log('gardenId: ' + gardenId);
         console.log('file: ' + file);
 
         // Create a new FormData instance
         var formData = new FormData();
 
-        // Append the file and plantId to the FormData instance
+        // Append the file, plantId, and gardenId to the FormData instance
         formData.append('file', file);
         formData.append('plantId', plantId);
+        formData.append('gardenId', gardenId);
 
         fetch('/add-plant-picture', {
             method: 'POST',

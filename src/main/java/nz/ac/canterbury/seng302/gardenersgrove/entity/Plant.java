@@ -63,6 +63,7 @@ public class Plant {
         this.count = count;
         this.description = description;
         this.datePlanted = new SimpleDateFormat("dd/MM/yyyy").parse(datePlanted);
+        this.picture = "leaves-160x160.png";
     }
 
     // Setter for id

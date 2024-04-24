@@ -58,6 +58,5 @@ public class ViewGardenController {
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " does not exist");
         }
-
     }
 }
