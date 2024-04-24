@@ -72,7 +72,7 @@ public class SecurityConfiguration {
                     .hasRole("ADMIN")
 
                     // Increase access to authenticated users to reach the "/main", "/view-user-profile", "/edit-user-profile" pages
-                    .requestMatchers("/main", "/view-user-profile", "/edit-user-profile", "/create-garden", "/view-garden", "/view-gardens", "/create-plant", "/edit-plant")
+                    .requestMatchers("/main", "/view-user-profile", "/edit-user-profile", "/create-garden", "/view-garden", "/view-gardens", "/create-plant", "/edit-plant", "/add-plant-picture")
                     .hasRole("USER")
 
                     // Any other request requires authentication
