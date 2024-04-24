@@ -16,15 +16,9 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeParseException;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 /**
  * Controller for registration form.
@@ -98,8 +92,6 @@ public class ConfirmRegistrationController {
 
             // Set the authenticated user in the session
             request.getSession().setAttribute("user", newUser);
-
-            model.addAttribute("displayName", firstName + " " + lastName);
 
             return "redirect:/sign-in-form";
         } else {
