@@ -1,7 +1,7 @@
 /* General styles */
 body {
-    background-color: #b5ffbe;
-    text-align: center;
+    background-color: #d4ffd4;
+    /*text-align: center;*/
     font-family: Verdana, sans-serif;
 }
 
@@ -19,14 +19,14 @@ li {
 /* Flexbox styles */
 .wrapper {
     display: flex;
-    justify-content: center; /* Horizontally center the items */
+    justify-content: space-between; /* Horizontally center the items */
 }
 
 /* Container styles */
 .container {
     background: #333333;
     height: 100vh;
-    align-items: revert;
+    text-align: left;
 }
 
 /* Sidebar styles */
@@ -42,14 +42,10 @@ li {
 
 /* Form container styles */
 .formContainer {
-    flex: 1;
-    padding-left: 20px;
-}
-
-/* Form row styles */
-.formRow {
-    margin-top: 50px;
-    margin-bottom: 50px;
+    /*flex: 1;*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Green button styles */
@@ -119,9 +115,26 @@ li {
     opacity: 0;
 }
 
-/* Error message styles */
-.errors {
+.error {
+    border: 1px solid red;
+    outline: 1px solid red;
+}
+
+.error:focus {
+    outline: 2px solid red;
+}
+
+.error-message {
     color: red;
+    display: block;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+h2 {
+    padding-top: 5%;
+    text-align: center;
 }
 
 .autocomplete-items {
@@ -131,12 +144,14 @@ li {
     border-top: none;
     background-color: #fff;
     z-index: 99;
-    top: calc(100% + 2px);
     left: 0;
     right: 0;
-    margin: 20px auto 0;
-    width: fit-content;
-    text-align: center;
+    width: 300px;
+    text-align: left;
+}
+
+.suggestions {
+    padding: 0;
 }
 
 .autocomplete-items div {
@@ -156,6 +171,44 @@ li {
     border: 1px solid #333333; /* Adding border style */
     border-radius: 2px;
 }
+
+.locationTable {
+    margin: auto;
+}
+
+input {
+    width: 300px;
+    font-size: 100%;
+    background-color: #b2eab2;
+}
+p {
+    margin: 0
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+button, label {
+    font-size: 120%;
+}
+button {
+    background-color : #8ffa8f;
+    border-radius: 5px;
+}
+
+
+
+/*label {*/
+/*    width: 300px;*/
+/*}*/
 
 
 
