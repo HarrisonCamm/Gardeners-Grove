@@ -31,6 +31,9 @@ public class Plant {
     @DateTimeFormat(pattern = "dd/MM/YYYY")
     private Date datePlanted;
 
+    @Column
+    private String picture;
+
     /**
      * Required constructor
      */
@@ -102,5 +105,13 @@ public class Plant {
 
     //Getter for datePlanted
     public Date getDatePlanted() { return datePlanted; }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
 
 }

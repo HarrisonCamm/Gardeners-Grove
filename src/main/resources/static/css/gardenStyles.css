@@ -157,5 +157,21 @@ li {
     border-radius: 2px;
 }
 
+.image_picker {
+    position: absolute;
+    top: 0; right: 0;
+    cursor: pointer;
+    background-color: #dedede;
+    font-weight: bold;
+    border-radius: 25px;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.9;
+    border: solid black 1px;
+}
+
 
 

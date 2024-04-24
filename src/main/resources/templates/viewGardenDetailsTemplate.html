@@ -60,7 +60,13 @@
                     </thead>
                     <tbody>
                     <tr th:each="plant : ${plants}">
-                        <td><img th:src="@{/images/leaves-80x80.png}" alt=""></td>
+                        <td>
+                            <div style="position: relative;">
+                                <img th:src="@{/images/leaves-80x80.png}" alt="">
+                                <label class="image_picker" for="fileInput">+</label>
+                                <input th:value="imagePath" id="fileInput"  type="file" style="display: none;">
+                            </div>
+                        </td>
                         <td th:text="${plant.name}"></td>
                         <td th:text="${plant.count}"></td>
                         <td th:text="${plant.description}"></td>
@@ -72,5 +78,6 @@
             </div>
         </div>
     </div>
+    <script src="/javascript/image_handling.js"></script>
 </body>
 </html>
