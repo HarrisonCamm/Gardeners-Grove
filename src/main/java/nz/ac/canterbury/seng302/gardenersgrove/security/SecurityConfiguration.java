@@ -8,6 +8,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -19,7 +20,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 // don't worry if the "com.baeldung.security" comes up red in IntelliJ
 @ComponentScan("com.baeldung.security")
-public class SecurityConfiguration {
+public class SecurityConfiguration  {
 
     /**
      * Our Custom Authentication Provider {@link CustomAuthenticationProvider}
@@ -58,7 +59,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth.requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll())
                 .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable())
-                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")))
+                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection for all requests
 
                 .authorizeHttpRequests(request ->
                     // Allow "/", "/register", and "/login" to anyone (permitAll)

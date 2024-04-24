@@ -1,26 +1,30 @@
-document.getElementById('fileInput').addEventListener('change', function(event) {
-    var file = event.target.files[0];
-    var formData = new FormData();
-    formData.append('file', file);
+document.addEventListener('DOMContentLoaded', (event) => {
 
-    // Get the parent tr element
-    var tr = event.target.closest('tr');
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+        var file = event.target.files[0];
 
-    // Find the "Edit" button within the tr element
-    var editButton = tr.querySelector('a[href*="edit-plant?plantID="]');
+        // Get the parent tr element
+        var tr = event.target.closest('tr');
 
-    // Extract the plantId from the href attribute
-    var plantId = editButton.href.split('=')[1];
+        // Find the "Edit" button within the tr element
+        var editButton = tr.querySelector('a[href*="edit-plant?plantID="]');
 
-    formData.append('plantId', plantId);
-    console.log('plantId: ' + plantId);
-    console.log('file: ' + file);
+        // Extract the plantId from the href attribute
+        var plantId = editButton.href.split('=')[1];
 
-    fetch('/add-plant-picture', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error(error));
+        console.log('plantId: ' + plantId);
+        console.log('file: ' + file);
+
+        // Create a new FormData instance
+        var formData = new FormData();
+
+        // Append the file and plantId to the FormData instance
+        formData.append('file', file);
+        formData.append('plantId', plantId);
+
+        fetch('/add-plant-picture', {
+            method: 'POST',
+            body: formData
+        })
+    });
 });
