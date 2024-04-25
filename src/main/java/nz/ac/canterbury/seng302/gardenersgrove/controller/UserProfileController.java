@@ -43,12 +43,7 @@ public class UserProfileController {
      */
     @GetMapping("/view-user-profile")
     public String getTemplate(HttpServletRequest request, Model model) {
-
-//        User currentUser = (User) request.getSession().getAttribute("user");
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        User currentUser = userService.getUserByEmail(currentPrincipalName);
+        User currentUser = userService.getAuthenicatedUser();
 
         logger.info("User retrieved from session: " + currentUser);
 

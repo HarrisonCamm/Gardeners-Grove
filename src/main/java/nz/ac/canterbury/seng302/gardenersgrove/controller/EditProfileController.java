@@ -52,13 +52,8 @@ public class EditProfileController {
      */
     @GetMapping("/edit-user-profile")
     public String form(HttpServletRequest request, Model model) {
-
         logger.info("GET /edit-user-profile");
-
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        User currentUser = userService.getUserByEmail(currentPrincipalName);
+        User currentUser = userService.getAuthenicatedUser();
 
         model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
         model.addAttribute("firstName", currentUser.getFirstName());
@@ -96,9 +91,7 @@ public class EditProfileController {
         firstName = firstName.trim();
         lastName = lastName.trim();
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        User currentUser = userService.getUserByEmail(currentPrincipalName);
+        User currentUser = userService.getAuthenicatedUser();
 
         logger.info("User retrieved from session: " + currentUser);
 
