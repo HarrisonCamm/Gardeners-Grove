@@ -18,6 +18,10 @@ public class Garden {
 
     private String size;
 
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private User owner;
+
     /**
      * Required constructor
      */
@@ -66,5 +70,13 @@ public class Garden {
 
     public void setSize(String size) {
         this.size = size;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 }
