@@ -63,13 +63,17 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request ->
                     // Allow "/", "/register", and "/login" to anyone (permitAll)
                     // Authenticated and non-Authenticated users can access these pages
-                    request.requestMatchers("/", "/register-form", "/sign-in-form", "/home", "/confirm-registration")
+                    request.requestMatchers("/", "/register-form", "/sign-in-form", "/home")
                     .permitAll()
                     // Could change .permitAll() to .anonymous() to give access to these pages only to non-Authenticated users
 
                     // Only allow admins to reach the "/admin" page
                     .requestMatchers("/admin")
                     .hasRole("ADMIN")
+
+                    // Only allow unverified users to reach the "/confirm-registration" page
+                    .requestMatchers("/", "/register-form", "/sign-in-form", "/home", "/confirm-registration")
+                    .hasRole("UNVERIFIED")
 
                     // Increase access to authenticated users to reach the "/main", "/view-user-profile", "/edit-user-profile" pages
                     .requestMatchers("/main", "/view-user-profile", "/edit-user-profile", "/create-garden", "/view-garden", "/view-gardens", "/create-plant", "/edit-plant")
