@@ -29,7 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentUrl = window.location.href;
 
             // Extract the gardenId from the href attribute
-            const gardenId = currentUrl.split('=')[1];
+            let gardenId = currentUrl.split('=')[1];
+
+            if (gardenId.includes('&')) { // Accounting for 'continue' query parameter
+                gardenId = gardenId.split('&')[0];
+            }
 
             console.log('Plant ID: ' + plantId);
             console.log('Garden ID: ' + gardenId);

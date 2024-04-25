@@ -67,6 +67,6 @@ public class AddPlantPictureController {
 
         // Add the attributes to the model
         addAttributes(gardenID, model, plantService, gardenService);
-        return "viewGardenDetailsTemplate";
+        return "redirect:/view-garden?gardenID=" +gardenID;
     }
 }
