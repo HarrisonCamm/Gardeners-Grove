@@ -34,12 +34,12 @@ public class EditGardenController {
     private final GardenService gardenService;
 
 //    @Autowired
-//    private final UserService userService;
+    private final UserService userService;
 
 //    @Autowired
-    public EditGardenController(GardenService gardenService) {
+    public EditGardenController(GardenService gardenService, UserService userService) {
         this.gardenService = gardenService;
-//        this.userService = userService;
+        this.userService = userService;
     }
 
     /**
@@ -51,9 +51,9 @@ public class EditGardenController {
     @GetMapping("/edit-garden")
     public String form(@RequestParam("gardenID") Long gardenID,
                        Model model) throws ResponseStatusException {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String currentPrincipalName = authentication.getName();
-//        User currentUser = userService.getUserByEmail(currentPrincipalName);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        User currentUser = userService.getUserByEmail(currentPrincipalName);
 
         logger.info("GET /edit-garden");
         RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
@@ -78,6 +78,9 @@ public class EditGardenController {
                              @ModelAttribute Garden garden,
                              BindingResult bindingResult,
                              Model model) throws ResponseStatusException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        User currentUser = userService.getUserByEmail(currentPrincipalName);
         logger.info("PUT /edit-garden");
 
         Optional<Garden> result = gardenService.findGarden(gardenID);

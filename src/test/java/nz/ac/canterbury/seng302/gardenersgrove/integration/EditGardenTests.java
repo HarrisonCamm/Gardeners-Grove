@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 
@@ -71,6 +72,7 @@ public class EditGardenTests {
     }
 
     @Test
+    @WithMockUser
     public void RequestPage_InvalidID_Failure() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/edit-garden")
                     .param("gardenID", "0"))
@@ -79,6 +81,7 @@ public class EditGardenTests {
     }
 
     @ParameterizedTest
+    @WithMockUser
     @CsvSource({
             "325, My Garden, 12.00009123",
             "211, Tomato's, " + Long.MAX_VALUE,
@@ -88,6 +91,7 @@ public class EditGardenTests {
         Location testLocation = new Location("123 test street", "test", "test", "test", "test");
         when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(new Garden(gardenName, testLocation, gardenSize)));
         mockMvc.perform(MockMvcRequestBuilders.put("/edit-garden")
+                        .with(csrf())
                     .param("gardenID", gardenID.toString())
                     .param("name", gardenName)
                     .param("location.streetAddress", testLocation.getStreetAddress())
@@ -102,6 +106,7 @@ public class EditGardenTests {
     }
 
     @ParameterizedTest
+    @WithMockUser
     @CsvSource({
             "52334, '', 1.49,  My Garden, 12.00009123",
             "76451, '', '',  Tomato's, " + Long.MAX_VALUE,
@@ -116,6 +121,7 @@ public class EditGardenTests {
         Location oldLocation = newLocation;
         when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(new Garden(oldName, oldLocation, oldSize)));
         mockMvc.perform(MockMvcRequestBuilders.put("/edit-garden")
+                        .with(csrf())
                         .param("gardenID", gardenID.toString())
                         .param("name", newName)
                         .param("location.streetAddress", newLocation.getStreetAddress())
@@ -130,6 +136,7 @@ public class EditGardenTests {
     }
 
     @ParameterizedTest
+    @WithMockUser
     @CsvSource({
             "52334, My Garden, 12.00009123",
             "76451, Tomato's, " + Long.MAX_VALUE,
