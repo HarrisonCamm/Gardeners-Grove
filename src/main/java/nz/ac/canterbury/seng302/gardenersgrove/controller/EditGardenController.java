@@ -51,7 +51,7 @@ public class EditGardenController {
     @GetMapping("/edit-garden")
     public String form(@RequestParam("gardenID") Long gardenID,
                        Model model) throws ResponseStatusException {
-        User currentUser = userService.getAuthenicatedUser();
+//        User currentUser = userService.getAuthenicatedUser();
 
         logger.info("GET /edit-garden");
         RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
@@ -76,7 +76,7 @@ public class EditGardenController {
                              @ModelAttribute Garden garden,
                              BindingResult bindingResult,
                              Model model) throws ResponseStatusException {
-        User currentUser = userService.getAuthenicatedUser();
+//        User currentUser = userService.getAuthenicatedUser();
         logger.info("PUT /edit-garden");
 
         Optional<Garden> result = gardenService.findGarden(gardenID);

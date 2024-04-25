@@ -1,16 +1,16 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration;
 
 
-import nz.ac.canterbury.seng302.gardenersgrove.service.AutocompleteService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 
@@ -39,7 +40,16 @@ public class ViewGardenTests {
     @MockBean
     private PlantService PlantService;
 
+    @MockBean
+    private UserService userService;
+    @MockBean
+    private UserRepository userRepository;
+    @MockBean
+    private AuthenticationManager authenticationManager;
+
+
     @ParameterizedTest
+    @WithMockUser
     @CsvSource({
             "Lovely Garden, 12.00009123",
             "Tomato's, " +Long.MAX_VALUE,
@@ -48,6 +58,7 @@ public class ViewGardenTests {
     public void PostForm_WithValidFields_Success(String gardenName, String gardenSize) throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/create-garden")
+                        .with(csrf())
                         .param("name", gardenName)
                         .param("location.streetAddress", "test")
                         .param("location.suburb", "test")

@@ -3,10 +3,8 @@ package nz.ac.canterbury.seng302.gardenersgrove.integration;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
-import nz.ac.canterbury.seng302.gardenersgrove.service.AutocompleteService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +13,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -24,6 +24,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @WebMvcTest
 public class CreatePlantTests {
@@ -36,6 +37,13 @@ public class CreatePlantTests {
 
     @MockBean
     private GardenService gardenService;
+
+    @MockBean
+    private UserService userService;
+    @MockBean
+    private UserRepository userRepository;
+    @MockBean
+    private AuthenticationManager authenticationManager;
 
     @MockBean
     private AutocompleteService autocompleteService;
@@ -55,6 +63,7 @@ public class CreatePlantTests {
     }
 
     @Test
+    @WithMockUser
     public void GetPage_NoFields_Success() throws Exception {
 
         when(plantService.findPlant(any(Long.class))).thenReturn(Optional.ofNullable(testPlant));
@@ -66,6 +75,7 @@ public class CreatePlantTests {
     }
 
     @Test
+    @WithMockUser
     public void GetPage_NoFields_Failure() throws Exception {
 
         when(plantService.findPlant(any(Long.class))).thenReturn(Optional.ofNullable(testPlant));
@@ -77,6 +87,7 @@ public class CreatePlantTests {
     }
 
     @ParameterizedTest
+    @WithMockUser
     @CsvSource({
             "Tomato, " + Integer.MAX_VALUE + ", Yummy Tomato",
             "Potato, 2, Test Description",
@@ -86,6 +97,7 @@ public class CreatePlantTests {
         when(gardenService.findGarden(any(Long.class))).thenReturn(Optional.ofNullable(testGarden));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/create-plant")
+                        .with(csrf())
                 .queryParam("gardenID", String.valueOf(1L))
                 .queryParam("plantDatePlanted", "2021-01-01")
                 .param("name", name)
@@ -96,6 +108,7 @@ public class CreatePlantTests {
     }
 
     @ParameterizedTest
+    @WithMockUser
     @CsvSource({
             "Tomato, " + Integer.MIN_VALUE + ", Yummy Tomato",
             "Potato____, 0, Test Description",
@@ -106,6 +119,7 @@ public class CreatePlantTests {
         when(gardenService.findGarden(any(Long.class))).thenReturn(Optional.ofNullable(testGarden));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/create-plant")
+                        .with(csrf())
                 .queryParam("gardenID", String.valueOf(1L))
                 .queryParam("plantDatePlanted", "2021-01-01")
                 .param("name", name)

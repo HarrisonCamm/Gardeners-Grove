@@ -1,10 +1,8 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration;
 
 import nz.ac.canterbury.seng302.gardenersgrove.controller.AutocompleteController;
-import nz.ac.canterbury.seng302.gardenersgrove.service.AutocompleteService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -12,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -35,25 +35,33 @@ public class AutocompleteControllerTests {
     private MockMvc mockMvc;
 
     @MockBean
-    AutocompleteService autocompleteService;
+    private AutocompleteService autocompleteService;
 
     @MockBean
-    GardenService gardenService;
+    private GardenService gardenService;
 
     @MockBean
-    LocationService locationService;
+    private LocationService locationService;
 
     @MockBean
     private PlantService PlantService;
 
-    AutocompleteController autocompleteController;
+    @MockBean
+    private UserService userService;
+    @MockBean
+    private UserRepository userRepository;
+    @MockBean
+    private AuthenticationManager authenticationManager;
+
+//    AutocompleteController autocompleteController;
 
     @BeforeEach
     public void setUp() {
-        autocompleteController = new AutocompleteController(autocompleteService);
+//        autocompleteController = new AutocompleteController(autocompleteService);
     }
 
     @Test
+    @WithMockUser
     public void TypedInAddress_ServiceReturns_Ok() throws Exception {
 
         HttpResponse<String> httpResponse = new HttpResponse<>() {

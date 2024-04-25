@@ -67,7 +67,7 @@ public class EditPlantController {
      */
     @PutMapping("/edit-plant")
     public String submitForm(@RequestParam("plantID") Long plantID,
-                             @RequestParam("datePlanted") String datePlanted,
+                             @RequestParam("datePlantedString") String datePlanted,
                              @ModelAttribute("plant") Plant newPlant,
                              BindingResult bindingResult,
                              Model model) throws Exception {
