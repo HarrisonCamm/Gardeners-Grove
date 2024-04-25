@@ -1,12 +1,14 @@
-package nz.ac.canterbury.seng302.gardenersgrove;
+package nz.ac.canterbury.seng302.gardenersgrove.integration;
 
 import nz.ac.canterbury.seng302.gardenersgrove.controller.EditPlantController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -22,6 +26,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,6 +41,13 @@ public class EditPlantTests {
     @MockBean
     private GardenService gardenService;
 
+    @MockBean
+    private UserService userService;
+    @MockBean
+    private UserRepository userRepository;
+    @MockBean
+    private AuthenticationManager authenticationManager;
+
     private Garden testGarden;
     private Location testLocation;
     private Plant testPlant;
@@ -48,6 +60,7 @@ public class EditPlantTests {
     }
 
     @Test
+    @WithMockUser
     public void RequestPage_NoID_Failure() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/edit-plant"))
                 .andExpect(status().isBadRequest());
@@ -56,6 +69,7 @@ public class EditPlantTests {
     }
 
     @Test
+    @WithMockUser
     public void RequestPage_InvalidID_Failure() throws Exception {
         final Long id = 0L;
         mockMvc.perform(MockMvcRequestBuilders.get("/edit-plant")
@@ -65,6 +79,7 @@ public class EditPlantTests {
     }
 
     @Test
+    @WithMockUser
     public void RequestPage_ValidID_ReturnPage() throws Exception {
         final Long id = 1L;
         Plant plant = new Plant(null, null);
@@ -78,6 +93,7 @@ public class EditPlantTests {
     }
 
     @ParameterizedTest
+    @WithMockUser
     @CsvSource({
             "1, Carrot, 3453125, 24/1/6353, this is an orange plant",
             "2, oranges, 3453125, 01/10/1234, this is also orange",
@@ -91,11 +107,12 @@ public class EditPlantTests {
         when(plantService.findPlant(plantID)).thenReturn(Optional.of(oldPlant));
 
         mockMvc.perform(put("/edit-plant")
+                        .with(csrf())
                         .param("plantID", plantID.toString())
-                        .param("plantName", plantName)
-                        .param("plantCount", count)
+                        .param("name", plantName)
+                        .param("count", count)
                         .param("datePlanted", date)
-                        .param("plantDescription", description))
+                        .param("description", description))
                 .andExpect(status().is3xxRedirection());
 
         verify(plantService).findPlant(plantID);

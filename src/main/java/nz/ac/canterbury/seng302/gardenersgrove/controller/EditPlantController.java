@@ -16,6 +16,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -67,7 +68,7 @@ public class EditPlantController {
      */
     @PutMapping("/edit-plant")
     public String submitForm(@RequestParam("plantID") Long plantID,
-                             @RequestParam("datePlantedString") String datePlanted,
+                             @RequestParam("datePlanted") String datePlanted,
                              @ModelAttribute("plant") Plant newPlant,
                              BindingResult bindingResult,
                              Model model) throws Exception {
@@ -89,6 +90,8 @@ public class EditPlantController {
         Date date = null;
         try {
             date = new SimpleDateFormat("yyyy-MM-dd").parse(datePlanted);
+        } catch (ParseException pe) {
+            date = new SimpleDateFormat("dd/MM/yyyy").parse(datePlanted);
         } catch (Exception e) {
             bindingResult.addError(new ObjectError(datePlanted, "Date is not valid"));
         }
