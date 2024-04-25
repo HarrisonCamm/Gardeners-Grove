@@ -32,8 +32,6 @@ public class EditGardenController {
     Logger logger = LoggerFactory.getLogger(EditGardenController.class);
 
     private final GardenService gardenService;
-
-//    @Autowired
     private final UserService userService;
 
 //    @Autowired
@@ -51,14 +49,15 @@ public class EditGardenController {
     @GetMapping("/edit-garden")
     public String form(@RequestParam("gardenID") Long gardenID,
                        Model model) throws ResponseStatusException {
-//        User currentUser = userService.getAuthenicatedUser();
-
         logger.info("GET /edit-garden");
         RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
 
         Optional<Garden> result = gardenService.findGarden(gardenID);
+        User currentUser = userService.getAuthenicatedUser();
         if (result.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
+        else if (!result.get().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this garden.");
 
         Garden garden = result.get();
         addAttributes(model, garden, garden.getId(), garden.getName(), garden.getLocation(), garden.getSize());
@@ -76,18 +75,22 @@ public class EditGardenController {
                              @ModelAttribute Garden garden,
                              BindingResult bindingResult,
                              Model model) throws ResponseStatusException {
-//        User currentUser = userService.getAuthenicatedUser();
         logger.info("PUT /edit-garden");
 
         Optional<Garden> result = gardenService.findGarden(gardenID);
+        User currentUser = userService.getAuthenicatedUser();
         if (result.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
+        else if (!result.get().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this garden.");
+
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
         Location gardenLocation = garden.getLocation();
         // Perform validation
         checkFields(gardenName, gardenLocation, gardenSize, bindingResult);
         garden.setId(result.get().getId());
+        garden.setOwner(currentUser);
 
         addAttributes(model, garden, garden.getId(), gardenName, gardenLocation, gardenSize);
 
@@ -139,7 +142,7 @@ public class EditGardenController {
 
         model.addAttribute("size", gardenSize);
 
-        model.addAttribute("gardens", gardenService.getGardens());
+        model.addAttribute("gardens", gardenService.getOwnedGardens(garden.getOwner().getUserId()));
     }
 
 }
