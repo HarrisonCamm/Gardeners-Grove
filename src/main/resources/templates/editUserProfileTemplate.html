@@ -141,7 +141,7 @@
                        th:name="email" th:value="${email}" data-cy="email"
                        th:class="${registrationEmailError != null ? 'error' : 'form-control'}" autofocus>
                 <br/>
-                <!-- Display error message if there is an error with the email existing-->
+                <!-- Display an error message if there is an error with the email existing-->
                 <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
                 <br/>
 
