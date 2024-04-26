@@ -65,7 +65,6 @@ public class RegisterUserTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/view-user-profile"));
 
-        // Verify that userService.addUser(...) was called
         verify(userService).addUser(any(User.class));
     }
 
@@ -82,7 +81,6 @@ public class RegisterUserTest {
             "John, Doe, john.doe@example.com, pass, pass, 01/01/1990, passwordValidityError",
             "John, Doe, john.doe@example.com, Password@123, DifferentPassword@123, 01/01/1990, passwordMatchError",
             "John, Doe, john.doe@example.com, Password@123, Password@123, 01/01/1902, ageError",
-            // other test data
     })
     void whenPostRegisterFormWithInvalidData_thenReturnsFormViewWithErrors(String firstName, String lastName,
                                                                            String email, String password,
