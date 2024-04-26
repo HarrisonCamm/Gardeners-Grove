@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
+package nz.ac.canterbury.seng302.gardenersgrove.integration.service;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
@@ -18,7 +18,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.util.*;
 
-@SpringBootTest
+//@SpringBootTest
 public class GardenServiceTests {
 
     private GardenRepository gardenRepository;
