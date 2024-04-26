@@ -167,20 +167,22 @@ li {
     top: 0; right: 0;
     cursor: pointer;
     background-color: #dedede;
-    font-weight: bold;
+    /*font-weight: bold;*/
     border-radius: 25px;
     width: 15px;
     height: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
-    opacity: 0.9;
+    opacity: 0.7;
     border: solid black 1px;
 }
 
 .image {
     width: 80px;
     height: 80px;
+    border-radius: 50px;
+    border: black solid 1px;
 }
 
 

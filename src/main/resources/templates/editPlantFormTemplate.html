@@ -21,8 +21,7 @@
             <div class="formRow">
                 <div>
                     <img class="image" th:src="@{'/images/' + ${plant.picture}}" alt="">
-                    <label class="image_picker" th:for="${'fileInput' + plantID}">+</label>
-                    <input th:value="imagePath" class="fileInput" th:id="${'fileInput' + plantID}" type="file" style="display: none;">
+                    <button class="image_picker" th:id="${'button' + plant.id}">+</button>
                 </div>
             </div>
             <div class="formRow">
@@ -54,6 +53,6 @@
         </form>
     </div>
     <br/>
-    <script src="/javascript/plant_image_handling_edit.js"></script>
+    <script src="/javascript/redirect_image_handler.js"></script>
 </body>
 </html>

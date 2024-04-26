@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Select the button
     const button = document.querySelector('button');
 
+    const fileInput = document.querySelector('.fileInput');
+
     button.addEventListener('click', function(event) {
         // Select all file inputs
         console.log("Button clicked")
@@ -58,6 +60,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .catch(error => console.error(error));
         });
+    });
+
+    // Add an event listener to the file input
+    fileInput.addEventListener('change', function(event) {
+        console.log("File input changed")
+        const imageSource = document.getElementById('imageSource');
+        imageSource.src = 'images/' + event.target.files[0].name;
+        console.log(imageSource.class)
+        imageSource.style.display = "block";
     });
 });
 

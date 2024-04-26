@@ -10,10 +10,20 @@
         <li><a class="navLink" th:href="@{/create-garden}">Create a Garden</a></li>
         <li><a class="navLink" th:href="@{/view-gardens}">View Gardens</a></li>
     </ul>
-    <input th:value="imagePath" class="fileInput" type="file" name="file" id="file">
-    <button type="submit">Upload</button>
-    <br/>
-    <a href="/view-gardens">Back to Gardens</a>
+    <div>
+        <h1 style="text-align: center">Upload Image</h1>
+        <p>Includes .png, .jpg, .svg, less than 10Mb</p>
+        <div style="margin-bottom: 25px">
+            <input th:value="imagePath" class="fileInput" type="file" name="file" id="file">
+            <button type="submit">Upload</button>
+        </div>
+        <img class="image" id="imageSource" style="display: none; margin: auto"/>
+        <br/>
+        <form th:action="@{/Cancel}" method="get">
+            <button style="margin-top: 25px" type="submit">Cancel</button>
+        </form>
+    </div>
+
 <script src="/javascript/image_handling.js"></script>
 </body>
 </html>

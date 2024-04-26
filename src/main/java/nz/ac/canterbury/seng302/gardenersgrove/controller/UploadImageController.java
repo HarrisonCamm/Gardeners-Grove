@@ -14,9 +14,10 @@ public class UploadImageController {
     Logger logger = LoggerFactory.getLogger(UploadImageController.class);
 
     @GetMapping("/upload-image")
-    public String uploadImage(@RequestParam("view-garden") boolean viewGarden,
+    public String uploadImage(@RequestParam(value = "view-garden", required = false) boolean viewGarden,
+                              @RequestParam(value = "edit-garden", required = false) boolean editGarden,
                               @RequestParam("plantID") Long plantID,
-                              @RequestParam("gardenID") Long gardenID) {
+                              @RequestParam(value = "gardenID", required = false) Long gardenID) {
 
         logger.info("GET /upload-image");
 
