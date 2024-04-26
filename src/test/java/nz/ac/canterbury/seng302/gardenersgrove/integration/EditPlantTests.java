@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.controller.EditPlantController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -51,11 +53,16 @@ public class EditPlantTests {
     private Garden testGarden;
     private Location testLocation;
     private Plant testPlant;
+    private User testUser;
 
     @BeforeEach
     public void setUp() {
+        testUser = new User("user@email.com", "User", "Name", "password");
+        testUser.setUserId(1L);
+        Mockito.when(userService.getAuthenicatedUser()).thenReturn(testUser);
+
         testLocation = new Location("123 Test Street", "Test Suburb", "Test City", "1234", "Test Country");
-        testGarden = new Garden("Test Garden", testLocation, "1");
+        testGarden = new Garden("Test Garden", testLocation, "1", testUser);
         testPlant = new Plant(testGarden, "Test Description");
     }
 
@@ -82,7 +89,7 @@ public class EditPlantTests {
     @WithMockUser
     public void RequestPage_ValidID_ReturnPage() throws Exception {
         final Long id = 1L;
-        Plant plant = new Plant(null, null);
+        Plant plant = new Plant(testGarden, null);
         plant.setId(id);
         when(plantService.findPlant(id)).thenReturn(Optional.of(plant));
 

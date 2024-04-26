@@ -1,11 +1,14 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration;
 
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -46,6 +49,15 @@ public class ViewGardenTests {
     private UserRepository userRepository;
     @MockBean
     private AuthenticationManager authenticationManager;
+
+    private User testUser;
+
+    @BeforeEach
+    public void setUp() {
+        testUser = new User("user@email.com", "User", "Name", "password");
+        testUser.setUserId(1L);
+        Mockito.when(userService.getAuthenicatedUser()).thenReturn(testUser);
+    }
 
 
     @ParameterizedTest

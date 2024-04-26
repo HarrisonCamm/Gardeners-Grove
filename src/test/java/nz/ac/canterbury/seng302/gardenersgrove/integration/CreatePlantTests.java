@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.integration;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,18 +55,22 @@ public class CreatePlantTests {
     private Garden testGarden;
     private Location testLocation;
     private Plant testPlant;
+    private User testUser;
 
     @BeforeEach
     public void setUp() {
         testLocation = new Location("123 Test Street", "Test Suburb", "Test City", "1234", "Test Country");
         testGarden = new Garden("Test Garden", testLocation, "1");
         testPlant = new Plant(testGarden, "Test Description");
+
+        testUser = new User("user@email.com", "User", "Name", "password");
+        testUser.setUserId(1L);
+        Mockito.when(userService.getAuthenicatedUser()).thenReturn(testUser);
     }
 
     @Test
     @WithMockUser
     public void GetPage_NoFields_Success() throws Exception {
-
         when(plantService.findPlant(any(Long.class))).thenReturn(Optional.ofNullable(testPlant));
         when(gardenService.findGarden(any(Long.class))).thenReturn(Optional.ofNullable(testGarden));
 

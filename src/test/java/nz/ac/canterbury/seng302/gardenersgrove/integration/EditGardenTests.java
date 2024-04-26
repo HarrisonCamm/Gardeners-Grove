@@ -4,12 +4,15 @@ import nz.ac.canterbury.seng302.gardenersgrove.controller.AutocompleteController
 import nz.ac.canterbury.seng302.gardenersgrove.controller.CreateGardenController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -58,13 +61,16 @@ public class EditGardenTests {
     @MockBean
     private PlantService PlantService;
 
-    @BeforeAll
-    public static void setup() {
+    private User mockUser;
 
+    @BeforeEach
+    public void setup() {
+        mockUser = new User("user@email.com", "User", "Name", "password");
+        mockUser.setUserId(1L);
+        Mockito.when(userService.getAuthenicatedUser()).thenReturn(mockUser);
     }
 
     @Test
-//    @WithMockUser
     public void RequestPage_NoFields_Failure() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/edit-garden"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
@@ -89,7 +95,7 @@ public class EditGardenTests {
     })
     public void PutForm_WithValidFields_Success(Long gardenID, String gardenName, String gardenSize) throws Exception {
         Location testLocation = new Location("123 test street", "test", "test", "test", "test");
-        when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(new Garden(gardenName, testLocation, gardenSize)));
+        when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(new Garden(gardenName, testLocation, gardenSize, mockUser)));
         mockMvc.perform(MockMvcRequestBuilders.put("/edit-garden")
                         .with(csrf())
                     .param("gardenID", gardenID.toString())
@@ -108,10 +114,10 @@ public class EditGardenTests {
     @ParameterizedTest
     @WithMockUser
     @CsvSource({
-            "52334, '', 1.49,  My Garden, 12.00009123",
-            "76451, '', '',  Tomato's, " + Long.MAX_VALUE,
-            "34534555, '', '',  Bob, ''",
-            "8, myGarden, -1,  The Mall, 143,5553"
+            "1, '', 1.49,  My Garden, 12.00009123",
+            "1, '', '',  Tomato's, " + Long.MAX_VALUE,
+            "1, '', '',  Bob, ''",
+            "1, myGarden, -1,  The Mall, 143,5553"
     })
     public void PutForm_WithInvalidFields_ErrorsShown(
             Long gardenID, String newName, String newSize,
@@ -119,7 +125,8 @@ public class EditGardenTests {
 
         Location newLocation = new Location("123 test street", "test", "test", "test", "test");
         Location oldLocation = newLocation;
-        when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(new Garden(oldName, oldLocation, oldSize)));
+        Garden garden = new Garden(oldName, oldLocation, oldSize, mockUser);
+        when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(garden));
         mockMvc.perform(MockMvcRequestBuilders.put("/edit-garden")
                         .with(csrf())
                         .param("gardenID", gardenID.toString())
@@ -146,7 +153,7 @@ public class EditGardenTests {
     public void OnForm_CancelEdit_RedirectToViewGarden(
             Long gardenID, String name, String size) throws Exception {
         Location location = new Location("123 test street", "test", "test", "test", "test");
-        Garden garden = new Garden(name, location, size);
+        Garden garden = new Garden(name, location, size, mockUser);
         when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(garden));
         RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
         RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
