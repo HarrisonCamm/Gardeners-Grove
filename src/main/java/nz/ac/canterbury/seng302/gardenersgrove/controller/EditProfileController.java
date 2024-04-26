@@ -134,18 +134,17 @@ public class EditProfileController {
             // Only perform password validation when change password form open (changePasswordFormInput == true)
 
             // Check if the old password is empty
-            if (oldPassword == null || oldPassword.isEmpty() || newPassword == null || newPassword.isEmpty() || retypePassword == null || retypePassword.isEmpty()) {
-                if (oldPassword == null || oldPassword.isEmpty()) {
-                    model.addAttribute("oldPasswordError", "Old password is required.");
-                } else {
-                    // Attempt to validate the user with the provided old password
-                    Optional<User> validatedUser = userService.validateUser(currentUser.getEmail(), oldPassword);
+            if (oldPassword == null || oldPassword.isEmpty()) {
+                model.addAttribute("oldPasswordError", "Old password is required.");
+            } else {
+                // Attempt to validate the user with the provided old password
+                Optional<User> validatedUser = userService.validateUser(currentUser.getEmail(), oldPassword);
 
-                    // If the Optional is empty, the old password does not match
-                    if (!validatedUser.isPresent()) {
-                        model.addAttribute("oldPasswordError", "Your old password is incorrect");
-                    }
+                // If the Optional is empty, the old password does not match
+                if (!validatedUser.isPresent()) {
+                    model.addAttribute("oldPasswordError", "Your old password is incorrect");
                 }
+            }
 
             // Check if the new password is empty
             if (newPassword == null || newPassword.isEmpty()) {
@@ -167,7 +166,6 @@ public class EditProfileController {
                 }
             }
         }
-    }
 
     // Format and convert the data of birth
     String formattedDateOfBirth = convertDateFormat(dateOfBirth);
