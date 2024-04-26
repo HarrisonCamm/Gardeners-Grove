@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.gardenersgrove.security;
+package nz.ac.canterbury.seng302.gardenersgrove.unit.security;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.security.CustomAuthenticationProvider;

@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.gardenersgrove.integration;
+package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.controller.EditPlantController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;

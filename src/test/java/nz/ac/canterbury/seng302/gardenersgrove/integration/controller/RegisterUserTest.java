@@ -1,5 +1,6 @@
-package nz.ac.canterbury.seng302.gardenersgrove.controller;
+package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
+import nz.ac.canterbury.seng302.gardenersgrove.controller.RegisterFormController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Integration tests for the RegisterFormController class.
  */
 @WebMvcTest(RegisterFormController.class)
-public class RegisterUserIntegrationTest {
+public class RegisterUserTest {
 
     @Autowired
     private MockMvc mockMvc;
