@@ -1,9 +1,11 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +32,13 @@ public class EditPlantController {
 
     private final PlantService plantService;
     private final GardenService gardenService;
+    private final UserService userService;
 
     @Autowired
-    public EditPlantController(PlantService plantService, GardenService gardenService) {
+    public EditPlantController(PlantService plantService, GardenService gardenService, UserService userService) {
         this.plantService = plantService;
         this.gardenService = gardenService;
+        this.userService = userService;
     }
 
     @GetMapping("/edit-plant")
@@ -43,10 +47,12 @@ public class EditPlantController {
         logger.info("GET /edit-plant");
         RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
+        User currentUser = userService.getAuthenicatedUser();
         Optional<Plant> found = plantService.findPlant(plantID);
         if (found.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant with ID " + plantID + " not found");
-        }
+        } else if (!found.get().getGarden().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this plant.");
         Plant plant = found.get();
 
         String date = "";
@@ -74,14 +80,15 @@ public class EditPlantController {
                              Model model) throws Exception {
         logger.info("PUT /edit-plant");
 
-        bindingResult = new BeanPropertyBindingResult(newPlant, "plant");
-
+        User currentUser = userService.getAuthenicatedUser();
         Optional<Plant> found = plantService.findPlant(plantID);
         if (found.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant with ID " + plantID + " not found");
-        }
+        } else if (!found.get().getGarden().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this plant.");
         Plant plant = found.get();
 
+        bindingResult = new BeanPropertyBindingResult(newPlant, "plant");
         //Validates input fields
         checkName(newPlant.getName(), bindingResult);
         checkDescription(newPlant.getDescription(), bindingResult);
