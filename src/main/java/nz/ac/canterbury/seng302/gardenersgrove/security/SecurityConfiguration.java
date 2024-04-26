@@ -71,6 +71,10 @@ public class SecurityConfiguration {
                     .requestMatchers("/admin")
                     .hasRole("ADMIN")
 
+                    // Only allow unverified users to reach the "/confirm-registration" page
+                    .requestMatchers("/", "/register-form", "/sign-in-form", "/home", "/confirm-registration")
+                    .hasRole("UNVERIFIED")
+
                     // Increase access to authenticated users to reach the "/main", "/view-user-profile", "/edit-user-profile" pages
                     .requestMatchers("/main", "/view-user-profile", "/edit-user-profile", "/create-garden", "/view-garden", "/view-gardens", "/create-plant", "/edit-plant")
                     .hasRole("USER")
