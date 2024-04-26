@@ -15,7 +15,7 @@ public class UploadImageController {
 
     @GetMapping("/upload-image")
     public String uploadImage(@RequestParam(value = "view-garden", required = false) boolean viewGarden,
-                              @RequestParam(value = "edit-garden", required = false) boolean editGarden,
+                              @RequestParam(value = "edit-plant", required = false) boolean editPlant,
                               @RequestParam("plantID") Long plantID,
                               @RequestParam(value = "gardenID", required = false) Long gardenID) {
 
