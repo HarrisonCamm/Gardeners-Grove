@@ -36,29 +36,39 @@
                     <input type="text" id="name" placeholder="Garden Name" th:value="*{name}" th:field="*{name}">
                 </div>
                 <br/>
-                <div class="formRow" id="locationContainer">
-                    <label id="gardenLocationLabel">Garden Location:</label>
-                    <br/>
-                    <label for="streetAddress" id="streetAddressLabel">Street Address: </label>
-                    <input type="text" id="streetAddress"  placeholder="Street Address" th:value="*{location.streetAddress}" th:field="*{location.streetAddress}">
-                    <br/>
-                    <label for="suburb" id="suburbLabel">Suburb: </label>
-                    <input type="text" id="suburb"  placeholder="Suburb" th:value="*{location.suburb}" th:field="*{location.suburb}">
-                    <br/>
-                    <label for="city" id="cityLabel">City </label>
-                    <input type="text" id="city"  placeholder="City" th:value="*{location.city}" th:field="*{location.city}">
-                    <br/>
-                    <label for="postcode" id="postcodeLabel">Postcode: </label>
-                    <input type="text" id="postcode"  placeholder="Postcode" th:value="*{location.postcode}" th:field="*{location.postcode}">
-                    <br/>
-                    <label for="country" id="countryLabel">Country: </label>
-                    <input type="text" id="country"  placeholder="Country" th:value="*{location.country}" th:field="*{location.country}">
-                </div>
-                <ul id="suggestions"></ul>
+                <table class="locationTable" id="locationContainer">
+                    <tr>
+                        <th>Location</th>
+                        <th><div id="autocompleteContainer"></div></th>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><ul id="suggestions"></ul></td>
+                    </tr>
+                    <tr>
+                        <td><label for="streetAddress" id="streetAddressLabel">Street Address: </label></td>
+                        <td><input type="text" id="streetAddress" placeholder="Street Address" th:field="*{location.streetAddress}" th:value="*{location.streetAddress}" ></td>
+                    </tr>
+                    <tr>
+                        <td><label for="suburb" id="suburbLabel">Suburb: </label></td>
+                        <td><input type="text" id="suburb" placeholder="Suburb" th:field="*{location.suburb}" th:value="*{location.suburb}" ></td>
+                    </tr>
+                    <tr>
+                        <td><label for="city" id="cityLabel">City </label></td>
+                        <td><input type="text" id="city" placeholder="City" th:field="*{location.city}"th:value="*{location.city}"  th:classappend="${gardenCityError} ? 'error' : ''"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="postcode" id="postcodeLabel">Postcode: </label></td>
+                        <td><input type="text" id="postcode" placeholder="Postcode" th:field="*{location.postcode}" th:value="*{location.postcode}" ></td>
+                    </tr>
+                    <tr>
+                        <td><label for="country" id="countryLabel">Country: </label></td>
+                        <td><input type="text" id="country" placeholder="Country" th:field="*{location.country}" th:value="*{location.country}" th:classappend="${gardenCountryError} ? 'error' : ''"></td>
+                    </tr>
+                </table>
                 <br/>
                 <div class="formRow">
                     <label for="size"> Garden Size: </label>
-                    <input type="text" id="size" placeholder="Garden Size" th:value="*{size}" th:field="*{size}">
+                    <input type="text" id="size" placeholder="Garden Size" th:value="*{size}" th:field="*{size}" th:classappend="${gardenSizeError} ? 'error' : ''">
                 </div>
                 <br/>
                 <br/>
@@ -73,188 +83,7 @@
         </div>
         <br/>
     </div>
-<script>
-
-    //Code taken from Geoapify's documentation. See Spike on wiki for details.
-    function addressAutocomplete(containerElement, callback, options) {
-
-        const MIN_ADDRESS_LENGTH = 5; //Adjust as needed
-
-        const inputContainerElement = document.createElement("div");
-
-        //getting the garden label
-        const locationLabel = document.getElementById("gardenLocationLabel");
-
-        inputContainerElement.setAttribute("class", "input-container");
-        containerElement.appendChild(inputContainerElement);
-
-        // create input element
-        const inputElement = document.createElement("input");
-        inputElement.setAttribute("type", "text");
-        inputElement.setAttribute('id', 'addressInput');
-
-        // Append the input element to the container
-        inputContainerElement.appendChild(inputElement);
-
-        // Associate the label with the input element
-        locationLabel.setAttribute('for', 'addressInput');
-
-        inputElement.setAttribute("placeholder", options.placeholder);
-
-        /* Focused item in the autocomplete list. This variable is used to navigate with buttons */
-        let focusedItemIndex;
-
-        /* Process a user input: */
-        inputElement.addEventListener("input", function(e) {
-            const currentValue = this.value;
-
-            /* Close any already open dropdown list */
-            closeDropDownList();
-
-            // Skip empty or short address strings
-            if (!currentValue || currentValue.length < MIN_ADDRESS_LENGTH) {
-                return false;
-            }
-
-            /* Create a new promise and send geocoding request to the backend */
-            const promise = new Promise((resolve, reject) => {
-                const url = `/getAutocompleteResults?inputString=${currentValue}`; //We create the getAutocompleteResults endpoint Java side
-                fetch(url)
-                    .then(response => {
-                        // check if the call was successful
-                        if (response.ok) {
-                            return response.json(); // Return JSON promise
-                        } else {
-                            throw new Error('Network response was not ok');
-                        }
-                    })
-                    .then(data => resolve(data)) // Resolve with data
-                    .catch(error => reject(error)); // Reject with error
-            });
-
-            promise.then((data) => {
-                // Parse JSON data
-                let json;
-                try {
-                    json = data.results;
-                } catch (error) {
-                    throw new Error('Failed to parse JSON data');
-                }
-
-                closeDropDownList(); //close any of results div
-
-                /*create a DIV element that will contain the items (values):*/
-                const autocompleteItemsElement = document.createElement("div");
-                autocompleteItemsElement.setAttribute("class", "autocomplete-items");
-                inputContainerElement.appendChild(autocompleteItemsElement);
-
-                if (json.length === 0) { //if there were no results
-                    const messageElement = document.createElement("div");
-                    messageElement.textContent = "No matching location found, location-based services may not work";
-                    autocompleteItemsElement.appendChild(messageElement);
-                } else {
-                    // Iterate through each result
-                    json.forEach((result, index) => {
-                        // Create a DIV element for each result
-                        const itemElement = document.createElement("div");
-                        // Set formatted address as item value
-                        itemElement.innerHTML = result.formatted;
-                        autocompleteItemsElement.appendChild(itemElement);
-
-                        // Set the value for the autocomplete text field and notify
-                        itemElement.addEventListener("click", function(e) {
-                            inputElement.value = result.formatted;
-                            callback(result); // Call our callback function to add the address to the rest of the fields
-                            inputElement.value = '';
-                            // Close the list of autocompleted values
-                            closeDropDownList();
-                        });
-                    });
-                }
-
-            }).catch(error => {
-                console.error(error.message);
-            });
-        });
-
-        function closeDropDownList() {
-            const autocompleteItemsElement = inputContainerElement.querySelector(".autocomplete-items");
-            if (autocompleteItemsElement) {
-                inputContainerElement.removeChild(autocompleteItemsElement);
-            }
-
-            focusedItemIndex = -1;
-        }
-
-        /* Close the autocomplete dropdown when the document is clicked.
-          Skip, when a user clicks on the input field */
-        document.addEventListener("click", function(e) {
-            if (e.target !== inputElement) {
-                closeDropDownList();
-            } else if (!containerElement.querySelector(".autocomplete-items")) {
-                // open dropdown list again
-                var event = document.createEvent('Event');
-                event.initEvent('input', true, true);
-                inputElement.dispatchEvent(event);
-            }
-        });
-    }
-
-</script>
-<script>
-    // Call the addressAutocomplete function after the DOM has loaded
-    window.addEventListener('DOMContentLoaded', function () {
-        // Get the container element where you want to add the address autocomplete input
-        const containerElement = document.getElementById('locationContainer');
-
-        // Define a callback function to handle the selected address data
-        function handleAddressSelection(data) {
-            const inputArray = getInputFields();
-            for (let i = 0; i < inputArray.length; i++) {
-                switch (inputArray[i].id) {
-                    case 'streetAddress':
-                        inputArray[i].value = handleField(data.housenumber) + ' ' + handleField(data.street);
-                        break;
-                    case 'suburb':
-                        inputArray[i].value = handleField(data.suburb);
-                        break;
-                    case 'city':
-                        inputArray[i].value = handleField(data.county);
-                        break;
-                    case 'postcode':
-                        inputArray[i].value = handleField(data.postcode);
-                        break;
-                    case 'country':
-                        inputArray[i].value = handleField(data.country);
-                        break;
-                }
-            }
-        }
-
-
-        // Returns an empty string if field is undefined otherwise just return the field
-        function handleField(field) {
-            return (field) ? field : '';
-        }
-
-        function getInputFields() {
-            let array = [];
-            array.push(document.getElementById('streetAddress'));
-            array.push(document.getElementById('suburb'));
-            array.push(document.getElementById('city'));
-            array.push(document.getElementById('postcode'));
-            array.push(document.getElementById('country'));
-            return array;
-        }
-
-        // Options for the address autocomplete function (e.g., placeholder text)
-        const options = {
-            placeholder: "Enter an address here"
-        };
-
-        // Call the addressAutocomplete function with the container element, callback, and options
-        addressAutocomplete(containerElement, handleAddressSelection, options);
-    });
-</script>
+    <script src="/javascript/hover_enter.js"></script>
+    <script src="/javascript/autocomplete.js"></script>
 </body>
 </html>
