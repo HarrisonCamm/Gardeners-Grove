@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = 'team-600'
-include('app')
+//include('app')
