@@ -109,21 +109,21 @@ public class EditPlantController {
         }
     }
 
-    private void checkName(String name, BindingResult bindingResult) {
+    public static void checkName(String name, BindingResult bindingResult) {
         ObjectError nameError = validatePlantName(name);
         if (nameError != null) {
             bindingResult.addError(nameError);
         }
     }
 
-    private void checkCount(String count, BindingResult bindingResult) {
+    public static void checkCount(String count, BindingResult bindingResult) {
         ObjectError countError = validatePlantCount(count);
         if (countError != null) {
             bindingResult.addError(countError);
         }
     }
 
-    private void checkDescription(String description, BindingResult bindingResult) {
+    public static void checkDescription(String description, BindingResult bindingResult) {
         ObjectError descriptionError = validatePlantDescription(description);
         if (descriptionError != null) {
             bindingResult.addError(descriptionError);

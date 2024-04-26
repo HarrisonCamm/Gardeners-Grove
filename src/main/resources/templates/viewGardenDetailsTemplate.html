@@ -63,8 +63,7 @@
                         <td>
                             <div style="position: relative;">
                                 <img class="image" th:src="@{'/images/' + ${plant.picture}}" alt="">
-                                <label class="image_picker" th:for="${'fileInput' + plant.id}">+</label>
-                                <input th:value="imagePath" class="fileInput" th:id="${'fileInput' + plant.id}" type="file" style="display: none;">
+                                <button th:id="${'buttonFile' + plant.id}">+</button>
                             </div>
                         </td>
                         <td th:text="${plant.name}"></td>
@@ -78,6 +77,6 @@
             </div>
         </div>
     </div>
-    <script src="/javascript/plant_image_handling.js"></script>
+    <script src="/javascript/redirect_image_handler.js"></script>
 </body>
 </html>

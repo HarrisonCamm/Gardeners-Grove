@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formData.append('gardenId', gardenId);
 
             fetch('/add-plant-picture', {
-                method: 'POST',
+                method: 'PUT',
                 body: formData
             })
                 .then(response => response.json())
