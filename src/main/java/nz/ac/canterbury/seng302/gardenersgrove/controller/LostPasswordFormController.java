@@ -1,7 +1,11 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
+import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +27,18 @@ public class LostPasswordFormController {
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final VerificationTokenService verificationTokenService;
+    private final MailService mailService;
+
 
     @Autowired
-    public LostPasswordFormController(UserService userService, AuthenticationManager authenticationManager) {
+    public LostPasswordFormController(UserService userService, AuthenticationManager authenticationManager,
+                                      VerificationTokenService verificationTokenService,
+                                      MailService mailService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
+        this.verificationTokenService = verificationTokenService;
+        this.mailService = mailService;
     }
 
     /**
@@ -67,9 +78,31 @@ public class LostPasswordFormController {
 
             model.addAttribute("confirmationMessage", "An email was sent to the address if it was recognised");
 
-            // todo send email if email is known
             if (userService.emailExists(email)) {
-                // todo send email here
+                // Create Verification Token
+                User newUser = userService.getUserByEmail(email);
+                VerificationToken verificationToken = verificationTokenService.createVerificationToken(newUser);
+                // todo work w henry to make sure tokens are deleted after 10 minutes to avoid primary key error
+
+                // Create confirmation email
+                String emailSubject = "Your Account Registration Code";
+                String emailText = "Dear " + newUser.getFirstName() + ",\n\n" +
+                        "To reset your password, please use the following code:\n\n" +
+                        verificationToken.getToken() + "\n\n" +
+                        "Please use this link to change your password.\n\n" +
+                        "If you did not request this code or have any questions, please contact our support team.\n\n" +
+                        "Thank you for using Gardener's Grove! Happy gardening!";
+
+                // Try to send confirmation email
+                try {
+                    // Send confirmation email
+                    mailService.sendSimpleMessage(email, emailSubject, emailText);
+
+                } catch (Exception e) {
+                    // Log the error
+                    logger.error("Failed to send confirmation code to " + email, e);
+                    // no feedback to user right now
+                }
             }
             return "lostPasswordFormTemplate"; // todo implement popup confirmation message modal using Boostrap spike
         }
