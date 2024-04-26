@@ -34,9 +34,21 @@ public class Garden {
      * @param size size
      */
     public Garden(String name, Location location, String size) {
+        this(name, location, size, null);
+    }
+
+    /**
+     * Garden Constructor
+     * @param name name
+     * @param location location object
+     * @param size size
+     * @param owner owner
+     */
+    public Garden(String name, Location location, String size, User owner) {
         this.name = name;
         this.location = location;
         this.size = size;
+        this.owner = owner;
     }
 
     // Getter for id
