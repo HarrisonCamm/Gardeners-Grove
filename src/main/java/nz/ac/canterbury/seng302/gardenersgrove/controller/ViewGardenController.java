@@ -15,8 +15,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +49,37 @@ public class ViewGardenController {
         RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
 
         return addAttributes(gardenID, model, plantService, gardenService);
+    }
+
+    @PostMapping("/view-garden")
+    public String addPlantPicture(@RequestParam("plantID") Long plantID,
+                                  @RequestParam("gardenID") Long gardenID,
+                                  @RequestParam("file") MultipartFile file,
+                                  @RequestParam(value = "continue",required = false) String continueString,
+                                  Model model) {
+
+        logger.info("POST /view-garden");
+
+        // Write the picture to file system
+        Plant plant = plantService.findPlant(plantID).get();
+
+        plant.setPicture(file.getOriginalFilename()); // Set the new image
+
+        Path path = Paths.get("src/main/resources/static/images/" + file.getOriginalFilename());
+
+        plantService.addPlant(plant);
+
+        // Write the file to the file system
+        try {
+            Files.createDirectories(path.getParent());
+            file.transferTo(path);
+        } catch (Exception e) {
+            logger.error("Failed to write file to file system", e);
+        }
+
+        // Add the attributes to the model
+        addAttributes(gardenID, model, plantService, gardenService);
+        return "redirect:/view-garden?gardenID=" +gardenID;
     }
 
     static String addAttributes(@RequestParam("gardenID") Long gardenID, Model model, PlantService plantService, GardenService gardenService) {

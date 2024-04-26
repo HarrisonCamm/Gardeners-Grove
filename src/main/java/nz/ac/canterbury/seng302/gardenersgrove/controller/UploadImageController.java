@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Controller
 public class UploadImageController {
@@ -14,7 +15,8 @@ public class UploadImageController {
 
     @GetMapping("/upload-image")
     public String uploadImage(@RequestParam("view-garden") boolean viewGarden,
-                              @RequestParam("plantID") Long plantID) {
+                              @RequestParam("plantID") Long plantID,
+                              @RequestParam("gardenID") Long gardenID) {
 
         logger.info("GET /upload-image");
 

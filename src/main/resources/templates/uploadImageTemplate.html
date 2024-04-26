@@ -10,10 +10,8 @@
         <li><a class="navLink" th:href="@{/create-garden}">Create a Garden</a></li>
         <li><a class="navLink" th:href="@{/view-gardens}">View Gardens</a></li>
     </ul>
-    <form th:action="@{/upload-image}" method="post" enctype="multipart/form-data">
-        <input th:value="imagePath" class="fileInput" type="file" name="file" id="file">
-        <button type="submit">Upload</button>
-    </form>
+    <input th:value="imagePath" class="fileInput" type="file" name="file" id="file">
+    <button type="submit">Upload</button>
     <br/>
     <a href="/view-gardens">Back to Gardens</a>
 <script src="/javascript/image_handling.js"></script>

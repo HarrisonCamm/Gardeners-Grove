@@ -63,7 +63,7 @@
                         <td>
                             <div style="position: relative;">
                                 <img class="image" th:src="@{'/images/' + ${plant.picture}}" alt="">
-                                <button th:id="${'buttonFile' + plant.id}">+</button>
+                                <button th:id="${'button' + plant.id}">+</button>
                             </div>
                         </td>
                         <td th:text="${plant.name}"></td>

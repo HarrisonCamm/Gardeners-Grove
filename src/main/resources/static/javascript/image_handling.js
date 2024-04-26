@@ -1,15 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Select all file inputs
-    const fileInputs = document.querySelectorAll('.fileInput');
-    console.log(fileInputs.length)
+    // Select the button
+    const button = document.querySelector('button');
 
-    // Attach the event listener to each file input individually
-    fileInputs.forEach(fileInput => {
-        fileInput.addEventListener('change', function(event) {
-            console.log('File input changed: ' + event.target.files[0].name);
+    button.addEventListener('click', function(event) {
+        // Select all file inputs
+        console.log("Button clicked")
+        const fileInputs = document.querySelectorAll('.fileInput');
+        console.log(fileInputs.length)
 
-            const file = event.target.files[0];
+        // Process each file input individually
+        fileInputs.forEach(fileInput => {
+
+            if (fileInput.files.length === 0) {
+                alert('Please select a file')
+                return;
+            }
+
+            const file = fileInput.files[0];
 
             validateFile(file);
 
@@ -21,25 +29,33 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get the query parameters from the URL
             const params = new URLSearchParams(url.search);
 
+            let fetchURL = null
+
             // Flag to skip the first key
             let isFirstKey = true;
 
             // Iterate over each parameter and append it to the FormData
             for (const [key, value] of params.entries()) {
                 if (isFirstKey) {
+                    fetchURL = key
                     isFirstKey = false;
                     continue;
                 }
                 formData.append(key, value);
             }
 
+            console.log('Fetch URL: ' + fetchURL)
+
             formData.append('file', file);
-            fetch(url, {
-                method: 'PUT',
+            fetch(fetchURL, {
+                method: 'POST',
                 body: formData
             })
-                .then(response => response.json())
-                .then(data => console.log(data))
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    }
+                })
                 .catch(error => console.error(error));
         });
     });

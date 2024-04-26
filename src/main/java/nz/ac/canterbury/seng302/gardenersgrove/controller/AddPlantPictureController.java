@@ -44,10 +44,10 @@ public class AddPlantPictureController {
         this.plantService = plantService;
     }
 
-    @PutMapping("/add-plant-picture")
-    public String addPlantPicture(@RequestParam("file") MultipartFile file,
-                                  @RequestParam("plantId") Long plantID,
+    @PostMapping("/add-plant-picture")
+    public String addPlantPicture(@RequestParam("plantId") Long plantID,
                                   @RequestParam("gardenId") Long gardenID,
+                                  @RequestParam("file") MultipartFile file,
                                   Model model) {
 
         logger.info("POST /add-plant-picture");
@@ -72,62 +72,5 @@ public class AddPlantPictureController {
         // Add the attributes to the model
         addAttributes(gardenID, model, plantService, gardenService);
         return "redirect:/view-garden?gardenID=" +gardenID;
-    }
-
-    @PutMapping("/edit-plant-picture")
-    public String addPlantPicture(@RequestParam("file") MultipartFile file,
-                                  @RequestParam("plantId") Long plantID,
-                                  @RequestParam("datePlanted") String datePlanted,
-                                  @ModelAttribute("plant") Plant newPlant,
-                                  BindingResult bindingResult,
-                                  Model model) {
-
-        logger.info("POST /edit-plant-picture");
-
-        bindingResult = new BeanPropertyBindingResult(newPlant, "plant");
-
-        // Write the picture to file system
-        Plant plant = plantService.findPlant(plantID).get();
-
-        plant.setPicture(file.getOriginalFilename()); // Set the new image
-
-        Path path = Paths.get("src/main/resources/static/images/" + file.getOriginalFilename());
-
-        plantService.addPlant(plant);
-
-        // Write the file to the file system
-        try {
-            Files.createDirectories(path.getParent());
-            file.transferTo(path);
-        } catch (Exception e) {
-            logger.error("Failed to write file to file system", e);
-        }
-
-        //Validates input fields
-        checkName(newPlant.getName(), bindingResult);
-        checkDescription(newPlant.getDescription(), bindingResult);
-        checkCount(newPlant.getCount(), bindingResult);
-
-        Date date = null;
-        try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(datePlanted);
-        } catch (Exception e) {
-            bindingResult.addError(new ObjectError(datePlanted, "Date is not valid"));
-        }
-        plant.setDatePlanted(date);
-        plant.setName(newPlant.getName());
-        plant.setCount(newPlant.getCount().replace(',', '.'));
-        plant.setDescription(newPlant.getDescription());
-
-        model.addAttribute("plantID", plantID); // Add gardenID to the model
-        model.addAttribute("datePlanted", new SimpleDateFormat("yyyy-MM-dd").format(date));
-
-        if (bindingResult.hasErrors()) {
-            // If there are validation errors, return to the form page
-            return "editPlantFormTemplate";
-        } else {
-            plantService.addPlant(plant);
-            return "redirect:/view-garden?gardenID=" + plant.getGarden().getId();
-        }
     }
 }
