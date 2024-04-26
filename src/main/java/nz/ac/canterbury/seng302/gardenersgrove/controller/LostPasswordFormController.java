@@ -65,11 +65,13 @@ public class LostPasswordFormController {
         } else {
             // Email is valid
 
+            model.addAttribute("confirmationMessage", "An email was sent to the address if it was recognised");
+
             // todo send email if email is known
             if (userService.emailExists(email)) {
-                // send email here
+                // todo send email here
             }
-            return "redirect:/lost-password-form"; // todo implement popup confirmation message
+            return "lostPasswordFormTemplate"; // todo implement popup confirmation message modal using Boostrap spike
         }
     }
 
