@@ -22,6 +22,9 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Integration tests for the RegisterFormController class.
+ */
 @WebMvcTest(RegisterFormController.class)
 public class RegisterUserIntegrationTest {
 
@@ -39,7 +42,9 @@ public class RegisterUserIntegrationTest {
         Mockito.reset(userService);
     }
 
-    // Blue sky test for successful registration
+    /**
+     * Test the successful registration scenario where valid user data is submitted.
+     */
     @Test
     @WithMockUser
     public void whenPostRegisterFormWithValidData_thenRedirectsToUserProfile() throws Exception {
@@ -63,7 +68,10 @@ public class RegisterUserIntegrationTest {
         verify(userService).addUser(any(User.class));
     }
 
-    // Parameterized test for invalid input
+    /**
+     * Test errors behavior is correctly handled by the registration form when invalid data is submitted.
+     * It simulates a POST request to the "/register-form" endpoint.
+     */
     @ParameterizedTest
     @WithMockUser
     @CsvSource({
@@ -91,5 +99,4 @@ public class RegisterUserIntegrationTest {
                 .andExpect(view().name("registerFormTemplate"))
                 .andExpect(model().attributeExists(errorField));
     }
-
 }
