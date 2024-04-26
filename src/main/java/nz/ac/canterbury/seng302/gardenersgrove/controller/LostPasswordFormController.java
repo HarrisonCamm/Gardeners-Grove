@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class LostPasswordFormController {
-    Logger logger = LoggerFactory.getLogger(RegisterFormController.class);
+    Logger logger = LoggerFactory.getLogger(LostPasswordFormController.class);
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
@@ -79,6 +79,7 @@ public class LostPasswordFormController {
             model.addAttribute("confirmationMessage", "An email was sent to the address if it was recognised");
 
             if (userService.emailExists(email)) {
+                logger.info("Email is registered in system: " + email);
                 // Create Verification Token
                 User newUser = userService.getUserByEmail(email);
                 VerificationToken verificationToken = verificationTokenService.createVerificationToken(newUser);
