@@ -19,9 +19,9 @@
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="plantID" th:value="${plantID}">
             <div class="formRow">
-                <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+                <div>
                     <img class="image" th:src="@{'/images/' + ${plant.picture}}" alt="">
-                    <label class="image_picker" th:for="${'fileInput' + plantID}" style="position: absolute; top: 0; right: 0;">+</label>
+                    <label class="image_picker" th:for="${'fileInput' + plantID}">+</label>
                     <input th:value="imagePath" class="fileInput" th:id="${'fileInput' + plantID}" type="file" style="display: none;">
                 </div>
             </div>
