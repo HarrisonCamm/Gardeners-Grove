@@ -5,6 +5,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fileInput = document.querySelector('.fileInput');
 
+    const imageSource = document.querySelectorAll('img');
+
+    let plantID = null;
+
+    imageSource.forEach(image => { //Should only be one image
+        plantID = image.getAttribute('data-plant-id');
+    })
+
+    let objectUrl = null;
+
     button.addEventListener('click', function(event) {
         // Select all file inputs
         console.log("Button clicked")
@@ -48,6 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log('Fetch URL: ' + fetchURL)
 
+            // Store the object URL in localStorage with the plant ID as part of the key
+            localStorage.setItem('objectUrl_' + plantID, objectUrl);
+
             formData.append('file', file);
             fetch(fetchURL, {
                 method: 'POST',
@@ -64,18 +77,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add an event listener to the file input
     fileInput.addEventListener('change', function(event) {
-        const imageSource = document.getElementById('imageSource');
+        console.log("Plant ID: " + plantID)
         const file = event.target.files[0];
-        const objectUrl = URL.createObjectURL(file);
-        imageSource.src = objectUrl;
-        console.log("Image source: " + imageSource.src)
-        imageSource.style.display = "block";
+        objectUrl = URL.createObjectURL(file);
+        console.log("Object URL: " + objectUrl)
 
-        // Get the plant ID from the imageSource element
-        const plantID = imageSource.getAttribute('data-plant-id');
-
-        // Store the object URL in localStorage with the plant ID as part of the key
-        localStorage.setItem('objectUrl_' + plantID, objectUrl);
+        imageSource.forEach(image => { //Should only be one image
+            image.src = objectUrl;
+            console.log("Image source: " + image.src)
+            image.style.display = "block";
+        })
     });
 });
 

@@ -17,7 +17,7 @@
             <input th:value="imagePath" class="fileInput" type="file" name="file" id="file">
             <button type="submit">Upload</button>
         </div>
-        <img class="image" id="imageSource" style="display: none; margin: auto"/>
+        <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="">
         <br/>
         <form th:action="@{/Cancel}" method="get">
             <button style="margin-top: 25px" type="submit">Cancel</button>

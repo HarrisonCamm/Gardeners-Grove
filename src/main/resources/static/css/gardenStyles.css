@@ -183,6 +183,9 @@ li {
     height: 80px;
     border-radius: 50px;
     border: black solid 1px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 

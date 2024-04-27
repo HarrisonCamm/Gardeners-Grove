@@ -70,6 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const objectUrl = localStorage.getItem('objectUrl_' + plantID);
 
+        console.log("Object URL: " + objectUrl) // THIS IS NULL
+
         if (objectUrl) {
             image.src = objectUrl;
         } else { // Load the leaf image
