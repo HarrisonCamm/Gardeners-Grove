@@ -66,8 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
     fileInput.addEventListener('change', function(event) {
         console.log("File input changed")
         const imageSource = document.getElementById('imageSource');
-        imageSource.src = 'images/' + event.target.files[0].name;
-        console.log(imageSource.class)
+        const file = event.target.files[0];
+        imageSource.src = URL.createObjectURL(file);
+        console.log("Image source: " + imageSource.src)
         imageSource.style.display = "block";
     });
 });

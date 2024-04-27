@@ -62,7 +62,7 @@
                     <tr th:each="plant : ${plants}" class="plant-row">
                         <td>
                             <div style="position: relative;">
-                                <img class="image" th:src="@{'/images/' + ${plant.picture}}" alt="">
+                                <img class="image" th:data-picture="${plant.picture}" alt="">
                                 <button class="image_picker" th:id="${'button' + plant.id}">+</button>
                             </div>
                         </td>

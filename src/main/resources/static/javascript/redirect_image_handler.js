@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Select all buttons
     const buttons = document.querySelectorAll('button');
 
+    const imageSource = document.querySelectorAll('img');
+
     // Attach the event listener to each button individually
     buttons.forEach(button => {
 
@@ -60,4 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 .catch(error => console.error(error));
         });
     });
+
+    imageSource.forEach(image => {
+        const plantPicture = image.getAttribute('data-picture');
+        image.src = '/images/' + plantPicture;
+        console.log("Image source: " + image.src)
+        image.style.display = "block";
+    })
 });
