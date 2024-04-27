@@ -14,8 +14,12 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -107,6 +111,33 @@ public class EditPlantController {
             plantService.addPlant(plant);
             return "redirect:/view-garden?gardenID=" + plant.getGarden().getId();
         }
+    }
+
+    @PostMapping("edit-plant")
+    public String changePicture(@RequestParam("plantID") Long plantID,
+                                @RequestParam("file") MultipartFile file,
+                                @RequestParam(value = "continue",required = false) String continueString) {
+        logger.info("POST /edit-plant");
+        Optional<Plant> found = plantService.findPlant(plantID);
+        if (found.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant with ID " + plantID + " not found");
+        }
+        Plant plant = found.get();
+
+        plant.setPicture(file.getOriginalFilename()); // Set the new image
+
+        Path path = Paths.get("src/main/resources/static/images/" + file.getOriginalFilename());
+
+        plantService.addPlant(plant);
+
+        // Write the file to the file system
+        try {
+            Files.createDirectories(path.getParent());
+            file.transferTo(path);
+        } catch (Exception e) {
+            logger.error("Failed to write file to file system", e);
+        }
+        return "redirect:/edit-plant?plantID=" + plantID;
     }
 
     public static void checkName(String name, BindingResult bindingResult) {
