@@ -64,12 +64,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     imageSource.forEach(image => {
-        // Retrieve the object URL from localStorage
-        const objectUrl = localStorage.getItem('objectUrl');
+        const plantID = image.getAttribute('data-plant-id');
+
+        console.log("Plant ID: " + plantID)
+
+        const objectUrl = localStorage.getItem('objectUrl_' + plantID);
 
         if (objectUrl) {
             image.src = objectUrl;
-        } else {
+        } else { // Load the leaf image
             const plantPicture = image.getAttribute('data-picture');
             image.src = '/images/' + plantPicture;
         }

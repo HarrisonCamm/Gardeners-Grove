@@ -20,7 +20,7 @@
             <input type="hidden" name="plantID" th:value="${plantID}">
             <div class="formRow">
                 <div>
-                    <img class="image" alt="">
+                    <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="">
                     <button class="image_picker" th:id="${'button' + plant.id}">+</button>
                 </div>
             </div>

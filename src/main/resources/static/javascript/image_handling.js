@@ -64,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add an event listener to the file input
     fileInput.addEventListener('change', function(event) {
-        console.log("File input changed")
         const imageSource = document.getElementById('imageSource');
         const file = event.target.files[0];
         const objectUrl = URL.createObjectURL(file);
@@ -72,8 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Image source: " + imageSource.src)
         imageSource.style.display = "block";
 
-        // Store the object URL in localStorage
-        localStorage.setItem('objectUrl', objectUrl);
+        // Get the plant ID from the imageSource element
+        const plantID = imageSource.getAttribute('data-plant-id');
+
+        // Store the object URL in localStorage with the plant ID as part of the key
+        localStorage.setItem('objectUrl_' + plantID, objectUrl);
     });
 });
 
