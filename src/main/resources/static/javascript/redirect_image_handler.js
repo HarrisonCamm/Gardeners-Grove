@@ -64,9 +64,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     imageSource.forEach(image => {
-        const plantPicture = image.getAttribute('data-picture');
-        image.src = '/images/' + plantPicture;
+        // Retrieve the object URL from localStorage
+        const objectUrl = localStorage.getItem('objectUrl');
+
+        if (objectUrl) {
+            image.src = objectUrl;
+        } else {
+            const plantPicture = image.getAttribute('data-picture');
+            image.src = '/images/' + plantPicture;
+        }
         console.log("Image source: " + image.src)
         image.style.display = "block";
-    })
+    });
 });

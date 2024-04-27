@@ -67,9 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("File input changed")
         const imageSource = document.getElementById('imageSource');
         const file = event.target.files[0];
-        imageSource.src = URL.createObjectURL(file);
+        const objectUrl = URL.createObjectURL(file);
+        imageSource.src = objectUrl;
         console.log("Image source: " + imageSource.src)
         imageSource.style.display = "block";
+
+        // Store the object URL in localStorage
+        localStorage.setItem('objectUrl', objectUrl);
     });
 });
 
