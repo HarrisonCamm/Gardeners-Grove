@@ -63,7 +63,7 @@
                         <td>
                             <div style="position: relative;">
                                 <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="">
-                                <button class="image_picker" th:id="${'button' + plant.id}">+</button>
+                                <button class="image_picker" th:id="${'button_' + plant.id}">+</button>
                             </div>
                         </td>
                         <td th:text="${plant.name}"></td>
