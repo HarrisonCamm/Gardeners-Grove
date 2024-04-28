@@ -68,11 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Store the object URL in localStorage with the plant ID as part of the key
             localStorage.setItem('objectUrl_' + plantID, objectUrl);
 
-            console.log(localStorage.length)
-
             formData.append('file', file);
             fetch(fetchURL, {
                 method: 'POST',
+                headers: {
+                    'X-XSRF-TOKEN': getCsrfToken()
+                },
                 body: formData
             })
                 .then(response => {
@@ -81,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 })
                 .catch(error => console.error(error));
+
         });
     });
 
@@ -112,4 +114,21 @@ function validateFile(file) {
         return false;
     }
     return true;
+}
+
+function getCsrfToken() {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, 'XSRF-TOKEN'.length + 1) === ('XSRF-TOKEN' + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring('XSRF-TOKEN'.length + 1));
+                break;
+            }
+        }
+    }
+    console.log('CSRF Token: ' + cookieValue)
+    return cookieValue;
 }

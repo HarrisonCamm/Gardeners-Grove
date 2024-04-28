@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,9 +36,10 @@ public class UploadImageController {
                               @RequestParam(value = "edit-plant", required = false) boolean editPlant,
                               @RequestParam("plantID") Long plantID,
                               @RequestParam(value = "gardenID", required = false) Long gardenID,
-                              Model model) {
+                              Model model, HttpServletRequest request) {
 
         logger.info("GET /upload-image");
+
 
         if (viewGarden) {
             RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
