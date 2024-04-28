@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,7 +33,11 @@ public class Plant {
     private Date datePlanted;
 
     @Column
-    private String picture;
+    private String filePath;
+
+    @Lob
+    @Column
+    private byte[] image;
 
     /**
      * Required constructor
@@ -57,13 +62,14 @@ public class Plant {
      * @param description Plant description
      * @param datePlanted Plant date planted
      */
-    public Plant(Garden garden, String name, String count, String description, String datePlanted, String picture) throws ParseException {
+    public Plant(Garden garden, String name, String count, String description, String datePlanted, String filePath) throws ParseException {
         this.garden = garden;
         this.name = name;
         this.count = count;
         this.description = description;
         this.datePlanted = new SimpleDateFormat("dd/MM/yyyy").parse(datePlanted);
-        this.picture = picture;
+        this.filePath = filePath;
+        this.image = null;
     }
 
     // Setter for id
@@ -108,11 +114,19 @@ public class Plant {
     public Date getDatePlanted() { return datePlanted; }
 
     public String getPicture() {
-        return picture;
+        return filePath;
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public void setPicture(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 
 }

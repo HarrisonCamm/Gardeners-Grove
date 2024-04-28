@@ -31,7 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const file = fileInput.files[0];
 
-            validateFile(file);
+            if (!validateFile(file)) {
+                return;
+            }
 
             let formData = new FormData();
 
@@ -58,8 +60,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log('Fetch URL: ' + fetchURL)
 
+            // Remove the existing object URL from localStorage
+            localStorage.removeItem('objectUrl_' + plantID);
+
             // Store the object URL in localStorage with the plant ID as part of the key
             localStorage.setItem('objectUrl_' + plantID, objectUrl);
+
+            console.log(localStorage.length)
 
             formData.append('file', file);
             fetch(fetchURL, {
@@ -97,7 +104,10 @@ function validateFile(file) {
 
     if (!allowedExtensions.includes(fileExtension)) {
         alert('Image must be of type png, jpg or svg');
+        return false;
     } else if (file.size > maxSize) {
         alert('Image must be less than 10MB');
+        return false;
     }
+    return true;
 }

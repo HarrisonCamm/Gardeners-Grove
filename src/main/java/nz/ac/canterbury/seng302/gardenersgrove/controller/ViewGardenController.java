@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -60,24 +61,19 @@ public class ViewGardenController {
 
         logger.info("POST /view-garden");
 
-        // Write the picture to file system
         Plant plant = plantService.findPlant(plantID).get();
+
+        try {
+            byte[] imageBytes = file.getBytes();
+            plant.setImage(imageBytes);
+        } catch (IOException e) {
+            logger.error("Failed to convert image to byte array", e);
+        }
 
         plant.setPicture(file.getOriginalFilename()); // Set the new image
 
-        Path path = Paths.get("src/main/resources/static/images/" + file.getOriginalFilename());
-
         plantService.addPlant(plant);
 
-        // Write the file to the file system
-        try {
-            Files.createDirectories(path.getParent());
-            file.transferTo(path);
-        } catch (Exception e) {
-            logger.error("Failed to write file to file system", e);
-        }
-
-        // Add the attributes to the model
         addAttributes(gardenID, model, plantService, gardenService);
         return "redirect:/view-garden?gardenID=" +gardenID;
     }
