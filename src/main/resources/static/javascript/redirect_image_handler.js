@@ -47,9 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             fetch(fetchUrl, {
                 method: 'GET',
-                // headers: {
-                //     'X-XSRF-TOKEN': getCsrfToken()
-                // }
+                headers: {
+                    'X-CSRF-TOKEN': getCsrfToken()
+                },
             })
                 .then(response => response.text())
                 .then(data => {
@@ -70,8 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch('/get-image?' + params.toString(), {
             headers: {
-                'X-XSRF-TOKEN': getCsrfToken()
-            }
+                'X-CSRF-TOKEN': getCsrfToken()
+            },
         })
             .then(response => response.blob())
             .then(blob => {

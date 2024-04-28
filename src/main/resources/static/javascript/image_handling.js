@@ -19,9 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     button.addEventListener('click', function(event) {
         // Select all file inputs
-        console.log("Button clicked")
         const fileInputs = document.querySelectorAll('.fileInput');
-        console.log(fileInputs.length)
 
         // Process each file input individually
         fileInputs.forEach(fileInput => {
@@ -72,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fetch(fetchURL, {
                 method: 'POST',
                 headers: {
-                    'X-XSRF-TOKEN': getCsrfToken()
+                    'X-CSRF-TOKEN': getCsrfToken()
                 },
                 body: formData
             })
