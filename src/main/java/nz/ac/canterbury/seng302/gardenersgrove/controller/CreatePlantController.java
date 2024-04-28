@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -95,6 +99,14 @@ public class CreatePlantController {
         checkCount(plant.getCount(), bindingResult);
 
         plant.setPicture("leaves-80x80.png"); // Set default picture
+
+        Path imagePath = Paths.get("src/main/resources/static/images/leaves-80x80.png");
+        try {
+            plant.setImage(Files.readAllBytes(imagePath));
+        } catch (IOException e) {
+            logger.error("Failed to set default image", e);
+        }
+
 
         Garden ownerGarden = null;
         Optional<Garden> found = gardenService.findGarden(gardenID);

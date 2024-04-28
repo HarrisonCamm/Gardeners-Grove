@@ -2,8 +2,11 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -62,7 +65,7 @@ public class Plant {
      * @param description Plant description
      * @param datePlanted Plant date planted
      */
-    public Plant(Garden garden, String name, String count, String description, String datePlanted, String filePath) throws ParseException {
+    public Plant(Garden garden, String name, String count, String description, String datePlanted, String filePath) throws ParseException, IOException {
         this.garden = garden;
         this.name = name;
         this.count = count;
