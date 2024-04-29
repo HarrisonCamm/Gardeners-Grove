@@ -67,11 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('objectUrl_' + plantID, objectUrl);
 
             formData.append('file', file);
+            formData.append('_csrf', getCsrfToken());
+
             fetch(fetchURL, {
                 method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': getCsrfToken()
-                },
                 body: formData
             })
                 .then(response => {
@@ -127,6 +126,6 @@ function getCsrfToken() {
             }
         }
     }
-    console.log('CSRF Token: ' + cookieValue)
+    console.log('XSRF-TOKEN: ' + cookieValue)
     return cookieValue;
 }

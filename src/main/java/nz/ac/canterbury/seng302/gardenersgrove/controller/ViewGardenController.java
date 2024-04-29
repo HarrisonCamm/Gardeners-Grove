@@ -56,6 +56,7 @@ public class ViewGardenController {
     public String addPlantPicture(@RequestParam("plantID") Long plantID,
                                   @RequestParam("gardenID") Long gardenID,
                                   @RequestParam("file") MultipartFile file,
+                                  @RequestParam("_csrf") String csrfToken,
                                   @RequestParam(value = "continue",required = false) String continueString,
                                   Model model) {
 
@@ -75,6 +76,7 @@ public class ViewGardenController {
         plantService.addPlant(plant);
 
         addAttributes(gardenID, model, plantService, gardenService);
+
         return "redirect:/view-garden?gardenID=" +gardenID;
     }
 

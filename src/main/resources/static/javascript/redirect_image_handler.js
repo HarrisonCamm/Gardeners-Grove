@@ -47,9 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             fetch(fetchUrl, {
                 method: 'GET',
-                headers: {
-                    'X-CSRF-TOKEN': getCsrfToken()
-                },
             })
                 .then(response => response.text())
                 .then(data => {
@@ -69,9 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         fetch('/get-image?' + params.toString(), {
-            headers: {
-                'X-CSRF-TOKEN': getCsrfToken()
-            },
         })
             .then(response => response.blob())
             .then(blob => {
@@ -80,20 +74,3 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error(error));
     });
 });
-
-function getCsrfToken() {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, 'XSRF-TOKEN'.length + 1) === ('XSRF-TOKEN' + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring('XSRF-TOKEN'.length + 1));
-                break;
-            }
-        }
-    }
-    console.log('CSRF Token: ' + cookieValue)
-    return cookieValue;
-}
