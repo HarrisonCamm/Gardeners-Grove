@@ -66,6 +66,20 @@ public class UserService {
         return userRepository.findByEmail(email).isPresent();
     }
 
+    /**
+     * Updates and persists user information in the repository.
+     *
+     * This method updates a user's first name, last name, email, and date of birth based on the provided parameters.
+     * It also sets the user's "noLastName" status, which indicates whether the user has a last name.
+     *
+     * @param user The user entity to be updated.
+     * @param firstName The new first name to set for the user.
+     * @param lastName The new last name to set for the user. If "noLastName" is true, this may be disregarded.
+     * @param noLastName A boolean flag indicating if the user has a last name.
+     * @param email The new email to set for the user.
+     * @param dateOfBirth The new date of birth to set for the user, in a string format.
+     * @return The updated and persisted user entity.
+     */
     public User updateUser(User user, String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
         user.setFirstName(firstName);
         user.setLastName(lastName);
@@ -75,6 +89,30 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    /**
+     * Updates the password of a given user.
+     *
+     * @param user        The user whose password is to be updated.
+     * @param newPassword The new password to set.
+     * @return The updated User entity.
+     */
+    public User updateUserPassword(User user, String newPassword) {
+        // Encode the new password
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        // Set the user's password to the encoded one
+        user.setPassword(encodedPassword);
+        // Save the updated user in the repository
+        return userRepository.save(user);
+    }
+
+    /**
+     * Retrieves a user by their email address.
+     *
+     * This method searches the repository for a user with the specified email.
+     *
+     * @param email The email address to search for.
+     * @return The user entity if found, or null if no user exists with the given email.
+     */
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
