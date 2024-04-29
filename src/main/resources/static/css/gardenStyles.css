@@ -191,9 +191,15 @@ p {
     align-items: center;
 }
 
-.buttons {
+.buttons-right {
     display: flex;
     justify-content: flex-end;
+}
+
+.buttons-left {
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px;
 }
 
 button, label {
@@ -202,6 +208,12 @@ button, label {
 button {
     background-color : #8ffa8f;
     border-radius: 5px;
+}
+
+
+button:hover {
+    background-color: darkgreen;
+
 }
 
 
