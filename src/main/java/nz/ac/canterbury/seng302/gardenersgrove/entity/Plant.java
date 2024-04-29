@@ -28,8 +28,7 @@ public class Plant {
     private String description;
 
     @Column
-    @DateTimeFormat(pattern = "dd/MM/YYYY")
-    private Date datePlanted;
+    private String datePlanted;
 
     /**
      * Required constructor
@@ -54,12 +53,12 @@ public class Plant {
      * @param description Plant description
      * @param datePlanted Plant date planted
      */
-    public Plant(Garden garden, String name, String count, String description, String datePlanted) throws ParseException {
+    public Plant(Garden garden, String name, String count, String description, String datePlanted) {
         this.garden = garden;
         this.name = name;
         this.count = count;
         this.description = description;
-        this.datePlanted = new SimpleDateFormat("dd/MM/yyyy").parse(datePlanted);
+        this.datePlanted = datePlanted;
     }
 
     // Setter for id
@@ -75,7 +74,7 @@ public class Plant {
     public void setDescription(String description) { this.description = description; }
 
     //Setter for date
-    public void setDatePlanted(Date date) { this.datePlanted = date; }
+    public void setDatePlanted(String date) { this.datePlanted = date; }
 
     //Setter for garden
     public void setGarden(Garden garden) {
@@ -101,6 +100,6 @@ public class Plant {
     public String getDescription() { return description; }
 
     //Getter for datePlanted
-    public Date getDatePlanted() { return datePlanted; }
+    public String getDatePlanted() { return datePlanted; }
 
 }

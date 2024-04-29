@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Optional;
 
@@ -101,13 +103,14 @@ public class CreatePlantController {
         }
         ownerGarden = found.get();
 
-        Date date = null;
-        try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(datePlanted);
-        } catch (Exception e) {
-            bindingResult.addError(new ObjectError(datePlanted, "Date should be in the format dd/mm/yyyy"));
+        String formattedDate;
+        formattedDate = convertDateFormat(datePlanted);
+
+        if (checkDateValidity(formattedDate)) {
+            plant.setDatePlanted(formattedDate);
+        } else {
+            model.addAttribute("dateError", "error");
         }
-        plant.setDatePlanted(date);
 
         plant.setCount(plant.getCount().replace(',', '.'));
 
@@ -117,6 +120,9 @@ public class CreatePlantController {
         model.addAttribute("plantDescription", plant.getDescription());
         model.addAttribute("plantDatePlanted", plant.getDatePlanted());
 
+//        if (checkDateValidity(formattedDate)) {
+//            model.addAttribute("dateError", dateError);
+//        }
         if (bindingResult.hasErrors()) {
             // If there are validation errors, return to the form page
             model.addAttribute("gardenID", gardenID); // Add gardenID to the model before forwarding to error display page
@@ -152,4 +158,34 @@ public class CreatePlantController {
         }
     }
 
+    public static boolean checkDateValidity(String dateOfBirth) {
+        try {
+            LocalDate dob = LocalDate.parse(dateOfBirth);
+            return true;
+            // Continue with further processing
+        } catch (DateTimeParseException e) {
+            return false;
+            // Handle the case where the date string doesn't match the expected format
+        }
+    }
+    public static String convertDateFormat(String dateInput) {
+        String[] parts = dateInput.split("/");
+        if (dateInput.length() < 10) {
+            return "0000-00-00";
+        } else {
+            // Reconstruct the date string in yyyy-MM-dd format
+            String yyyy = parts[2];
+            String mm = parts[1];
+            String dd = parts[0];
+
+            // Ensure mm and dd are formatted with leading zeros if necessary
+            if (mm.length() == 1) {
+                mm = "0" + mm;
+            }
+            if (dd.length() == 1) {
+                dd = "0" + dd;
+            }
+            return yyyy + "-" + mm + "-" + dd;
+        }
+    }
 }
