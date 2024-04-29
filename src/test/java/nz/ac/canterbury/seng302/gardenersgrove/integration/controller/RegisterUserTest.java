@@ -49,7 +49,6 @@ public class RegisterUserTest {
     @Test
     @WithMockUser
     public void whenPostRegisterFormWithValidData_thenRedirectsToUserProfile() throws Exception {
-        // Mock the authentication process
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(mock(Authentication.class));
         when(userService.emailExists("john.doe@example.com")).thenReturn(false);
