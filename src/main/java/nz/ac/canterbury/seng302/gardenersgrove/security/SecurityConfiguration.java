@@ -92,6 +92,12 @@ public class SecurityConfiguration {
                 .formLogin(formLogin -> formLogin.loginPage(SIGN_IN_FORM).loginProcessingUrl(SIGN_IN_FORM).defaultSuccessUrl("/main"))
                 // Define logging out, a POST "/logout" endpoint now exists under the hood, redirect to "/login", invalidate session and remove cookie
                 .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl(SIGN_IN_FORM).invalidateHttpSession(true).deleteCookies("JSESSIONID"));
+                //ChatGPT code to redirect unverified user to confirm registration page if they enter a url they don't have permission for
+                http.exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> {
+                    if (request.isUserInRole("UNVERIFIED")) {
+                        response.sendRedirect("/confirm-registration");
+                    }
+                });
         return http.build();
     }
 }
