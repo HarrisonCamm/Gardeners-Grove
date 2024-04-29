@@ -12,38 +12,70 @@
     </ul>
 <!--    <h1>Create Plant</h1>-->
     <br/>
-    <div class="formContainer">
+    <div class="form">
         <h1>Create Plant</h1>
-        <form th:action="@{create-plant}" method="post" th:object="${plant}">
-            <input type="hidden" name="gardenID" th:value="${gardenID}">
-            <div class="formRow">
+        <div class="formContainer">
+            <form th:action="@{create-plant}" method="post" th:object="${plant}">
+                <input type="hidden" name="gardenID" th:value="${gardenID}">
                 <label for="plantName"> Name: </label>
+                <br/>
                 <input type="text" id="plantName" placeholder="Name" th:field="*{name}">
-            </div>
-            <div class="formRow">
+                <br/>
+                <br/>
                 <label for="plantCount"> Count: </label>
+                <br/>
                 <input type="text" id="plantCount" placeholder="Count" th:field="*{count}">
-            </div>
-            <div class="formRow">
+                <br/>
+                <br/>
                 <label for="plantDescription"> Description: </label>
+                <br/>
                 <input type="text" id="plantDescription" placeholder="Description" th:field="*{description}">
-            </div>
-            <div class="formRow">
+                <br/>
+                <br/>
                 <label for="plantDatePlanted"> Date Planted: </label>
+                <br/>
+                <input type="text" name="plantDatePlanted" id="plantDatePlanted"
+                       th:name="plantDatePlanted" th:value="${plantDatePlanted}"
+                       placeholder="DD/MM/YYYY"
+                       data-cy="plantDatePlanted" autofocus
+                       oninput="formatDateOfBirth(this)">
+                <script>
+                    function formatDateOfBirth(input) {
+                        let formattedValue = input.value.replace(/[^\d/]/g, '');
 
-                <input type="date" name="plantDatePlanted" id="plantDatePlanted">
-            </div>
-            <br/>
-            <button type="submit">Create</button>
-            <div class="errors" th:if="${#fields.hasErrors('global')}">
-                <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
-            </div>
-        </form>
+                        let matches = formattedValue.match(/\//g);
+                        if (matches && matches.length > 2) {
+                            formattedValue = formattedValue.substring(0, formattedValue.lastIndexOf('/'));
+                        }
+
+                        if (formattedValue.length > 2 && formattedValue.charAt(2) !== '/') {
+                            formattedValue = formattedValue.slice(0, 2) + '/' + formattedValue.slice(2);
+                        }
+                        if (formattedValue.length > 5 && formattedValue.charAt(5) !== '/') {
+                            formattedValue = formattedValue.slice(0, 5) + '/' + formattedValue.slice(5);
+                        }
+
+                        if (formattedValue.length > 10) {
+                            formattedValue = formattedValue.slice(0, 10);
+                        }
+                        input.value = formattedValue;
+                    }
+                </script>
+                <br/>
+                <br/>
+                <div class="buttons">
+                    <button type="submit">Create</button>
+                    &nbsp;
+                    <form th:action="@{/Cancel}" method="get">
+                        <button type="submit">Cancel</button>
+                    </form>
+                </div>
+                <div class="errors" th:if="${#fields.hasErrors('global')}">
+                    <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
+                </div>
+            </form>
+        </div>
     </div>
-    <br/>
-    <form th:action="@{/Cancel}" method="get">
-        <button type="submit">Cancel</button>
-    </form>
 </body>
 </html>
 
