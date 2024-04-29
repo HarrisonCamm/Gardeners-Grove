@@ -77,9 +77,9 @@
                     <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
                 </div>
             </form>
-            <form th:action="@{/Cancel}" method="get">
-                <button class="button" style="margin-left: 50%" type="submit">Cancel</button>
-            </form>
+            <a th:href="@{${lastEndpoint}}" id="cancelButton">
+                <button type="button">Cancel</button>
+            </a>
         </div>
         <br/>
     </div>

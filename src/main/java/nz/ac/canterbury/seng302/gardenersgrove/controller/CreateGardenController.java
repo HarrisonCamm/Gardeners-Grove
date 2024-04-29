@@ -145,6 +145,9 @@ public class CreateGardenController {
      * @param gardenSize garden size
      */
     public void addAttributes(Model model, String gardenName, Location gardenLocation, String gardenSize) {
+
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+
         model.addAttribute("name", gardenName);
 
         model.addAttribute("location.streetAddress", gardenLocation.getStreetAddress());
