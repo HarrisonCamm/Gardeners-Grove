@@ -114,10 +114,15 @@ public class EditPlantController {
         }
     }
 
+    /**
+     * This method sets up the upload image page
+     * @param plantID The ID of the plant to upload an image for
+     * @param file The image file to upload
+     * @return Redirect string for JavaScript
+     */
     @PostMapping("edit-plant")
     public String changePicture(@RequestParam("plantID") Long plantID,
-                                @RequestParam("file") MultipartFile file,
-                                @RequestParam(value = "continue",required = false) String continueString) {
+                                @RequestParam("file") MultipartFile file) {
         logger.info("POST /edit-plant");
         Optional<Plant> found = plantService.findPlant(plantID);
         if (found.isEmpty()) {

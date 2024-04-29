@@ -52,12 +52,18 @@ public class ViewGardenController {
         return addAttributes(gardenID, model, plantService, gardenService);
     }
 
+    /**
+     *
+     * @param plantID The ID of the plant to add the picture to
+     * @param gardenID The ID of the garden the plant is in
+     * @param file The image file to upload
+     * @param model The Spring Boot model
+     * @return The view garden page
+     */
     @PostMapping("/view-garden")
     public String addPlantPicture(@RequestParam("plantID") Long plantID,
                                   @RequestParam("gardenID") Long gardenID,
                                   @RequestParam("file") MultipartFile file,
-                                  @RequestParam("_csrf") String csrfToken,
-                                  @RequestParam(value = "continue",required = false) String continueString,
                                   Model model) {
 
         logger.info("POST /view-garden");

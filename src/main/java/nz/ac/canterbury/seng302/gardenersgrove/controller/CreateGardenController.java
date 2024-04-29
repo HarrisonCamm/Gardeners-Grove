@@ -35,14 +35,6 @@ public class CreateGardenController {
         this.locationService = locationService;
     }
 
-
-//    @GetMapping("/")
-//    public String redirect() {
-//        logger.info("GET /");
-//        RedirectService.addEndpoint("/");
-//        return "redirect:/create-garden";
-//    }
-
     /**
      * If the form has been previously filled, load the attributes back from the previous POST request
      * @param model Spring Boot model
