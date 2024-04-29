@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.gardenersgrove.unit;
+package nz.ac.canterbury.seng302.gardenersgrove.unit.vaildation;
 
 import nz.ac.canterbury.seng302.gardenersgrove.validation.GardenValidator;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.validation.ObjectError;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ValidatorTests {
+public class GardenValidatorTests {
 
     @Test
     public void ValidatingGardenName_EmptyString_Invalid() {
@@ -18,7 +18,7 @@ public class ValidatorTests {
 
     @Test
     public void ValidatingGardenLocation_EmptyCountryAndCity_Invalid() {
-        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", "", "", ""));
+        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", "", "", ""), true);
         assertNotNull(objectError);
     }
 
@@ -32,7 +32,7 @@ public class ValidatorTests {
     @ParameterizedTest
     @CsvSource({"#Location, ''", "'', &&Location", "'', ''"})
     public void ValidatingGardenLocation_NonEmptyStrings_Invalid(String city, String country) {
-        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", "", country, city));
+        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", "", country, city), true);
         assertNotNull(objectError);
     }
 
