@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
@@ -12,11 +13,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
@@ -69,14 +72,10 @@ public class EditPlantController {
                              BindingResult bindingResult,
                              Model model) throws Exception {
         logger.info("PUT /edit-plant");
-
         //Attempt to retrieve plant or throw ResponseStatusException
         Plant plant = retrievePlant(plantID, plantService);
 
-        //Validates input fields
-        checkName(newPlant.getName(), bindingResult);
-        checkDescription(newPlant.getDescription(), bindingResult);
-        checkCount(newPlant.getCount(), bindingResult);
+        ArrayList<FieldError> errors = checkFields(newPlant.getName(), newPlant.getDescription(), newPlant.getCount());
 
         //Parses the datePlanted string into a Date object or leave as null if date is invalid
         //Currently a dateError can never be caused
@@ -85,10 +84,9 @@ public class EditPlantController {
             try {
                 date = new SimpleDateFormat("yyyy-MM-dd").parse(datePlanted);
             } catch (Exception e) {
-                bindingResult.addError(new ObjectError(datePlanted, "Date should be in the format dd/mm/yyyy"));
+                errors.add(new FieldError("plant", "datePlanted", "Date should be in the format dd/mm/yyyy"));
             }
         }
-
         //Sets assigns the new values to the original plant object ready to be saved to the database
         plant.setDatePlanted(date);
         plant.setName(newPlant.getName());
@@ -99,7 +97,11 @@ public class EditPlantController {
         //Ternary operator to assign null date or assign a formatted date
         model.addAttribute("datePlanted", (date != null) ? new SimpleDateFormat("yyyy-MM-dd").format(date) : "");
 
-        if (bindingResult.hasErrors()) {
+
+        if (!errors.isEmpty()) {
+            for (FieldError error : errors) {
+                model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());}
+            model.addAttribute("plant", plant);             // I don't understand why but if I remove this line all fields are cleared if they have errors, except name for no reason
             return "editPlantFormTemplate";
         } else {
             plantService.addPlant(plant);
@@ -108,42 +110,26 @@ public class EditPlantController {
     }
 
     /**
-     * Validates a string for a plant name
-     * Adds an objectError to the binding result if the name is invalid
-     * @param name A string representing a plant name
-     * @param bindingResult The BindingResult object errors should be bound to
+     * Checks all input strings with PlantValidator validation methods
+     * And generates a list of errors
+     * @param plantName A string representing a plant name
+     * @param plantDescription A string representing a plant description
+     * @param plantCount A string representing a plant count
+     * @return An Arraylist<FieldError> object containing all
      */
-    private void checkName(String name, BindingResult bindingResult) {
-        ObjectError nameError = validatePlantName(name);
-        if (nameError != null) {
-            bindingResult.addError(nameError);
-        }
-    }
+    public ArrayList<FieldError> checkFields(String plantName, String plantDescription, String plantCount) {
+        ArrayList<FieldError> errors = new ArrayList<>();
 
-    /**
-     * Validates a string for a plant count
-     * Adds an objectError to the binding result if the count is invalid
-     * @param count A String representing an integer count
-     * @param bindingResult The BindingResult object errors should be bound to
-     */
-    private void checkCount(String count, BindingResult bindingResult) {
-        ObjectError countError = validatePlantCount(count);
-        if (countError != null) {
-            bindingResult.addError(countError);
-        }
-    }
+        FieldError nameError = validatePlantName(plantName);
+        if (nameError != null) {errors.add(nameError);}
 
-    /**
-     * Validates  a string for a plant description
-     * Adds an object error to the binding result if the description is invalid
-     * @param description   A string representing a plant description
-     * @param bindingResult The BindingResult object errors should be bound to
-     */
-    private void checkDescription(String description, BindingResult bindingResult) {
-        ObjectError descriptionError = validatePlantDescription(description);
-        if (descriptionError != null) {
-            bindingResult.addError(descriptionError);
-        }
+        FieldError descriptionError = validatePlantDescription(plantDescription);
+        if (descriptionError != null) {errors.add(descriptionError);}
+
+        FieldError countError = validatePlantCount(plantCount);
+        if (countError != null) {errors.add(countError);}
+
+        return errors;
     }
 
     /**
