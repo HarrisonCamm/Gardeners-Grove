@@ -82,13 +82,13 @@ public class LostPasswordFormController {
                 logger.info("Email is registered in system: " + email);
                 // Create Verification Token
                 User newUser = userService.getUserByEmail(email);
+                newUser.grantAuthority("ROLE_UNVERIFIED");
                 VerificationToken verificationToken = verificationTokenService.createVerificationToken(newUser);
-                // todo work w henry to make sure tokens are deleted after 10 minutes to avoid primary key error
 
                 // Create confirmation email
-                String emailSubject = "Your Account Registration Code";
+                String emailSubject = "Reset Your Password for Gardener's Grove";
                 String emailText = "Dear " + newUser.getFirstName() + ",\n\n" +
-                        "To reset your password, please use the following code:\n\n" +
+                        "To reset your password, please use the following link:\n\n" +
                         verificationToken.getToken() + "\n\n" +
                         "Please use this link to change your password.\n\n" +
                         "If you did not request this code or have any questions, please contact our support team.\n\n" +
