@@ -195,7 +195,6 @@ public class RegisterFormController {
                 // Keep user on registration page
                 return "registerFormTemplate";
             }
-
             // Email sent successfully, confirm user registration page
             return "redirect:/confirm-registration";
         }

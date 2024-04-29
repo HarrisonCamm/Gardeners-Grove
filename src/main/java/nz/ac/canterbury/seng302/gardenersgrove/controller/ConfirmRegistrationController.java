@@ -64,6 +64,8 @@ public class ConfirmRegistrationController {
         logger.info("POST /confirm-registration");
 
         model.addAttribute("registrationCode", registrationCode);
+        verificationTokenService.cleanupExpiredTokens();
+
 
         // Check if the registration code is valid
         if (verificationTokenService.validateToken(registrationCode)) {
@@ -76,6 +78,8 @@ public class ConfirmRegistrationController {
 
             // Save the user entity to persist the changes
             userService.saveUser(user);
+            //Delete token once user has successfully confirmed registration
+            verificationTokenService.deleteToken(registrationCode);
 
             // Auto-login security stuff
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());

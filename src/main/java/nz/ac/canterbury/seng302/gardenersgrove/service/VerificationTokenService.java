@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -16,7 +18,6 @@ public class VerificationTokenService {
 
     @Autowired
     private VerificationTokenRepository verificationTokenRepository;
-
     /**
      * Creates a verification token for a given user and sets an expiry time of 10 minutes.
      * @param user the user for whom the token is created
@@ -36,11 +37,8 @@ public class VerificationTokenService {
      */
     public boolean validateToken(String token) {
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
-        if (verificationToken != null && verificationToken.getExpiryDate().isAfter(LocalDateTime.now())) {
-            // Optionally activate the user account or perform any other necessary actions here
-            return true;
-        }
-        return false;
+        // Optionally activate the user account or perform any other necessary actions here
+        return verificationToken != null && verificationToken.getExpiryDate().isAfter(LocalDateTime.now());
     }
 
     /**
@@ -65,9 +63,8 @@ public class VerificationTokenService {
      * Scheduled task to clean up expired tokens.
      * Runs every minute and removes tokens that have passed their expiry date.
      */
-    @Scheduled(fixedRate = 60000)
-    @Transactional
     public void cleanupExpiredTokens() {
         verificationTokenRepository.deleteAllExpiredSince(LocalDateTime.now());
+
     }
 }
