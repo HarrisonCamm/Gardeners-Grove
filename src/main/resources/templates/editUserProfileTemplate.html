@@ -204,6 +204,11 @@
                        th:class="${ageError != null ? 'error' : 'form-control'}"
                        data-cy="dateOfBirth" autofocus
                        oninput="formatDateOfBirth(this)">
+                <div class="centre">
+                    <a th:href="@{/upload-image}">
+                        <button type="button">Edit Profile Picture</button>
+                    </a>
+                </div>
                 <script>
                     function formatDateOfBirth(input) {
                         let formattedValue = input.value.replace(/[^\d/]/g, '');

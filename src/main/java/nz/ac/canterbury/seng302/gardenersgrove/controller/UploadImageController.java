@@ -41,13 +41,17 @@ public class UploadImageController {
      * @param plantID  The ID of the plant to upload an image for
      * @param gardenID The ID of the garden the plant is in
      * @param model Spring Boot model
+     * @param userID The ID of the user to upload an image for
+     * @param editUser boolean to check if the user is editing their profile
      * @return HTML ThymeLeaf template file name
      */
     @GetMapping("/upload-image")
     public String uploadImage(@RequestParam(value = "view-garden", required = false) boolean viewGarden,
                               @RequestParam(value = "edit-plant", required = false) boolean editPlant,
-                              @RequestParam("plantID") Long plantID,
+                              @RequestParam(value = "plantID", required = false) Long plantID,
                               @RequestParam(value = "gardenID", required = false) Long gardenID,
+                              @RequestParam(value = "userID", required = false) Long userID,
+                              @RequestParam(value = "edit-user", required = false) boolean editUser,
                               Model model) {
 
         logger.info("GET /upload-image");
@@ -57,6 +61,8 @@ public class UploadImageController {
             RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
         } else if (editPlant) {
             RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
+        } else if (editUser){
+            RedirectService.addEndpoint("/edit-user?userID=" + userID);
         }
         model.addAttribute("plant", plantService.findPlant(plantID).get());
 
