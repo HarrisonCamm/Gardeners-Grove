@@ -20,8 +20,7 @@ public class ResetPasswordFormController {
     private final VerificationTokenService verificationTokenService;
     @Autowired
     public ResetPasswordFormController(UserService userService, AuthenticationManager authenticationManager,
-                                      VerificationTokenService verificationTokenService,
-                                     ) {
+                                      VerificationTokenService verificationTokenService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.verificationTokenService = verificationTokenService;
