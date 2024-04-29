@@ -7,15 +7,18 @@
     <link href="/css/gardenStyles.css" rel="stylesheet">
 </head>
 <body>
-    <ul class="navBar">
-        <li><a class="navLink" th:href="@{/create-garden}">Create a Garden</a></li>
-        <li><a class="navLink" th:href="@{/view-gardens}">View Gardens</a></li>
-    </ul>
-    <div>
+<ul th:insert="/fragments/navBar.html :: navBar"></ul>
+    <div style="text-align: center">
         <h1 style="text-align: center">Upload Image</h1>
-        <p>Includes .png, .jpg, .svg, less than 10Mb</p>
+        <p style="margin-bottom: 25px">Includes .png, .jpg, .svg, less than 10Mb</p>
         <div style="margin-bottom: 25px">
-            <input th:value="imagePath" class="fileInput" type="file" name="file" id="file">
+            <input style="display: none;" th:value="imagePath" class="fileInput" type="file" name="file" id="file">
+            <label for="file" style="background-color: #8ffa8f;
+                                    border-radius: 5px;
+                                    cursor: pointer;
+                                    padding: 2px;
+                                    border: solid 2px;">Choose file
+            </label>
             <button type="submit">Upload</button>
         </div>
         <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="">
