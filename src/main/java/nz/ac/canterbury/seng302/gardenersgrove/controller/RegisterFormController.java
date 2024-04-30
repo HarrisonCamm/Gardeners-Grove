@@ -2,7 +2,10 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
+import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeParseException;
-import java.util.Objects;
-import java.util.regex.Pattern;
+import static nz.ac.canterbury.seng302.gardenersgrove.validation.UserValidator.*;
 
 /**
  * Controller for registration form.
@@ -30,15 +29,22 @@ import java.util.regex.Pattern;
 @Controller
 public class RegisterFormController {
     Logger logger = LoggerFactory.getLogger(RegisterFormController.class);
-
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final VerificationTokenService verificationTokenService;
+    private final MailService mailService;
 
     @Autowired
-    public RegisterFormController(UserService userService, AuthenticationManager authenticationManager) {
+    public RegisterFormController(UserService userService,
+                                  AuthenticationManager authenticationManager,
+                                  VerificationTokenService verificationTokenService,
+                                  MailService mailService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
+        this.verificationTokenService = verificationTokenService;
+        this.mailService = mailService;
     }
+
     /**
      * Gets form to be displayed, includes the ability to display results of previous form when linked to from POST form
      * @param displayName previous name entered into form to be displayed
@@ -140,19 +146,19 @@ public class RegisterFormController {
                 || model.containsAttribute("passwordMatchError") || model.containsAttribute("ageError")) {
             return "registerFormTemplate";
         } else {
-            // Email has not been used
+            // All user details have passed validation
 
-            // Create new user
-            User newUser = new User(firstName, lastName, noLastName, email, password, dateOfBirth);
+            // Create the user
+            User newUser = new User(firstName, lastName, noLastName, email, password, formattedDateOfBirth);
 
-            // Grant user role
-            newUser.grantAuthority("ROLE_USER");
-
-            // Register user
+            // Save the user to database
             userService.addUser(newUser);
 
+            // Grant user unverified role
+            newUser.grantAuthority("ROLE_UNVERIFIED");
+
             // Auto-login security stuff
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, password);
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(newUser.getEmail(), newUser.getPassword());
             Authentication authentication = authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
@@ -160,82 +166,33 @@ public class RegisterFormController {
             // Set the authenticated user in the session
             request.getSession().setAttribute("user", newUser);
 
-            model.addAttribute("displayName", firstName + " " + lastName);
-            return "redirect:/view-user-profile";
-        }
-    }
-    private boolean isNameValid(String name) {
-        // Regex to check for a valid name including non-English characters
-        boolean isValid = name.matches("[\\p{L}\\s'-]+");
+            // Create Verification Token
+            VerificationToken verificationToken = verificationTokenService.createVerificationToken(newUser);
 
-        // Check if the name contains multiple consecutive spaces
-        boolean hasMultipleSpaces = name.contains("  ");
+            // Create confirmation email
+            String emailSubject = "Your Account Registration Code";
+            String emailText = "Dear " + firstName + ",\n\n" +
+                    "Thank you for choosing to join Gardener's Grove! To complete your registration, please use the following code:\n\n" +
+                    verificationToken.getToken() + "\n\n" +
+                    "Please enter this code in the registration form to activate your account.\n\n" +
+                    "If you did not request this code or have any questions, please contact our support team.\n\n" +
+                    "Welcome to Gardener's Grove! Happy gardening!";
 
-        return isValid && !hasMultipleSpaces;
-    }
+            // Try to send confirmation email
+            try {
+                // Send confirmation email
+                mailService.sendSimpleMessage(email, emailSubject, emailText);
 
-    private boolean isEmailValid(String email) {
-        // Regex to check for a specific email pattern
-        boolean isValid = email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$") && !email.contains("..");
+            } catch (Exception e) {
+                // Log the error
+                logger.error("Failed to send confirmation code to " + email, e);
+                // TODO display an error message
 
-        // Check if the email exceeds the SQL limit
-        boolean isWithinSqlLimit = email.length() <= 255;
-
-        return isValid && isWithinSqlLimit;
-    }
-
-    public static boolean isPasswordValid(String password) {
-        String specialCharacters = "[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]+";
-        return password.length() >= 8 &&
-                password.matches(".*\\d.*") &&
-                password.matches(".*[A-Z].*") &&
-                password.matches(".*[a-z].*") &&
-                Pattern.compile(specialCharacters).matcher(password).find();
-    }
-
-    public static boolean doPasswordsMatch(String password1, String password2) {
-        return Objects.equals(password1, password2);
-    }
-
-    public static boolean checkDateValidity(String dateOfBirth) {
-        try {
-            LocalDate dob = LocalDate.parse(dateOfBirth);
-            return true;
-            // Continue with further processing
-        } catch (DateTimeParseException e) {
-            return false;
-            // Handle the case where the date string doesn't match the expected format
-        }
-    }
-
-    public static int calculateAge(String dateOfBirth) {
-        LocalDate dob = LocalDate.parse(dateOfBirth);
-        LocalDate today = LocalDate.now();
-        Period period = Period.between(dob, today);
-        int age = period.getYears();
-        if (period.getMonths() < 0 || (period.getMonths() == 0 && today.getDayOfMonth() < dob.getDayOfMonth())) {
-            age--;
-        }
-        return age;
-    }
-    public static String convertDateFormat(String dateInput) {
-        String[] parts = dateInput.split("/");
-        if (dateInput.length() < 10) {
-            return "0000-00-00";
-        } else {
-            // Reconstruct the date string in yyyy-MM-dd format
-            String yyyy = parts[2];
-            String mm = parts[1];
-            String dd = parts[0];
-
-            // Ensure mm and dd are formatted with leading zeros if necessary
-            if (mm.length() == 1) {
-                mm = "0" + mm;
+                // Keep user on registration page
+                return "registerFormTemplate";
             }
-            if (dd.length() == 1) {
-                dd = "0" + dd;
-            }
-            return yyyy + "-" + mm + "-" + dd;
+            // Email sent successfully, confirm user registration page
+            return "redirect:/confirm-registration";
         }
     }
 }

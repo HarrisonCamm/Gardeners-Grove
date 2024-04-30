@@ -56,6 +56,7 @@ public class SignInController {
         }
         // Pass the email value back to the template
         model.addAttribute("email", "");
+        model.addAttribute("message", "");
         return "signInTemplate";
     }
 
