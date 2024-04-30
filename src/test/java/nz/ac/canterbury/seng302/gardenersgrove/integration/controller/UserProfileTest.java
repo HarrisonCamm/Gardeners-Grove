@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +36,7 @@ public class UserProfileTest {
     }
 
     @Test
+    @WithMockUser
     public void whenGetUserProfileWithAuthenticatedUser_thenReturnsUserProfileView() throws Exception {
         User mockUser = new User("user@email.com", "User", "Name", "password");
         mockUser.setDateOfBirth("01/01/1990");
@@ -44,8 +46,8 @@ public class UserProfileTest {
         mockMvc.perform(get("/view-user-profile"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("viewUserProfileTemplate"))
-                .andExpect(model().attribute("displayName", "John Doe"))
-                .andExpect(model().attribute("email", "john.doe@example.com"))
+                .andExpect(model().attribute("displayName", "User Name"))
+                .andExpect(model().attribute("email", "user@email.com"))
                 .andExpect(model().attribute("dateOfBirth", "01/01/1990"));
     }
 }
