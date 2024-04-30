@@ -97,6 +97,7 @@ public class EditPlantController {
         plant.setCount(newPlant.getCount().replace(',', '.'));
         plant.setDescription(newPlant.getDescription());
 
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         model.addAttribute("plantID", plantID); // Add gardenID to the model
         model.addAttribute("datePlanted", new SimpleDateFormat("yyyy-MM-dd").format(date));
 

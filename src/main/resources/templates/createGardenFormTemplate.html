@@ -88,30 +88,30 @@
                         </div>
                     </div>
 
-                <br/>
+            <br/>
+            <div>
                 <div>
-                    <div>
-                        <label for="size"> Garden Size: </label>
-                        <br/>
-                        <input type="text" id="size"
-                               th:name="size"
-                               th:value="*{size}"
-                               th:classappend="${sizeError} ? 'error' : ''">
-                        <p th:if="${location_countryError}" class="error-message" th:text="${sizeError}"></p>
-                    </div>
+                    <label for="size"> Garden Size: </label>
+                    <br/>
+                    <input type="text" id="size"
+                           th:name="size"
+                           th:value="*{size}"
+                           th:classappend="${sizeError} ? 'error' : ''">
+                    <p th:if="${location_countryError}" class="error-message" th:text="${sizeError}"></p>
                 </div>
-                <br/>
-                <div class="buttons-right">
-                    <button type="submit">Create</button>
-                    &nbsp;
-                    <form th:action="@{/Cancel}" method="get">
-                        <button type="submit">Cancel</button>
-                    </form>
-                </div>
-            </form>
             </div>
+            <br/>
+            <div class="buttons-right">
+                <button type="submit">Create</button>
+                &nbsp;
+                <a th:href="@{${lastEndpoint}}" id="cancelButton">
+                    <button type="button">Cancel</button>
+                </a>
+            </div>
+        </form>
         </div>
-        <div class="empty_space">
+    </div>
+    <div class="empty_space">
 
         </div>
 
