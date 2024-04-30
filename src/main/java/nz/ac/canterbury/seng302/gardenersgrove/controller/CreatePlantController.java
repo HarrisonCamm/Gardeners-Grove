@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
@@ -95,24 +96,33 @@ public class CreatePlantController {
             @RequestParam("plantDatePlanted") String datePlanted,
             @ModelAttribute("plant") Plant plant,
             BindingResult bindingResult,
+            HttpSession session,
             Model model) throws Exception {
         logger.info("POST /create-plant");
+
+        Plant sessionPlant = (Plant) session.getAttribute("plant");
+
+        if (sessionPlant != null) {
+            plant.setImage(sessionPlant.getImage());
+            plant.setPicture(sessionPlant.getPicture());
+            session.removeAttribute("plant");
+        }
 
         //Validates input fields
         checkName(plant.getName(), bindingResult);
         checkDescription(plant.getDescription(), bindingResult);
         checkCount(plant.getCount(), bindingResult);
 
-        plant.setPicture("leaves-80x80.png"); // Set default picture
+        if (plant.getPicture() == null) {
+            plant.setPicture("leaves-80x80.png"); // Set default picture
 
-        Path imagePath = Paths.get("src/main/resources/static/images/leaves-80x80.png");
-        try {
-            plant.setImage(Files.readAllBytes(imagePath));
-        } catch (IOException e) {
-            logger.error("Failed to set default image", e);
+            Path imagePath = Paths.get("src/main/resources/static/images/leaves-80x80.png");
+            try {
+                plant.setImage(Files.readAllBytes(imagePath));
+            } catch (IOException e) {
+                logger.error("Failed to set default image", e);
+            }
         }
-
-
         Garden ownerGarden = null;
         Optional<Garden> found = gardenService.findGarden(gardenID);
         if (found.isEmpty()) {
@@ -154,13 +164,15 @@ public class CreatePlantController {
     @PostMapping("/create-plant-picture")
     public String uploadImage(@RequestParam("gardenID") Long gardenID,
                               @RequestParam("file") MultipartFile file,
-                              RedirectAttributes redirectAttributes) throws IOException, ParseException {
+                              HttpSession session) throws IOException, ParseException {
         logger.info("POST /create-plant-picture");
         Garden garden = gardenService.findGarden(gardenID).get();
 
-        Plant plant = new Plant(garden, "", "", "0", "11/11/1111", file.getOriginalFilename());
-        redirectAttributes.addFlashAttribute("plant", plant);
+        Plant plant = new Plant(garden, "", "", "0", "00/00/0000", file.getOriginalFilename());
         plant.setImage(file.getBytes());
+
+        // Add the plant object to the session
+        session.setAttribute("plant", plant);
 
         return "redirect:/create-plant?gardenID=" + plant.getGarden().getId();
     }

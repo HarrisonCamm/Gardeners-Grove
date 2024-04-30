@@ -21,6 +21,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * This controller handles the MVC part of the upload image page and also gets an image for a plant
  */
@@ -101,6 +106,7 @@ public class UploadImageController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_JPEG);
 
+        //Add cases for required image (plant or user)
         //Add cases for required image (plant or user)
         if (!viewUser && !editUserProfile) {
             Plant plant = plantService.findPlant(plantID).get();
