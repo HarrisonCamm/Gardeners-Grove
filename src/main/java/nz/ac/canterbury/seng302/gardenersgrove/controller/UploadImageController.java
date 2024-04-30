@@ -2,8 +2,10 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +30,12 @@ public class UploadImageController {
     Logger logger = LoggerFactory.getLogger(UploadImageController.class);
 
     private final PlantService plantService;
+    private final UserService userService;
 
     @Autowired
-    public UploadImageController(PlantService plantService) {
+    public UploadImageController(PlantService plantService, UserService userService) {
         this.plantService = plantService;
+        this.userService = userService;
     }
 
     /**
@@ -48,10 +52,11 @@ public class UploadImageController {
     @GetMapping("/upload-image")
     public String uploadImage(@RequestParam(value = "view-garden", required = false) boolean viewGarden,
                               @RequestParam(value = "edit-plant", required = false) boolean editPlant,
+                              @RequestParam(value = "edit-user", required = false) boolean editUser,
+                              @RequestParam(value = "view-user-profile", required = false) boolean viewUser,
                               @RequestParam(value = "plantID", required = false) Long plantID,
                               @RequestParam(value = "gardenID", required = false) Long gardenID,
                               @RequestParam(value = "userID", required = false) Long userID,
-                              @RequestParam(value = "edit-user", required = false) boolean editUser,
                               Model model) {
 
         logger.info("GET /upload-image");
@@ -63,9 +68,9 @@ public class UploadImageController {
             RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
         } else if (editUser){
             RedirectService.addEndpoint("/edit-user?userID=" + userID);
+        } else if (viewUser) {
+            RedirectService.addEndpoint("/view-user-profile");
         }
-        model.addAttribute("plant", plantService.findPlant(plantID).get());
-
         return "uploadImageTemplate";
     }
 
@@ -82,15 +87,25 @@ public class UploadImageController {
     @GetMapping("/get-image")
     public ResponseEntity<byte[]> getPlantImage(@RequestParam(value = "view-garden", required = false) boolean viewGarden,
                                                 @RequestParam(value = "edit-plant", required = false) boolean editPlant,
+                                                @RequestParam(value = "view-user-profile", required = false) boolean viewUser,
                                                 @RequestParam(value = "gardenID", required = false) Long gardenID,
-                                                @RequestParam("plantID") Long plantID) {
-        //Add cases for required image (plant or user)
+                                                @RequestParam(value = "userID", required = false) Long userID,
+                                                @RequestParam(value = "plantID", required = false) Long plantID) {
 
-        Plant plant = plantService.findPlant(plantID).get();
-        byte[] image = plant.getImage();
+        byte[] image;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_JPEG);
+
+        //Add cases for required image (plant or user)
+        if (!viewUser) {
+            Plant plant = plantService.findPlant(plantID).get();
+            image = plant.getImage();
+        } else {
+            User user = userService.getUserByID(userID);
+            image = user.getImage();
+        }
+
 
         return new ResponseEntity<>(image, headers, HttpStatus.OK);
     }

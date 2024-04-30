@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 params.append('edit-plant', 'true');
                 params.append('plantID', plantID);
                 break;
+            case '/view-user-profile':
+                params.append('view-user-profile', 'true');
             //Add more cases as needed
             default:
                 console.log('No match!');
@@ -37,8 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const buttonPlantID = buttonID.split('_')[1];
 
-            //Add cases for user profiles as well
-            params.set('plantID', buttonPlantID);
+
+            if (!params.has('view-user-profile')) {
+                params.set('plantID', buttonPlantID);
+            }
 
             const fetchUrl = '/upload-image?' + params.toString();
 
@@ -56,10 +60,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     imageSource.forEach(image => {
+        let userID = null;
         if (params.get('view-garden') === 'true') {
             const plantID = image.getAttribute('data-plant-id');
             params.set('plantID', plantID);
             console.log(params.toString())
+        } else if (params.get('view-user-profile') === 'true') {
+            userID = image.getAttribute('data-user-id');
+            params.set('userID', userID);
         }
 
         fetch('/get-image?' + params.toString(), {

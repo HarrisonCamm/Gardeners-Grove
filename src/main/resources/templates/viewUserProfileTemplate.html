@@ -80,9 +80,10 @@
   <div class="content">
     <div th:object="${user}">
       <h2>User Profile</h2>
-<!--      <img th:src="@{/images/defaultUserImage.png}" alt="">-->
-      <img class="image" th:data-user-id="${user.userId}" th:data-picture="${user.image}" alt="">
-      <button class="image_picker" th:id="${'button_' + user.userId}">+</button>
+      <div style="position: relative; width: 82px; margin: auto;">
+        <img class="image" th:data-user-id="${user.userId}" th:data-picture="${user.image}" alt="">
+        <button class="image_picker" th:id="${'button_' + user.userId}" style="position: absolute; top: 0; right: 0;">+</button>
+      </div>
       <div>
       <form>
         <label for="name">Name: </label>
@@ -122,5 +123,6 @@
     </div>
   </div>
   </div>
+  <script src="/javascript/redirect_image_handler.js"></script>
   </body>
 </html>
