@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -42,17 +44,22 @@ public class EditProfileTest {
     public void setUp() {
         Mockito.reset(userService);
         User mockUser = new User("user@email.com", "User", "Name", "password");
-        mockUser.setUserId(1L);
+        mockUser.grantAuthority("ROLE_USER");
+//        mockUser.setUserId(1L);
         Mockito.when(userService.getAuthenicatedUser()).thenReturn(mockUser);
+        Mockito.when(userService.updateUser(any(User.class), anyString(), anyString(), anyBoolean(), anyString(), anyString()))
+                .thenAnswer(i -> ((User)i.getArgument(0)).setValues(i.getArgument(1), i.getArgument(2),
+                        i.getArgument(3), i.getArgument(4), i.getArgument(5)));
+//        Mockito.when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
     }
 
     /**
      * Test the successful alteration scenario where valid user data is submitted.
      */
     @Test
-    @WithMockUser
+    @WithMockUser(username = "user@email.com", roles = {"USER"})
     public void whenPostEditProfileWithValidData_thenRedirectsToUserProfile() throws Exception {
-
+        Mockito.when(authenticationManager.authenticate(any(Authentication.class))).thenReturn(Mockito.mock(Authentication.class));
         mockMvc.perform(post("/edit-user-profile")
                         .with(csrf())
                         .param("firstName", "John")
