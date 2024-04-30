@@ -1,7 +1,11 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Authority;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
+import nz.ac.canterbury.seng302.gardenersgrove.service.AuthorityService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.slf4j.Logger;
@@ -18,6 +22,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -30,14 +36,17 @@ public class ConfirmRegistrationController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final VerificationTokenService verificationTokenService;
+    private final AuthorityService authorityService;
 
     @Autowired
     public ConfirmRegistrationController(UserService userService,
                                          AuthenticationManager authenticationManager,
-                                         VerificationTokenService verificationTokenService) {
+                                         VerificationTokenService verificationTokenService,
+                                         AuthorityService authorityService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.verificationTokenService = verificationTokenService;
+        this.authorityService = authorityService;
     }
     /**
      * Gets form to be displayed, includes the ability to display results of previous form when linked to from POST form
@@ -57,6 +66,7 @@ public class ConfirmRegistrationController {
      *              with values being set to relevant parameters provided
      * @return thymeleaf demoFormTemplate
      */
+    @Transactional
     @PostMapping("/confirm-registration")
     public String submitForm(@RequestParam(name="registrationCode") String registrationCode,
                              HttpServletRequest request,
@@ -64,7 +74,19 @@ public class ConfirmRegistrationController {
         logger.info("POST /confirm-registration");
 
         model.addAttribute("registrationCode", registrationCode);
+
         verificationTokenService.cleanupExpiredTokens();
+
+        List<Authority> authorityList = authorityService.findByRole("ROLE_UNVERIFIED");
+
+        for (Authority authority: authorityList) {
+            User user = authority.getUser();
+            VerificationToken token = verificationTokenService.getTokenByUser(user);
+            if (token == null) {
+                authorityService.deleteByUser(user);
+            }
+        }
+
 
 
         // Check if the registration code is valid
