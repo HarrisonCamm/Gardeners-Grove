@@ -113,7 +113,7 @@ public class LostPasswordFormController {
         String emailText = "Dear " + newUser.getFirstName() + ",\n\n" +
                 "To reset your password, please use the following link:\n\n" +
                 tokenLink +
-                "\nIf you did not request this code or have any questions, please contact our support team.\n\n" +
+                "\n\nIf you did not request this code or have any questions, please contact our support team.\n\n" +
                 "Thank you for using Gardener's Grove! Happy gardening!";
         return emailText;
     }

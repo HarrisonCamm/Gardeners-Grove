@@ -57,6 +57,12 @@ public class SignInController {
         // Pass the email value back to the template
         model.addAttribute("email", "");
         model.addAttribute("message", "");
+
+        String expiredTokenMessage = (String) model.getAttribute("expiredTokenMessage"); //todo fix this
+        logger.info("going to sign in page: expired token message " + expiredTokenMessage);
+        if (expiredTokenMessage != null) {
+            model.addAttribute("expiredTokenMessage", expiredTokenMessage);
+        }
         return "signInTemplate";
     }
 

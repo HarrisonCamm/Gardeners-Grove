@@ -47,7 +47,9 @@ public class ResetPasswordFormController {
 
         // If token is expired or null
         if (!verificationTokenService.validateToken(token)) {
-            model.addAttribute("expiredTokenError", "Reset password link has expired");
+//            model.addAttribute("expiredTokenError", "Reset password link has expired");
+            // todo fix this
+            model.addAttribute("expiredTokenMessage", "Reset password link has expired");
             logger.info("Reset password link with token " + token + " has expired.");
             return "redirect:/sign-in-form"; //todo show error message in sign in form
         }
