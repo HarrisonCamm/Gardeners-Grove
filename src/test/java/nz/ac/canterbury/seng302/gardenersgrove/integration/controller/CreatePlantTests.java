@@ -59,13 +59,13 @@ public class CreatePlantTests {
 
     @BeforeEach
     public void setUp() {
-        testLocation = new Location("123 Test Street", "Test Suburb", "Test City", "1234", "Test Country");
-        testGarden = new Garden("Test Garden", testLocation, "1");
-        testPlant = new Plant(testGarden, "Test Description");
-
         testUser = new User("user@email.com", "User", "Name", "password");
-        testUser.setUserId(1L);
+//        testUser.setUserId(1L);
         Mockito.when(userService.getAuthenicatedUser()).thenReturn(testUser);
+
+        testLocation = new Location("123 Test Street", "Test Suburb", "Test City", "1234", "Test Country");
+        testGarden = new Garden("Test Garden", testLocation, "1", testUser);
+        testPlant = new Plant(testGarden, "Test Description");
     }
 
     @Test
@@ -82,9 +82,9 @@ public class CreatePlantTests {
     @Test
     @WithMockUser
     public void GetPage_NoFields_Failure() throws Exception {
-
         when(plantService.findPlant(any(Long.class))).thenReturn(Optional.ofNullable(testPlant));
-        when(gardenService.findGarden(any(Long.class))).thenReturn(Optional.ofNullable(null));
+        when(gardenService.findGarden(any(Long.class))).thenReturn(Optional.empty());
+
 
         mockMvc.perform(MockMvcRequestBuilders.get("/create-plant")
                 .queryParam("gardenID", String.valueOf(1L))) // Any number will do
