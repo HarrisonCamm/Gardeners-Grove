@@ -23,20 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -107,7 +99,8 @@ public class SecurityConfigurationTest {
     }
 
     /**
-     * Parameterized test to verify the URL access control for a user with the role "USER".
+     * Parameterized test to verify the URL access control for a user with the role "USER"
+     * The 302-status code is expected because spring security redirects you to sign in page
      */
     @ParameterizedTest
     @CsvSource({
@@ -131,6 +124,34 @@ public class SecurityConfigurationTest {
     })
     @WithMockUser(value="user@email.com")
     void testAccessControl_UserRole_ExpectedHttpStatus(String url, int expectedStatus) throws Exception {
+        mockMvc.perform(get(url))
+                .andExpect(status().is(expectedStatus));
+    }
+
+    /**
+     * Parameterized test to verify the URL access control for a user with no role
+     */
+    @ParameterizedTest
+    @CsvSource({
+            "/home,200",
+            "/sign-in-form,200",
+            "/register-form,200",
+            "/main,302",
+            "/view-user-profile,302",
+            "/edit-user-profile,302",
+            "/create-garden,302",
+            "/view-gardens,302",
+            "/view-garden,302",
+            "/edit-garden,302",
+            "/create-plant,302",
+            "/edit-plant,302",
+            "/admin,302",
+            "/view-garden?gardenID=1,302",
+            "/edit-garden?gardenID=1,302",
+            "/create-plant?gardenID=1,302",
+            "/edit-plant?plantID=1,302",
+    })
+    void testAccessControl_UnauthenticatedUser_ExpectedHttpStatus(String url, int expectedStatus) throws Exception {
         mockMvc.perform(get(url))
                 .andExpect(status().is(expectedStatus));
     }
