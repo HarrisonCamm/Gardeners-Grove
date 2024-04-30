@@ -66,7 +66,7 @@ public class EditGardenTests {
     @BeforeEach
     public void setup() {
         mockUser = new User("user@email.com", "User", "Name", "password");
-        mockUser.setUserId(1L);
+//        mockUser.setUserId(1L);
         Mockito.when(userService.getAuthenicatedUser()).thenReturn(mockUser);
     }
 

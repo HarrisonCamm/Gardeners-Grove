@@ -58,7 +58,7 @@ public class EditPlantTests {
     @BeforeEach
     public void setUp() {
         testUser = new User("user@email.com", "User", "Name", "password");
-        testUser.setUserId(1L);
+//        testUser.setUserId(1L);
         Mockito.when(userService.getAuthenicatedUser()).thenReturn(testUser);
 
         testLocation = new Location("123 Test Street", "Test Suburb", "Test City", "1234", "Test Country");

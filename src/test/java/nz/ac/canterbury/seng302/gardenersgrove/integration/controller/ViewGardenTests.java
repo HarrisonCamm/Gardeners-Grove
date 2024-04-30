@@ -55,7 +55,7 @@ public class ViewGardenTests {
     @BeforeEach
     public void setUp() {
         testUser = new User("user@email.com", "User", "Name", "password");
-        testUser.setUserId(1L);
+//        testUser.setUserId(1L);
         Mockito.when(userService.getAuthenicatedUser()).thenReturn(testUser);
     }
 
