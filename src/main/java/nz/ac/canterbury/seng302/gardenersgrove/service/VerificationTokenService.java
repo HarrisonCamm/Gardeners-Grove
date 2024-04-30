@@ -37,8 +37,8 @@ public class VerificationTokenService {
         // Generate a random 6-digit number
         String token = String.valueOf(random.nextInt(900000) + 100000);
 //        String token = UUID.randomUUID().toString();
-//        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(10);
-        LocalDateTime expiryDate = LocalDateTime.now().plusSeconds(30);
+        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(10);
+//        LocalDateTime expiryDate = LocalDateTime.now().plusSeconds(30);
         VerificationToken verificationToken = new VerificationToken(user, token, expiryDate);
         return verificationTokenRepository.save(verificationToken);
     }

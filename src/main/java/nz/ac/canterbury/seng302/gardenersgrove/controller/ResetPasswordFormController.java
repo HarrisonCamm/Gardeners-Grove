@@ -39,18 +39,18 @@ public class ResetPasswordFormController {
      * @param model (map-like) representation of name, language and isJava boolean for use in thymeleaf
      * @return thymeleaf resetPasswordFormTemplate
      */
-    @GetMapping("/reset-password-form") //todo implement token in URL
-    public String form(@RequestParam(name = "token", required = false) String token,
-                       Model model) { //todo change token required
+    @GetMapping("/reset-password-form")
+    public String form(@RequestParam(name = "token", required = true) String token,
+                       Model model) {
         logger.info("GET /reset-password-form");
-        model.addAttribute("token", "");
+        model.addAttribute("token", token);
 
         // If token is expired or null
-//        if (!verificationTokenService.validateToken(token)) {
-//            model.addAttribute("expiredTokenError", "Reset password link has expired");
-//            return "redirect:/sign-in-form"; //todo show error message in sign in form
-//
-//        }
+        if (!verificationTokenService.validateToken(token)) {
+            model.addAttribute("expiredTokenError", "Reset password link has expired");
+            logger.info("Reset password link with token " + token + " has expired.");
+            return "redirect:/sign-in-form"; //todo show error message in sign in form
+        }
 
         return "resetPasswordFormTemplate";
     }
@@ -67,13 +67,14 @@ public class ResetPasswordFormController {
     @PostMapping("/reset-password-form")
     public String submitForm(@RequestParam(name="newPassword") String newPassword,
                              @RequestParam(name = "retypedPassword") String retypedPassword,
-                             @RequestParam(name = "token", required = false) String token,
+                             @RequestParam(name = "token", required = true) String token,
                              HttpServletRequest request,
-                             Model model) { //todo change token requirement after manual testing
+                             Model model) {
         logger.info("POST /reset-password-form");
 
         model.addAttribute("newPassword", newPassword);
         model.addAttribute("retypePassword", retypedPassword);
+        model.addAttribute("token", token);
 
         // Check if the new password is empty
         if (newPassword == null || newPassword.isEmpty()) {
@@ -100,6 +101,8 @@ public class ResetPasswordFormController {
         } else {
             // new password and retyped password are valid
             User currentUser = verificationTokenService.getUserByToken(token);
+            logger.info("Password is valid, user has token " + token );
+            logger.info("User first name is: " + currentUser.getFirstName());
 
             userService.updateUserPassword(currentUser, newPassword);
             // send user confirmation email of password change

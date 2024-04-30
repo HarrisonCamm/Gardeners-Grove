@@ -88,12 +88,9 @@ public class LostPasswordFormController {
 
                 // Create confirmation email
                 String emailSubject = "Reset Your Password for Gardener's Grove";
-                String emailText = "Dear " + newUser.getFirstName() + ",\n\n" +
-                        "To reset your password, please use the following link:\n\n" +
-                        verificationToken.getToken() + "\n\n" +
-                        "Please use this link to change your password.\n\n" +
-                        "If you did not request this code or have any questions, please contact our support team.\n\n" +
-                        "Thank you for using Gardener's Grove! Happy gardening!";
+
+                String emailText = generateResetPasswordEmail(verificationToken, newUser);
+
 
                 // Try to send confirmation email
                 try {
@@ -108,6 +105,17 @@ public class LostPasswordFormController {
             }
             return "lostPasswordFormTemplate"; // todo implement popup confirmation message modal using Boostrap spike
         }
+    }
+
+    private static String generateResetPasswordEmail(VerificationToken verificationToken, User newUser) {
+        String tokenLink = "http://localhost:8080/reset-password-form?token=" + verificationToken.getToken();
+
+        String emailText = "Dear " + newUser.getFirstName() + ",\n\n" +
+                "To reset your password, please use the following link:\n\n" +
+                tokenLink +
+                "\nIf you did not request this code or have any questions, please contact our support team.\n\n" +
+                "Thank you for using Gardener's Grove! Happy gardening!";
+        return emailText;
     }
 
     private boolean isEmailValid(String email) {
