@@ -42,7 +42,7 @@ public class UserProfileController {
      * Gets the thymeleaf page showing the user profile of the logged-in user
      */
     @GetMapping("/view-user-profile")
-    public String getTemplate(HttpServletRequest request, Model model) {
+    public String getTemplate(Model model) {
 
 //        User currentUser = (User) request.getSession().getAttribute("user");
 
@@ -53,6 +53,7 @@ public class UserProfileController {
         logger.info("User retrieved from session: " + currentUser);
 
         if (currentUser != null) {
+            model.addAttribute("user", currentUser);
             model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
             model.addAttribute("email", currentUser.getEmail());
             model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());

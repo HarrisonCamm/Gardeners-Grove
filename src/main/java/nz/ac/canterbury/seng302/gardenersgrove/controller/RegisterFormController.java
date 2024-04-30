@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
@@ -143,7 +147,14 @@ public class RegisterFormController {
             // Email has not been used
 
             // Create new user
-            User newUser = new User(firstName, lastName, noLastName, email, password, dateOfBirth);
+            User newUser = new User(firstName, lastName, noLastName, email, password, dateOfBirth, "defaultUserImage.png");
+
+            Path imagePath = Paths.get("src/main/resources/static/images/defaultUserImage.png");
+            try {
+                newUser.setImage(Files.readAllBytes(imagePath));
+            } catch (IOException e) {
+                logger.error("Failed to set default image", e);
+            }
 
             // Grant user role
             newUser.grantAuthority("ROLE_USER");
