@@ -33,7 +33,7 @@ button, label {
 
 .buttons-centre {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
 }
 .buttons-right {
     display: flex;
