@@ -3,6 +3,9 @@ package nz.ac.canterbury.seng302.gardenersgrove.unit.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.*;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.security.CustomAuthenticationProvider;
@@ -30,7 +33,10 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -84,40 +90,20 @@ public class SecurityConfigurationTest {
 
     @BeforeEach
     void setUp() {
-//        // Create new user
-//        User mockUser = new User("user@email.com", "User", "Name", "password");
-//
-//        // Grant user role
-//        mockUser.grantAuthority("ROLE_USER");
-//
-//        // Register user
-//        userService.addUser(mockUser);
-//
-//        // Auto-login security stuff
-//        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("user@email.com", "password");
-//        Authentication authentication = authenticationManager.authenticate(token);
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        // Define the behavior of request.getSession() to return the mocked HttpSession
-//        when(request.getSession()).thenReturn(session);
-//
-//        // Set the authenticated user in the session
-//        request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-//
-//        // Set the authenticated user in the session
-//        request.getSession().setAttribute("user", mockUser);
+        // Create new user
+        User mockUser = new User("user@email.com", "User", "Name", "password");
+        Mockito.when(userService.getAuthenicatedUser()).thenReturn(mockUser);
 
-        // Jakes help code
-//        mockUser.grantAuthority("ROLE_USER");
-//
-//        Authentication authentication = Mockito.mock(Authentication.class);
-//        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-//
-//        when(authentication.getPrincipal()).thenReturn(mockUser);
-//        when(authentication.isAuthenticated()).thenReturn(true);
-//        when(securityContext.getAuthentication()).thenReturn(authentication);
-//
-//        SecurityContextHolder.setContext(securityContext);
+        // Create new garden
+        Garden mockGarden = Mockito.mock(Garden.class);
+        Mockito.when(gardenService.findGarden(1L)).thenReturn(Optional.of(mockGarden));
+        Mockito.when(mockGarden.getOwner()).thenReturn(mockUser);
+        Mockito.when(mockGarden.getLocation()).thenReturn(Mockito.mock(Location.class));
+
+        // Create new plant
+        Plant mockPlant = Mockito.mock(Plant.class);
+        Mockito.when(plantService.findPlant(1L)).thenReturn(Optional.of(mockPlant));
+        Mockito.when(mockPlant.getGarden()).thenReturn(mockGarden);
     }
 
     /**
@@ -133,13 +119,17 @@ public class SecurityConfigurationTest {
             "/edit-user-profile,200",
             "/create-garden,200",
             "/view-gardens,200",
-            "/view-garden,200",
-            "/edit-garden,200",
-            "/create-plant,200",
-            "/edit-plant,200",
-            "/admin,403"
+            "/view-garden,400",
+            "/edit-garden,400",
+            "/create-plant,400",
+            "/edit-plant,400",
+            "/admin,403",
+            "/view-garden?gardenID=1,200",
+            "/edit-garden?gardenID=1,200",
+            "/create-plant?gardenID=1,200",
+            "/edit-plant?plantID=1,200",
     })
-//    @WithMockUser(value="user@email.com", authorities = {"ROLE_USER"})
+    @WithMockUser(value="user@email.com")
     void testAccessControl_UserRole_ExpectedHttpStatus(String url, int expectedStatus) throws Exception {
         mockMvc.perform(get(url))
                 .andExpect(status().is(expectedStatus));
