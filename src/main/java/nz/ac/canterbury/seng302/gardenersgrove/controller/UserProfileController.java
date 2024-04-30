@@ -63,4 +63,18 @@ public class UserProfileController {
             return "redirect:/sign-in-form";
         }
     }
+
+    @PostMapping("/view-user-profile")
+    public String uploadImage(@RequestParam(value = "file", required = false) String file,
+                              @RequestParam(value = "userID", required = false) Long userID,
+                              Model model) {
+        Optional<User> user = userRepository.findById(userID);
+        if (user.isPresent()) {
+            User userToEdit = user.get();
+            userToEdit.setImage(file);
+            userToEdit.setFilePath("images/" + file);
+            userRepository.save(userToEdit);
+        }
+        return "redirect:/view-user-profile";
+    }
 }

@@ -21,7 +21,7 @@
             </label>
             <button type="submit">Upload</button>
         </div>
-        <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="">
+        <img class="image" th:data-plant-id="${id}" th:data-picture="${picture}" alt="">
         <br/>
         <form th:action="@{/Cancel}" method="get">
             <button style="margin-top: 25px" type="submit">Cancel</button>

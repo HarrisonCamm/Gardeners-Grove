@@ -90,7 +90,8 @@ public class UploadImageController {
                                                 @RequestParam(value = "view-user-profile", required = false) boolean viewUser,
                                                 @RequestParam(value = "gardenID", required = false) Long gardenID,
                                                 @RequestParam(value = "userID", required = false) Long userID,
-                                                @RequestParam(value = "plantID", required = false) Long plantID) {
+                                                @RequestParam(value = "plantID", required = false) Long plantID,
+                                                Model model) {
 
         byte[] image;
 
@@ -101,9 +102,13 @@ public class UploadImageController {
         if (!viewUser) {
             Plant plant = plantService.findPlant(plantID).get();
             image = plant.getImage();
+            model.addAttribute("id", plantID);
+            model.addAttribute("picture", image);
         } else {
             User user = userService.getUserByID(userID);
             image = user.getImage();
+            model.addAttribute("id", userID);
+            model.addAttribute("picture", image);
         }
 
 
