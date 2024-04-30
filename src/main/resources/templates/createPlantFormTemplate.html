@@ -41,9 +41,9 @@
         </form>
     </div>
     <br/>
-    <form th:action="@{/Cancel}" method="get">
-        <button type="submit">Cancel</button>
-    </form>
+    <a th:href="@{${lastEndpoint}}" id="cancelButton">
+        <button type="button">Cancel</button>
+    </a>
 </body>
 </html>
 

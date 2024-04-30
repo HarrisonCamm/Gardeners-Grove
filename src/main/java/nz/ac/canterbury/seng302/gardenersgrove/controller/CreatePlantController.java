@@ -72,6 +72,7 @@ public class CreatePlantController {
         model.addAttribute("plantCount", plant.getCount());
         model.addAttribute("plantDescription", plant.getDescription());
         model.addAttribute("plantDatePlanted", plant.getDatePlanted());
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
 
         return "createPlantFormTemplate";
     }
@@ -112,6 +113,9 @@ public class CreatePlantController {
         plant.setCount(plant.getCount().replace(',', '.'));
 
         plant.setGarden(ownerGarden); // Set the garden for the plant
+
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+
         model.addAttribute("plantName", plant.getName());
         model.addAttribute("plantCount", plant.getCount());
         model.addAttribute("plantDescription", plant.getDescription());

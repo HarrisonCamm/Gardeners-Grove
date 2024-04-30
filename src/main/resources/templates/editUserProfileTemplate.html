@@ -3,6 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
     <title>Edit profile</title>
+    <script th:src="@{js/editUserProfile.js}"></script>
     <!-- Navbar styling -->
     <link href="/css/navBar.css" rel="stylesheet"/>
     <link href="/css/formStyles.css" rel="stylesheet"/>
@@ -67,9 +68,61 @@
                        th:name="email" th:value="${email}" data-cy="email"
                        th:class="${registrationEmailError != null ? 'error' : 'form-control'}" autofocus>
                 <br/>
-                <!-- Display error message if there is an error with the email existing-->
+                <!-- Display an error message if there is an error with the email existing-->
                 <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
                 <br/>
+
+                <!-- Change Password Section -->
+                <div id="passwordContainer" th:hidden="${changePasswordFormInput}">
+                    <label id="passwordLabel">Password:</label>
+                    <br/>
+                    <!-- Display Change Password Form Button -->
+                    <button type="button" id="changePasswordButton" onclick="toggleChangePasswordForm(true)">Change Password</button>
+                    <br/>
+                </div>
+
+                <input type="hidden" id="changePasswordFormInput" th:name="changePasswordFormInput" th:value="${changePasswordFormInput}" >
+                <!-- Hidden Change Password Form -->
+                <div id="changePasswordForm" th:hidden="${!changePasswordFormInput}">
+
+                    <!-- Old Password Field -->
+                    <label for="oldPassword">Old Password:</label>
+                    <br/>
+                    <input type="password" id="oldPassword" name="oldPassword" class="form-control" th:value="${oldPassword}" th:classappend="${oldPasswordError != null ? 'error' : ''}">
+                    <!-- Placeholder for Incorrect Old Password Error -->
+                    <div class="error-message" th:if="${oldPasswordError}" th:text="${oldPasswordError}"></div>
+                    <br/>
+                    <br/>
+
+                    <!-- New Password Field -->
+                    <label for="newPassword">New Password:</label>
+                    <br/>
+                    <input type="password" id="newPassword" name="newPassword" class="form-control" th:value="${newPassword}" th:classappend="${newPasswordError != null ? 'error' : ''}">
+                    <!-- Placeholder for New Password Validation Error -->
+                    <div class="error-message" th:if="${newPasswordError}" th:text="${newPasswordError}"></div>
+                    <br/>
+                    <br/>
+
+                    <!-- Retype New Password Field -->
+                    <label for="retypePassword">Retype New Password:</label>
+                    <br/>
+                    <input type="password" id="retypePassword" name="retypePassword" class="form-control" th:value="${retypePassword}" th:classappend="${passwordMatchError != null ? 'error' : ''}">
+                    <!-- Placeholder for Password Match Error -->
+                    <div class="error-message" th:if="${passwordMatchError}" th:text="${passwordMatchError}"></div>
+                    <br/>
+                    <br/>
+
+                    <!-- Submit Changed Password and Cancel Change Password Buttons -->
+                    <div class="buttons">
+                        <button type="submit" id="submitNewPasswordButton">Change Password</button>
+                        &nbsp;
+                        <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
+                    </div>
+                </div>
+                <!-- End Change Password Section -->
+                <br/>
+
+                <!-- Date of Birth Section -->
                 <label for="dateOfBirth"> Date of birth: </label>
                 <br/>
                 <input type="text" class="form-control" id="dateOfBirth"
