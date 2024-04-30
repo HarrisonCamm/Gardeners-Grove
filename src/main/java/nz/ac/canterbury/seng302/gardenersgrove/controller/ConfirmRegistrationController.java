@@ -88,12 +88,15 @@ public class ConfirmRegistrationController {
             }
         }
 
+
+
         // Check if the registration code is valid
         if (verificationTokenService.validateToken(registrationCode)) {
 
             // Token is valid, grab user's account
             User user = verificationTokenService.getUserByToken(registrationCode);
 
+            authorityService.deleteByUser(user);
             // Grant user role USER
             user.grantAuthority("ROLE_USER");
 

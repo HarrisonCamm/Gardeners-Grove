@@ -25,8 +25,8 @@ public class VerificationTokenService {
      */
     public VerificationToken createVerificationToken(User user) {
         String token = UUID.randomUUID().toString();
-//        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(10);
-        LocalDateTime expiryDate = LocalDateTime.now().plusSeconds(10);
+        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(10);
+//        LocalDateTime expiryDate = LocalDateTime.now().plusSeconds(10);
         VerificationToken verificationToken = new VerificationToken(user, token, expiryDate);
         return verificationTokenRepository.save(verificationToken);
     }

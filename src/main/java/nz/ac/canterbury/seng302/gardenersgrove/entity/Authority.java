@@ -19,16 +19,9 @@ public class Authority {
     protected Authority() {
         // JPA empty constructor
     }
+
     public Authority(String role) {
-
         this.role = role;
-    }
-
-    public Authority(Long authorityId, User user, String role) {
-
-        this.role = role;
-        this.authorityId = authorityId;
-        this.user = user;
     }
 
 
