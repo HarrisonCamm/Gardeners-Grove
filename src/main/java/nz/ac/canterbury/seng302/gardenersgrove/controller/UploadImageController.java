@@ -54,6 +54,7 @@ public class UploadImageController {
                               @RequestParam(value = "edit-plant", required = false) boolean editPlant,
                               @RequestParam(value = "edit-user", required = false) boolean editUser,
                               @RequestParam(value = "view-user-profile", required = false) boolean viewUser,
+                              @RequestParam(value = "edit-user-profile-image", required = false) boolean editUserProfile,
                               @RequestParam(value = "plantID", required = false) Long plantID,
                               @RequestParam(value = "gardenID", required = false) Long gardenID,
                               @RequestParam(value = "userID", required = false) Long userID,
@@ -70,6 +71,8 @@ public class UploadImageController {
             RedirectService.addEndpoint("/edit-user?userID=" + userID);
         } else if (viewUser) {
             RedirectService.addEndpoint("/view-user-profile");
+        } else if (editUserProfile) {
+            RedirectService.addEndpoint("/edit-user-profile");
         }
         return "uploadImageTemplate";
     }
@@ -88,6 +91,7 @@ public class UploadImageController {
     public ResponseEntity<byte[]> getPlantImage(@RequestParam(value = "view-garden", required = false) boolean viewGarden,
                                                 @RequestParam(value = "edit-plant", required = false) boolean editPlant,
                                                 @RequestParam(value = "view-user-profile", required = false) boolean viewUser,
+                                                @RequestParam(value = "edit-user-profile-image", required = false) boolean editUserProfile,
                                                 @RequestParam(value = "gardenID", required = false) Long gardenID,
                                                 @RequestParam(value = "userID", required = false) Long userID,
                                                 @RequestParam(value = "plantID", required = false) Long plantID,
@@ -99,7 +103,7 @@ public class UploadImageController {
         headers.setContentType(MediaType.IMAGE_JPEG);
 
         //Add cases for required image (plant or user)
-        if (!viewUser) {
+        if (!viewUser && !editUserProfile) {
             Plant plant = plantService.findPlant(plantID).get();
             image = plant.getImage();
             model.addAttribute("id", plantID);

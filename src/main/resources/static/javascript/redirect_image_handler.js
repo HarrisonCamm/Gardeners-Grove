@@ -23,6 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case '/view-user-profile':
                 params.append('view-user-profile', 'true');
+                break;
+            case '/edit-user-profile':
+                params.append('edit-user-profile-image', 'true');
+                break;
             //Add more cases as needed
             default:
                 console.log('No match!');
@@ -40,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const buttonPlantID = buttonID.split('_')[1];
 
 
-            if (!params.has('view-user-profile')) {
+            if (!params.has('view-user-profile') && !params.has('edit-user-profile-image')) {
                 params.set('plantID', buttonPlantID);
             }
 
@@ -65,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const plantID = image.getAttribute('data-plant-id');
             params.set('plantID', plantID);
             console.log(params.toString())
-        } else if (params.get('view-user-profile') === 'true') {
+        } else if (params.get('view-user-profile') === 'true' || params.get('edit-user-profile-image') === 'true'){
             userID = image.getAttribute('data-user-id');
             params.set('userID', userID);
         }

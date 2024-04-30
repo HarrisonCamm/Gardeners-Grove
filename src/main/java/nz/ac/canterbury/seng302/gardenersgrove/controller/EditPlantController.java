@@ -62,6 +62,7 @@ public class EditPlantController {
         model.addAttribute("plantID", plantID); // Add gardenID to the model
         model.addAttribute("plant", plant);
         model.addAttribute("datePlanted", date);
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
 
         return "editPlantFormTemplate";
     }
@@ -121,7 +122,7 @@ public class EditPlantController {
      * @param file The image file to upload
      * @return Redirect string for JavaScript
      */
-    @PostMapping("edit-plant")
+    @PostMapping("edit-plant-picture")
     public String changePicture(@RequestParam("plantID") Long plantID,
                                 @RequestParam("file") MultipartFile file) {
         logger.info("POST /edit-plant");
