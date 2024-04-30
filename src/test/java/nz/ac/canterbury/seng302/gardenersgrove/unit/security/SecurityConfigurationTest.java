@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.unit.security;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.*;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
@@ -9,24 +11,26 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import java.util.Collections;
-
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -55,6 +59,15 @@ public class SecurityConfigurationTest {
     private UserService userService;
 
     @MockBean
+    private AuthenticationManager authenticationManager;
+
+    @MockBean
+    private HttpServletRequest request;
+
+    @MockBean
+    private HttpSession session;
+
+    @MockBean
     private UserRepository userRepository;
 
     @MockBean
@@ -68,6 +81,44 @@ public class SecurityConfigurationTest {
 
     @MockBean
     private PlantService plantService;
+
+    @BeforeEach
+    void setUp() {
+//        // Create new user
+//        User mockUser = new User("user@email.com", "User", "Name", "password");
+//
+//        // Grant user role
+//        mockUser.grantAuthority("ROLE_USER");
+//
+//        // Register user
+//        userService.addUser(mockUser);
+//
+//        // Auto-login security stuff
+//        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("user@email.com", "password");
+//        Authentication authentication = authenticationManager.authenticate(token);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        // Define the behavior of request.getSession() to return the mocked HttpSession
+//        when(request.getSession()).thenReturn(session);
+//
+//        // Set the authenticated user in the session
+//        request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+//
+//        // Set the authenticated user in the session
+//        request.getSession().setAttribute("user", mockUser);
+
+        // Jakes help code
+//        mockUser.grantAuthority("ROLE_USER");
+//
+//        Authentication authentication = Mockito.mock(Authentication.class);
+//        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+//
+//        when(authentication.getPrincipal()).thenReturn(mockUser);
+//        when(authentication.isAuthenticated()).thenReturn(true);
+//        when(securityContext.getAuthentication()).thenReturn(authentication);
+//
+//        SecurityContextHolder.setContext(securityContext);
+    }
 
     /**
      * Parameterized test to verify the URL access control for a user with the role "USER".
@@ -88,24 +139,10 @@ public class SecurityConfigurationTest {
             "/edit-plant,200",
             "/admin,403"
     })
-    @WithMockUser(username="user", roles={"USER"})
+//    @WithMockUser(value="user@email.com", authorities = {"ROLE_USER"})
     void testAccessControl_UserRole_ExpectedHttpStatus(String url, int expectedStatus) throws Exception {
-        User mockUser = new User("user@email.com", "User", "Name", "password");
-        MockHttpServletRequestBuilder request = get(url);
-        setupMockUserSession(request, mockUser);
-        mockMvc.perform(request)
+        mockMvc.perform(get(url))
                 .andExpect(status().is(expectedStatus));
-    }
-
-    /**
-     * Helper function to set up a mock user session for the requests
-     */
-    private void setupMockUserSession(MockHttpServletRequestBuilder requestBuilder, User user) {
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        securityContext.setAuthentication(authentication);
-        requestBuilder.sessionAttr(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext)
-                .sessionAttr("user", user);
     }
 }
 
