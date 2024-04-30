@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import org.apache.tomcat.util.http.parser.HttpParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,16 +56,17 @@ public class CreatePlantController {
     @GetMapping("/create-plant")
     public String form(@RequestParam(name = "gardenID") Long gardenID,
                        @ModelAttribute Plant plant,
-                       Model model) {
+                       Model model, HttpSession session) {
         logger.info("GET /create-plant");
 
         if (gardenService.findGarden(gardenID).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
         }
-        //Plant plant = new Plant(null, null);
-
-
-
+        Plant sessionPlant = (Plant) session.getAttribute("plant");
+        if (sessionPlant != null) {
+            plant = sessionPlant;
+            session.removeAttribute("plant");
+        }
         model.addAttribute("gardenID", gardenID); // Add gardenID to the model
         model.addAttribute("gardens", gardenService.getGardens());
         model.addAttribute("plant", plant);
