@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.validation;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -26,6 +27,7 @@ public class UserValidator {
 
     /**
      * Validates a user's name.
+     * Checks for valid characters and no spaces.
      *
      * @param name The name to validate.
      * @return true if the name is valid, false otherwise.
@@ -80,6 +82,7 @@ public class UserValidator {
 
     /**
      * Checks if a date of birth is valid.
+     * Checks if the date of birth is after the current date.
      *
      * @param dateOfBirth The date of birth to check.
      * @return true if the date of birth is valid, false otherwise.
@@ -112,6 +115,8 @@ public class UserValidator {
 
     /**
      * Validates a user's password.
+     * Ensures the password is at least 8 characters long,
+     * contains at least one uppercase letter, one lowercase letter, one digit and one special character.
      *
      * @param password The password to validate.
      * @return true if the password is valid, false otherwise.
@@ -123,5 +128,17 @@ public class UserValidator {
                 password.matches(".*[A-Z].*") &&
                 password.matches(".*[a-z].*") &&
                 Pattern.compile(specialCharacters).matcher(password).find();
+    }
+
+    /**
+     * Checks if the provided passwords match.
+     * For the checking retyping password.
+     *
+     * @param password1 the first password to compare
+     * @param password2 the second password to compare
+     * @return true if the passwords match, false otherwise
+     */
+    public static boolean doPasswordsMatch(String password1, String password2) {
+        return Objects.equals(password1, password2);
     }
 }

@@ -116,4 +116,10 @@ public class UserService {
     public User getUserByID(Long id) {
         return userRepository.findById(id).orElse(null);
     }
+    public void deleteUser(User user) {
+        userRepository.deleteUser(user);
+    }
+
+
+
 }

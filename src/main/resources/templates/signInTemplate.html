@@ -3,83 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
     <title>Sign In</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding-top: 5%;
-        }
-        .error, .form-control {
-            width: 300px;
-            font-size: 100%;
-        }
-        .error {
-            border-radius: 2px;
-            border: 1px solid red;
-            outline: 1px solid red;
-        }
-        .error:focus {
-            outline: 2px solid red;
-        }
-        .error-message {
-            color: red;
-            display: block;
-            width: 300px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        button, label {
-            font-size: 120%;
-        }
-        .buttons {
-            display: flex;
-            justify-content: flex-end;
-        }
-        h2 {
-            text-align: center;
-        }
-        .link {
-            font-size: 120%;
-        }
-        @media only screen and (orientation: portrait) {
-            h2 {
-                font-size: 300%;
-            }
-            button {
-                font-size: 200%;
-            }
-            label {
-                font-size: 200%;
-            }
-            .form-control {
-                font-size: 180%;
-                width: 540px;
-                border: 2px solid;
-                border-radius: 2px;
-            }
-            .form-control[disabled] {
-                border-color: #ccc;
-            }
-            .error {
-                font-size: 180%;
-                width: 540px;
-                border: 2px solid red;
-                border-radius: 2px;
-                outline: 2px solid red;
-            }
-            .error:focus {
-                outline: 4px solid red;
-            }
-            .error-message {
-                width: 540px;
-                font-size: 150%;
-            }
-            .link {
-                font-size: 200%;
-            }
-        }
-    </style>
+    <link href="/css/formStyles.css" rel="stylesheet"/>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('form').addEventListener('keydown', function(event) {
@@ -97,42 +21,47 @@
     </script>
 </head>
 <body>
-<div>
-    <h2>Sign In Form</h2>
+<div class="content">
     <div>
-        <!-- the 'novalidate' disables the default HTML5 validation -->
-        <form id="signInForm" th:action="@{/sign-in-form}" method="post" novalidate>
-            <label for="email"> Email: </label>
-            <br/>
-            <!-- Email input box -->
-            <input type="text" class="form-control" id="email"
-                   th:name="username" th:value="${email}" data-cy="email" required autofocus
-                   th:class="${signInError != null ? 'error' : 'form-control'}">
-            <br/>
-            <!-- Display error message if there is an error with the email format-->
-            <div id="emailError" class="error-message"></div>
-            <br/>
-            <!-- Password input box -->
-            <label for="password"> Password: </label>
-            <br/>
-            <input type="password" class="form-control" id="password"
-                   th:name="password" th:value="${password}" data-cy="password" required
-                   th:class="${signInError != null ? 'error' : 'form-control'}">
-            <br/>
-            <!-- Display error message if there is an error with the email or password validation -->
-            <div id="signInError" class="error-message"></div>
-            <div id="validityError" th:if="${signInError}" class="error-message" th:text="${signInError}"></div>
-            <br/>
+        <h2>Sign In Form</h2>
+        <div>
+            <!-- the 'novalidate' disables the default HTML5 validation -->
+            <form id="signInForm" th:action="@{/sign-in-form}" method="post" novalidate>
+                <div>
+                    <p class="message" id="message" th:text="${message}"></p>
+                </div>
+                <label for="email"> Email: </label>
+                <br/>
+                <!-- Email input box -->
+                <input type="text" class="form-control" id="email"
+                       th:name="username" th:value="${email}" data-cy="email" required autofocus
+                       th:class="${signInError != null ? 'error' : 'form-control'}">
+                <br/>
+                <!-- Display error message if there is an error with the email format-->
+                <div id="emailError" class="error-message"></div>
+                <br/>
+                <!-- Password input box -->
+                <label for="password"> Password: </label>
+                <br/>
+                <input type="password" class="form-control" id="password"
+                       th:name="password" th:value="${password}" data-cy="password" required
+                       th:class="${signInError != null ? 'error' : 'form-control'}">
+                <br/>
+                <!-- Display error message if there is an error with the email or password validation -->
+                <div id="signInError" class="error-message"></div>
+                <div id="validityError" th:if="${signInError}" class="error-message" th:text="${signInError}"></div>
+                <br/>
 
-            <div class="buttons">
-                <button type="submit" onclick="validateForm()" id="submitButton">Sign In</button>
-                &nbsp;
-                <a th:href="@{/home}" id="cancelButton">
-                    <button type="button">Cancel</button>
-                </a>
-            </div>
-        </form>
-        <p class="buttons"><a th:href="@{/register-form}" class="link">Not registered? Create an account</a></p>
+                <div class="buttons">
+                    <button type="submit" onclick="validateForm()" id="submitButton">Sign In</button>
+                    &nbsp;
+                    <a th:href="@{/home}" id="cancelButton">
+                        <button type="button">Cancel</button>
+                    </a>
+                </div>
+            </form>
+            <p class="buttons"><a th:href="@{/register-form}" class="link">Not registered? Create an account</a></p>
+        </div>
     </div>
 </div>
 <script>
@@ -145,6 +74,18 @@
                 emailInput.value = localStorage.getItem('email');
                 // Clear the email from the local storage
                 localStorage.removeItem('email');
+            }
+
+            let message = localStorage.getItem('message');
+            let messageElement = document.getElementById("message");
+            if (message) {
+                // Set the message to the h4 element
+                messageElement.innerText = message;
+                // Clear the message from the local storage
+                localStorage.removeItem('message');
+            } else {
+                // If there's no message, hide the h4 element
+                messageElement.style.display = 'none';
             }
         });
     function validateForm() {
