@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Optional;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.PlantValidator.*;
@@ -71,7 +69,8 @@ public class CreatePlantController {
         model.addAttribute("plantName", plant.getName());
         model.addAttribute("plantCount", plant.getCount());
         model.addAttribute("plantDescription", plant.getDescription());
-        model.addAttribute("plantDatePlanted", plant.getDatePlanted());
+        model.addAttribute("datePlanted", plant.getDatePlanted());
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
 
         return "createPlantFormTemplate";
     }
@@ -83,16 +82,19 @@ public class CreatePlantController {
     @PostMapping("/create-plant")
     public String submitForm(
             @RequestParam("gardenID") Long gardenID,
-            @RequestParam("plantDatePlanted") String datePlanted,
+            @RequestParam("datePlanted") String datePlanted,
             @ModelAttribute("plant") Plant plant,
             BindingResult bindingResult,
             Model model) throws Exception {
         logger.info("POST /create-plant");
 
+        String formattedDate;
+        formattedDate = convertDateFormat(datePlanted);
         //Validates input fields
         checkName(plant.getName(), bindingResult);
         checkDescription(plant.getDescription(), bindingResult);
         checkCount(plant.getCount(), bindingResult);
+        checkDateValidity(formattedDate, bindingResult);
 
         Garden ownerGarden = null;
         Optional<Garden> found = gardenService.findGarden(gardenID);
@@ -101,29 +103,39 @@ public class CreatePlantController {
         }
         ownerGarden = found.get();
 
-        Date date = null;
-        try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(datePlanted);
-        } catch (Exception e) {
-            bindingResult.addError(new ObjectError(datePlanted, "Date should be in the format dd/mm/yyyy"));
-        }
-        plant.setDatePlanted(date);
 
         plant.setCount(plant.getCount().replace(',', '.'));
 
         plant.setGarden(ownerGarden); // Set the garden for the plant
+
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+
         model.addAttribute("plantName", plant.getName());
         model.addAttribute("plantCount", plant.getCount());
         model.addAttribute("plantDescription", plant.getDescription());
-        model.addAttribute("plantDatePlanted", plant.getDatePlanted());
+        model.addAttribute("datePlanted", plant.getDatePlanted());
 
-        if (bindingResult.hasErrors()) {
-            // If there are validation errors, return to the form page
+        if (validatePlantName(plant.getName()) != null) {
+            model.addAttribute("nameError", validatePlantName(plant.getName()).getDefaultMessage());
+        }
+
+        if (validatePlantCount(plant.getCount()) != null) {
+            model.addAttribute("countError", validatePlantCount(plant.getCount()).getDefaultMessage());
+        }
+
+        if (validatePlantDescription(plant.getDescription()) != null) {
+            model.addAttribute("descriptionError", validatePlantDescription(plant.getDescription()).getDefaultMessage());
+        }
+
+        if (validatePlantDate(formattedDate) != null) {
+            model.addAttribute("dateError", validatePlantDate(formattedDate).getDefaultMessage());
+        }
+        // If there are validation errors, return to the form page
+        if (model.containsAttribute("nameError") || model.containsAttribute("countError")
+                || model.containsAttribute("descriptionError") || model.containsAttribute("dateError")) {
             model.addAttribute("gardenID", gardenID); // Add gardenID to the model before forwarding to error display page
-
-
             return "createPlantFormTemplate";
-        } else {
+        }else {
             plantService.addPlant(plant);
             return "redirect:/view-garden?gardenID=" + plant.getGarden().getId();
         }
@@ -152,4 +164,27 @@ public class CreatePlantController {
         }
     }
 
+    private ObjectError checkDateValidity(String date, BindingResult bindingResult) {
+        return validatePlantDate(date);
+    }
+    public static String convertDateFormat(String dateInput) {
+        String[] parts = dateInput.split("/");
+        if (dateInput.length() < 10) {
+            return "0000-00-00";
+        } else {
+            // Reconstruct the date string in yyyy-MM-dd format
+            String yyyy = parts[2];
+            String mm = parts[1];
+            String dd = parts[0];
+
+            // Ensure mm and dd are formatted with leading zeros if necessary
+            if (mm.length() == 1) {
+                mm = "0" + mm;
+            }
+            if (dd.length() == 1) {
+                dd = "0" + dd;
+            }
+            return yyyy + "-" + mm + "-" + dd;
+        }
+    }
 }

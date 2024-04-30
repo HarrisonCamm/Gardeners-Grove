@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
@@ -27,6 +29,7 @@ import static nz.ac.canterbury.seng302.gardenersgrove.validation.PlantValidator.
 
 @Controller
 public class EditPlantController {
+
     Logger logger = LoggerFactory.getLogger(EditPlantController.class);
 
     private final PlantService plantService;
@@ -77,6 +80,11 @@ public class EditPlantController {
 
         ArrayList<FieldError> errors = checkFields(newPlant.getName(), newPlant.getDescription(), newPlant.getCount());
 
+        String formattedDate;
+        formattedDate = convertDateFormat(datePlanted);
+        //Validates input fields
+        checkDateValidity(formattedDate, bindingResult);
+
         //Parses the datePlanted string into a Date object or leave as null if date is invalid
         //Currently a dateError can never be caused
         Date date = null;
@@ -93,9 +101,10 @@ public class EditPlantController {
         plant.setCount(newPlant.getCount());
         plant.setDescription(newPlant.getDescription());
 
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         model.addAttribute("plantID", plantID); // Add gardenID to the model
         //Ternary operator to assign null date or assign a formatted date
-        model.addAttribute("datePlanted", (date != null) ? new SimpleDateFormat("yyyy-MM-dd").format(date) : "");
+        model.addAttribute("datePlanted", (date != null) ? new SimpleDateFormat("yyyy-MM-dd").format(formattedDate) : "");
 
 
         if (!errors.isEmpty()) {
@@ -146,6 +155,34 @@ public class EditPlantController {
         Plant plant = found.get();
 
         return plant;
+    }
+
+
+    private void checkDateValidity(String date, BindingResult bindingResult) {
+        ObjectError dateError = validatePlantDate(date);
+        if (dateError != null) {
+            bindingResult.addError(dateError);
+        }
+    }
+    public static String convertDateFormat(String dateInput) {
+        String[] parts = dateInput.split("/");
+        if (dateInput.length() < 10) {
+            return "0000-00-00";
+        } else {
+            // Reconstruct the date string in yyyy-MM-dd format
+            String yyyy = parts[2];
+            String mm = parts[1];
+            String dd = parts[0];
+
+            // Ensure mm and dd are formatted with leading zeros if necessary
+            if (mm.length() == 1) {
+                mm = "0" + mm;
+            }
+            if (dd.length() == 1) {
+                dd = "0" + dd;
+            }
+            return yyyy + "-" + mm + "-" + dd;
+        }
     }
 
 }

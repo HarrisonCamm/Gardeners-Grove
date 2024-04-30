@@ -64,7 +64,7 @@ li {
 
 /* Navigation link styles */
 .navLink {
-    display: block;
+    /*display: block;*/
     color: white;
     text-align: center;
     padding: 14px 16px;
@@ -180,6 +180,7 @@ input {
     width: 300px;
     font-size: 100%;
     background-color: #b2eab2;
+    border-radius: 2px;
 }
 p {
     margin: 0
