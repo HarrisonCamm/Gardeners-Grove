@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 params.append('edit-plant', 'true');
                 params.append('plantID', plantID);
                 break;
-            case 'create-plant':
-                params.append('create-plant', 'true');
+            case '/create-plant':
+                params.append('create-plant-picture', 'true');
                 gardenID = url.searchParams.get('gardenID');
                 params.append('gardenID', gardenID);
                 break;
@@ -50,11 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const buttonPlantID = buttonID.split('_')[1];
 
-            if (!params.has('view-user-profile') && !params.has('edit-user-profile-image')) {
+            if (!params.has('view-user-profile') && !params.has('edit-user-profile-image') && !params.has('create-plant-picture')) {
                 params.set('plantID', buttonPlantID);
             }
 
             const fetchUrl = '/upload-image?' + params.toString();
+            console.log(fetchUrl);
 
             fetch(fetchUrl, {
                 method: 'GET',
@@ -79,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             userID = image.getAttribute('data-user-id');
             params.set('userID', userID);
         }
-        if (!params.has('create-plant')) { //We don't to get the image if we are creating a plant
+        if (!params.has('create-plant-picture')) { //We don't to get the image if we are creating a plant
             fetch('/get-image?' + params.toString(), {
             })
                 .then(response => response.blob())

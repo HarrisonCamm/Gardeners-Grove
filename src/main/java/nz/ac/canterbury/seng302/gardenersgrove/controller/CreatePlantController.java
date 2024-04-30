@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
@@ -17,12 +18,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -145,6 +149,20 @@ public class CreatePlantController {
             plantService.addPlant(plant);
             return "redirect:/view-garden?gardenID=" + plant.getGarden().getId();
         }
+    }
+
+    @PostMapping("/create-plant-picture")
+    public String uploadImage(@RequestParam("gardenID") Long gardenID,
+                              @RequestParam("file") MultipartFile file,
+                              RedirectAttributes redirectAttributes) throws IOException, ParseException {
+        logger.info("POST /create-plant-picture");
+        Garden garden = gardenService.findGarden(gardenID).get();
+
+        Plant plant = new Plant(garden, "", "", "0", "11/11/1111", file.getOriginalFilename());
+        redirectAttributes.addFlashAttribute("plant", plant);
+        plant.setImage(file.getBytes());
+
+        return "redirect:/create-plant?gardenID=" + plant.getGarden().getId();
     }
 
 
