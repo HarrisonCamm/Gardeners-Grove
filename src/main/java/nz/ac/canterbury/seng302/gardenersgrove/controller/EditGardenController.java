@@ -125,8 +125,6 @@ public class EditGardenController {
 
         model.addAttribute("garden", garden);
 
-        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
-
         model.addAttribute("location.streetAddress", gardenLocation.getStreetAddress());
         model.addAttribute("location.suburb", gardenLocation.getSuburb());
         model.addAttribute("location.city", gardenLocation.getCity());
