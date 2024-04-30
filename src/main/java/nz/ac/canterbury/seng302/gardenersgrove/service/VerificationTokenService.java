@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -24,9 +25,13 @@ public class VerificationTokenService {
      * @return the created verification token
      */
     public VerificationToken createVerificationToken(User user) {
-        String token = UUID.randomUUID().toString();
-        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(10);
-//        LocalDateTime expiryDate = LocalDateTime.now().plusSeconds(10);
+        Random random = new Random();
+
+        // Generate a random 6-digit number
+        String token = String.valueOf(random.nextInt(900000) + 100000);
+//        String token = UUID.randomUUID().toString();
+//        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(10);
+        LocalDateTime expiryDate = LocalDateTime.now().plusSeconds(30);
         VerificationToken verificationToken = new VerificationToken(user, token, expiryDate);
         return verificationTokenRepository.save(verificationToken);
     }
@@ -71,5 +76,9 @@ public class VerificationTokenService {
     public void cleanupExpiredTokens() {
         verificationTokenRepository.deleteAllExpiredSince(LocalDateTime.now());
 
+    }
+
+    public List<VerificationToken> findAllTokens() {
+        return verificationTokenRepository.findAll();
     }
 }

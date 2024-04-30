@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Controller for registration form.
@@ -56,6 +58,15 @@ public class ConfirmRegistrationController {
     @GetMapping("/confirm-registration")
     public String form(Model model) {
         logger.info("GET /confirm-registration");
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (!verificationTokenService.findAllTokens().isEmpty()) {
+                    clearExpiredUsers();
+                }
+            }
+        }, 0, 5000);
         return "confirmRegistrationTemplate";
     }
 
@@ -75,19 +86,7 @@ public class ConfirmRegistrationController {
 
         model.addAttribute("registrationCode", registrationCode);
 
-        verificationTokenService.cleanupExpiredTokens();
-
-        List<Authority> authorityList = authorityService.findByRole("ROLE_UNVERIFIED");
-
-        for (Authority authority: authorityList) {
-            User user = authority.getUser();
-            VerificationToken token = verificationTokenService.getTokenByUser(user);
-            if (token == null) {
-                authorityService.deleteByUser(user);
-                userService.deleteUser(user);
-            }
-        }
-
+        clearExpiredUsers();
 
 
         // Check if the registration code is valid
@@ -120,5 +119,21 @@ public class ConfirmRegistrationController {
             return "confirmRegistrationTemplate";
         }
 
+    }
+
+    public void clearExpiredUsers() {
+        verificationTokenService.cleanupExpiredTokens();
+
+        List<Authority> authorityList = authorityService.findByRole("ROLE_UNVERIFIED");
+        if (!authorityList.isEmpty()) {
+            for (Authority authority: authorityList) {
+                User user = authority.getUser();
+                VerificationToken token = verificationTokenService.getTokenByUser(user);
+                if (token == null) {
+                    authorityService.deleteByUser(user);
+                    userService.deleteUser(user);
+                }
+            }
+        }
     }
 }
