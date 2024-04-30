@@ -113,7 +113,7 @@
                     <br/>
 
                     <!-- Submit Changed Password and Cancel Change Password Buttons -->
-                    <div class="buttons">
+                    <div class="buttons-centre">
                         <button type="submit" id="submitNewPasswordButton">Change Password</button>
                         &nbsp;
                         <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
@@ -156,7 +156,7 @@
                 <br/>
                 <div th:if="${ageError}" class="error-message" th:text="${ageError}"></div>
                 <br/>
-                <div class="buttons">
+                <div class="buttons-centre">
                     <button type="submit" id="submitButton">Submit</button>
                     &nbsp;
                     <a th:href="@{/view-user-profile}" id="cancelButton">

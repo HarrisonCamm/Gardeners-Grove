@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>View Garden</title>
-    <link href="/css/gardenStyles.css" rel="stylesheet">
+    <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
+    <link th:href="@{/css/navBar.css}" rel="stylesheet">
 </head>
 <body>
-    <ul class="navBar">
-        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>
-        <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
-    </ul>
+<!--    <ul class="navBar">-->
+<!--        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>-->
+<!--        <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>-->
+<!--    </ul>-->
+    <ul th:insert="/fragments/navBar.html :: navBar"></ul>
     <div class="wrapper">
         <div class="container">
             <table class="sideBar">
@@ -26,35 +28,37 @@
             </table>
         </div>
         <div class="gardenContainer">
-            <div class="containerRow">
-                <label> Garden Name: </label>
-                <h3 th:text="${gardenName}">  </h3>
+            <div class="gardenDetails">
+                <div class="containerRow">
+                    <label> Garden Name: </label>
+                    <h3 th:text="${gardenName}">  </h3>
+                </div>
+                <div class="containerRow">
+                    <label>Garden Location: </label>
+                    <h3 th:text="${gardenLocation}">  </h3>
+                </div>
+                <div class="containerRow" th:classappend="${gardenSize == '' ? 'disabled' : ''}">
+                    <label>Garden Size: </label>
+                    <h3 th:text="${gardenSize}"></h3>
+                </div>
+                <div class="buttons-right">
+                    <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}">
+                        <button type="button">Edit</button>
+                    </a>
+                    &nbsp;
+                    <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}">
+                        <button type="button">Add new plant</button>
+                    </a>
+                </div>
             </div>
-
-            <br/>
-            <div class="containerRow">
-                <label>Garden Location: </label>
-                <h3 th:text="${gardenLocation}">  </h3>
-            </div>
-            <br/>
-            <div class="containerRow" th:classappend="${gardenSize == '' ? 'disabled' : ''}">
-                <label>Garden Size: </label>
-                <h3 th:text="${gardenSize}"></h3>
-            </div>
-
-            <br />
-            <a class="button" th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" >Edit</a>
-            <br />
-            <a class="button" th:href="@{'/create-plant?gardenID=' + ${gardenID}}" >Add new plant</a>
-            <br />
             <div class="plantContainer">
-                <table >
+                <table>
                     <thead>
                     <tr>
-                        <th>Picture</th>
-                        <th>Plant Name</th>
-                        <th>Count</th>
-                        <th>Description</th>
+                        <th>Picture &nbsp;</th>
+                        <th>Plant Name &nbsp;</th>
+                        <th>Count &nbsp;</th>
+                        <th>Description &nbsp;</th>
                         <th>Date Planted</th>
                     </tr>
                     </thead>
@@ -74,3 +78,21 @@
     </div>
 </body>
 </html>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const plantContainer = document.querySelector('.plantContainer');
+        const gardenDetails = document.querySelector('.gardenDetails');
+
+        // Adjust width of gardenDetails initially
+        adjustWidth();
+
+        // Adjust width of gardenDetails when window is resized
+        window.addEventListener('resize', adjustWidth);
+
+        function adjustWidth() {
+            const width = plantContainer.offsetWidth;
+            gardenDetails.style.width = `${width}px`;
+        }
+    });
+
+</script>

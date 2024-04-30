@@ -2,15 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create Plant</title>
+    <title>Edit Plant</title>
     <link href="/css/gardenStyles.css" rel="stylesheet">
+    <link th:href="@{/css/navBar.css}" rel="stylesheet">
 </head>
 <body>
-    <ul class="navBar">
-        <li><a class="navLink" th:href="@{/create-garden}">Create a Garden</a></li>
-        <li><a class="navLink" th:href="@{/view-gardens}">View Gardens</a></li>
-    </ul>
-
+<!--    <ul class="navBar">-->
+<!--        <li><a class="navLink" th:href="@{/create-garden}">Create a Garden</a></li>-->
+<!--        <li><a class="navLink" th:href="@{/view-gardens}">View Gardens</a></li>-->
+<!--    </ul>-->
+    <ul th:insert="/fragments/navBar.html :: navBar"></ul>
     <br/>
 
     <div class="formContainer">
@@ -36,15 +37,15 @@
 <!--                <input type="text" name="datePlanted" id="datePlanted" placeholder="01/01/2024" th:value="${datePlanted}">-->
             </div>
             <br/>
-            <button type="submit">Save</button>
+
             <div class="errors" th:if="${#fields.hasErrors('global')}">
                 <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
             </div>
+            <button type="submit">Save</button>
+            <a th:href="@{${lastEndpoint}}" id="cancelButton">
+                <button type="button">Cancel</button>
+            </a>
         </form>
-
-        <a th:href="@{${lastEndpoint}}" id="cancelButton">
-            <button type="button">Cancel</button>
-        </a>
     </div>
     <br/>
 </body>
