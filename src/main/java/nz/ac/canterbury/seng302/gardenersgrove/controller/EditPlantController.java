@@ -84,23 +84,18 @@ public class EditPlantController {
         }
         Plant plant = found.get();
 
+        String formattedDate;
+        formattedDate = convertDateFormat(datePlanted);
         //Validates input fields
         checkName(newPlant.getName(), bindingResult);
         checkDescription(newPlant.getDescription(), bindingResult);
         checkCount(newPlant.getCount(), bindingResult);
+        checkDateValidity(formattedDate, bindingResult);
 
-        String formattedDate;
-        formattedDate = convertDateFormat(datePlanted);
-
-        if (checkDateValidity(formattedDate)) {
-            plant.setDatePlanted(formattedDate);
-        } else {
-            model.addAttribute("dateError", "error");
-        }
 
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         model.addAttribute("plantID", plantID); // Add gardenID to the model
-        model.addAttribute("datePlanted", datePlanted);
+        model.addAttribute("datePlanted", formattedDate);
 
         if (bindingResult.hasErrors()) {
             // If there are validation errors, return to the form page
@@ -133,14 +128,10 @@ public class EditPlantController {
     }
 
 
-    public static boolean checkDateValidity(String dateOfBirth) {
-        try {
-            LocalDate dob = LocalDate.parse(dateOfBirth);
-            return true;
-            // Continue with further processing
-        } catch (DateTimeParseException e) {
-            return false;
-            // Handle the case where the date string doesn't match the expected format
+    private void checkDateValidity(String date, BindingResult bindingResult) {
+        ObjectError dateError = validatePlantDate(date);
+        if (dateError != null) {
+            bindingResult.addError(dateError);
         }
     }
     public static String convertDateFormat(String dateInput) {

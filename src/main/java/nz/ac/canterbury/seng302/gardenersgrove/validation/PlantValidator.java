@@ -2,6 +2,8 @@ package nz.ac.canterbury.seng302.gardenersgrove.validation;
 
 import org.springframework.validation.ObjectError;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.regex.Pattern;
 
 public class PlantValidator {
@@ -42,6 +44,18 @@ public class PlantValidator {
             return new ObjectError("plantDescription", "Plant description must be less than 512 characters");
         }
         return null;
+    }
+
+    public static ObjectError validatePlantDate(String date) {
+        try {
+            LocalDate dob = LocalDate.parse(date);
+            return null;
+            // Continue with further processing
+        } catch (DateTimeParseException e) {
+            return new ObjectError("plantDate", "Date is not in valid format, DD/MM/YYYY");
+
+            // Handle the case where the date string doesn't match the expected format
+        }
     }
 
     /**

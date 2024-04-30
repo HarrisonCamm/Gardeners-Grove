@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Create Plant</title>
@@ -19,45 +19,47 @@
                 <input type="hidden" name="gardenID" th:value="${gardenID}">
                 <label for="plantName"> Name: </label>
                 <br/>
-                <input type="text" id="plantName" placeholder="Name" th:field="*{name}">
+                <input type="text" id="plantName" th:field="*{name}"
+                       th:class="${nameError != null ? 'error' : ''}" autofocus>
                 <br/>
+                <div th:if="${nameError}" class="error-message" th:text="${nameError}"></div>
                 <br/>
                 <label for="plantCount"> Count: </label>
                 <br/>
-                <input type="text" id="plantCount" placeholder="Count" th:field="*{count}">
+                <input type="text" id="plantCount" th:field="*{count}"
+                       th:class="${countError != null ? 'error' : ''}" autofocus>
                 <br/>
+                <div th:if="${countError}" class="error-message" th:text="${countError}"></div>
                 <br/>
                 <label for="plantDescription"> Description: </label>
                 <br/>
-                <input type="text" id="plantDescription" placeholder="Description" th:field="*{description}">
+                <input type="text" id="plantDescription" th:field="*{description}"
+                       th:class="${descriptionError != null ? 'error' : ''}" autofocus>
                 <br/>
+                <div th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></div>
                 <br/>
-                <label for="plantDatePlanted"> Date Planted: </label>
+                <label for="datePlanted"> Date Planted: </label>
                 <br/>
-                <input type="text" name="plantDatePlanted" id="plantDatePlanted"
-                       th:name="plantDatePlanted" th:value="${plantDatePlanted}"
+                <input type="text" name="datePlanted" id="datePlanted"
+                       th:name="datePlanted" th:value="${datePlanted}"
                        placeholder="DD/MM/YYYY"
-                       data-cy="plantDatePlanted" autofocus
-                       oninput="formatDateOfBirth(this)">
+                       data-cy="datePlanted"
+                       oninput="formatDateOfBirth(this)"
+                       th:class="${dateError != null ? 'error' : ''}" autofocus>
                 <br/>
+                <div th:if="${dateError}" class="error-message" th:text="${dateError}"></div>
                 <br/>
                 <div class="buttons">
                     <button type="submit">Create</button>
                     &nbsp;
-                    <form th:action="@{/Cancel}" method="get">
-                        <button type="submit">Cancel</button>
-                    </form>
-                </div>
-                <div class="errors" th:if="${#fields.hasErrors('global')}">
-                    <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
+                    <a th:href="@{${lastEndpoint}}" id="cancelButton">
+                        <button type="button">Cancel</button>
+                    </a>
                 </div>
             </form>
         </div>
     </div>
     <br/>
-    <a th:href="@{${lastEndpoint}}" id="cancelButton">
-        <button type="button">Cancel</button>
-    </a>
 </body>
 </html>
 <script>
@@ -82,6 +84,3 @@
         input.value = formattedValue;
     }
 </script>
-<!--<script>-->
-<!--    $('#date').datepicker({ dateFormat: 'dd-mm-yy' })-->
-<!--</script>-->
