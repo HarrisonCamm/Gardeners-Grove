@@ -4,49 +4,8 @@
     <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
     <title>User Profile</title>
     <!-- Navbar styling -->
-    <link href="/css/navBar.css" rel="stylesheet">
-    <style>
-      .content {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding-top: 5%;
-      }
-      .form-control {
-        width: 300px;
-        font-size: 100%;
-      }
-      button, label {
-        font-size: 120%;
-      }
-      .buttons-right {
-        display: flex;
-        justify-content: flex-end;
-      }
-      h2 {
-        text-align: center;
-      }
-      @media only screen and (orientation: portrait) {
-        h2 {
-          font-size: 300%;
-        }
-        button {
-          font-size: 200%;
-        }
-        label {
-          font-size: 200%;
-        }
-        .form-control {
-          font-size: 180%;
-          width: 540px;
-          border: 2px solid;
-          border-radius: 2px;
-        }
-        .form-control[disabled] {
-          border-color: #ccc;
-        }
-      }
-    </style>
+    <link href="/css/navBar.css" rel="stylesheet"/>
+    <link href="/css/formStyles.css" rel="stylesheet"/>
   </head>
   <body>
   <!-- Navigation Bar Fragment -->
@@ -54,7 +13,7 @@
   <div class="content">
     <div>
       <h2>User Profile</h2>
-      <td><img th:src="@{/images/defaultUserImage.png}" alt=""></td>
+      <td><img class="profile-picture" th:src="@{/images/defaultUserImage.png}" alt=""></td>
       <div>
       <form>
         <label for="name">Name: </label>

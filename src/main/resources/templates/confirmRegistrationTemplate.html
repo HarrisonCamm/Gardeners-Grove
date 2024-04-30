@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
+    <title>Confirm Registration</title>
+    <script>
+        function storeMessage() {
+            localStorage.setItem('message',"Your account has been activated, please log in");
+        }
+    </script>
+    <link th:href="@{/css/formStyles.css}" rel="stylesheet">
+</head>
+<body>
+<div class="content">
+    <div>
+        <h2>Confirm Registration</h2>
+        <div>
+            <form th:action="@{/confirm-registration}" method="post" novalidate>
+            <label for="registrationCode"> Registration Code: </label>
+                <br/>
+                <input type="text" class="form-control" id="registrationCode"
+                       th:name="registrationCode" th:value="${registrationCode}" data-cy="registrationCode"
+                       th:class="${signupCodeError != null ? 'error' : 'form-control'}" autofocus>
+                <br/>
+                <div th:if="${signupCodeError}" class="error-message" th:text="${signupCodeError}"></div>
+                <br/>
+                <div class="buttons">
+                    <button type="submit" onclick="storeMessage()" id="submitButton">Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
