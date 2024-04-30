@@ -76,7 +76,8 @@ public class LostPasswordFormController {
         } else {
             // Email is valid
 
-            model.addAttribute("confirmationMessage", "An email was sent to the address if it was recognised");
+            model.addAttribute("confirmationMessage", "An email was sent to the address if it was recognised."
+            + "<br/>You can close this tab now.");
 
             if (userService.emailExists(email)) {
                 logger.info("Email is registered in system: " + email);
