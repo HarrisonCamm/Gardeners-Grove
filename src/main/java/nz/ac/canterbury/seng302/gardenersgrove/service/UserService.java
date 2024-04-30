@@ -65,11 +65,12 @@ public class UserService {
     }
 
     public User updateUser(User user, String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setNoLastName(noLastName);
-        user.setEmail(email);
-        user.setDateOfBirth(dateOfBirth);
+//        user.setFirstName(firstName);
+//        user.setLastName(lastName);
+//        user.setNoLastName(noLastName);
+//        user.setEmail(email);
+//        user.setDateOfBirth(dateOfBirth);
+        user.setValues(firstName, lastName, noLastName, email, dateOfBirth);
         return userRepository.save(user);
     }
 
