@@ -84,10 +84,9 @@ public class ConfirmRegistrationController {
             VerificationToken token = verificationTokenService.getTokenByUser(user);
             if (token == null) {
                 authorityService.deleteByUser(user);
+                userService.deleteUser(user);
             }
         }
-
-
 
         // Check if the registration code is valid
         if (verificationTokenService.validateToken(registrationCode)) {
