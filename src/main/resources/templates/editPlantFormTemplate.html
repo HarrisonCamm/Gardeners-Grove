@@ -4,50 +4,58 @@
     <meta charset="UTF-8">
     <title>Create Plant</title>
     <link href="/css/gardenStyles.css" rel="stylesheet">
+    <link th:href="@{/css/navBar.css}" rel="stylesheet">
+
 </head>
 <body>
-    <ul class="navBar">
-        <li><a class="navLink" th:href="@{/create-garden}">Create a Garden</a></li>
-        <li><a class="navLink" th:href="@{/view-gardens}">View Gardens</a></li>
-    </ul>
-
+<!-- Navigation Bar Fragment -->
+<ul th:insert="/fragments/navBar.html :: navBar"></ul>
+<div class="wrapper">
     <br/>
+    <div class="form">
+        <h2>Edit Plant</h2>
+        <div class="formContainer">
+            <form th:action="@{/edit-plant}" method="post" th:object="${plant}">
+                <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" name="plantID" th:value="${plantID}">
 
-    <div class="formContainer">
-        <h1>Edit Plant</h1>
-        <form th:action="@{/edit-plant}" method="post" th:object="${plant}">
-            <input type="hidden" name="_method" value="PUT">
-            <input type="hidden" name="plantID" th:value="${plantID}">
-            <div class="formRow">
-                <label for="plantName"> Name: </label>
-                <input type="text" id="plantName" maxlength="254" placeholder="Name" th:value="*{name}" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
-            </div>
-            <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
+                <div>
+                    <label for="plantName"> Name: </label>
+                    <br/>
+                    <input type="text" id="plantName" maxlength="254" placeholder="Name" th:value="*{name}" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
+                </div>
+                <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
 
-            <div class="formRow">
-                <label for="plantCount"> Count: </label>
-                <input type="text" id="plantCount" placeholder="Count" th:value="*{count}" th:field="*{count}" th:classappend="${countError} ? 'error' : ''">
-            </div>
-            <p th:if="${countError}" class="error-message" th:text="${countError}"></p>
+                <div>
+                    <label for="plantCount"> Count: </label>
+                    <br/>
+                    <input type="text" id="plantCount" placeholder="Count" th:value="*{count}" th:field="*{count}" th:classappend="${countError} ? 'error' : ''">
+                </div>
+                <p th:if="${countError}" class="error-message" th:text="${countError}"></p>
 
-            <div class="formRow">
-                <label for="plantDescription"> Description: </label>
-                <input type="text" id="plantDescription" placeholder="Description" th:value="*{description}" th:field="*{description}" th:classappend="${descriptionError} ? 'error' : ''">
-            </div>
-            <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
+                <div>
+                    <label for="plantDescription"> Description: </label>
+                    <br/>
+                    <input type="text" id="plantDescription" placeholder="Description" th:value="*{description}" th:field="*{description}" th:classappend="${descriptionError} ? 'error' : ''">
+                </div>
+                <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
 
-            <div class="formRow">
-                <label for="datePlanted"> Date Planted: </label>
-                <input type="date" name="datePlanted" id="datePlanted" th:value="${datePlanted}">
-            </div>
-            <br/>
-            <button type="submit">Save</button>
-        </form>
+                <div class="formRow">
+                    <label for="datePlanted"> Date Planted: </label>
+                    <br/>
+                    <input type="date" name="datePlanted" id="datePlanted" th:value="${datePlanted}">
+                </div>
+                <br/>
+                    <button type="submit">Save</button>
 
-        <form th:action="@{/Cancel}" method="get">
-            <button type="submit">Cancel</button>
-        </form>
+            </form>
+            <form th:action="@{/Cancel}" method="get">
+                <button type="submit">Cancel</button>
+            </form>
+        </div>
     </div>
-    <br/>
+</div>
+</br>
+
 </body>
 </html>
