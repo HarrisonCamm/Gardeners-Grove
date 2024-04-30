@@ -1,5 +1,8 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
@@ -10,7 +13,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import static nz.ac.canterbury.seng302.gardenersgrove.validation.UserValidator.isPasswordValid;
 
 @Controller
 public class ResetPasswordFormController {
@@ -18,27 +24,109 @@ public class ResetPasswordFormController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final VerificationTokenService verificationTokenService;
+    private final MailService mailService;
+
     @Autowired
     public ResetPasswordFormController(UserService userService, AuthenticationManager authenticationManager,
-                                      VerificationTokenService verificationTokenService) {
+                                      VerificationTokenService verificationTokenService, MailService mailService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.verificationTokenService = verificationTokenService;
+        this.mailService = mailService;
     }
 
     /**
      * @param model (map-like) representation of name, language and isJava boolean for use in thymeleaf
-     * @return thymeleaf lostPasswordFormTemplate
+     * @return thymeleaf resetPasswordFormTemplate
      */
     @GetMapping("/reset-password-form") //todo implement token in URL
     public String form(@RequestParam(name = "token", required = false) String token,
-                       Model model) {
+                       Model model) { //todo change token required
         logger.info("GET /reset-password-form");
         model.addAttribute("token", "");
 
-        // todo validate token and redirect to login with expired message if so
+        // If token is expired or null
+//        if (!verificationTokenService.validateToken(token)) {
+//            model.addAttribute("expiredTokenError", "Reset password link has expired");
+//            return "redirect:/sign-in-form"; //todo show error message in sign in form
+//
+//        }
+
         return "resetPasswordFormTemplate";
     }
 
+    /**
+     * Posts a form response with email
+     * @param newPassword newPassword set by user
+     * @param retypedPassword user retyped password
+     * @param token the token in the URL from the email
+     * @param model (map-like) representation for use in thymeleaf,
+     *              with values being set to relevant parameters provided
+     * @return thymeleaf lostPasswordFormTemplate and popup message
+     */
+    @PostMapping("/reset-password-form")
+    public String submitForm(@RequestParam(name="newPassword") String newPassword,
+                             @RequestParam(name = "retypedPassword") String retypedPassword,
+                             @RequestParam(name = "token", required = false) String token,
+                             HttpServletRequest request,
+                             Model model) { //todo change token requirement after manual testing
+        logger.info("POST /reset-password-form");
+
+        model.addAttribute("newPassword", newPassword);
+        model.addAttribute("retypePassword", retypedPassword);
+
+        // Check if the new password is empty
+        if (newPassword == null || newPassword.isEmpty()) {
+            model.addAttribute("newPasswordError", "New password is required.");
+        } else {
+            // Validate the new password strength
+            if (!isPasswordValid(newPassword)) {
+                model.addAttribute("newPasswordError", "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            }
+        }
+
+        // Check if the retyped password is empty
+        if (retypedPassword == null || retypedPassword.isEmpty()) {
+            model.addAttribute("passwordMatchError", "Retyping the new password is required.");
+        } else {
+            // Check if the new password and retype password match
+            if (!newPassword.equals(retypedPassword)) {
+                model.addAttribute("passwordMatchError", "The new passwords do not match");
+            }
+        }
+
+        if (model.containsAttribute("newPasswordError") || model.containsAttribute("passwordMatchError")) {
+            return "resetPasswordFormTemplate";
+        } else {
+            // new password and retyped password are valid
+            User currentUser = verificationTokenService.getUserByToken(token);
+
+            userService.updateUserPassword(currentUser, newPassword);
+            // send user confirmation email of password change
+            String emailAddress = currentUser.getEmail();
+            String emailSubject = "Password Change Confirmation";
+            String emailText = "Dear " + currentUser.getFirstName() + ",\n\n" +
+                    "Your password has been successfully updated. If you did not make this change, please contact support immediately.\n\n" +
+                    "Best,\n" +
+                    "The Gardener's Grove Team";
+
+            // Try to send the email
+            try {
+                mailService.sendSimpleMessage(emailAddress, emailSubject, emailText);
+                logger.info("Sent confirmation email to " + emailAddress);
+
+                // Password updated, allow user to login page
+                // todo check authentication of user??
+
+                return "redirect:/sign-in-form";
+            } catch (Exception e) {
+                // Log the error
+                logger.error("Failed to send password change confirmation email to " + emailAddress, e);
+                // TODO display an error message
+
+            }
+        }
+        return "resetPasswordFormTemplate"; //technically this line should never run(?)
+    }
 
 }
