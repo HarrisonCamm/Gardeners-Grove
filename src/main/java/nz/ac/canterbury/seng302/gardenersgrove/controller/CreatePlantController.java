@@ -2,9 +2,11 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +38,13 @@ public class CreatePlantController {
 
     private final PlantService plantService;
     private final GardenService gardenService;
+    private final UserService userService;
 
     @Autowired
-    public CreatePlantController(PlantService plantService, GardenService gardenService) {
+    public CreatePlantController(PlantService plantService, GardenService gardenService, UserService userService) {
         this.plantService = plantService;
         this.gardenService = gardenService;
+        this.userService = userService;
     }
 
     @GetMapping("/create-plant")
@@ -49,10 +53,12 @@ public class CreatePlantController {
                        Model model) {
         logger.info("GET /create-plant");
 
-        if (gardenService.findGarden(gardenID).isEmpty()) {
+        User currentUser = userService.getAuthenicatedUser();
+        Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
+        if (foundGarden.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
-        }
-        //Plant plant = new Plant(null, null);
+        } else if (!foundGarden.get().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot create a plant for this garden.");
 
         RedirectService.addEndpoint("/create-plant?gardenID=" + gardenID);
 
@@ -60,13 +66,7 @@ public class CreatePlantController {
         model.addAttribute("gardens", gardenService.getGardens());
         model.addAttribute("plant", plant);
 
-
-        Garden ownerGarden = null;
-        Optional<Garden> found = gardenService.findGarden(gardenID);
-        if (found.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
-        }
-        ownerGarden = found.get();
+        Garden ownerGarden = foundGarden.get();
         plant.setGarden(ownerGarden); // Set the garden for the plant
         model.addAttribute("plantName", plant.getName());
         model.addAttribute("plantCount", plant.getCount());
@@ -89,17 +89,18 @@ public class CreatePlantController {
             Model model) throws Exception {
         logger.info("POST /create-plant");
 
-        //Validates input fields
+        User currentUser = userService.getAuthenicatedUser();
+        Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
+        if (foundGarden.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
+        } else if (!foundGarden.get().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot create a plant for this garden.");
+        Garden ownerGarden = foundGarden.get();
+
+        // Validates input fields
         checkName(plant.getName(), bindingResult);
         checkDescription(plant.getDescription(), bindingResult);
         checkCount(plant.getCount(), bindingResult);
-
-        Garden ownerGarden = null;
-        Optional<Garden> found = gardenService.findGarden(gardenID);
-        if (found.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
-        }
-        ownerGarden = found.get();
 
         Date date = null;
         try {
@@ -120,8 +121,6 @@ public class CreatePlantController {
         if (bindingResult.hasErrors()) {
             // If there are validation errors, return to the form page
             model.addAttribute("gardenID", gardenID); // Add gardenID to the model before forwarding to error display page
-
-
             return "createPlantFormTemplate";
         } else {
             plantService.addPlant(plant);
