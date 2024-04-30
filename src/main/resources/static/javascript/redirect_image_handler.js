@@ -46,6 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
     buttons.forEach(button => {
         button.addEventListener('click', function(event) {
 
+            event.stopPropagation();
+
             const buttonID = event.target.id;
 
             const buttonPlantID = buttonID.split('_')[1];
