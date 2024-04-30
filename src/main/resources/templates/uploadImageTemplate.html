@@ -23,9 +23,9 @@
         </div>
         <img class="image" th:data-plant-id="${id}" th:data-picture="${picture}" alt="">
         <br/>
-        <form th:action="@{/Cancel}" method="get">
-            <button style="margin-top: 25px" type="submit">Cancel</button>
-        </form>
+        <a th:href="@{${lastEndpoint}}" id="cancel">
+            <button type="button">Cancel</button>
+        </a>
     </div>
 
 <script src="/javascript/image_handling.js"></script>

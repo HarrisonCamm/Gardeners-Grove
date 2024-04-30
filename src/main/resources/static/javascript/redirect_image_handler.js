@@ -44,32 +44,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Attach the event listener to each button individually
     buttons.forEach(button => {
-        button.addEventListener('click', function(event) {
+        if (button.id.includes('button')) {
+            button.addEventListener('click', function(event) {
 
-            event.stopPropagation();
+                event.stopPropagation();
 
-            const buttonID = event.target.id;
+                const buttonID = event.target.id;
 
-            const buttonPlantID = buttonID.split('_')[1];
+                const buttonPlantID = buttonID.split('_')[1];
 
-            if (!params.has('view-user-profile') && !params.has('edit-user-profile-image') && !params.has('create-plant-picture')) {
-                params.set('plantID', buttonPlantID);
-            }
+                if (!params.has('view-user-profile') && !params.has('edit-user-profile-image') && !params.has('create-plant-picture')) {
+                    params.set('plantID', buttonPlantID);
+                }
 
-            const fetchUrl = '/upload-image?' + params.toString();
-            console.log(fetchUrl);
+                const fetchUrl = '/upload-image?' + params.toString();
+                console.log(fetchUrl);
 
-            fetch(fetchUrl, {
-                method: 'GET',
-            })
-                .then(response => response.text())
-                .then(data => {
-                    document.body.innerHTML = data;
-                    history.pushState(null, '', fetchUrl);
-                    location.reload();
+                fetch(fetchUrl, {
+                    method: 'GET',
                 })
-                .catch(error => console.error(error));
-        });
+                    .then(response => response.text())
+                    .then(data => {
+                        document.body.innerHTML = data;
+                        history.pushState(null, '', fetchUrl);
+                        location.reload();
+                    })
+                    .catch(error => console.error(error));
+            });
+        }
     });
 
     imageSource.forEach(image => {

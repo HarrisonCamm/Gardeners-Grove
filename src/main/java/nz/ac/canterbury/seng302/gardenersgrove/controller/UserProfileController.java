@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class UserProfileController {
     @GetMapping("/view-user-profile")
     public String getTemplate(Model model) {
 
-
+        RedirectService.addEndpoint("/view-user-profile");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
         User currentUser = userService.getUserByEmail(currentPrincipalName);

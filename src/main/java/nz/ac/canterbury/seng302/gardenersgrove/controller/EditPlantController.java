@@ -45,7 +45,6 @@ public class EditPlantController {
     public String form(@RequestParam("plantID") Long plantID,
                        Model model) {
         logger.info("GET /edit-plant");
-        RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
         Optional<Plant> found = plantService.findPlant(plantID);
         if (found.isEmpty()) {
@@ -63,6 +62,7 @@ public class EditPlantController {
         model.addAttribute("plant", plant);
         model.addAttribute("datePlanted", date);
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+        RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
         return "editPlantFormTemplate";
     }

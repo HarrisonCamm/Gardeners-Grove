@@ -41,13 +41,16 @@ public class EditGardenController {
     public String form(@RequestParam("gardenID") Long gardenID,
                        Model model) throws ResponseStatusException {
         logger.info("GET /edit-garden");
-        RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
 
         Optional<Garden> result = gardenService.findGarden(gardenID);
         if (result.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
 
         Garden garden = result.get();
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+
+        RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
+
         addAttributes(model, garden, garden.getId(), garden.getName(), garden.getLocation(), garden.getSize());
         return "editGardenTemplate";
     }

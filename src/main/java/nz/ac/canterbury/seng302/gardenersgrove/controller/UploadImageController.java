@@ -66,6 +66,7 @@ public class UploadImageController {
 
         logger.info("GET /upload-image");
 
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
 
         if (viewGarden) {
             RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
@@ -78,6 +79,7 @@ public class UploadImageController {
         } else if (editUserProfile) {
             RedirectService.addEndpoint("/edit-user-profile");
         }
+
         return "uploadImageTemplate";
     }
 
@@ -106,7 +108,6 @@ public class UploadImageController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_JPEG);
 
-        //Add cases for required image (plant or user)
         //Add cases for required image (plant or user)
         if (!viewUser && !editUserProfile) {
             Plant plant = plantService.findPlant(plantID).get();

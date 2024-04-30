@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,8 @@ public class EditProfileController {
     public String form(HttpServletRequest request, Model model) {
 
         logger.info("GET /edit-user-profile");
+
+        RedirectService.addEndpoint("/edit-user-profile");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();

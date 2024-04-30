@@ -63,7 +63,7 @@ public class CreatePlantController {
         }
         //Plant plant = new Plant(null, null);
 
-        RedirectService.addEndpoint("/create-plant?gardenID=" + gardenID);
+
 
         model.addAttribute("gardenID", gardenID); // Add gardenID to the model
         model.addAttribute("gardens", gardenService.getGardens());
@@ -82,6 +82,8 @@ public class CreatePlantController {
         model.addAttribute("plantDescription", plant.getDescription());
         model.addAttribute("plantDatePlanted", plant.getDatePlanted());
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+
+        RedirectService.addEndpoint("/create-plant?gardenID=" + gardenID);
 
         return "createPlantFormTemplate";
     }
