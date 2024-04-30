@@ -98,6 +98,7 @@ public class EditPlantController {
             model.addAttribute("dateError", "error");
         }
 
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         model.addAttribute("plantID", plantID); // Add gardenID to the model
         model.addAttribute("datePlanted", datePlanted);
 
