@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,6 +19,7 @@ public class GardenersGroveApplication {
 
 	@Autowired
 	private UserService userService;
+	private VerificationTokenService verificationTokenService;
 
 	/**
 	 * Main entry point, runs the Spring application

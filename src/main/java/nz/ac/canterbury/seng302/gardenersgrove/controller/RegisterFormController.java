@@ -2,7 +2,10 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
+import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +31,20 @@ public class RegisterFormController {
     Logger logger = LoggerFactory.getLogger(RegisterFormController.class);
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final VerificationTokenService verificationTokenService;
+    private final MailService mailService;
 
     @Autowired
-    public RegisterFormController(UserService userService, AuthenticationManager authenticationManager) {
+    public RegisterFormController(UserService userService,
+                                  AuthenticationManager authenticationManager,
+                                  VerificationTokenService verificationTokenService,
+                                  MailService mailService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
+        this.verificationTokenService = verificationTokenService;
+        this.mailService = mailService;
     }
+
     /**
      * Gets form to be displayed, includes the ability to display results of previous form when linked to from POST form
      * @param displayName previous name entered into form to be displayed
@@ -135,19 +146,19 @@ public class RegisterFormController {
                 || model.containsAttribute("passwordMatchError") || model.containsAttribute("ageError")) {
             return "registerFormTemplate";
         } else {
-            // Email has not been used
+            // All user details have passed validation
 
-            // Create new user
-            User newUser = new User(firstName, lastName, noLastName, email, password, dateOfBirth);
+            // Create the user
+            User newUser = new User(firstName, lastName, noLastName, email, password, formattedDateOfBirth);
 
-            // Grant user role
-            newUser.grantAuthority("ROLE_USER");
-
-            // Register user
+            // Save the user to database
             userService.addUser(newUser);
 
+            // Grant user unverified role
+            newUser.grantAuthority("ROLE_UNVERIFIED");
+
             // Auto-login security stuff
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, password);
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(newUser.getEmail(), newUser.getPassword());
             Authentication authentication = authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
@@ -155,8 +166,33 @@ public class RegisterFormController {
             // Set the authenticated user in the session
             request.getSession().setAttribute("user", newUser);
 
-            model.addAttribute("displayName", firstName + " " + lastName);
-            return "redirect:/view-user-profile";
+            // Create Verification Token
+            VerificationToken verificationToken = verificationTokenService.createVerificationToken(newUser);
+
+            // Create confirmation email
+            String emailSubject = "Your Account Registration Code";
+            String emailText = "Dear " + firstName + ",\n\n" +
+                    "Thank you for choosing to join Gardener's Grove! To complete your registration, please use the following code:\n\n" +
+                    verificationToken.getToken() + "\n\n" +
+                    "Please enter this code in the registration form to activate your account.\n\n" +
+                    "If you did not request this code or have any questions, please contact our support team.\n\n" +
+                    "Welcome to Gardener's Grove! Happy gardening!";
+
+            // Try to send confirmation email
+            try {
+                // Send confirmation email
+                mailService.sendSimpleMessage(email, emailSubject, emailText);
+
+            } catch (Exception e) {
+                // Log the error
+                logger.error("Failed to send confirmation code to " + email, e);
+                // TODO display an error message
+
+                // Keep user on registration page
+                return "registerFormTemplate";
+            }
+            // Email sent successfully, confirm user registration page
+            return "redirect:/confirm-registration";
         }
     }
 }
