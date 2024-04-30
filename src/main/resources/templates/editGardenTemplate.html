@@ -77,7 +77,7 @@
                 <div class="errors" th:if="${#fields.hasErrors('global')}">
                     <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
                 </div>
-                <div class="buttons-right">
+                <div class="buttons-centre">
                     <button style="margin-left: 50%" type="submit">Save</button>
                     <a th:href="@{${lastEndpoint}}" id="cancelButton">
                         <button type="button">Cancel</button>

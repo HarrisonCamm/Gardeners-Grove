@@ -31,10 +31,15 @@ button, label {
     font-size: 120%;
 }
 
+.buttons-centre {
+    display: flex;
+    justify-content: center;
+}
 .buttons-right {
     display: flex;
     justify-content: flex-end;
 }
+
 h2 {
     text-align: center;
 }
