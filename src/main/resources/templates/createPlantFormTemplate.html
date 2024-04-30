@@ -14,6 +14,10 @@
     <br/>
     <div class="formContainer">
         <h1>Create Plant</h1>
+        <div style="position: relative; width: 82px; margin: auto;">
+            <img class="image" src="/images/leaves-80x80.png" alt="">
+            <button class="image_picker" th:id="${'button_null'}" style="position: absolute; top: 0; right: 0;">+</button>
+        </div>
         <form th:action="@{create-plant}" method="post" th:object="${plant}">
             <input type="hidden" name="gardenID" th:value="${gardenID}">
             <div class="formRow">

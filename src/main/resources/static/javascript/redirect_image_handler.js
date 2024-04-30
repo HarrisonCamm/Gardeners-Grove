@@ -10,9 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const url = new URL(window.location.href);
         const pathname = url.pathname;
 
+        let gardenID = null;
+
         switch (pathname) {
             case '/view-garden':
-                const gardenID = url.searchParams.get('gardenID');
+                gardenID = url.searchParams.get('gardenID');
                 params.append('view-garden', 'true');
                 params.append('gardenID', gardenID);
                 break;
@@ -20,6 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const plantID = url.searchParams.get('plantID');
                 params.append('edit-plant', 'true');
                 params.append('plantID', plantID);
+                break;
+            case 'create-plant':
+                params.append('create-plant', 'true');
+                gardenID = url.searchParams.get('gardenID');
+                params.append('gardenID', gardenID);
                 break;
             case '/view-user-profile':
                 params.append('view-user-profile', 'true');
@@ -42,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const buttonID = event.target.id;
 
             const buttonPlantID = buttonID.split('_')[1];
-
 
             if (!params.has('view-user-profile') && !params.has('edit-user-profile-image')) {
                 params.set('plantID', buttonPlantID);
@@ -73,13 +79,14 @@ document.addEventListener('DOMContentLoaded', () => {
             userID = image.getAttribute('data-user-id');
             params.set('userID', userID);
         }
-
-        fetch('/get-image?' + params.toString(), {
-        })
-            .then(response => response.blob())
-            .then(blob => {
-                image.src = URL.createObjectURL(blob);
+        if (!params.has('create-plant')) { //We don't to get the image if we are creating a plant
+            fetch('/get-image?' + params.toString(), {
             })
-            .catch(error => console.error(error));
+                .then(response => response.blob())
+                .then(blob => {
+                    image.src = URL.createObjectURL(blob);
+                })
+                .catch(error => console.error(error));
+        }
     });
 });
