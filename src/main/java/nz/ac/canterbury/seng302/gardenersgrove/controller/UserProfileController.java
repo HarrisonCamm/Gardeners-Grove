@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -65,14 +67,14 @@ public class UserProfileController {
     }
 
     @PostMapping("/view-user-profile")
-    public String uploadImage(@RequestParam(value = "file", required = false) String file,
-                              @RequestParam(value = "userID", required = false) Long userID,
-                              Model model) {
+    public String uploadImage(@RequestParam(value = "userID", required = false) Long userID,
+                              @RequestParam(value = "file", required = false) MultipartFile file,
+                              Model model) throws IOException {
         Optional<User> user = userRepository.findById(userID);
         if (user.isPresent()) {
             User userToEdit = user.get();
-            userToEdit.setImage(file);
-            userToEdit.setFilePath("images/" + file);
+            userToEdit.setImage(file.getBytes());
+            userToEdit.setFilePath(file.getOriginalFilename());
             userRepository.save(userToEdit);
         }
         return "redirect:/view-user-profile";
