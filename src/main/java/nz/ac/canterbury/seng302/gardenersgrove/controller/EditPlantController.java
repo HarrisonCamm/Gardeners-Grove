@@ -61,8 +61,6 @@ public class EditPlantController {
         if (!plant.getGarden().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this plant.");
 
-        RedirectService.addEndpoint("/view-garden?gardenID=" + plant.getGarden().getId());
-
         model.addAttribute("plantID", plantID); // Add gardenID to the model
         model.addAttribute("plant", plant);
         model.addAttribute("datePlanted", plant.getDatePlanted());

@@ -92,8 +92,6 @@ public class CreatePlantController {
         session.removeAttribute("description");
         session.removeAttribute("datePlanted");
 
-        RedirectService.addEndpoint("/create-plant?gardenID=" + gardenID);
-
         return "createPlantFormTemplate";
     }
 
