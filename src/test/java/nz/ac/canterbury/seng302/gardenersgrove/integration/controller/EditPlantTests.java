@@ -102,10 +102,10 @@ public class EditPlantTests {
     @ParameterizedTest
     @WithMockUser
     @CsvSource({
-            "1, Carrot, 3453125, 24/1/6353, this is an orange plant",
+            "1, Carrot, 3453125, 24/10/6353, this is an orange plant",
             "2, oranges, 3453125, 01/10/1234, this is also orange",
-            "3, apple, 3453125, 6/12/7554, ''",
-            "4, grapefruit, 3453125, 31/7/2024, not a grape"
+            "3, apple, 3453125, 06/12/7554, ''",
+            "4, grapefruit, 3453125, 31/07/2024, not a grape"
     })
     public void OnForm_ValidValues_PlantRecordAdded(
             Long plantID, String plantName, String count, String date, String description) throws Exception {

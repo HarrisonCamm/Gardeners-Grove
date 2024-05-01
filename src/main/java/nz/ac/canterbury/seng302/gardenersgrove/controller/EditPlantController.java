@@ -59,7 +59,7 @@ public class EditPlantController {
         // Attempt to retrieve plant or throw ResponseStatusException
         Plant plant = retrievePlant(plantID, plantService);
         if (!plant.getGarden().getOwner().equals(currentUser))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this plant.")
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this plant.");
 
         RedirectService.addEndpoint("/view-garden?gardenID=" + plant.getGarden().getId());
 

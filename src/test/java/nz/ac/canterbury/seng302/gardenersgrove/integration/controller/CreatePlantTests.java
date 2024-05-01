@@ -112,7 +112,7 @@ public class CreatePlantTests {
         mockMvc.perform(MockMvcRequestBuilders.post("/create-plant")
                         .with(csrf())
                 .queryParam("gardenID", String.valueOf(1L))
-                .queryParam("plantDatePlanted", "2021-01-01")
+                .queryParam("datePlanted", "01/01/2021")
                 .param("name", name)
                 .param("count", count)
                 .param("description", description))
@@ -134,11 +134,11 @@ public class CreatePlantTests {
         mockMvc.perform(MockMvcRequestBuilders.post("/create-plant")
                         .with(csrf())
                 .queryParam("gardenID", String.valueOf(1L))
-                .queryParam("plantDatePlanted", "2021-01-01")
+                .queryParam("datePlanted", "01/01/2021")
                 .param("name", name)
                 .param("count", count)
                 .param("description", description))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
         verify(plantService, Mockito.times(0)).addPlant(any(Plant.class));
     }
 }
