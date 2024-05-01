@@ -30,8 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.PlantValidator.*;
 
@@ -65,7 +64,6 @@ public class CreatePlantController {
         Plant sessionPlant = (Plant) session.getAttribute("plant");
         if (sessionPlant != null) {
             plant = sessionPlant;
-            session.removeAttribute("plant");
         }
         model.addAttribute("gardenID", gardenID); // Add gardenID to the model
         model.addAttribute("gardens", gardenService.getGardens());
@@ -77,6 +75,7 @@ public class CreatePlantController {
         if (found.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
         }
+        addErrors(session, model);
         ownerGarden = found.get();
         plant.setGarden(ownerGarden); // Set the garden for the plant
         model.addAttribute("plantName", plant.getName());
@@ -88,6 +87,16 @@ public class CreatePlantController {
         RedirectService.addEndpoint("/create-plant?gardenID=" + gardenID);
 
         return "createPlantFormTemplate";
+    }
+
+    private void addErrors(HttpSession session, Model model) {
+        HashMap<String, String> errors = (HashMap<String, String>) session.getAttribute("errors");
+        if (errors != null) {
+            for (Map.Entry<String, String> entry : errors.entrySet()) {
+                model.addAttribute(entry.getKey(), entry.getValue());
+            }
+            session.removeAttribute("errors");
+        }
     }
 
 
@@ -144,31 +153,40 @@ public class CreatePlantController {
 
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
 
+        model.addAttribute("gardenID", gardenID); // Add gardenID to the model
+        model.addAttribute("gardens", gardenService.getGardens());
+        model.addAttribute("plant", plant);
+
+
         model.addAttribute("plantName", plant.getName());
         model.addAttribute("plantCount", plant.getCount());
         model.addAttribute("plantDescription", plant.getDescription());
         model.addAttribute("datePlanted", formattedDate);
 
+        Map<String, String> errors = new HashMap<>();
+
         if (validatePlantName(plant.getName()) != null) {
-            model.addAttribute("nameError", validatePlantName(plant.getName()).getDefaultMessage());
+            errors.put("nameError", Objects.requireNonNull(validatePlantName(plant.getName())).getDefaultMessage());
         }
 
         if (validatePlantCount(plant.getCount()) != null) {
-            model.addAttribute("countError", validatePlantCount(plant.getCount()).getDefaultMessage());
+            errors.put("countError", Objects.requireNonNull(validatePlantCount(plant.getCount())).getDefaultMessage());
         }
 
         if (validatePlantDescription(plant.getDescription()) != null) {
-            model.addAttribute("descriptionError", validatePlantDescription(plant.getDescription()).getDefaultMessage());
+            errors.put("descriptionError", Objects.requireNonNull(validatePlantDescription(plant.getDescription())).getDefaultMessage());
         }
 
         if (!datePlanted.isEmpty() && validatePlantDate(formattedDate) != null) {
-            model.addAttribute("dateError", validatePlantDate(formattedDate).getDefaultMessage());
+            errors.put("dateError", Objects.requireNonNull(validatePlantDate(formattedDate)).getDefaultMessage());
         }
+
+        session.setAttribute("errors", errors);
         // If there are validation errors, return to the form page
-        if (model.containsAttribute("nameError") || model.containsAttribute("countError")
-                || model.containsAttribute("descriptionError") || model.containsAttribute("dateError")) {
+        if (errors.containsKey("nameError") || errors.containsKey("countError")
+                || errors.containsKey("descriptionError") || errors.containsKey("dateError")) {
             model.addAttribute("gardenID", gardenID); // Add gardenID to the model before forwarding to error display page
-            return "createPlantFormTemplate";
+            return "redirect:/create-plant?gardenID=" + gardenID;
         }else {
             plantService.addPlant(plant);
             return "redirect:/view-garden?gardenID=" + plant.getGarden().getId();
@@ -182,7 +200,7 @@ public class CreatePlantController {
         logger.info("POST /create-plant-picture");
         Garden garden = gardenService.findGarden(gardenID).get();
 
-        Plant plant = new Plant(garden, "", "", "0", "00/00/0000", file.getOriginalFilename());
+        Plant plant = new Plant(garden, "", "", "", "", file.getOriginalFilename());
         plant.setImage(file.getBytes());
 
         // Add the plant object to the session
