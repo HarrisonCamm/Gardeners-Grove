@@ -21,21 +21,21 @@
                 <input type="hidden" name="gardenID" th:value="${gardenID}">
                 <label for="plantName"> Name: </label>
                 <br/>
-                <input type="text" id="plantName" th:field="*{name}"
+                <input type="text" id="plantName" th:name="name" th:value="${name}"
                        th:class="${nameError != null ? 'error' : ''}" autofocus>
                 <br/>
                 <div th:if="${nameError}" class="error-message" th:text="${nameError}"></div>
                 <br/>
                 <label for="plantCount"> Count: </label>
                 <br/>
-                <input type="text" id="plantCount" th:field="*{count}"
+                <input type="text" id="plantCount" th:name="count" th:value="${count}"
                        th:class="${countError != null ? 'error' : ''}" autofocus>
                 <br/>
                 <div th:if="${countError}" class="error-message" th:text="${countError}"></div>
                 <br/>
                 <label for="plantDescription"> Description: </label>
                 <br/>
-                <input type="text" id="plantDescription" th:field="*{description}"
+                <input type="text" id="plantDescription" th:name="description" th:value="${description}"
                        th:class="${descriptionError != null ? 'error' : ''}" autofocus>
                 <br/>
                 <div th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></div>

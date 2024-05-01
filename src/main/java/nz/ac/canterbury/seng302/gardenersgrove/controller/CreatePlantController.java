@@ -78,11 +78,17 @@ public class CreatePlantController {
         addErrors(session, model);
         ownerGarden = found.get();
         plant.setGarden(ownerGarden); // Set the garden for the plant
-        model.addAttribute("plantName", plant.getName());
-        model.addAttribute("plantCount", plant.getCount());
-        model.addAttribute("plantDescription", plant.getDescription());
-        model.addAttribute("datePlanted", plant.getDatePlanted());
+        model.addAttribute("name", session.getAttribute("name"));
+        model.addAttribute("description", session.getAttribute("description"));
+        model.addAttribute("count", session.getAttribute("count"));
+        model.addAttribute("datePlanted", session.getAttribute("datePlanted"));
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+
+        // Remove attributes from the session
+        session.removeAttribute("name");
+        session.removeAttribute("count");
+        session.removeAttribute("description");
+        session.removeAttribute("datePlanted");
 
         RedirectService.addEndpoint("/create-plant?gardenID=" + gardenID);
 
@@ -106,6 +112,9 @@ public class CreatePlantController {
     @PostMapping("/create-plant")
     public String submitForm(
             @RequestParam("gardenID") Long gardenID,
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("count") String count,
             @RequestParam("datePlanted") String datePlanted,
             @ModelAttribute("plant") Plant plant,
             BindingResult bindingResult,
@@ -157,11 +166,16 @@ public class CreatePlantController {
         model.addAttribute("gardens", gardenService.getGardens());
         model.addAttribute("plant", plant);
 
+        session.setAttribute("name", name);
+        session.setAttribute("count", count);
+        session.setAttribute("description", description);
+        session.setAttribute("datePlanted", plant.getDatePlanted());
 
-        model.addAttribute("plantName", plant.getName());
-        model.addAttribute("plantCount", plant.getCount());
-        model.addAttribute("plantDescription", plant.getDescription());
-        model.addAttribute("datePlanted", formattedDate);
+
+//        model.addAttribute("plantName", plant.getName());
+//        model.addAttribute("plantCount", plant.getCount());
+//        model.addAttribute("plantDescription", plant.getDescription());
+//        model.addAttribute("datePlanted", formattedDate);
 
         Map<String, String> errors = new HashMap<>();
 
