@@ -192,7 +192,7 @@ public class RegisterFormController {
                     "Thank you for choosing to join Gardener's Grove! To complete your registration, please use the following code:\n\n" +
                     verificationToken.getToken() + "\n\n" +
                     "Please enter this code in the registration form to activate your account.\n\n" +
-                    "If you did not request this code or have any questions, please contact our support team.\n\n" +
+                    "If this was not you, you can ignore this message and the account will be deleted after 10 minutes.\n\n" +
                     "Welcome to Gardener's Grove! Happy gardening!";
 
             // Try to send confirmation email
