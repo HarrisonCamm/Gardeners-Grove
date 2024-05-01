@@ -4,9 +4,11 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 import jakarta.servlet.http.HttpServletResponse;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -34,10 +36,12 @@ public class ViewGardenController {
 
     private final GardenService gardenService;
     private final PlantService plantService;
+    private final UserService userService;
 
-    public ViewGardenController(GardenService gardenService, PlantService plantService) {
+    public ViewGardenController(GardenService gardenService, PlantService plantService, UserService userService) {
         this.gardenService = gardenService;
         this.plantService  = plantService;
+        this.userService = userService;
     }
 
     @GetMapping("/view-garden")
@@ -50,7 +54,14 @@ public class ViewGardenController {
         logger.info("GET /view-garden");
         RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
 
-        return addAttributes(gardenID, model, plantService, gardenService);
+        Optional<Garden> garden = gardenService.findGarden(gardenID);
+        User currentUser = userService.getAuthenicatedUser();
+        if (garden.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
+        else if (!garden.get().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
+
+        return addAttributes(currentUser, gardenID, model, plantService, gardenService);
     }
 
     /**
@@ -66,8 +77,14 @@ public class ViewGardenController {
                                   @RequestParam("gardenID") Long gardenID,
                                   @RequestParam("file") MultipartFile file,
                                   Model model) {
-
         logger.info("POST /view-garden");
+
+        Optional<Garden> garden = gardenService.findGarden(gardenID);
+        User currentUser = userService.getAuthenicatedUser();
+        if (garden.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
+        else if (!garden.get().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
         Plant plant = plantService.findPlant(plantID).get();
 
@@ -82,19 +99,15 @@ public class ViewGardenController {
 
         plantService.addPlant(plant);
 
-        addAttributes(gardenID, model, plantService, gardenService);
+        addAttributes(currentUser, gardenID, model, plantService, gardenService);
 
         return "redirect:/view-garden?gardenID=" +gardenID;
     }
 
-    static String addAttributes(@RequestParam("gardenID") Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
-        List<Plant> plants = new ArrayList<>();
-        for (var plant : plantService.getPlants()) {
-            if (plant.getGarden().getId().equals(gardenID)) {
-                plants.add(plant);
-            }
-        }
-        model.addAttribute("gardens", gardenService.getGardens());
+    private static String addAttributes(User owner, @RequestParam("gardenID") Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
+        List<Plant> plants = plantService.getGardenPlant(gardenID);
+        List<Garden> gardens = gardenService.getOwnedGardens(owner.getUserId());
+        model.addAttribute("gardens", gardens);
         model.addAttribute("plants", plants);
 
         Optional<Garden> garden = gardenService.findGarden(gardenID);

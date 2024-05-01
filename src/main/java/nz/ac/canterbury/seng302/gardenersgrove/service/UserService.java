@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.gardenersgrove.service;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -77,11 +79,12 @@ public class UserService {
      * @return The updated and persisted user entity.
      */
     public User updateUser(User user, String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setNoLastName(noLastName);
-        user.setEmail(email);
-        user.setDateOfBirth(dateOfBirth);
+//        user.setFirstName(firstName);
+//        user.setLastName(lastName);
+//        user.setNoLastName(noLastName);
+//        user.setEmail(email);
+//        user.setDateOfBirth(dateOfBirth);
+        user.setValues(firstName, lastName, noLastName, email, dateOfBirth);
         return userRepository.save(user);
     }
 
@@ -113,13 +116,30 @@ public class UserService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
+    /**
+     * Gets the currently logged-in user
+     * @return The user
+     */
+    public User getAuthenicatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication == null ? null : this.getUserByEmail(authentication.getName());
+
+    }
+
+    /**
+     *  Gets a user by their id
+     * @param id The user id
+     * @return The user
+     */
     public User getUserByID(Long id) {
         return userRepository.findById(id).orElse(null);
     }
+
+    /**
+     * Deletes a user from the repository
+     * @param user The user to delete
+     */
     public void deleteUser(User user) {
         userRepository.deleteUser(user);
     }
-
-
-
 }

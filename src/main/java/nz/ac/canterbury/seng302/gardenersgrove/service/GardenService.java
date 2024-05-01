@@ -19,12 +19,17 @@ public class GardenService {
     public GardenService(GardenRepository gardenRepository) {
         this.gardenRepository = gardenRepository;
     }
+
     /**
      * Gets all FormResults from persistence
      * @return all FormResults currently saved in persistence
      */
     public List<Garden> getGardens() {
         return gardenRepository.findAll();
+    }
+
+    public List<Garden> getOwnedGardens(Long ownerId) {
+        return gardenRepository.findByOwnerUserId(ownerId);
     }
 
     public Garden addGarden(Garden garden) {

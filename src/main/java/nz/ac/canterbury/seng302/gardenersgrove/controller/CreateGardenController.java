@@ -2,12 +2,15 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.FieldError;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 
@@ -30,11 +34,13 @@ public class CreateGardenController {
 
     private final GardenService gardenService;
     private final LocationService locationService;
+    private final UserService userService;
 
     @Autowired
-    public CreateGardenController(GardenService gardenService, LocationService locationService) {
+    public CreateGardenController(GardenService gardenService, LocationService locationService, UserService userService) {
         this.gardenService = gardenService;
         this.locationService = locationService;
+        this.userService = userService;
     }
 
     /**
@@ -47,12 +53,14 @@ public class CreateGardenController {
                        Model model) {
         logger.info("GET /create-garden");
 
+        User currentUser = userService.getAuthenicatedUser();
+
         Location gardenLocation = new Location("", "", "", "", ""); //Bad code warning
         garden.setLocation(gardenLocation); //avoiding NullPointException
 
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
-        addAttributes(model, gardenName, gardenLocation, gardenSize);
+        addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize);
 
         RedirectService.addEndpoint("/create-garden");
 
@@ -82,13 +90,20 @@ public class CreateGardenController {
                             @RequestParam(name="size", required = false) String gardenSize,
                              Model model) {
         logger.info("POST /create-garden");
+
+
+        User currentUser = userService.getAuthenicatedUser();
+        if (currentUser == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in");
+        }
         Location gardenLocation = new Location(streetAddress, suburb, city, postcode, country);
         Garden garden = new Garden(gardenName, gardenLocation, gardenSize);
+        garden.setOwner(currentUser);
 
         // Perform validation
         ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize);
 
-        addAttributes(model, gardenName, gardenLocation, gardenSize);
+        addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize);
 
         if (!errors.isEmpty()) {
             // If there are validation errors, return to the form page
@@ -145,7 +160,7 @@ public class CreateGardenController {
      * @param gardenLocation garden location object
      * @param gardenSize garden size
      */
-    public void addAttributes(Model model, String gardenName, Location gardenLocation, String gardenSize) {
+    public void addAttributes(Model model, Long userId, String gardenName, Location gardenLocation, String gardenSize) {
 
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
 
@@ -159,6 +174,7 @@ public class CreateGardenController {
 
         model.addAttribute("size", gardenSize);
 
-        model.addAttribute("gardens", gardenService.getGardens());
+        model.addAttribute("gardens", gardenService.getOwnedGardens(userId));
     }
+
 }

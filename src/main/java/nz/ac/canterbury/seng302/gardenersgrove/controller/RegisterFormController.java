@@ -186,17 +186,17 @@ public class RegisterFormController {
             // Create Verification Token
             VerificationToken verificationToken = verificationTokenService.createVerificationToken(newUser);
 
-            // Create confirmation email
-            String emailSubject = "Your Account Registration Code";
-            String emailText = "Dear " + firstName + ",\n\n" +
-                    "Thank you for choosing to join Gardener's Grove! To complete your registration, please use the following code:\n\n" +
-                    verificationToken.getToken() + "\n\n" +
-                    "Please enter this code in the registration form to activate your account.\n\n" +
-                    "If this was not you, you can ignore this message and the account will be deleted after 10 minutes.\n\n" +
-                    "Welcome to Gardener's Grove! Happy gardening!";
-
             // Try to send confirmation email
             try {
+                // Create confirmation email
+                String emailSubject = "Your Account Registration Code";
+                String emailText = "Dear " + firstName + ",\n\n" +
+                        "Thank you for choosing to join Gardener's Grove! To complete your registration, please use the following code:\n\n" +
+                        verificationToken.getToken() + "\n\n" +
+                        "Please enter this code in the registration form to activate your account.\n\n" +
+                        "If this was not you, you can ignore this message and the account will be deleted after 10 minutes.\n\n" +
+                        "Welcome to Gardener's Grove! Happy gardening!";
+
                 // Send confirmation email
                 mailService.sendSimpleMessage(email, emailSubject, emailText);
 

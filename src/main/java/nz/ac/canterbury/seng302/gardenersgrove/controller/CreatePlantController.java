@@ -4,9 +4,11 @@ import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.apache.tomcat.util.http.parser.HttpParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,11 +47,13 @@ public class CreatePlantController {
 
     private final PlantService plantService;
     private final GardenService gardenService;
+    private final UserService userService;
 
     @Autowired
-    public CreatePlantController(PlantService plantService, GardenService gardenService) {
+    public CreatePlantController(PlantService plantService, GardenService gardenService, UserService userService) {
         this.plantService = plantService;
         this.gardenService = gardenService;
+        this.userService = userService;
     }
 
     @GetMapping("/create-plant")
@@ -58,9 +62,13 @@ public class CreatePlantController {
                        Model model, HttpSession session) {
         logger.info("GET /create-plant");
 
-        if (gardenService.findGarden(gardenID).isEmpty()) {
+        User currentUser = userService.getAuthenicatedUser();
+        Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
+        if (foundGarden.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
-        }
+        } else if (!foundGarden.get().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot create a plant for this garden.");
+
         Plant sessionPlant = (Plant) session.getAttribute("plant");
         if (sessionPlant != null) {
             plant = sessionPlant;
@@ -69,14 +77,8 @@ public class CreatePlantController {
         model.addAttribute("gardens", gardenService.getGardens());
         model.addAttribute("plant", plant);
 
-
-        Garden ownerGarden = null;
-        Optional<Garden> found = gardenService.findGarden(gardenID);
-        if (found.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
-        }
         addErrors(session, model);
-        ownerGarden = found.get();
+        Garden ownerGarden = foundGarden.get();
         plant.setGarden(ownerGarden); // Set the garden for the plant
         model.addAttribute("name", session.getAttribute("name"));
         model.addAttribute("description", session.getAttribute("description"));
@@ -122,6 +124,15 @@ public class CreatePlantController {
             Model model) throws Exception {
         logger.info("POST /create-plant");
 
+        User currentUser = userService.getAuthenicatedUser();
+        Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
+        if (foundGarden.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
+        } else if (!foundGarden.get().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot create a plant for this garden.");
+        Garden ownerGarden = foundGarden.get();
+
+        // Validates input fields
         Plant sessionPlant = (Plant) session.getAttribute("plant");
 
         if (sessionPlant != null) {
@@ -148,12 +159,6 @@ public class CreatePlantController {
                 logger.error("Failed to set default image", e);
             }
         }
-        Garden ownerGarden = null;
-        Optional<Garden> found = gardenService.findGarden(gardenID);
-        if (found.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
-        }
-        ownerGarden = found.get();
 
 
         plant.setCount(plant.getCount().replace(',', '.'));
@@ -201,7 +206,7 @@ public class CreatePlantController {
                 || errors.containsKey("descriptionError") || errors.containsKey("dateError")) {
             model.addAttribute("gardenID", gardenID); // Add gardenID to the model before forwarding to error display page
             return "redirect:/create-plant?gardenID=" + gardenID;
-        }else {
+        } else {
             plantService.addPlant(plant);
             return "redirect:/view-garden?gardenID=" + plant.getGarden().getId();
         }
