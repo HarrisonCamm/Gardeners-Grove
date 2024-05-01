@@ -50,11 +50,12 @@ public class CreateGardenController {
         Location gardenLocation = new Location("", "", "", "", ""); //Bad code warning
         garden.setLocation(gardenLocation); //avoiding NullPointException
 
-        RedirectService.addEndpoint("/create-garden");
-
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
         addAttributes(model, gardenName, gardenLocation, gardenSize);
+
+        RedirectService.addEndpoint("/create-garden");
+
         return "createGardenFormTemplate";
     }
 
