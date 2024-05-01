@@ -102,7 +102,6 @@ public class EditPlantController {
         model.addAttribute("plantID", plantID); // Add gardenID to the model
         model.addAttribute("datePlanted", formattedDate);
         model.addAttribute("plant", plant);
-        model.addAttribute("datePlanted", new SimpleDateFormat("yyyy-MM-dd").format(date));
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
 
         if (bindingResult.hasErrors()) {
