@@ -123,6 +123,7 @@ public class EditProfileController {
         logger.info("User retrieved from session: " + currentUser);
 
         // Pre-populate the model with submitted values to persist them in case of an error
+        model.addAttribute("user", currentUser);
         model.addAttribute("firstName", firstName);
         model.addAttribute("lastName", lastName);
         model.addAttribute("noLastName", noLastName);

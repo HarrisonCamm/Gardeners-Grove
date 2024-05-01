@@ -103,9 +103,10 @@ public class EditPlantController {
         plant.setCount(newPlant.getCount().replace(',', '.'));
         plant.setDescription(newPlant.getDescription());
 
-        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         model.addAttribute("plantID", plantID); // Add gardenID to the model
+        model.addAttribute("plant", plant);
         model.addAttribute("datePlanted", new SimpleDateFormat("yyyy-MM-dd").format(date));
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
 
         if (bindingResult.hasErrors()) {
             // If there are validation errors, return to the form page
