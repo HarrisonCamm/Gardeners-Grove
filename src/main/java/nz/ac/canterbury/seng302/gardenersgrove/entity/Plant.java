@@ -32,8 +32,7 @@ public class Plant {
     private String description;
 
     @Column
-    @DateTimeFormat(pattern = "dd/MM/YYYY")
-    private Date datePlanted;
+    private String datePlanted;
 
     @Column
     private String filePath;
@@ -70,7 +69,7 @@ public class Plant {
         this.name = name;
         this.count = count;
         this.description = description;
-        this.datePlanted = new SimpleDateFormat("dd/MM/yyyy").parse(datePlanted);
+        this.datePlanted = datePlanted;
         this.filePath = filePath;
         this.image = null;
     }
@@ -88,7 +87,7 @@ public class Plant {
     public void setDescription(String description) { this.description = description; }
 
     //Setter for date
-    public void setDatePlanted(Date date) { this.datePlanted = date; }
+    public void setDatePlanted(String date) { this.datePlanted = date; }
 
     //Setter for garden
     public void setGarden(Garden garden) {
@@ -114,7 +113,7 @@ public class Plant {
     public String getDescription() { return description; }
 
     //Getter for datePlanted
-    public Date getDatePlanted() { return datePlanted; }
+    public String getDatePlanted() { return datePlanted; }
 
     public String getPicture() {
         return filePath;

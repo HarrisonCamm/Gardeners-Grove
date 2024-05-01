@@ -30,8 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.PlantValidator.*;
 
@@ -65,7 +64,6 @@ public class CreatePlantController {
         Plant sessionPlant = (Plant) session.getAttribute("plant");
         if (sessionPlant != null) {
             plant = sessionPlant;
-            session.removeAttribute("plant");
         }
         model.addAttribute("gardenID", gardenID); // Add gardenID to the model
         model.addAttribute("gardens", gardenService.getGardens());
@@ -77,17 +75,34 @@ public class CreatePlantController {
         if (found.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
         }
+        addErrors(session, model);
         ownerGarden = found.get();
         plant.setGarden(ownerGarden); // Set the garden for the plant
-        model.addAttribute("plantName", plant.getName());
-        model.addAttribute("plantCount", plant.getCount());
-        model.addAttribute("plantDescription", plant.getDescription());
-        model.addAttribute("plantDatePlanted", plant.getDatePlanted());
+        model.addAttribute("name", session.getAttribute("name"));
+        model.addAttribute("description", session.getAttribute("description"));
+        model.addAttribute("count", session.getAttribute("count"));
+        model.addAttribute("datePlanted", session.getAttribute("datePlanted"));
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+
+        // Remove attributes from the session
+        session.removeAttribute("name");
+        session.removeAttribute("count");
+        session.removeAttribute("description");
+        session.removeAttribute("datePlanted");
 
         RedirectService.addEndpoint("/create-plant?gardenID=" + gardenID);
 
         return "createPlantFormTemplate";
+    }
+
+    private void addErrors(HttpSession session, Model model) {
+        HashMap<String, String> errors = (HashMap<String, String>) session.getAttribute("errors");
+        if (errors != null) {
+            for (Map.Entry<String, String> entry : errors.entrySet()) {
+                model.addAttribute(entry.getKey(), entry.getValue());
+            }
+            session.removeAttribute("errors");
+        }
     }
 
 
@@ -97,7 +112,10 @@ public class CreatePlantController {
     @PostMapping("/create-plant")
     public String submitForm(
             @RequestParam("gardenID") Long gardenID,
-            @RequestParam("plantDatePlanted") String datePlanted,
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("count") String count,
+            @RequestParam("datePlanted") String datePlanted,
             @ModelAttribute("plant") Plant plant,
             BindingResult bindingResult,
             HttpSession session,
@@ -112,10 +130,13 @@ public class CreatePlantController {
             session.removeAttribute("plant");
         }
 
+        String formattedDate;
+        formattedDate = convertDateFormat(datePlanted);
         //Validates input fields
         checkName(plant.getName(), bindingResult);
         checkDescription(plant.getDescription(), bindingResult);
         checkCount(plant.getCount(), bindingResult);
+        checkDateValidity(formattedDate, bindingResult);
 
         if (plant.getPicture() == null) {
             plant.setPicture("leaves-80x80.png"); // Set default picture
@@ -134,13 +155,6 @@ public class CreatePlantController {
         }
         ownerGarden = found.get();
 
-        Date date = null;
-        try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(datePlanted);
-        } catch (Exception e) {
-            bindingResult.addError(new ObjectError(datePlanted, "Date should be in the format dd/mm/yyyy"));
-        }
-        plant.setDatePlanted(date);
 
         plant.setCount(plant.getCount().replace(',', '.'));
 
@@ -148,18 +162,46 @@ public class CreatePlantController {
 
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
 
-        model.addAttribute("plantName", plant.getName());
-        model.addAttribute("plantCount", plant.getCount());
-        model.addAttribute("plantDescription", plant.getDescription());
-        model.addAttribute("plantDatePlanted", plant.getDatePlanted());
+        model.addAttribute("gardenID", gardenID); // Add gardenID to the model
+        model.addAttribute("gardens", gardenService.getGardens());
+        model.addAttribute("plant", plant);
 
-        if (bindingResult.hasErrors()) {
-            // If there are validation errors, return to the form page
+        session.setAttribute("name", name);
+        session.setAttribute("count", count);
+        session.setAttribute("description", description);
+        session.setAttribute("datePlanted", plant.getDatePlanted());
+
+
+//        model.addAttribute("plantName", plant.getName());
+//        model.addAttribute("plantCount", plant.getCount());
+//        model.addAttribute("plantDescription", plant.getDescription());
+//        model.addAttribute("datePlanted", formattedDate);
+
+        Map<String, String> errors = new HashMap<>();
+
+        if (validatePlantName(plant.getName()) != null) {
+            errors.put("nameError", Objects.requireNonNull(validatePlantName(plant.getName())).getDefaultMessage());
+        }
+
+        if (validatePlantCount(plant.getCount()) != null) {
+            errors.put("countError", Objects.requireNonNull(validatePlantCount(plant.getCount())).getDefaultMessage());
+        }
+
+        if (validatePlantDescription(plant.getDescription()) != null) {
+            errors.put("descriptionError", Objects.requireNonNull(validatePlantDescription(plant.getDescription())).getDefaultMessage());
+        }
+
+        if (!datePlanted.isEmpty() && validatePlantDate(formattedDate) != null) {
+            errors.put("dateError", Objects.requireNonNull(validatePlantDate(formattedDate)).getDefaultMessage());
+        }
+
+        session.setAttribute("errors", errors);
+        // If there are validation errors, return to the form page
+        if (errors.containsKey("nameError") || errors.containsKey("countError")
+                || errors.containsKey("descriptionError") || errors.containsKey("dateError")) {
             model.addAttribute("gardenID", gardenID); // Add gardenID to the model before forwarding to error display page
-
-
-            return "createPlantFormTemplate";
-        } else {
+            return "redirect:/create-plant?gardenID=" + gardenID;
+        }else {
             plantService.addPlant(plant);
             return "redirect:/view-garden?gardenID=" + plant.getGarden().getId();
         }
@@ -172,7 +214,7 @@ public class CreatePlantController {
         logger.info("POST /create-plant-picture");
         Garden garden = gardenService.findGarden(gardenID).get();
 
-        Plant plant = new Plant(garden, "", "", "0", "00/00/0000", file.getOriginalFilename());
+        Plant plant = new Plant(garden, "", "", "", "", file.getOriginalFilename());
         plant.setImage(file.getBytes());
 
         // Add the plant object to the session
@@ -204,4 +246,27 @@ public class CreatePlantController {
         }
     }
 
+    private ObjectError checkDateValidity(String date, BindingResult bindingResult) {
+        return validatePlantDate(date);
+    }
+    public static String convertDateFormat(String dateInput) {
+        String[] parts = dateInput.split("/");
+        if (dateInput.length() < 10) {
+            return "0000-00-00";
+        } else {
+            // Reconstruct the date string in yyyy-MM-dd format
+            String yyyy = parts[2];
+            String mm = parts[1];
+            String dd = parts[0];
+
+            // Ensure mm and dd are formatted with leading zeros if necessary
+            if (mm.length() == 1) {
+                mm = "0" + mm;
+            }
+            if (dd.length() == 1) {
+                dd = "0" + dd;
+            }
+            return yyyy + "-" + mm + "-" + dd;
+        }
+    }
 }
