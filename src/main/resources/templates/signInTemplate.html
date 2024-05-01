@@ -30,6 +30,9 @@
                 <div>
                     <p class="message" id="message" th:text="${message}"></p>
                 </div>
+                <div>
+                    <p class="error-message" th:if="${expiredTokenError}" id="expiredTokenMessage" th:text="${expiredTokenError}"></p>
+                </div>
                 <label for="email"> Email: </label>
                 <br/>
                 <!-- Email input box -->
@@ -61,6 +64,7 @@
                 </div>
             </form>
             <p class="buttons-centre"><a th:href="@{/register-form}" class="link">Not registered? Create an account</a></p>
+            <p class="buttons-centre"><a th:href="@{/lost-password-form}" class="link">Forgot your password?</a></p>
         </div>
     </div>
 </div>
