@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +18,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -57,10 +61,13 @@ public class EditProfileController {
 
         logger.info("GET /edit-user-profile");
 
+        RedirectService.addEndpoint("/edit-user-profile");
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
         User currentUser = userService.getUserByEmail(currentPrincipalName);
 
+        model.addAttribute("user", currentUser);
         model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
         model.addAttribute("firstName", currentUser.getFirstName());
         model.addAttribute("lastName", currentUser.getLastName());
@@ -257,5 +264,26 @@ public class EditProfileController {
         // Redirect to the user profile page after successful update of user details
         return "redirect:/view-user-profile";
     }
+    }
+
+    @PostMapping("/edit-user-profile-image")
+    public String uploadImage(@RequestParam(value = "userID", required = false) Long userID,
+                              @RequestParam(value = "file", required = false) MultipartFile file,
+                              Model model) throws IOException {
+        logger.info("PUT /edit-user-profile");
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        User currentUser = userService.getUserByEmail(currentPrincipalName);
+
+        Optional<User> user = userRepository.findById(userID);
+        if (user.isPresent()) {
+            User userToEdit = user.get();
+            userToEdit.setImage(file.getBytes());
+            userToEdit.setFilePath(file.getOriginalFilename());
+            userRepository.save(userToEdit);
+        }
+
+        return "redirect:/edit-user-profile";
     }
 }

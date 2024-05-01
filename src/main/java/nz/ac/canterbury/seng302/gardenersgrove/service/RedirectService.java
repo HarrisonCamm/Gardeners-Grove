@@ -24,16 +24,9 @@ public class RedirectService {
     public static String getPreviousPage() {
         String prevPage = "/";
         if (!urlEndpoints.isEmpty()) {
-            if (urlEndpoints.size() >= 2)
-                prevPage = urlEndpoints.remove(urlEndpoints.size() - 2);
-            urlEndpoints.remove(urlEndpoints.size() - 1);
+            prevPage = urlEndpoints.get(urlEndpoints.size() - 1);
         }
         return prevPage;
-//        if (urlEndpoints.size() >= 2) {
-//            return urlEndpoints.get(urlEndpoints.size() - 2);
-//        } else {
-//            return null;
-//        }
     }
 
     public static ArrayList<String> getUrlEndpoints() { return urlEndpoints; }

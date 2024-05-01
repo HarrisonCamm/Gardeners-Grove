@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
     <title>View Garden</title>
     <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
@@ -63,8 +64,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="plant : ${plants}">
-                        <td><img th:src="@{/images/leaves-80x80.png}" alt=""></td>
+                    <tr th:each="plant : ${plants}" class="plant-row">
+                        <td>
+                            <div style="position: relative;">
+                                <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="">
+                                <button class="image_picker" th:id="${'button_' + plant.id}">+</button>
+                            </div>
+                        </td>
                         <td th:text="${plant.name}"></td>
                         <td th:text="${plant.count}"></td>
                         <td th:text="${plant.description}"></td>
@@ -80,6 +86,7 @@
             </div>
         </div>
     </div>
+    <script src="/javascript/redirect_image_handler.js"></script>
 </body>
 </html>
 <script>
