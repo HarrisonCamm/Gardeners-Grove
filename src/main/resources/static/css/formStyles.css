@@ -1,3 +1,7 @@
+body {
+    background-color: #d4ffd4;
+    font-family: Verdana, sans-serif;
+}
 .content {
     display: flex;
     justify-content: center;
@@ -7,6 +11,7 @@
 .error, .form-control {
     width: 300px;
     font-size: 100%;
+    background-color: #b2eab2;
 }
 .message {
     width: 300px;
@@ -31,6 +36,15 @@ button, label {
     font-size: 120%;
 }
 
+button {
+    background-color : #8ffa8f;
+    border-radius: 5px;
+}
+button:hover {
+    background-color: darkgreen;
+
+}
+
 .buttons-centre {
     display: flex;
     justify-content: flex-end;
@@ -44,7 +58,7 @@ h2 {
     text-align: center;
 }
 .link {
-    font-size: 120%;
+    font-size: 100%;
 }
 .profile-picture {
     width: 200px;
