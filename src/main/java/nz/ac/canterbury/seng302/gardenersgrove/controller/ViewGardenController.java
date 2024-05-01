@@ -101,7 +101,7 @@ public class ViewGardenController {
         if (garden.isPresent()) { // if the garden ID exists
             model.addAttribute("gardenID", gardenID);
             model.addAttribute("gardenName", garden.get().getName());
-            model.addAttribute("gardenLocation", garden.get().getLocation().getStreetAddress());
+            model.addAttribute("gardenLocation", garden.get().getLocation().toString());
             model.addAttribute("gardenSize", garden.get().getSize());
             return "viewGardenDetailsTemplate";
         } else {
