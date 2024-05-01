@@ -1,7 +1,6 @@
 /* General styles */
 body {
     background-color: #d4ffd4;
-    /*text-align: center;*/
     font-family: Verdana, sans-serif;
 }
 
@@ -48,18 +47,9 @@ li {
     align-items: center;
 }
 
-/* Green button styles */
-.button {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    background-color: green;
-    width: fit-content;
-}
-
-.button:hover {
-    background-color: darkgreen;
+.formRow > div {
+    position: relative;
+    display: inline-block;
 }
 
 /* Navigation link styles */
@@ -106,8 +96,15 @@ li {
 
 /* Garden container styles */
 .gardenContainer {
-    text-align: center;
-    flex: 1;
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: auto;
+}
+
+.gardenDetails {
+    width: 500px;
 }
 
 /* Disabled styles */
@@ -166,12 +163,40 @@ h2 {
 
 .plantContainer {
     height: 900px;
+    min-width: 500px;
     width: fit-content;
     overflow-y: auto;
     border: 1px solid #333333; /* Adding border style */
     border-radius: 2px;
+    margin-top: 5px;
 }
 
+.image_picker {
+    position: absolute;
+    top: 0; right: 0;
+    cursor: pointer;
+    background-color: #dedede;
+    /*font-weight: bold;*/
+    border-radius: 25px;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.7;
+    border: solid black 1px;
+}
+
+.image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50px;
+    border: black solid 1px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+}
 .locationTable {
     margin: auto;
 }
@@ -192,24 +217,36 @@ p {
     align-items: center;
 }
 
-.buttons {
+
+.buttons-left {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    padding: 10px;
 }
 
 button, label {
     font-size: 120%;
 }
-button {
+
+button, .button {
     background-color : #8ffa8f;
     border-radius: 5px;
 }
 
 
+button:hover, .button:hover {
+    background-color: darkgreen;
 
-/*label {*/
-/*    width: 300px;*/
-/*}*/
+}
+.buttons-centre {
+    display: flex;
+    justify-content: flex-end;
+}
+.buttons-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: end;
+}
 
 
 

@@ -62,6 +62,9 @@ public class UserValidator {
         if (dateInput == null || dateInput.isEmpty()) {
             return "";
         }
+        if (dateInput.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            return dateInput; // Return the input date as it is
+        }
         // Convert the date to the correct format
         String[] parts = dateInput.split("/");
         if (dateInput.length() < 10) {

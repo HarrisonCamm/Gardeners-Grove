@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +18,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -35,16 +39,15 @@ public class EditProfileController {
     private final UserService userService;
     private UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
+    private final MailService mailService;
 
     @Autowired
-    public EditProfileController(UserService userService, UserRepository newUserRepository, AuthenticationManager authenticationManager) {
+    public EditProfileController(UserService userService, UserRepository newUserRepository, AuthenticationManager authenticationManager, MailService mailService) {
         this.userService = userService;
         this.userRepository = newUserRepository;
         this.authenticationManager = authenticationManager;
+        this.mailService = mailService;
     }
-
-    @Autowired
-    private MailService mailService;
 
     /**
      * Gets form to be displayed, includes the ability to display results of previous form when linked to from POST form
@@ -58,10 +61,13 @@ public class EditProfileController {
 
         logger.info("GET /edit-user-profile");
 
+        RedirectService.addEndpoint("/edit-user-profile");
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
         User currentUser = userService.getUserByEmail(currentPrincipalName);
 
+        model.addAttribute("user", currentUser);
         model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
         model.addAttribute("firstName", currentUser.getFirstName());
         model.addAttribute("lastName", currentUser.getLastName());
@@ -69,6 +75,7 @@ public class EditProfileController {
         model.addAttribute("email", currentUser.getEmail());
         model.addAttribute("changePasswordFormInput", false);
         model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
+        logger.info("current user + "  + currentUser.getDateOfBirth());
 
         return "editUserProfileTemplate";
     }
@@ -115,13 +122,22 @@ public class EditProfileController {
         User currentUser = userService.getUserByEmail(currentPrincipalName);
 
         logger.info("User retrieved from session: " + currentUser);
+        // Format and convert the data of birth
+        String formattedDateOfBirth;
+        if (dateOfBirth.isEmpty()) {
+            formattedDateOfBirth = "";
+        } else {
+            formattedDateOfBirth = convertDateFormat(dateOfBirth);
+        }
+
 
         // Pre-populate the model with submitted values to persist them in case of an error
+        model.addAttribute("user", currentUser);
         model.addAttribute("firstName", firstName);
         model.addAttribute("lastName", lastName);
         model.addAttribute("noLastName", noLastName);
         model.addAttribute("changePasswordFormInput", changePasswordFormInput);
-        model.addAttribute("oldPassword", oldPassword);
+//        model.addAttribute("oldPassword", oldPassword);
         model.addAttribute("newPassword", newPassword);
         model.addAttribute("retypePassword", retypePassword);
         model.addAttribute("email", email);
@@ -167,9 +183,6 @@ public class EditProfileController {
             }
         }
 
-    // Format and convert the data of birth
-    String formattedDateOfBirth = convertDateFormat(dateOfBirth);
-
     // Begin User Details Validations
 
     // Check if email already exists
@@ -197,7 +210,7 @@ public class EditProfileController {
     if (!noLastName && lastName.isEmpty()) {
         model.addAttribute("lastNameError", "Last name cannot be empty");
     }
-    if (!formattedDateOfBirth.isEmpty() && !checkDateValidity(formattedDateOfBirth)) {
+    if (!dateOfBirth.isEmpty() && !checkDateValidity(formattedDateOfBirth)) {
         model.addAttribute("ageError", "Date in not in valid format, DD/MM/YYYY");
     }
     if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) < 13) {
@@ -258,5 +271,26 @@ public class EditProfileController {
         // Redirect to the user profile page after successful update of user details
         return "redirect:/view-user-profile";
     }
+    }
+
+    @PostMapping("/edit-user-profile-image")
+    public String uploadImage(@RequestParam(value = "userID", required = false) Long userID,
+                              @RequestParam(value = "file", required = false) MultipartFile file,
+                              Model model) throws IOException {
+        logger.info("PUT /edit-user-profile");
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        User currentUser = userService.getUserByEmail(currentPrincipalName);
+
+        Optional<User> user = userRepository.findById(userID);
+        if (user.isPresent()) {
+            User userToEdit = user.get();
+            userToEdit.setImage(file.getBytes());
+            userToEdit.setFilePath(file.getOriginalFilename());
+            userRepository.save(userToEdit);
+        }
+
+        return "redirect:/edit-user-profile";
     }
 }

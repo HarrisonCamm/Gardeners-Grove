@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +35,14 @@ public class SignInController {
 
     private UserRepository userRepository;
     private AuthenticationManager authenticationManager;
+    private VerificationTokenService verificationTokenService;
 
     @Autowired
-    public SignInController(UserService userService, UserRepository newUserRepository, AuthenticationManager authenticationManager) {
+    public SignInController(UserService userService, UserRepository newUserRepository, AuthenticationManager authenticationManager, VerificationTokenService verificationTokenService) {
         this.userService = userService;
         this.userRepository = newUserRepository;
         this.authenticationManager = authenticationManager;
+        this.verificationTokenService = verificationTokenService;
     }
 
     /**
@@ -49,6 +52,7 @@ public class SignInController {
      */
     @GetMapping("/sign-in-form")
     public String getTemplate(@RequestParam(value = "error", required = false) String error,
+                              @RequestParam(value = "token", required = false) String token,
                               Model model) {
         logger.info("GET /sign-in-form");
         if (error != null) {
@@ -57,6 +61,13 @@ public class SignInController {
         // Pass the email value back to the template
         model.addAttribute("email", "");
         model.addAttribute("message", "");
+        model.addAttribute("token", "");
+
+        String expiredTokenMessage = "Reset link has expired.";
+        if (!verificationTokenService.validateToken(token) && token != null) { //show error on sign in page if reset pw token link expired
+            model.addAttribute("expiredTokenError", expiredTokenMessage);
+            logger.info("token is invalid on sign in form");
+        }
         return "signInTemplate";
     }
 

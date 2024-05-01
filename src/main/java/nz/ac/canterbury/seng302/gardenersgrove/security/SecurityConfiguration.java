@@ -8,7 +8,11 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
@@ -59,12 +63,14 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth.requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll())
                 .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable())
-                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")))
-
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/h2/**"))
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
                 .authorizeHttpRequests(request ->
                     // Allow "/", "/register", and "/login" to anyone (permitAll)
                     // Authenticated and non-Authenticated users can access these pages
-                    request.requestMatchers("/", "/register-form", SIGN_IN_FORM, "/home", "/confirm-registration")
+                    request.requestMatchers("/", "/register-form", SIGN_IN_FORM, "/home", "/confirm-registration", "/lost-password-form", "reset-password-form")
                     .permitAll()
                     // Could change .permitAll() to .anonymous() to give access to these pages only to non-Authenticated users
 
@@ -81,7 +87,7 @@ public class SecurityConfiguration {
                     .hasRole("UNVERIFIED")
 
                     // Increase access to authenticated users to reach the "/main", "/view-user-profile", "/edit-user-profile" pages
-                    .requestMatchers("/main", "/view-user-profile", "/edit-user-profile", "/create-garden", "/view-garden", "/view-gardens", "/create-plant", "/edit-plant")
+                    .requestMatchers("/main", "/view-user-profile", "/edit-user-profile", "/create-garden", "/view-garden", "/view-gardens", "/create-plant", "/edit-plant", "/upload-image")
                     .hasRole("USER")
 
                     // Any other request requires authentication

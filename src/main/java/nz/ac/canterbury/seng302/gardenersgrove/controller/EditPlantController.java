@@ -13,8 +13,18 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.Date;
 import java.util.Optional;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.PlantValidator.*;
@@ -46,6 +56,9 @@ public class EditPlantController {
         model.addAttribute("plantID", plantID); // Add gardenID to the model
         model.addAttribute("plant", plant);
         model.addAttribute("datePlanted", plant.getDatePlanted());
+        model.addAttribute("datePlanted", date);
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+        RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
         return "editPlantFormTemplate";
     }
@@ -76,8 +89,10 @@ public class EditPlantController {
         plant.setCount(newPlant.getCount());
         plant.setDescription(newPlant.getDescription());
 
-        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         model.addAttribute("plantID", plantID); // Add gardenID to the model
+//        model.addAttribute("datePlanted", formattedDate);
+        model.addAttribute("plant", plant);
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         //Ternary operator to assign null date or assign a formatted date
         model.addAttribute("datePlanted", datePlanted);
 
@@ -93,6 +108,39 @@ public class EditPlantController {
         }
     }
 
+    /**
+     * This method sets up the upload image page
+     * @param plantID The ID of the plant to upload an image for
+     * @param file The image file to upload
+     * @return Redirect string for JavaScript
+     */
+    @PostMapping("edit-plant-picture")
+    public String changePicture(@RequestParam("plantID") Long plantID,
+                                @RequestParam("file") MultipartFile file) {
+        logger.info("POST /edit-plant");
+        Optional<Plant> found = plantService.findPlant(plantID);
+        if (found.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant with ID " + plantID + " not found");
+        }
+        Plant plant = found.get();
+
+        try {
+            byte[] imageBytes = file.getBytes();
+            plant.setImage(imageBytes);
+        } catch (IOException e) {
+            logger.error("Failed to convert image to byte array", e);
+        }
+
+        plantService.addPlant(plant);
+
+        return "redirect:/edit-plant?plantID=" + plantID;
+    }
+
+    public static void checkName(String name, BindingResult bindingResult) {
+        ObjectError nameError = validatePlantName(name);
+        if (nameError != null) {
+            bindingResult.addError(nameError);
+        }
     /**
      * Checks all input strings with PlantValidator validation methods
      * And generates a list of errors
