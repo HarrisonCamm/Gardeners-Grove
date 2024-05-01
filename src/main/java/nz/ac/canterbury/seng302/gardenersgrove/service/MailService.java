@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
+import org.hibernate.annotations.Array;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ public class MailService {
 
     private final JavaMailSender emailSender;
 
+    @Autowired
     public MailService(JavaMailSender emailSender) {
         this.emailSender = emailSender;
     }

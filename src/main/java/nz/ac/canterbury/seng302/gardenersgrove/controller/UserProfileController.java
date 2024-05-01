@@ -43,11 +43,8 @@ public class UserProfileController {
      */
     @GetMapping("/view-user-profile")
     public String getTemplate(Model model) {
-
         RedirectService.addEndpoint("/view-user-profile");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        User currentUser = userService.getUserByEmail(currentPrincipalName);
+        User currentUser = userService.getAuthenicatedUser();
 
         logger.info("User retrieved from session: " + currentUser);
 

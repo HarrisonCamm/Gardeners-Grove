@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.gardenersgrove.unit;
+package nz.ac.canterbury.seng302.gardenersgrove.unit.service;
 
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import org.junit.jupiter.api.BeforeEach;

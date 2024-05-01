@@ -53,10 +53,26 @@ public class User {
     }
 
     public User(String email, String firstName, String lastName, String password) {
-        this.email = email;
+        this(firstName, lastName, false, email, password, "");
+    }
+
+    public User(String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth) {
+        this(null, firstName, lastName, noLastName, email, password, dateOfBirth);
+    }
+
+    public User(Long id, String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth) {
+        this.userId = id;
+        this.password = password;
+        this.setValues(firstName, lastName, noLastName, email, dateOfBirth);
+    }
+
+    public User setValues(String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.password = password;
+        this.noLastName = noLastName;
+        this.email = email;
+        this.dateOfBirth = dateOfBirth;
+        return this;
     }
 
     public void grantAuthority(String authority) {

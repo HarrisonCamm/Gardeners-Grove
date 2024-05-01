@@ -1,5 +1,6 @@
-package nz.ac.canterbury.seng302.gardenersgrove.entity;
+package nz.ac.canterbury.seng302.gardenersgrove.unit.entity;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

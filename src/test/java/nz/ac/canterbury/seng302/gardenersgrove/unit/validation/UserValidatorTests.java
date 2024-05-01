@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.gardenersgrove.unit.vaildation;
+package nz.ac.canterbury.seng302.gardenersgrove.unit.validation;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

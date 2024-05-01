@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.gardenersgrove.integration;
+package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.controller.AutocompleteController;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -38,13 +39,22 @@ public class AutocompleteControllerTests {
     private MockMvc mockMvc;
 
     @MockBean
-    AutocompleteService autocompleteService;
+    private VerificationTokenService verificationTokenService;
 
     @MockBean
-    GardenService gardenService;
+    private AuthorityService authorityService;
 
     @MockBean
-    LocationService locationService;
+    private MailService mailService;
+
+    @MockBean
+    private AutocompleteService autocompleteService;
+
+    @MockBean
+    private GardenService gardenService;
+
+    @MockBean
+    private LocationService locationService;
 
     @MockBean
     UserService userService;
@@ -73,6 +83,7 @@ public class AutocompleteControllerTests {
     }
 
     @Test
+    @WithMockUser
     public void TypedInAddress_ServiceReturns_Ok() throws Exception {
 
         HttpResponse<String> httpResponse = new HttpResponse<>() {

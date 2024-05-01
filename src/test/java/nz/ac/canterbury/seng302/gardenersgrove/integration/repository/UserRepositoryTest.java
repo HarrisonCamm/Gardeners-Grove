@@ -1,6 +1,7 @@
-package nz.ac.canterbury.seng302.gardenersgrove.repository;
+package nz.ac.canterbury.seng302.gardenersgrove.integration.repository;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

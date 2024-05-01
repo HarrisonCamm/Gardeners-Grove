@@ -58,14 +58,10 @@ public class EditProfileController {
      */
     @GetMapping("/edit-user-profile")
     public String form(HttpServletRequest request, Model model) {
-
         logger.info("GET /edit-user-profile");
+        User currentUser = userService.getAuthenicatedUser();
 
         RedirectService.addEndpoint("/edit-user-profile");
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        User currentUser = userService.getUserByEmail(currentPrincipalName);
 
         model.addAttribute("user", currentUser);
         model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
@@ -117,9 +113,7 @@ public class EditProfileController {
         firstName = formatName(firstName);
         lastName = formatName(lastName);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        User currentUser = userService.getUserByEmail(currentPrincipalName);
+        User currentUser = userService.getAuthenicatedUser();
 
         logger.info("User retrieved from session: " + currentUser);
         // Format and convert the data of birth

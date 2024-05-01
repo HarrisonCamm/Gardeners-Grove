@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.gardenersgrove.unit.vaildation;
+package nz.ac.canterbury.seng302.gardenersgrove.unit.validation;
 
 import nz.ac.canterbury.seng302.gardenersgrove.validation.GardenValidator;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;

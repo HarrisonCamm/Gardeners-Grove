@@ -1,9 +1,11 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 
+import java.text.ParseException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,11 +40,13 @@ public class EditPlantController {
 
     private final PlantService plantService;
     private final GardenService gardenService;
+    private final UserService userService;
 
     @Autowired
-    public EditPlantController(PlantService plantService, GardenService gardenService) {
+    public EditPlantController(PlantService plantService, GardenService gardenService, UserService userService) {
         this.plantService = plantService;
         this.gardenService = gardenService;
+        this.userService = userService;
     }
 
     @GetMapping("/edit-plant")
@@ -50,8 +55,11 @@ public class EditPlantController {
         logger.info("GET /edit-plant");
 //        RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
-        //Attempt to retrieve plant or throw ResponseStatusException
+        User currentUser = userService.getAuthenicatedUser();
+        // Attempt to retrieve plant or throw ResponseStatusException
         Plant plant = retrievePlant(plantID, plantService);
+        if (!plant.getGarden().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this plant.");
 
         RedirectService.addEndpoint("/view-garden?gardenID=" + plant.getGarden().getId());
 
@@ -75,8 +83,13 @@ public class EditPlantController {
                              BindingResult bindingResult,
                              Model model) throws Exception {
         logger.info("PUT /edit-plant");
+
         //Attempt to retrieve plant or throw ResponseStatusException
         Plant plant = retrievePlant(plantID, plantService);
+        User currentUser = userService.getAuthenicatedUser();
+        if (!plant.getGarden().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this plant.");
+
         RedirectService.addEndpoint("/view-garden?gardenID=" + plant.getGarden().getId());
         String formattedDate;
 

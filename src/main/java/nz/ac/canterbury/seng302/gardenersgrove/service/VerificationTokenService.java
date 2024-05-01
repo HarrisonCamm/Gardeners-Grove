@@ -40,7 +40,8 @@ public class VerificationTokenService {
         LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(10);
 //        LocalDateTime expiryDate = LocalDateTime.now().plusSeconds(30);
         VerificationToken verificationToken = new VerificationToken(user, token, expiryDate);
-        return verificationTokenRepository.save(verificationToken);
+        verificationTokenRepository.save(verificationToken);
+        return verificationToken;
     }
 
     /**

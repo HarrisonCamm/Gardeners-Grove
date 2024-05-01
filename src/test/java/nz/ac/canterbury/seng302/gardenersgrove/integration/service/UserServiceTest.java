@@ -1,7 +1,8 @@
-package nz.ac.canterbury.seng302.gardenersgrove.service;
+package nz.ac.canterbury.seng302.gardenersgrove.integration.service;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
