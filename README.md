@@ -1,4 +1,4 @@
-# Team C - Gardeners Grove Users
+# Team 600 - Gardeners Grove Users
 basic project using ```gradle```, ```Spring Boot```, ```Thymeleaf```, and ```GitLab CI```.
 
 > This should be your project's README (renamed to `README.md`) that your team will continually update as your team progresses throughout the year.
@@ -6,7 +6,39 @@ basic project using ```gradle```, ```Spring Boot```, ```Thymeleaf```, and ```Git
 > Update this document as necessary.
 
 ## How to run
-### 1 - Running the project
+### 1 - Create application-dev.properties
+
+- From the root directory go to src/main/resources
+- Create the file application-dev.properties
+- Type the following line
+```
+geoapify.api.key=YOUR_API_KEY
+```
+See below for instructions for getting an API key
+
+### 2 - Getting an API key
+
+- Go to https://www.geoapify.com/
+- Create an account
+- Create a project
+- Select "Autocomplete API" under "Choose Geoapify API key"
+- Copy and paste the API key into the application-dev.properties file (see above)
+
+### 3 - Setting Credentials in application-dev.properties
+
+- Copy and paste the following lines into the application-dev.properties file
+```
+# Spring Mail Credentials
+spring.mail.username=gardenersgrovenoreply@gmail.com
+spring.mail.password=yqzl kzje hkhn ekbl
+
+#Spring Data Source Credentials
+spring.datasource.username=sa
+spring.datasource.password=password
+```
+- These properties are to configure the application to work with the mail server and database used.
+
+### 4 - Running the project
 From the root directory ...
 
 1. Open a terminal in the root directory of the project.
@@ -24,7 +56,7 @@ gradlew bootRun
 
 By default, the application will run on local port 8080 [http://localhost:8080](http://localhost:8080)
 
-### 2 - Using the application
+### 5 - Using the application
 
 #### Default User Credentials
 The application comes with several default users created at startup for testing purposes. Here are the credentials:
@@ -75,11 +107,6 @@ On Windows:
 gradlew test
 ```
 
-## Todo (Sprint 1)
-
-- Add team name into `build.gradle`
-- Update this README title
-- Update this README contributors
 
 ## Todo (Sprint 2)
 
@@ -95,6 +122,10 @@ gradlew test
 - Bella Hill (ihi17)
 - Angelica Silva (ams361)
 - Aakrista Dahal (ada185)
+- Oliver Clark (ocl28)
+- Toby Oliver (tol21)
+- Zak Lockett (zlo18)
+- Harrison Camm (hrc48)
 - SENG302 teaching team
 
 ## References
