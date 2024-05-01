@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.UserValidator.isPasswordValid;
 
 @Controller
@@ -44,6 +47,15 @@ public class ResetPasswordFormController {
                        Model model) {
         logger.info("GET /reset-password-form");
         model.addAttribute("token", token);
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (!verificationTokenService.findAllTokens().isEmpty()) {
+                    verificationTokenService.cleanupExpiredTokens();
+                }
+            }
+        }, 0, 5000);
 
         // If token is expired or null
         if (!verificationTokenService.validateToken(token)) {
