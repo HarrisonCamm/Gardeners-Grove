@@ -40,6 +40,7 @@ spring.datasource.password=password
 
 ### 4 - Running the project
 We are not deploying on the PROD instance. We have a persistent database using h2.
+
 From the root directory ...
 
 1. Open a terminal in the root directory of the project.
