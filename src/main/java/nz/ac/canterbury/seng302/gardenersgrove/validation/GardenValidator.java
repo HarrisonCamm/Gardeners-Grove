@@ -35,13 +35,13 @@ public class GardenValidator {
         if (isCity) {
             if (validateWithRegex("^$", location.getCity())) {
                 return new FieldError("garden", "location.city", "City cannot be empty");
-            } else if (!validateWithRegex("^[a-zA-Z\\s]*$", location.getCity())) {
+            } else if (!validateWithRegex("[\\p{L}\\s'-]+", location.getCity())) {
                 return new FieldError("garden", "location.city", "City must only include letters and spaces");
             }
         } else {
             if (validateWithRegex("^$", location.getCountry())) {
                 return new FieldError("garden", "location.country", "Country cannot be empty");
-            } else if (!validateWithRegex("^[a-zA-Z\\s]*$", location.getCountry())) {
+            } else if (!validateWithRegex("[\\p{L}\\s'-]+", location.getCountry())) {
                 return new FieldError("garden", "location.country", "Country must only include letters and spaces");
             }
         }
@@ -71,7 +71,4 @@ public class GardenValidator {
         Matcher matcher = pattern.matcher(comparison);
         return matcher.matches();
     }
-
-
-
 }
