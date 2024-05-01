@@ -3,61 +3,17 @@
     <head>
         <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
         <title>Gardener's Grove</title>
-        <style>
-            body {
-                padding-top: 10%;
-                align-items: center;
-            }
-            .centre {
-                justify-content: center;
-                display: flex;
-            }
-            button {
-                font-size: 140%;
-            }
-            .form {
-                font-size: 140%;
-            }
-            h1 {
-                font-size: 200%;
-                text-align: center;
-            }
-            @media only screen and (orientation: portrait) {
-                body {
-                    padding-top: 25%; /* Decrease top padding for vertical screens */
-                }
-
-                h1 {
-                    font-size: 350%; /* Increase font size for vertical screens */
-                }
-
-                button {
-                    font-size: 250%; /* Increase button font size for vertical screens */
-                }
-                .form {
-                    font-size: 250%;
-                }
-            }
-        </style>
+        <!-- Navbar styling -->
+        <link href="/css/navBar.css" rel="stylesheet"/>
+        <link href="/css/homeMainStyles.css" rel="stylesheet"/>
     </head>
-    <body class="centre">
-        <div>
-            <h1>Main Page</h1>
-            <br/>
-            <!-- View Profile button -->
-            <div class="centre">
-                <div>
-                    <a th:href="@{/view-user-profile}">
-                        <button type="button">My Profile</button>
-                    </a>
-                </div>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <!-- Logout button -->
-                <div>
-                    <form th:action="@{/logout}" method="post">
-                        <input type="submit" value="Log Out" class="form">
-                    </form>
-                </div>
+    <body>
+    <!-- Navigation Bar Fragment -->
+    <ul th:insert="/fragments/navBar.html :: navBar"></ul>
+        <div class="content">
+            <div>
+                <h1>Main Page</h1>
+                <br/>
             </div>
         </div>
     </body>

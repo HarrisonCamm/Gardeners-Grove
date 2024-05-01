@@ -2,50 +2,91 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create Plant</title>
+    <title>Edit Plant</title>
     <link href="/css/gardenStyles.css" rel="stylesheet">
+    <link th:href="@{/css/navBar.css}" rel="stylesheet">
 </head>
 <body>
-    <ul class="navBar">
-        <li><a class="navLink" th:href="@{/create-garden}">Create a Garden</a></li>
-        <li><a class="navLink" th:href="@{/view-gardens}">View Gardens</a></li>
-    </ul>
-
+<!-- Navigation Bar Fragment -->
+<ul th:insert="/fragments/navBar.html :: navBar"></ul>
     <br/>
+    <div class="form">
+        <h2>Edit Plant</h2>
+        <div class="formContainer">
+            <form th:action="@{/edit-plant}" method="post" th:object="${plant}">
+                <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" name="plantID" th:value="${plantID}">
+                <div style="position: relative; width: 82px; margin: auto;">
+                    <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="" src="">
+                    <button type="button" class="image_picker" th:id="${'button_' + plant.id}">+</button>
+                </div>
+                <div>
+                    <label for="plantName"> Name: </label>
+                    <br/>
+                    <input type="text" id="plantName" maxlength="254" th:value="*{name}" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
+                </div>
+                <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
 
-    <div class="formContainer">
-        <h1>Edit Plant</h1>
-        <form th:action="@{/edit-plant}" method="post" th:object="${plant}">
-            <input type="hidden" name="_method" value="PUT">
-            <input type="hidden" name="plantID" th:value="${plantID}">
-            <div class="formRow">
-                <label for="plantName"> Name: </label>
-                <input type="text" id="plantName" placeholder="Name" th:value="*{name}" th:field="*{name}">
-            </div>
-            <div class="formRow">
-                <label for="plantCount"> Count: </label>
-                <input type="text" id="plantCount" placeholder="Count" th:value="*{count}" th:field="*{count}">
-            </div>
-            <div class="formRow">
-                <label for="plantDescription"> Description: </label>
-                <input type="text" id="plantDescription" placeholder="Description" th:value="*{description}" th:field="*{description}">
-            </div>
-            <div class="formRow">
-                <label for="datePlanted"> Date Planted: </label>
-                <input type="date" name="datePlanted" id="datePlanted" th:value="${datePlanted}">
-<!--                <input type="text" name="datePlanted" id="datePlanted" placeholder="01/01/2024" th:value="${datePlanted}">-->
-            </div>
-            <br/>
-            <button type="submit">Save</button>
-            <div class="errors" th:if="${#fields.hasErrors('global')}">
-                <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
-            </div>
-        </form>
+                <div>
+                    <label for="plantCount"> Count: </label>
+                    <br/>
+                    <input type="text" id="plantCount" th:value="*{count}" th:field="*{count}" th:classappend="${countError} ? 'error' : ''">
+                </div>
+                <p th:if="${countError}" class="error-message" th:text="${countError}"></p>
 
-        <form th:action="@{/Cancel}" method="get">
-            <button type="submit">Cancel</button>
-        </form>
-    </div>
-    <br/>
+                <div>
+                    <label for="plantDescription"> Description: </label>
+                    <br/>
+                    <input type="text" id="plantDescription" th:value="*{description}" th:field="*{description}" th:classappend="${descriptionError} ? 'error' : ''">
+                </div>
+                <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
+
+                    <label for="datePlanted"> Date Planted: </label>
+                    <br/>
+                    <input type="text" name="datePlanted" id="datePlanted"
+                           th:name="datePlanted" th:value="${datePlanted}"
+                           placeholder="DD/MM/YYYY"
+                           data-cy="datePlanted"
+                           oninput="formatDateOfBirth(this)" th:field="*{datePlanted}"
+                           th:classappend="${datePlantedError} ? 'error' : ''">
+
+                <p th:if="${datePlantedError}" class="error-message" th:text="${datePlantedError}"></p>
+                <br/>
+                <br/>
+                <div class="buttons-centre">
+                    <button type="submit">Save</button>
+                    &nbsp;
+                    <a th:href="@{${lastEndpoint}}" id="cancel">
+                        <button type="button">Cancel</button>
+                    </a>
+                </div>
+            </form>
+        </div>
+        <br/>
+        <script src="/javascript/redirect_image_handler.js"></script>
+        </div>
+
 </body>
 </html>
+<script>
+    function formatDateOfBirth(input) {
+        let formattedValue = input.value.replace(/[^\d/]/g, '');
+
+        let matches = formattedValue.match(/\//g);
+        if (matches && matches.length > 2) {
+            formattedValue = formattedValue.substring(0, formattedValue.lastIndexOf('/'));
+        }
+
+        if (formattedValue.length > 2 && formattedValue.charAt(2) !== '/') {
+            formattedValue = formattedValue.slice(0, 2) + '/' + formattedValue.slice(2);
+        }
+        if (formattedValue.length > 5 && formattedValue.charAt(5) !== '/') {
+            formattedValue = formattedValue.slice(0, 5) + '/' + formattedValue.slice(5);
+        }
+
+        if (formattedValue.length > 10) {
+            formattedValue = formattedValue.slice(0, 10);
+        }
+        input.value = formattedValue;
+    }
+</script>

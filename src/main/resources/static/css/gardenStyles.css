@@ -1,7 +1,6 @@
 /* General styles */
 body {
-    background-color: #b5ffbe;
-    text-align: center;
+    background-color: #d4ffd4;
     font-family: Verdana, sans-serif;
 }
 
@@ -19,14 +18,14 @@ li {
 /* Flexbox styles */
 .wrapper {
     display: flex;
-    justify-content: center; /* Horizontally center the items */
+    justify-content: space-between; /* Horizontally center the items */
 }
 
 /* Container styles */
 .container {
     background: #333333;
     height: 100vh;
-    align-items: revert;
+    text-align: left;
 }
 
 /* Sidebar styles */
@@ -38,37 +37,25 @@ li {
 /* Table styles */
 .gardenTable {
     flex: 1;
+    align-items: center;
 }
 
 /* Form container styles */
 .formContainer {
-    flex: 1;
-    padding-left: 20px;
+    /*flex: 1;*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Form row styles */
-.formRow {
-    margin-top: 50px;
-    margin-bottom: 50px;
-}
-
-/* Green button styles */
-.button {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    background-color: green;
-    width: fit-content;
-}
-
-.button:hover {
-    background-color: darkgreen;
+.formRow > div {
+    position: relative;
+    display: inline-block;
 }
 
 /* Navigation link styles */
 .navLink {
-    display: block;
+    /*display: block;*/
     color: white;
     text-align: center;
     padding: 14px 16px;
@@ -110,8 +97,15 @@ li {
 
 /* Garden container styles */
 .gardenContainer {
-    text-align: center;
-    flex: 1;
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: auto;
+}
+
+.gardenDetails {
+    width: 500px;
 }
 
 /* Disabled styles */
@@ -119,9 +113,26 @@ li {
     opacity: 0;
 }
 
-/* Error message styles */
-.errors {
+.error {
+    border: 1px solid red;
+    outline: 1px solid red;
+}
+
+.error:focus {
+    outline: 2px solid red;
+}
+
+.error-message {
     color: red;
+    display: block;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+h2 {
+    padding-top: 5%;
+    text-align: center;
 }
 
 .autocomplete-items {
@@ -131,12 +142,14 @@ li {
     border-top: none;
     background-color: #fff;
     z-index: 99;
-    top: calc(100% + 2px);
     left: 0;
     right: 0;
-    margin: 20px auto 0;
-    width: fit-content;
-    text-align: center;
+    width: 300px;
+    text-align: left;
+}
+
+.suggestions {
+    padding: 0;
 }
 
 .autocomplete-items div {
@@ -151,11 +164,144 @@ li {
 
 .plantContainer {
     height: 900px;
+    min-width: 500px;
     width: fit-content;
     overflow-y: auto;
     border: 1px solid #333333; /* Adding border style */
     border-radius: 2px;
+    margin-top: 5px;
 }
 
+.image_picker {
+    position: absolute;
+    top: 0; right: 0;
+    cursor: pointer;
+    background-color: #dedede;
+    /*font-weight: bold;*/
+    border-radius: 25px;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.7;
+    border: solid black 1px;
+}
+
+.image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50px;
+    border: black solid 1px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+.locationTable {
+    margin: auto;
+}
+
+input {
+    width: 300px;
+    font-size: 100%;
+    background-color: #b2eab2;
+    border-radius: 2px;
+}
+p {
+    margin: 0
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.buttons-left {
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px;
+}
+
+button, label {
+    font-size: 120%;
+}
+
+button, .button {
+    background-color : #8ffa8f;
+    border-radius: 5px;
+}
+
+
+button:hover, .button:hover {
+    background-color: darkgreen;
+
+}
+.buttons-centre {
+    display: flex;
+    justify-content: flex-end;
+}
+.buttons-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: end;
+}
+
+@media only screen and (orientation: portrait) {
+    h2 {
+        font-size: 300%;
+    }
+    button {
+        font-size: 200%;
+    }
+    label {
+        font-size: 200%;
+    }
+    input {
+        font-size: 180%;
+        width: 540px;
+        border: 2px solid;
+        border-radius: 2px;
+    }
+    .message {
+        font-size: 182%;
+        width: 540px;
+    }
+    .form-control[disabled] {
+        border-color: #ccc;
+    }
+    .error {
+        font-size: 180%;
+        width: 540px;
+        border: 2px solid red;
+        border-radius: 2px;
+        outline: 2px solid red;
+    }
+    .error:focus {
+        outline: 4px solid red;
+    }
+    .error-message {
+        width: 540px;
+        font-size: 150%;
+    }
+    .checkbox {
+        transform: scale(1.5);
+    }
+    .link {
+        font-size: 200%;
+    }
+    .profile-picture {
+        width: 360px;
+    }
+    .garden-header, .gardenLink, h3{
+    font-size: 200%;
+    }
+
+    .garden-table, .plant-row{
+        font-size: 150%;
+    }
+}
 
 

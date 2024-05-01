@@ -3,6 +3,10 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,14 +26,20 @@ public class Plant {
     private String name;
 
     @Column
-    private String count;          //Todo: change to Float
+    private String count;
 
     @Column(length = 512)
     private String description;
 
     @Column
-    @DateTimeFormat(pattern = "dd/MM/YYYY")
-    private Date datePlanted;
+    private String datePlanted;
+
+    @Column
+    private String filePath;
+
+    @Lob
+    @Column
+    private byte[] image;
 
     /**
      * Required constructor
@@ -54,12 +64,14 @@ public class Plant {
      * @param description Plant description
      * @param datePlanted Plant date planted
      */
-    public Plant(Garden garden, String name, String count, String description, String datePlanted) throws ParseException {
+    public Plant(Garden garden, String name, String count, String description, String datePlanted, String filePath) throws ParseException, IOException {
         this.garden = garden;
         this.name = name;
         this.count = count;
         this.description = description;
-        this.datePlanted = new SimpleDateFormat("dd/MM/yyyy").parse(datePlanted);
+        this.datePlanted = datePlanted;
+        this.filePath = filePath;
+        this.image = null;
     }
 
     // Setter for id
@@ -75,7 +87,7 @@ public class Plant {
     public void setDescription(String description) { this.description = description; }
 
     //Setter for date
-    public void setDatePlanted(Date date) { this.datePlanted = date; }
+    public void setDatePlanted(String date) { this.datePlanted = date; }
 
     //Setter for garden
     public void setGarden(Garden garden) {
@@ -101,6 +113,22 @@ public class Plant {
     public String getDescription() { return description; }
 
     //Getter for datePlanted
-    public Date getDatePlanted() { return datePlanted; }
+    public String getDatePlanted() { return datePlanted; }
+
+    public String getPicture() {
+        return filePath;
+    }
+
+    public void setPicture(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
 
 }

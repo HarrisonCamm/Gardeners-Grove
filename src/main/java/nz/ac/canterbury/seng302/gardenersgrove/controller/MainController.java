@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,9 @@ public class MainController {
                               Model model) {
         User currentUser = (User) request.getSession().getAttribute("user");
         logger.info("GET /main");
+
+        RedirectService.addEndpoint("/main");
+
         model.addAttribute("name", name);
         model.addAttribute("user", currentUser);
         return "mainTemplate";

@@ -2,21 +2,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org" lang="en">
 <head>
     <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
-    <title>Create Garden</title>
+    <title>Edit Garden</title>
     <link href="/css/gardenStyles.css" rel="stylesheet">
+    <link th:href="@{/css/navBar.css}" rel="stylesheet">
 </head>
 
 <body>
-    <ul class="navBar">
-        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>
-        <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
-    </ul>
+    <ul th:insert="/fragments/navBar.html :: navBar"></ul>
     <div class="wrapper">
         <div class="container">
             <table class="sideBar">
                 <thead>
                 <tr>
-                    <th>Gardens</th>
+                    <th class="garden-header">Gardens</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -27,234 +25,94 @@
             </table>
         </div>
         <br/>
-        <div class="formContainer">
+        <div class="form">
+
             <h1>Edit Garden</h1>
-            <form th:action="@{'/edit-garden?gardenID=' + ${id}}" method="post" th:object="${garden}">
-                <input type="hidden" name="_method" value="PUT">
-                <div class="formRow">
-                    <label for="name"> Garden Name: </label>
-                    <input type="text" id="name" placeholder="Garden Name" th:value="*{name}" th:field="*{name}">
-                </div>
-                <br/>
-                <div class="formRow" id="locationContainer">
-                    <label id="gardenLocationLabel">Garden Location:</label>
+            <div class="formContainer">
+                <form th:action="@{'/edit-garden?gardenID=' + ${id}}" method="post" th:object="${garden}">
+                    <input type="hidden" name="_method" value="PUT">
+                    <div>
+                        <label for="name"> Garden Name: </label>
+                        <br/>
+                        <input type="text" id="name"
+                               th:name="name"
+                               th:value="*{name}"
+                               th:classappend="${nameError} ? 'error' : ''">
+                        <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
+                    </div>
                     <br/>
-                    <label for="streetAddress" id="streetAddressLabel">Street Address: </label>
-                    <input type="text" id="streetAddress"  placeholder="Street Address" th:value="*{location.streetAddress}" th:field="*{location.streetAddress}">
+                    <div class="locationTable" id="locationContainer">
+                        <div id="autocompleteContainer"></div>
+                        <ul class="suggestions" id="suggestions"></ul>
+                        <br/>
+                        <label for="streetAddress" id="streetAddressLabel">Street Address: </label>
+                        <br/>
+                        <input type="text" id="streetAddress"
+                               th:name="location.streetAddress"
+                               th:value="*{location.streetAddress}">
+                        <br/>
+                        <br/>
+                        <label for="suburb" id="suburbLabel">Suburb: </label>
+                        <br/>
+                        <input type="text" id="suburb"
+                               th:name="location.suburb"
+                               th:value="*{location.suburb}">
+                        <br/>
+                        <br/>
+                        <label for="city" id="cityLabel">City: </label>
+                        <br/>
+                        <input type="text" id="city"
+                               th:name="location.city"
+                               th:value="*{location.city}"
+                               th:class="${location_cityError != null ? 'error' : ''}">
+                        <br/>
+                        <p th:if="${location_cityError != null}" class="error-message" th:text="${location_cityError}"></p>
+                        <br/>
+                        <label for="postcode" id="postcodeLabel">Postcode: </label>
+                        <br/>
+                        <input type="text" id="postcode"
+                               th:name="location.postcode"
+                               th:value="*{location.postcode}">
+                        <br/>
+                        <br/>
+                        <label for="country" id="countryLabel">Country: </label>
+                        <br/>
+                        <input type="text" id="country"
+                               th:name="location.country"
+                               th:value="*{location.country}"
+                               th:classappend="${location_countryError} ? 'error' : ''">
+                        <br/>
+                        <p th:if="${location_countryError}" class="error-message" th:text="${location_countryError}"></p>
+                        <br/>
+                    </div>
                     <br/>
-                    <label for="suburb" id="suburbLabel">Suburb: </label>
-                    <input type="text" id="suburb"  placeholder="Suburb" th:value="*{location.suburb}" th:field="*{location.suburb}">
+                    <div>
+                        <div>
+                            <label for="size"> Garden Size: </label>
+                            <br/>
+                            <input type="text" id="size"
+                                   th:name="size"
+                                   th:value="*{size}"
+                                   th:classappend="${sizeError} ? 'error' : ''">
+                            <p th:if="${sizeError}" class="error-message" th:text="${sizeError}"></p>
+                        </div>
+                    </div>
                     <br/>
-                    <label for="city" id="cityLabel">City </label>
-                    <input type="text" id="city"  placeholder="City" th:value="*{location.city}" th:field="*{location.city}">
-                    <br/>
-                    <label for="postcode" id="postcodeLabel">Postcode: </label>
-                    <input type="text" id="postcode"  placeholder="Postcode" th:value="*{location.postcode}" th:field="*{location.postcode}">
-                    <br/>
-                    <label for="country" id="countryLabel">Country: </label>
-                    <input type="text" id="country"  placeholder="Country" th:value="*{location.country}" th:field="*{location.country}">
-                </div>
-                <ul id="suggestions"></ul>
-                <br/>
-                <div class="formRow">
-                    <label for="size"> Garden Size: </label>
-                    <input type="text" id="size" placeholder="Garden Size" th:value="*{size}" th:field="*{size}">
-                </div>
-                <br/>
-                <br/>
-                <button class="button" style="margin-left: 50%" type="submit">Save</button>
-                <div class="errors" th:if="${#fields.hasErrors('global')}">
-                    <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
-                </div>
-            </form>
-            <form th:action="@{/Cancel}" method="get">
-                <button class="button" style="margin-left: 50%" type="submit">Cancel</button>
-            </form>
+                    <div class="buttons-centre">
+                        <button style="margin-left: 50%" type="submit">Save</button>
+                        &nbsp;
+                        <a th:href="@{${lastEndpoint}}" id="cancelButton">
+                            <button type="button">Cancel</button>
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
         <br/>
+        <div class="empty_space">
+        </div>
     </div>
-<script>
-
-    //Code taken from Geoapify's documentation. See Spike on wiki for details.
-    function addressAutocomplete(containerElement, callback, options) {
-
-        const MIN_ADDRESS_LENGTH = 5; //Adjust as needed
-
-        const inputContainerElement = document.createElement("div");
-
-        //getting the garden label
-        const locationLabel = document.getElementById("gardenLocationLabel");
-
-        inputContainerElement.setAttribute("class", "input-container");
-        containerElement.appendChild(inputContainerElement);
-
-        // create input element
-        const inputElement = document.createElement("input");
-        inputElement.setAttribute("type", "text");
-        inputElement.setAttribute('id', 'addressInput');
-
-        // Append the input element to the container
-        inputContainerElement.appendChild(inputElement);
-
-        // Associate the label with the input element
-        locationLabel.setAttribute('for', 'addressInput');
-
-        inputElement.setAttribute("placeholder", options.placeholder);
-
-        /* Focused item in the autocomplete list. This variable is used to navigate with buttons */
-        let focusedItemIndex;
-
-        /* Process a user input: */
-        inputElement.addEventListener("input", function(e) {
-            const currentValue = this.value;
-
-            /* Close any already open dropdown list */
-            closeDropDownList();
-
-            // Skip empty or short address strings
-            if (!currentValue || currentValue.length < MIN_ADDRESS_LENGTH) {
-                return false;
-            }
-
-            /* Create a new promise and send geocoding request to the backend */
-            const promise = new Promise((resolve, reject) => {
-                const url = `/getAutocompleteResults?inputString=${currentValue}`; //We create the getAutocompleteResults endpoint Java side
-                fetch(url)
-                    .then(response => {
-                        // check if the call was successful
-                        if (response.ok) {
-                            return response.json(); // Return JSON promise
-                        } else {
-                            throw new Error('Network response was not ok');
-                        }
-                    })
-                    .then(data => resolve(data)) // Resolve with data
-                    .catch(error => reject(error)); // Reject with error
-            });
-
-            promise.then((data) => {
-                // Parse JSON data
-                let json;
-                try {
-                    json = data.results;
-                } catch (error) {
-                    throw new Error('Failed to parse JSON data');
-                }
-
-                closeDropDownList(); //close any of results div
-
-                /*create a DIV element that will contain the items (values):*/
-                const autocompleteItemsElement = document.createElement("div");
-                autocompleteItemsElement.setAttribute("class", "autocomplete-items");
-                inputContainerElement.appendChild(autocompleteItemsElement);
-
-                if (json.length === 0) { //if there were no results
-                    const messageElement = document.createElement("div");
-                    messageElement.textContent = "No matching location found, location-based services may not work";
-                    autocompleteItemsElement.appendChild(messageElement);
-                } else {
-                    // Iterate through each result
-                    json.forEach((result, index) => {
-                        // Create a DIV element for each result
-                        const itemElement = document.createElement("div");
-                        // Set formatted address as item value
-                        itemElement.innerHTML = result.formatted;
-                        autocompleteItemsElement.appendChild(itemElement);
-
-                        // Set the value for the autocomplete text field and notify
-                        itemElement.addEventListener("click", function(e) {
-                            inputElement.value = result.formatted;
-                            callback(result); // Call our callback function to add the address to the rest of the fields
-                            inputElement.value = '';
-                            // Close the list of autocompleted values
-                            closeDropDownList();
-                        });
-                    });
-                }
-
-            }).catch(error => {
-                console.error(error.message);
-            });
-        });
-
-        function closeDropDownList() {
-            const autocompleteItemsElement = inputContainerElement.querySelector(".autocomplete-items");
-            if (autocompleteItemsElement) {
-                inputContainerElement.removeChild(autocompleteItemsElement);
-            }
-
-            focusedItemIndex = -1;
-        }
-
-        /* Close the autocomplete dropdown when the document is clicked.
-          Skip, when a user clicks on the input field */
-        document.addEventListener("click", function(e) {
-            if (e.target !== inputElement) {
-                closeDropDownList();
-            } else if (!containerElement.querySelector(".autocomplete-items")) {
-                // open dropdown list again
-                var event = document.createEvent('Event');
-                event.initEvent('input', true, true);
-                inputElement.dispatchEvent(event);
-            }
-        });
-    }
-
-</script>
-<script>
-    // Call the addressAutocomplete function after the DOM has loaded
-    window.addEventListener('DOMContentLoaded', function () {
-        // Get the container element where you want to add the address autocomplete input
-        const containerElement = document.getElementById('locationContainer');
-
-        // Define a callback function to handle the selected address data
-        function handleAddressSelection(data) {
-            const inputArray = getInputFields();
-            for (let i = 0; i < inputArray.length; i++) {
-                switch (inputArray[i].id) {
-                    case 'streetAddress':
-                        inputArray[i].value = handleField(data.housenumber) + ' ' + handleField(data.street);
-                        break;
-                    case 'suburb':
-                        inputArray[i].value = handleField(data.suburb);
-                        break;
-                    case 'city':
-                        inputArray[i].value = handleField(data.county);
-                        break;
-                    case 'postcode':
-                        inputArray[i].value = handleField(data.postcode);
-                        break;
-                    case 'country':
-                        inputArray[i].value = handleField(data.country);
-                        break;
-                }
-            }
-        }
-
-
-        // Returns an empty string if field is undefined otherwise just return the field
-        function handleField(field) {
-            return (field) ? field : '';
-        }
-
-        function getInputFields() {
-            let array = [];
-            array.push(document.getElementById('streetAddress'));
-            array.push(document.getElementById('suburb'));
-            array.push(document.getElementById('city'));
-            array.push(document.getElementById('postcode'));
-            array.push(document.getElementById('country'));
-            return array;
-        }
-
-        // Options for the address autocomplete function (e.g., placeholder text)
-        const options = {
-            placeholder: "Enter an address here"
-        };
-
-        // Call the addressAutocomplete function with the container element, callback, and options
-        addressAutocomplete(containerElement, handleAddressSelection, options);
-    });
-</script>
+    <script src="/javascript/hover_enter.js"></script>
+    <script src="/javascript/autocomplete.js"></script>
 </body>
 </html>

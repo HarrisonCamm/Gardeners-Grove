@@ -2,19 +2,25 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.GardenValidator.*;
 
@@ -28,20 +34,14 @@ public class CreateGardenController {
 
     private final GardenService gardenService;
     private final LocationService locationService;
+    private final UserService userService;
 
     @Autowired
-    public CreateGardenController(GardenService gardenService, LocationService locationService) {
+    public CreateGardenController(GardenService gardenService, LocationService locationService, UserService userService) {
         this.gardenService = gardenService;
         this.locationService = locationService;
+        this.userService = userService;
     }
-
-
-//    @GetMapping("/")
-//    public String redirect() {
-//        logger.info("GET /");
-//        RedirectService.addEndpoint("/");
-//        return "redirect:/create-garden";
-//    }
 
     /**
      * If the form has been previously filled, load the attributes back from the previous POST request
@@ -53,14 +53,17 @@ public class CreateGardenController {
                        Model model) {
         logger.info("GET /create-garden");
 
-        Location gardenLocation = new Location("", "", "", "", "");
-        garden.setLocation(gardenLocation); //avoiding NullPointException
+        User currentUser = userService.getAuthenicatedUser();
 
-        RedirectService.addEndpoint("/create-garden");
+        Location gardenLocation = new Location("", "", "", "", ""); //Bad code warning
+        garden.setLocation(gardenLocation); //avoiding NullPointException
 
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
-        addAttributes(model, gardenName, gardenLocation, gardenSize);
+        addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize);
+
+//        RedirectService.addEndpoint("/create-garden");
+
         return "createGardenFormTemplate";
     }
 
@@ -78,21 +81,37 @@ public class CreateGardenController {
      * @return Redirect object
      */
     @PostMapping("/create-garden")
-    public String submitForm(@ModelAttribute Garden garden,
-                             BindingResult bindingResult,
+    public String submitForm(@RequestParam(name="name") String gardenName,
+                             @RequestParam(name="location.streetAddress", required = false) String streetAddress,
+                            @RequestParam(name="location.suburb", required = false) String suburb,
+                            @RequestParam(name="location.city") String city,
+                            @RequestParam(name="location.postcode", required = false) String postcode,
+                            @RequestParam(name="location.country") String country,
+                            @RequestParam(name="size", required = false) String gardenSize,
                              Model model) {
         logger.info("POST /create-garden");
 
-        String gardenName = garden.getName();
-        String gardenSize = garden.getSize();
-        Location gardenLocation = garden.getLocation();
+        RedirectService.addEndpoint("/main");
+
+        User currentUser = userService.getAuthenicatedUser();
+        if (currentUser == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in");
+        }
+        Location gardenLocation = new Location(streetAddress, suburb, city, postcode, country);
+        Garden garden = new Garden(gardenName, gardenLocation, gardenSize);
+        garden.setOwner(currentUser);
+
         // Perform validation
-        checkFields(gardenName, gardenLocation, gardenSize, bindingResult);
+        ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize);
 
-        addAttributes(model, gardenName, gardenLocation, gardenSize);
+        addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize);
 
-        if (bindingResult.hasErrors()) {
+        if (!errors.isEmpty()) {
             // If there are validation errors, return to the form page
+            for (FieldError error : errors) {
+                model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());
+            }
+            model.addAttribute("garden", garden);
             return "createGardenFormTemplate";
         } else {
             //TODO figure out how to not have duplicate locations. Probably next sprint tbh
@@ -104,26 +123,35 @@ public class CreateGardenController {
 
     /**
      * Checks the garden name, location and size for errors
-     * @param gardenName Garden name
+     *
+     * @param gardenName     Garden name
      * @param gardenLocation Garden location
-     * @param gardenSize Garden size
-     * @param bindingResult Object to add errors to for Thyme leaf
+     * @param gardenSize     Garden size
      */
-    public void checkFields(String gardenName, Location gardenLocation, String gardenSize, BindingResult bindingResult) {
-        ObjectError nameError = validateGardenName(gardenName);
+    public ArrayList<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize) {
+
+        ArrayList<FieldError> errors = new ArrayList<>();
+
+        FieldError nameError = validateGardenName(gardenName);
         if (nameError != null) {
-            bindingResult.addError(nameError);
+            errors.add(nameError);
         }
 
-        ObjectError locationError = validateGardenLocation(gardenLocation);
-        if (locationError != null) {
-            bindingResult.addError(locationError);
+        FieldError locationCityError = validateGardenLocation(gardenLocation, true);
+        if (locationCityError != null) {
+            errors.add(locationCityError);
         }
 
-        ObjectError sizeError = validateSize(gardenSize);
+        FieldError locationCountryError = validateGardenLocation(gardenLocation, false);
+        if (locationCountryError != null) {
+            errors.add(locationCountryError);
+        }
+
+        FieldError sizeError = validateSize(gardenSize);
         if (sizeError != null) {
-            bindingResult.addError(sizeError);
+            errors.add(sizeError);
         }
+        return errors;
     }
 
     /**
@@ -133,7 +161,10 @@ public class CreateGardenController {
      * @param gardenLocation garden location object
      * @param gardenSize garden size
      */
-    public void addAttributes(Model model, String gardenName, Location gardenLocation, String gardenSize) {
+    public void addAttributes(Model model, Long userId, String gardenName, Location gardenLocation, String gardenSize) {
+
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+
         model.addAttribute("name", gardenName);
 
         model.addAttribute("location.streetAddress", gardenLocation.getStreetAddress());
@@ -144,10 +175,7 @@ public class CreateGardenController {
 
         model.addAttribute("size", gardenSize);
 
-        model.addAttribute("gardens", gardenService.getGardens());
+        model.addAttribute("gardens", gardenService.getOwnedGardens(userId));
     }
-
-
-
 
 }

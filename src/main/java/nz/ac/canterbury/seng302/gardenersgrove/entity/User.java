@@ -36,6 +36,13 @@ public class User {
     @Column(name = "dateOfBirth")
     private String dateOfBirth;
 
+    @Column
+    private String filePath;
+
+    @Lob
+    @Column
+    private byte[] image;
+
     @Column()
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
@@ -46,10 +53,26 @@ public class User {
     }
 
     public User(String email, String firstName, String lastName, String password) {
-        this.email = email;
+        this(firstName, lastName, false, email, password, "");
+    }
+
+    public User(String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth) {
+        this(null, firstName, lastName, noLastName, email, password, dateOfBirth);
+    }
+
+    public User(Long id, String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth) {
+        this.userId = id;
+        this.password = password;
+        this.setValues(firstName, lastName, noLastName, email, dateOfBirth);
+    }
+
+    public User setValues(String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.password = password;
+        this.noLastName = noLastName;
+        this.email = email;
+        this.dateOfBirth = dateOfBirth;
+        return this;
     }
 
     public void grantAuthority(String authority) {
@@ -72,13 +95,15 @@ public class User {
         return authorities;
     }
 
-    public User(String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth) {
+    public User(String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth, String filePath) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.noLastName = noLastName;
         this.email = email;
         this.password = password;
         this.dateOfBirth = dateOfBirth;
+        this.filePath = filePath;
+        this.image = null;
     }
 
     public void setUserId(Long userId) {
@@ -134,6 +159,22 @@ public class User {
     }
     public String getPassword() {
         return password;
+    }
+
+    public void setFilePath(String newFilePath) {
+        this.filePath = newFilePath;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setImage(byte[] newImage) {
+        this.image = newImage;
+    }
+
+    public byte[] getImage() {
+        return image;
     }
 
     @Override
