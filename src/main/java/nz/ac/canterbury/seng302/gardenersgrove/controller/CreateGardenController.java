@@ -58,11 +58,12 @@ public class CreateGardenController {
         Location gardenLocation = new Location("", "", "", "", ""); //Bad code warning
         garden.setLocation(gardenLocation); //avoiding NullPointException
 
-        RedirectService.addEndpoint("/create-garden");
-
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
         addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize);
+
+        RedirectService.addEndpoint("/create-garden");
+
         return "createGardenFormTemplate";
     }
 
@@ -160,6 +161,9 @@ public class CreateGardenController {
      * @param gardenSize garden size
      */
     public void addAttributes(Model model, Long userId, String gardenName, Location gardenLocation, String gardenSize) {
+
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+
         model.addAttribute("name", gardenName);
 
         model.addAttribute("location.streetAddress", gardenLocation.getStreetAddress());

@@ -3,6 +3,10 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,6 +35,13 @@ public class Plant {
     @DateTimeFormat(pattern = "dd/MM/YYYY")
     private Date datePlanted;
 
+    @Column
+    private String filePath;
+
+    @Lob
+    @Column
+    private byte[] image;
+
     /**
      * Required constructor
      */
@@ -54,12 +65,14 @@ public class Plant {
      * @param description Plant description
      * @param datePlanted Plant date planted
      */
-    public Plant(Garden garden, String name, String count, String description, String datePlanted) throws ParseException {
+    public Plant(Garden garden, String name, String count, String description, String datePlanted, String filePath) throws ParseException, IOException {
         this.garden = garden;
         this.name = name;
         this.count = count;
         this.description = description;
         this.datePlanted = new SimpleDateFormat("dd/MM/yyyy").parse(datePlanted);
+        this.filePath = filePath;
+        this.image = null;
     }
 
     // Setter for id
@@ -102,5 +115,21 @@ public class Plant {
 
     //Getter for datePlanted
     public Date getDatePlanted() { return datePlanted; }
+
+    public String getPicture() {
+        return filePath;
+    }
+
+    public void setPicture(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
 
 }

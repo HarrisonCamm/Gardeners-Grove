@@ -29,9 +29,17 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 @WebMvcTest
 public class CreatePlantTests {
-
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private VerificationTokenService verificationTokenService;
+
+    @MockBean
+    private AuthorityService authorityService;
+
+    @MockBean
+    private MailService mailService;
 
     @MockBean
     private PlantService plantService;

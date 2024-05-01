@@ -39,6 +39,15 @@ public class AutocompleteControllerTests {
     private MockMvc mockMvc;
 
     @MockBean
+    private VerificationTokenService verificationTokenService;
+
+    @MockBean
+    private AuthorityService authorityService;
+
+    @MockBean
+    private MailService mailService;
+
+    @MockBean
     private AutocompleteService autocompleteService;
 
     @MockBean

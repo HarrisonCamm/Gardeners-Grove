@@ -61,6 +61,15 @@ public class EditGardenTests {
     @MockBean
     private PlantService PlantService;
 
+    @MockBean
+    private VerificationTokenService verificationTokenService;
+
+    @MockBean
+    private AuthorityService authorityService;
+
+    @MockBean
+    private MailService mailService;
+
     private User mockUser;
 
     @BeforeEach
@@ -156,7 +165,6 @@ public class EditGardenTests {
         Garden garden = new Garden(name, location, size, mockUser);
         when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(garden));
         RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
-        RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/Cancel"))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())

@@ -50,6 +50,15 @@ public class ViewGardenTests {
     @MockBean
     private AuthenticationManager authenticationManager;
 
+    @MockBean
+    private VerificationTokenService verificationTokenService;
+
+    @MockBean
+    private AuthorityService authorityService;
+
+    @MockBean
+    private MailService mailService;
+
     private User testUser;
 
     @BeforeEach

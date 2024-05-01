@@ -19,7 +19,8 @@ public class GardenValidator {
     public static FieldError validateGardenName(String name) {
         if (validateWithRegex("^$", name)) { //The garden name is empty
             return new FieldError("garden", "name", "Garden name cannot be empty");
-        } else if (!validateWithRegex("^[a-zA-Z0-9\\.\\-\\'\\s]*$", name)) {
+//            name.matches("[\\p{L}\\s'-]+");
+        } else if (!validateWithRegex("[0-9\\p{L}\\s'-]+", name)) {
             return new FieldError("garden", "name", "Garden name must only include letters, numbers, spaces, dots, hyphens, or apostrophes");
         }
         return null;

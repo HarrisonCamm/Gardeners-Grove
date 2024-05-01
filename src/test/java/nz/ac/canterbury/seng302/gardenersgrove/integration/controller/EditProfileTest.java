@@ -3,7 +3,10 @@ package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.EditProfileController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.service.AuthorityService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(EditProfileController.class)
 public class EditProfileTest {
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -37,6 +39,9 @@ public class EditProfileTest {
 
     @MockBean
     private AuthenticationManager authenticationManager;
+
+    @MockBean
+    private MailService mailService;
 
     @BeforeEach
     public void setUp() {

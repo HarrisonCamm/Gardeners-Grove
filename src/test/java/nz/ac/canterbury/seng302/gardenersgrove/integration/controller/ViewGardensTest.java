@@ -3,10 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.AutocompleteController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,6 +42,15 @@ public class ViewGardensTest {
     private UserRepository userRepository;
     @MockBean
     private AuthenticationManager authenticationManager;
+
+    @MockBean
+    private VerificationTokenService verificationTokenService;
+
+    @MockBean
+    private AuthorityService authorityService;
+
+    @MockBean
+    private MailService mailService;
 
     private User testUser;
 

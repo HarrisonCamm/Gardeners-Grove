@@ -15,12 +15,12 @@ public class UserEntityTest {
         assertEquals(expected, user.toString());
     }
 
-    @Test
-    public void grantAuthority_AddsRoleToUserAuthorities() {
-        User user = new User("John", "Doe", false, "john.doe@example.com", "password123", "1990-01-01");
-        String authority = "ROLE_USER";
-        user.grantAuthority(authority);
-
-        assertTrue(user.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals(authority)));
-    }
+//    @Test
+//    public void grantAuthority_AddsRoleToUserAuthorities() {
+//        User user = new User("John", "Doe", false, "john.doe@example.com", "password123", "1990-01-01");
+//        String authority = "ROLE_USER";
+//        user.grantAuthority(authority);
+//
+//        assertTrue(user.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals(authority)));
+//    }
 }

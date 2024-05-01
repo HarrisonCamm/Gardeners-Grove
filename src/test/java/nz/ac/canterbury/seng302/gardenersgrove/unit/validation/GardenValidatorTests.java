@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.validation.ObjectError;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ValidatorTests {
+public class GardenValidatorTests {
 
     @Test
     public void ValidatingGardenName_EmptyString_Invalid() {

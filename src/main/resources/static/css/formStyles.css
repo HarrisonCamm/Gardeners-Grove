@@ -1,24 +1,30 @@
 body {
+    background-color: #d4ffd4;
+    font-family: Verdana, sans-serif;
+}
+.content {
     display: flex;
     justify-content: center;
     align-items: center;
     padding-top: 5%;
 }
-
 .error, .form-control {
     width: 300px;
-    border-radius: 2px;
+    font-size: 100%;
+    background-color: #b2eab2;
 }
-
+.message {
+    width: 300px;
+    font-size: 101%;
+}
 .error {
     border: 1px solid red;
     outline: 1px solid red;
+    border-radius: 2px;
 }
-
 .error:focus {
     outline: 2px solid red;
 }
-
 .error-message {
     color: red;
     display: block;
@@ -26,12 +32,30 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
+.confirmation-message {
+    display: block;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 button, label {
     font-size: 120%;
 }
 
-.buttons {
+button {
+    background-color : #8ffa8f;
+    border-radius: 5px;
+}
+button:hover {
+    background-color: darkgreen;
+
+}
+
+.buttons-centre {
+    display: flex;
+    justify-content: flex-end;
+}
+.buttons-right {
     display: flex;
     justify-content: flex-end;
 }
@@ -39,35 +63,66 @@ button, label {
 h2 {
     text-align: center;
 }
-
 .link {
-    font-size: 120%;
+    font-size: 100%;
+}
+.profile-picture {
+    width: 200px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.image_picker {
+    position: absolute;
+    top: 0; right: 0;
+    cursor: pointer;
+    background-color: #dedede;
+    /*font-weight: bold;*/
+    border-radius: 25px;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.7;
+    border: solid black 1px;
+}
+
+.image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50px;
+    border: black solid 1px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
 }
 
 @media only screen and (orientation: portrait) {
     h2 {
         font-size: 300%;
     }
-
     button {
         font-size: 200%;
     }
-
     label {
         font-size: 200%;
     }
-
     .form-control {
         font-size: 180%;
         width: 540px;
         border: 2px solid;
         border-radius: 2px;
     }
-
+    .message {
+        font-size: 182%;
+        width: 540px;
+    }
     .form-control[disabled] {
         border-color: #ccc;
     }
-
     .error {
         font-size: 180%;
         width: 540px;
@@ -75,21 +130,20 @@ h2 {
         border-radius: 2px;
         outline: 2px solid red;
     }
-
     .error:focus {
         outline: 4px solid red;
     }
-
     .error-message {
         width: 540px;
         font-size: 150%;
     }
-
     .checkbox {
         transform: scale(1.5);
     }
-
     .link {
         font-size: 200%;
+    }
+    .profile-picture {
+        width: 360px;
     }
 }

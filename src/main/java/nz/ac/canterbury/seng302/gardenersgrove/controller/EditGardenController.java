@@ -15,10 +15,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.GardenValidator.*;
@@ -50,7 +52,6 @@ public class EditGardenController {
     public String form(@RequestParam("gardenID") Long gardenID,
                        Model model) throws ResponseStatusException {
         logger.info("GET /edit-garden");
-        RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
 
         Optional<Garden> result = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenicatedUser();
@@ -60,6 +61,10 @@ public class EditGardenController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this garden.");
 
         Garden garden = result.get();
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+
+        RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
+
         addAttributes(model, garden, garden.getId(), garden.getName(), garden.getLocation(), garden.getSize());
         return "editGardenTemplate";
     }
@@ -88,14 +93,19 @@ public class EditGardenController {
         String gardenSize = garden.getSize();
         Location gardenLocation = garden.getLocation();
         // Perform validation
-        checkFields(gardenName, gardenLocation, gardenSize, bindingResult);
+        ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize);
         garden.setId(result.get().getId());
         garden.setOwner(currentUser);
 
         addAttributes(model, garden, garden.getId(), gardenName, gardenLocation, gardenSize);
 
-        if (bindingResult.hasErrors()) {
+
+        if (!errors.isEmpty()) {
             // If there are validation errors, return to the form page
+            for (FieldError error : errors) {
+                model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());
+            }
+            model.addAttribute("garden", garden);
             return "editGardenTemplate";
         } else {
             gardenService.addGarden(garden);
@@ -105,31 +115,35 @@ public class EditGardenController {
 
     /**
      * Checks the garden name, location and size for errors
-     * @param gardenName Garden name
+     *
+     * @param gardenName     Garden name
      * @param gardenLocation Garden location
-     * @param gardenSize Garden size
-     * @param bindingResult Object to add errors to for Thyme leaf
+     * @param gardenSize     Garden size
      */
-    public void checkFields(String gardenName, Location gardenLocation, String gardenSize, BindingResult bindingResult) {
-        ObjectError nameError = validateGardenName(gardenName);
+    public ArrayList<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize) {
+
+        ArrayList<FieldError> errors = new ArrayList<>();
+
+        FieldError nameError = validateGardenName(gardenName);
         if (nameError != null) {
-            bindingResult.addError(nameError);
+            errors.add(nameError);
         }
 
-        ObjectError locationCityError = validateGardenLocation(gardenLocation, true);
+        FieldError locationCityError = validateGardenLocation(gardenLocation, true);
         if (locationCityError != null) {
-            bindingResult.addError(locationCityError);
+            errors.add(locationCityError);
         }
 
-        ObjectError locationCountryError = validateGardenLocation(gardenLocation, false);
+        FieldError locationCountryError = validateGardenLocation(gardenLocation, false);
         if (locationCountryError != null) {
-            bindingResult.addError(locationCountryError);
+            errors.add(locationCountryError);
         }
 
-        ObjectError sizeError = validateSize(gardenSize);
+        FieldError sizeError = validateSize(gardenSize);
         if (sizeError != null) {
-            bindingResult.addError(sizeError);
+            errors.add(sizeError);
         }
+        return errors;
     }
 
     public void addAttributes(Model model, Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize) {
@@ -149,5 +163,4 @@ public class EditGardenController {
 
         model.addAttribute("gardens", gardenService.getOwnedGardens(garden.getOwner().getUserId()));
     }
-
 }

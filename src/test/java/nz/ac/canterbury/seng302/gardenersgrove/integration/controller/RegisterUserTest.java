@@ -2,7 +2,11 @@ package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.controller.RegisterFormController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
+import nz.ac.canterbury.seng302.gardenersgrove.service.AuthorityService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,6 +21,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -28,9 +34,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(RegisterFormController.class)
 public class RegisterUserTest {
-
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private VerificationTokenService verificationTokenService;
+
+    @MockBean
+    private AuthorityService authorityService;
+
+    @MockBean
+    private MailService mailService;
 
     @MockBean
     private UserService userService;
@@ -52,6 +66,8 @@ public class RegisterUserTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(mock(Authentication.class));
         when(userService.emailExists("john.doe@example.com")).thenReturn(false);
+        when(verificationTokenService.createVerificationToken(any(User.class)))
+                .thenReturn(new VerificationToken());
 
         mockMvc.perform(post("/register-form")
                         .with(csrf())
@@ -62,7 +78,7 @@ public class RegisterUserTest {
                         .param("password2", "Password@123")
                         .param("dateOfBirth", "01/01/1990"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/view-user-profile"));
+                .andExpect(view().name("redirect:/confirm-registration"));
 
         verify(userService).addUser(any(User.class));
     }

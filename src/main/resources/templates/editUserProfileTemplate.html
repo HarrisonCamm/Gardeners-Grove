@@ -3,82 +3,10 @@
 <head>
     <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
     <title>Edit profile</title>
+    <script th:src="@{javascript/editUserProfile.js}"></script>
     <!-- Navbar styling -->
-    <link href="/css/navBar.css" rel="stylesheet">
-<style>
-    .content {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding-top: 5%;
-    }
-    .error, .form-control {
-        width: 300px;
-        font-size: 100%;
-    }
-    .error {
-        border: 1px solid red;
-        outline: 1px solid red;
-        border-radius: 2px;
-    }
-    .error:focus {
-        outline: 2px solid red;
-    }
-    .error-message {
-        color: red;
-        display: block;
-        width: 300px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    button, label {
-        font-size: 120%;
-    }
-    .buttons {
-        display: flex;
-        justify-content: flex-end;
-    }
-    h2 {
-        text-align: center;
-    }
-    @media only screen and (orientation: portrait) {
-        h2 {
-            font-size: 300%;
-        }
-        button {
-            font-size: 200%;
-        }
-        label {
-            font-size: 200%;
-        }
-        .form-control {
-            font-size: 180%;
-            width: 540px;
-            border: 2px solid;
-            border-radius: 2px;
-        }
-        .form-control[disabled] {
-            border-color: #ccc;
-        }
-        .error {
-            font-size: 180%;
-            width: 540px;
-            border: 2px solid red;
-            border-radius: 2px;
-            outline: 2px solid red;
-        }
-        .error:focus {
-            outline: 4px solid red;
-        }
-        .error-message {
-            width: 540px;
-            font-size: 150%;
-        }
-        .checkbox {
-            transform: scale(1.5);
-        }
-    }
-</style>
+    <link href="/css/navBar.css" rel="stylesheet"/>
+    <link href="/css/formStyles.css" rel="stylesheet"/>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('form').addEventListener('keydown', function(event) {
@@ -95,77 +23,132 @@
         });
     </script>
 </head>
-<body>
-<!-- Navigation Bar Fragment -->
-<ul th:insert="/fragments/navBar.html :: navBar"></ul>
-<div class="content">
-    <div>
-        <h2>Edit Profile</h2>
-        <td><img th:src="@{/images/defaultUserImage.png}" alt=""></td>
+    <body>
+    <!-- Navigation Bar Fragment -->
+    <ul th:insert="/fragments/navBar.html :: navBar"></ul>
+    <div class="content">
         <div>
-            <form th:action="@{/edit-user-profile}" method="post" novalidate>
-                <label for="firstName"> First Name: </label>
-                <br/>
-                <input type="text" class="form-control" id="firstName"
-                       th:name="firstName" th:value="${firstName}" data-cy="firstName"
-                       th:class="${firstNameError != null ? 'error' : 'form-control'}" autofocus>
-                <br/>
-                <div th:if="${firstNameError}" class="error-message" th:text="${firstNameError}"></div>
-                <br/>
-                <label for="lastName"> Last Name: </label>
-                <br/>
-                <input type="text" class="form-control" id="lastName"
-                       th:name="lastName" th:value="${lastName}" th:disabled="${noLastName}" data-cy="lastName"
-                       th:class="${lastNameError != null ? 'error' : 'form-control'}" autofocus>
-                <br/>
-                <div th:if="${lastNameError}" class="error-message" th:text="${lastNameError}"></div>
-                <label for="noLastName">I have no surname</label>
-                <input type="checkbox" class="checkbox" id="noLastName" th:name="noLastName" th:value="${noLastName}"
-                       th:checked="${noLastName}" onchange="toggleLastNameField()" />
-                <script>
-                    function toggleLastNameField() {
-                        // Check the checkbox state and enable/disable the last name field accordingly
-                        let checkbox = document.getElementById('noLastName');
-                        let lastNameField = document.getElementById('lastName');
-                        lastNameField.value = "";
-                        lastNameField.disabled = checkbox.checked;
-                        checkbox.value = checkbox.checked;
-                    }
-                </script>
-                <br/>
-                <br/>
-                <label for="email"> Email: </label>
-                <br/>
-                <input type="text" class="form-control" id="email"
-                       th:name="email" th:value="${email}" data-cy="email"
-                       th:class="${registrationEmailError != null ? 'error' : 'form-control'}" autofocus>
-                <br/>
-                <!-- Display error message if there is an error with the email existing-->
-                <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
-                <br/>
-                <label for="dateOfBirth"> Date of birth: </label>
-                <br/>
-                <input type="text" class="form-control" id="dateOfBirth"
-                       th:name="dateOfBirth" th:value="${dateOfBirth}"
-                       placeholder="DD/MM/YYYY"
-                       th:class="${ageError != null ? 'error' : 'form-control'}"
-                       data-cy="dateOfBirth" autofocus
-                       oninput="formatDateOfBirth(this)">
-                <script>
-                    function formatDateOfBirth(input) {
-                        let formattedValue = input.value.replace(/[^\d/]/g, '');
+            <h2>Edit Profile</h2>
+            <div style="position: relative; width: 82px; margin: auto;">
+                <img class="image" th:data-user-id="${user.userId}" th:data-picture="${user.image}" alt="">
+                <button class="image_picker" th:id="${'button_' + user.userId}" style="position: absolute; top: 0; right: 0;">+</button>
+            </div>
+            <div>
+                <form th:action="@{/edit-user-profile}" method="post" novalidate>
+                    <label for="firstName"> First Name: </label>
+                    <br/>
+                    <input type="text" class="form-control" id="firstName"
+                           th:name="firstName" th:value="${firstName}" data-cy="firstName"
+                           th:class="${firstNameError != null ? 'error' : 'form-control'}" autofocus>
+                    <br/>
+                    <div th:if="${firstNameError}" class="error-message" th:text="${firstNameError}"></div>
+                    <br/>
+                    <label for="lastName"> Last Name: </label>
+                    <br/>
+                    <input type="text" class="form-control" id="lastName"
+                           th:name="lastName" th:value="${lastName}" th:disabled="${noLastName}" data-cy="lastName"
+                           th:class="${lastNameError != null ? 'error' : 'form-control'}" autofocus>
+                    <br/>
+                    <div th:if="${lastNameError}" class="error-message" th:text="${lastNameError}"></div>
+                    <label for="noLastName">I have no surname</label>
+                    <input type="checkbox" class="checkbox" id="noLastName" th:name="noLastName" th:value="${noLastName}"
+                           th:checked="${noLastName}" onchange="toggleLastNameField()" />
+                    <script>
+                        function toggleLastNameField() {
+                            // Check the checkbox state and enable/disable the last name field accordingly
+                            let checkbox = document.getElementById('noLastName');
+                            let lastNameField = document.getElementById('lastName');
+                            lastNameField.value = "";
+                            lastNameField.disabled = checkbox.checked;
+                            checkbox.value = checkbox.checked;
+                        }
+                    </script>
+                    <br/>
+                    <br/>
+                    <label for="email"> Email: </label>
+                    <br/>
+                    <input type="text" class="form-control" id="email"
+                           th:name="email" th:value="${email}" data-cy="email"
+                           th:class="${registrationEmailError != null ? 'error' : 'form-control'}" autofocus>
+                    <br/>
+                    <!-- Display an error message if there is an error with the email existing-->
+                    <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
+                    <br/>
 
-                        let matches = formattedValue.match(/\//g);
-                        if (matches && matches.length > 2) {
-                            formattedValue = formattedValue.substring(0, formattedValue.lastIndexOf('/'));
-                        }
+                    <!-- Change Password Section -->
+                    <div id="passwordContainer" th:hidden="${changePasswordFormInput}">
+                        <label id="passwordLabel">Password:</label>
+                        <br/>
+                        <!-- Display Change Password Form Button -->
+                        <button type="button" id="changePasswordButton" onclick="toggleChangePasswordForm(true)">Change Password</button>
+                        <br/>
+                    </div>
 
-                        if (formattedValue.length > 2 && formattedValue.charAt(2) !== '/') {
-                            formattedValue = formattedValue.slice(0, 2) + '/' + formattedValue.slice(2);
-                        }
-                        if (formattedValue.length > 5 && formattedValue.charAt(5) !== '/') {
-                            formattedValue = formattedValue.slice(0, 5) + '/' + formattedValue.slice(5);
-                        }
+                    <input type="hidden" id="changePasswordFormInput" th:name="changePasswordFormInput" th:value="${changePasswordFormInput}" >
+                    <!-- Hidden Change Password Form -->
+                    <div id="changePasswordForm" th:hidden="${!changePasswordFormInput}">
+
+                        <!-- Old Password Field -->
+                        <label for="oldPassword">Old Password:</label>
+                        <br/>
+                        <input type="password" id="oldPassword" name="oldPassword" class="form-control" th:value="${oldPassword}" th:classappend="${oldPasswordError != null ? 'error' : ''}">
+                        <!-- Placeholder for Incorrect Old Password Error -->
+                        <div class="error-message" th:if="${oldPasswordError}" th:text="${oldPasswordError}"></div>
+                        <br/>
+                        <br/>
+
+                        <!-- New Password Field -->
+                        <label for="newPassword">New Password:</label>
+                        <br/>
+                        <input type="password" id="newPassword" name="newPassword" class="form-control" th:value="${newPassword}" th:classappend="${newPasswordError != null ? 'error' : ''}">
+                        <!-- Placeholder for New Password Validation Error -->
+                        <div class="error-message" th:if="${newPasswordError}" th:text="${newPasswordError}"></div>
+                        <br/>
+                        <br/>
+
+                        <!-- Retype New Password Field -->
+                        <label for="retypePassword">Retype New Password:</label>
+                        <br/>
+                        <input type="password" id="retypePassword" name="retypePassword" class="form-control" th:value="${retypePassword}" th:classappend="${passwordMatchError != null ? 'error' : ''}">
+                        <!-- Placeholder for Password Match Error -->
+                        <div class="error-message" th:if="${passwordMatchError}" th:text="${passwordMatchError}"></div>
+                        <br/>
+                        <br/>
+
+                    <!-- Submit Changed Password and Cancel Change Password Buttons -->
+                    <div class="buttons-centre">
+                        <button type="submit" id="submitNewPasswordButton">Change Password</button>
+                        &nbsp;
+                        <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
+                    </div>
+                </div>
+                <!-- End Change Password Section -->
+                <br/>
+
+                    <!-- Date of Birth Section -->
+                    <label for="dateOfBirth"> Date of birth: </label>
+                    <br/>
+                    <input type="text" class="form-control" id="dateOfBirth"
+                           th:name="dateOfBirth" th:value="${dateOfBirth}"
+                           placeholder="DD/MM/YYYY"
+                           th:class="${ageError != null ? 'error' : 'form-control'}"
+                           data-cy="dateOfBirth" autofocus
+                           oninput="formatDateOfBirth(this)">
+                    <script>
+                        function formatDateOfBirth(input) {
+                            let formattedValue = input.value.replace(/[^\d/]/g, '');
+
+                            let matches = formattedValue.match(/\//g);
+                            if (matches && matches.length > 2) {
+                                formattedValue = formattedValue.substring(0, formattedValue.lastIndexOf('/'));
+                            }
+
+                            if (formattedValue.length > 2 && formattedValue.charAt(2) !== '/') {
+                                formattedValue = formattedValue.slice(0, 2) + '/' + formattedValue.slice(2);
+                            }
+                            if (formattedValue.length > 5 && formattedValue.charAt(5) !== '/') {
+                                formattedValue = formattedValue.slice(0, 5) + '/' + formattedValue.slice(5);
+                            }
 
                         if (formattedValue.length > 10) {
                             formattedValue = formattedValue.slice(0, 10);
@@ -176,7 +159,7 @@
                 <br/>
                 <div th:if="${ageError}" class="error-message" th:text="${ageError}"></div>
                 <br/>
-                <div class="buttons">
+                <div class="buttons-centre">
                     <button type="submit" id="submitButton">Submit</button>
                     &nbsp;
                     <a th:href="@{/view-user-profile}" id="cancelButton">
@@ -189,5 +172,6 @@
         </div>
     </div>
 </div>
+    <script src="/javascript/redirect_image_handler.js"></script>
 </body>
 </html>
