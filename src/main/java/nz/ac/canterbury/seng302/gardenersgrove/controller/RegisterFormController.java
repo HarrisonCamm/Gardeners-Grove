@@ -21,6 +21,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.UserValidator.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeParseException;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * Controller for registration form.
@@ -149,7 +158,15 @@ public class RegisterFormController {
             // All user details have passed validation
 
             // Create the user
-            User newUser = new User(firstName, lastName, noLastName, email, password, formattedDateOfBirth);
+            User newUser = new User(firstName, lastName, noLastName, email, password, formattedDateOfBirth,  "defaultUserImage.png");
+            // Create new user
+
+            Path imagePath = Paths.get("src/main/resources/static/images/defaultUserImage.png");
+            try {
+                newUser.setImage(Files.readAllBytes(imagePath));
+            } catch (IOException e) {
+                logger.error("Failed to set default image", e);
+            }
 
             // Save the user to database
             userService.addUser(newUser);
@@ -175,7 +192,7 @@ public class RegisterFormController {
                     "Thank you for choosing to join Gardener's Grove! To complete your registration, please use the following code:\n\n" +
                     verificationToken.getToken() + "\n\n" +
                     "Please enter this code in the registration form to activate your account.\n\n" +
-                    "If you did not request this code or have any questions, please contact our support team.\n\n" +
+                    "If this was not you, you can ignore this message and the account will be deleted after 10 minutes.\n\n" +
                     "Welcome to Gardener's Grove! Happy gardening!";
 
             // Try to send confirmation email

@@ -1,7 +1,6 @@
 /* General styles */
 body {
     background-color: #d4ffd4;
-    /*text-align: center;*/
     font-family: Verdana, sans-serif;
 }
 
@@ -46,6 +45,11 @@ li {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.formRow > div {
+    position: relative;
+    display: inline-block;
 }
 
 /* Green button styles */
@@ -181,6 +185,32 @@ h2 {
     margin-top: 5px;
 }
 
+.image_picker {
+    position: absolute;
+    top: 0; right: 0;
+    cursor: pointer;
+    background-color: #dedede;
+    /*font-weight: bold;*/
+    border-radius: 25px;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.7;
+    border: solid black 1px;
+}
+
+.image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50px;
+    border: black solid 1px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+}
 .locationTable {
     margin: auto;
 }
@@ -231,10 +261,6 @@ button:hover {
     justify-content: flex-end;
     align-items: end;
 }
-
-/*label {*/
-/*    width: 300px;*/
-/*}*/
 
 
 

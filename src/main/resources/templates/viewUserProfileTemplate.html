@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
-    <head>
-        <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
-        <title>User Profile</title>
-        <!-- Navbar styling -->
-        <link href="/css/navBar.css" rel="stylesheet"/>
-        <link href="/css/formStyles.css" rel="stylesheet"/>
-    </head>
-    <body>
-        <!-- Navigation Bar Fragment -->
-        <ul th:insert="/fragments/navBar.html :: navBar"></ul>
-        <div class="content">
-            <div>
-                <h2>User Profile</h2>
-                <td><img class="profile-picture" th:src="@{/images/defaultUserImage.png}" alt=""></td>
-                <div>
-                    <form>
-                        <label for="name">Name: </label>
-                        <br/>
-                        <input type="text" class="form-control" id="name"
-                               th:value="${displayName}" readonly>
-                        <br/>
+  <head>
+    <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
+    <title>User Profile</title>
+    <!-- Navbar styling -->
+    <link href="/css/navBar.css" rel="stylesheet"/>
+    <link href="/css/formStyles.css" rel="stylesheet"/>
+  </head>
+  <body>
+  <!-- Navigation Bar Fragment -->
+  <ul th:insert="/fragments/navBar.html :: navBar"></ul>
+  <div class="content">
+    <div th:object="${user}">
+      <h2>User Profile</h2>
+      <div style="position: relative; width: 82px; margin: auto;">
+        <img class="image" th:data-user-id="${user.userId}" th:data-picture="${user.image}" alt="">
+        <button class="image_picker" th:id="${'button_' + user.userId}" style="position: absolute; top: 0; right: 0;">+</button>
+      </div>
+      <div>
+      <form>
+        <label for="name">Name: </label>
+        <br/>
+        <input type="text" class="form-control" id="name"
+        th:value="${displayName}" readonly>
+        <br/>
 
                         <br/>
                         <label for="email">Email: </label>
@@ -53,5 +56,6 @@
                 </div>
             </div>
         </div>
+  <script src="/javascript/redirect_image_handler.js"></script>
     </body>
 </html>
