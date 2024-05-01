@@ -2,15 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create Plant</title>
+    <title>Edit Plant</title>
     <link href="/css/gardenStyles.css" rel="stylesheet">
+    <link th:href="@{/css/navBar.css}" rel="stylesheet">
 </head>
 <body>
-    <ul class="navBar">
-        <li><a class="navLink" th:href="@{/create-garden}">Create a Garden</a></li>
-        <li><a class="navLink" th:href="@{/view-gardens}">View Gardens</a></li>
-    </ul>
-
+    <ul th:insert="/fragments/navBar.html :: navBar"></ul>
     <br/>
 
     <div class="formContainer">
@@ -18,6 +15,12 @@
         <form th:action="@{/edit-plant}" method="post" th:object="${plant}">
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="plantID" th:value="${plantID}">
+            <div class="formRow">
+                <div>
+                    <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="">
+                    <button class="image_picker" th:id="${'button_' + plant.id}">+</button>
+                </div>
+            </div>
             <div class="formRow">
                 <label for="plantName"> Name: </label>
                 <input type="text" id="plantName" placeholder="Name" th:value="*{name}" th:field="*{name}">
@@ -36,16 +39,17 @@
 <!--                <input type="text" name="datePlanted" id="datePlanted" placeholder="01/01/2024" th:value="${datePlanted}">-->
             </div>
             <br/>
-            <button type="submit">Save</button>
+
             <div class="errors" th:if="${#fields.hasErrors('global')}">
                 <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
             </div>
-        </form>
-
-        <form th:action="@{/Cancel}" method="get">
-            <button type="submit">Cancel</button>
+            <button type="submit">Save</button>
+            <a th:href="@{${lastEndpoint}}" id="cancel">
+                <button type="button">Cancel</button>
+            </a>
         </form>
     </div>
     <br/>
+    <script src="/javascript/redirect_image_handler.js"></script>
 </body>
 </html>

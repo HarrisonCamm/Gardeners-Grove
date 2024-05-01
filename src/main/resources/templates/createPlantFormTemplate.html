@@ -4,47 +4,51 @@
     <meta charset="UTF-8">
     <title>Create Plant</title>
     <link href="/css/gardenStyles.css" rel="stylesheet">
+    <link th:href="@{/css/navBar.css}" rel="stylesheet">
 </head>
 <body>
-    <ul class="navBar">
-        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>
-        <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
-    </ul>
 <!--    <h1>Create Plant</h1>-->
+    <ul th:insert="/fragments/navBar.html :: navBar"></ul>
     <br/>
-    <div class="formContainer">
-        <h1>Create Plant</h1>
-        <form th:action="@{create-plant}" method="post" th:object="${plant}">
-            <input type="hidden" name="gardenID" th:value="${gardenID}">
-            <div class="formRow">
-                <label for="plantName"> Name: </label>
-                <input type="text" id="plantName" placeholder="Name" th:field="*{name}">
-            </div>
-            <div class="formRow">
-                <label for="plantCount"> Count: </label>
-                <input type="text" id="plantCount" placeholder="Count" th:field="*{count}">
-            </div>
-            <div class="formRow">
-                <label for="plantDescription"> Description: </label>
-                <input type="text" id="plantDescription" placeholder="Description" th:field="*{description}">
-            </div>
-            <div class="formRow">
-                <label for="plantDatePlanted"> Date Planted: </label>
-
-                <input type="date" name="plantDatePlanted" id="plantDatePlanted">
-            </div>
-            <br/>
-            <button type="submit">Create</button>
-            <div class="errors" th:if="${#fields.hasErrors('global')}">
-                <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
-            </div>
-        </form>
+<div class="formContainer">
+    <h1>Create Plant</h1>
+    <div style="position: relative; width: 82px; margin: auto;">
+        <img class="image" th:if="${plant.image != null}" th:data-plant-id="${plant.id}" th:data-picture="${plant.image}" alt="">
+        <img class="image" th:unless="${plant.image != null}" src="/images/leaves-80x80.png" alt="">
+        <button class="image_picker" th:id="${'button_null'}" style="position: absolute; top: 0; right: 0;">+</button>
     </div>
-    <br/>
-    <form th:action="@{/Cancel}" method="get">
-        <button type="submit">Cancel</button>
+    <form th:action="@{create-plant}" method="post" th:object="${plant}">
+        <input type="hidden" name="gardenID" th:value="${gardenID}">
+        <div class="formRow">
+            <label for="plantName"> Name: </label>
+            <input type="text" id="plantName" placeholder="Name" th:field="*{name}">
+        </div>
+        <div class="formRow">
+            <label for="plantCount"> Count: </label>
+            <input type="text" id="plantCount" placeholder="Count" th:field="*{count}">
+        </div>
+        <div class="formRow">
+            <label for="plantDescription"> Description: </label>
+            <input type="text" id="plantDescription" placeholder="Description" th:field="*{description}">
+        </div>
+        <div class="formRow">
+            <label for="plantDatePlanted"> Date Planted: </label>
+
+            <input type="date" name="plantDatePlanted" id="plantDatePlanted">
+        </div>
+        <br/>
+        <button type="submit">Create</button>
+        <div class="errors" th:if="${#fields.hasErrors('global')}">
+            <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
+        </div>
     </form>
+</div>
+<br/>
+<a th:href="@{${lastEndpoint}}" id="cancel">
+    <button type="button">Cancel</button>
+</a>
 </body>
+<script src="/javascript/redirect_image_handler.js"></script>
 </html>
 
 <!--<script>-->

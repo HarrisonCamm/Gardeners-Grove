@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,9 @@ public class HomeController {
     @GetMapping("/home")
     public String getTemplate(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
         logger.info("GET /home");
+
+        RedirectService.addEndpoint("/home");
+
         model.addAttribute("name", name);
         return "homeTemplate";
     }

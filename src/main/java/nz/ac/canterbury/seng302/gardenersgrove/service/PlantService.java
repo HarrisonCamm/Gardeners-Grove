@@ -24,7 +24,9 @@ public class PlantService {
 
     public List<Plant> getPlants() { return plantRepository.findAll(); }
 
-    public Plant addPlant(Plant plant) { return plantRepository.save(plant); }
+    public void addPlant(Plant plant) {
+        plantRepository.save(plant);
+    }
 
     public Optional<Plant> findPlant(Long id) { return plantRepository.findById(id); }
 

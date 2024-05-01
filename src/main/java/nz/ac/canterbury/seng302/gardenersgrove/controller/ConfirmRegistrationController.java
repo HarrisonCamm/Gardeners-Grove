@@ -99,8 +99,6 @@ public class ConfirmRegistrationController {
             // Grant user role USER
             user.grantAuthority("ROLE_USER");
 
-            // Save the user entity to persist the changes
-            userService.saveUser(user);
             //Delete token once user has successfully confirmed registration
             verificationTokenService.deleteToken(registrationCode);
 

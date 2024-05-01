@@ -31,10 +31,6 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         // Updates users password to the encrypted one
         user.setPassword(encodedPassword);
-        return saveUser(user);
-    }
-
-    public User saveUser(User user) {
         return userRepository.save(user);
     }
 
@@ -115,6 +111,10 @@ public class UserService {
      */
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
+    }
+
+    public User getUserByID(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
     public void deleteUser(User user) {
         userRepository.deleteUser(user);

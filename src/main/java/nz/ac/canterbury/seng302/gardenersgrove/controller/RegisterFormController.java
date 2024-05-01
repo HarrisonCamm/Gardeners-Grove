@@ -20,6 +20,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import static nz.ac.canterbury.seng302.gardenersgrove.validation.UserValidator.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
@@ -153,7 +158,15 @@ public class RegisterFormController {
             // All user details have passed validation
 
             // Create the user
-            User newUser = new User(firstName, lastName, noLastName, email, password, formattedDateOfBirth);
+            User newUser = new User(firstName, lastName, noLastName, email, password, formattedDateOfBirth,  "defaultUserImage.png");
+            // Create new user
+
+            Path imagePath = Paths.get("src/main/resources/static/images/defaultUserImage.png");
+            try {
+                newUser.setImage(Files.readAllBytes(imagePath));
+            } catch (IOException e) {
+                logger.error("Failed to set default image", e);
+            }
 
             // Save the user to database
             userService.addUser(newUser);
@@ -179,7 +192,7 @@ public class RegisterFormController {
                     "Thank you for choosing to join Gardener's Grove! To complete your registration, please use the following code:\n\n" +
                     verificationToken.getToken() + "\n\n" +
                     "Please enter this code in the registration form to activate your account.\n\n" +
-                    "If you did not request this code or have any questions, please contact our support team.\n\n" +
+                    "If this was not you, you can ignore this message and the account will be deleted after 10 minutes.\n\n" +
                     "Welcome to Gardener's Grove! Happy gardening!";
 
             // Try to send confirmation email
@@ -197,80 +210,6 @@ public class RegisterFormController {
             }
             // Email sent successfully, confirm user registration page
             return "redirect:/confirm-registration";
-        }
-    }
-    private boolean isNameValid(String name) {
-        // Regex to check for a valid name including non-English characters
-        boolean isValid = name.matches("[\\p{L}\\s'-]+");
-
-        // Check if the name contains multiple consecutive spaces
-        boolean hasMultipleSpaces = name.contains("  ");
-
-        return isValid && !hasMultipleSpaces;
-    }
-
-    private boolean isEmailValid(String email) {
-        // Regex to check for a specific email pattern
-        boolean isValid = email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$") && !email.contains("..");
-
-        // Check if the email exceeds the SQL limit
-        boolean isWithinSqlLimit = email.length() <= 255;
-
-        return isValid && isWithinSqlLimit;
-    }
-
-    public static boolean isPasswordValid(String password) {
-        String specialCharacters = "[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]+";
-        return password.length() >= 8 &&
-                password.matches(".*\\d.*") &&
-                password.matches(".*[A-Z].*") &&
-                password.matches(".*[a-z].*") &&
-                Pattern.compile(specialCharacters).matcher(password).find();
-    }
-
-    public static boolean doPasswordsMatch(String password1, String password2) {
-        return Objects.equals(password1, password2);
-    }
-
-    public static boolean checkDateValidity(String dateOfBirth) {
-        try {
-            LocalDate dob = LocalDate.parse(dateOfBirth);
-            return true;
-            // Continue with further processing
-        } catch (DateTimeParseException e) {
-            return false;
-            // Handle the case where the date string doesn't match the expected format
-        }
-    }
-
-    public static int calculateAge(String dateOfBirth) {
-        LocalDate dob = LocalDate.parse(dateOfBirth);
-        LocalDate today = LocalDate.now();
-        Period period = Period.between(dob, today);
-        int age = period.getYears();
-        if (period.getMonths() < 0 || (period.getMonths() == 0 && today.getDayOfMonth() < dob.getDayOfMonth())) {
-            age--;
-        }
-        return age;
-    }
-    public static String convertDateFormat(String dateInput) {
-        String[] parts = dateInput.split("/");
-        if (dateInput.length() < 10) {
-            return "0000-00-00";
-        } else {
-            // Reconstruct the date string in yyyy-MM-dd format
-            String yyyy = parts[2];
-            String mm = parts[1];
-            String dd = parts[0];
-
-            // Ensure mm and dd are formatted with leading zeros if necessary
-            if (mm.length() == 1) {
-                mm = "0" + mm;
-            }
-            if (dd.length() == 1) {
-                dd = "0" + dd;
-            }
-            return yyyy + "-" + mm + "-" + dd;
         }
     }
 }
