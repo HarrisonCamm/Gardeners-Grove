@@ -147,7 +147,7 @@ public class CreatePlantController {
         model.addAttribute("plantName", plant.getName());
         model.addAttribute("plantCount", plant.getCount());
         model.addAttribute("plantDescription", plant.getDescription());
-        model.addAttribute("datePlanted", plant.getDatePlanted());
+        model.addAttribute("datePlanted", formattedDate);
 
         if (validatePlantName(plant.getName()) != null) {
             model.addAttribute("nameError", validatePlantName(plant.getName()).getDefaultMessage());
@@ -161,7 +161,7 @@ public class CreatePlantController {
             model.addAttribute("descriptionError", validatePlantDescription(plant.getDescription()).getDefaultMessage());
         }
 
-        if (validatePlantDate(formattedDate) != null) {
+        if (!datePlanted.isEmpty() && validatePlantDate(formattedDate) != null) {
             model.addAttribute("dateError", validatePlantDate(formattedDate).getDefaultMessage());
         }
         // If there are validation errors, return to the form page

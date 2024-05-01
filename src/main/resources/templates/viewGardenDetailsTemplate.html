@@ -75,7 +75,9 @@
                         <td th:text="${plant.count}"></td>
                         <td th:text="${plant.description}"></td>
                         <td th:text="${plant.datePlanted}"></td>
-                        <td><a class="button" th:href="@{'/edit-plant?plantID=' + ${plant.id}}">Edit</a></td>
+                        <td><a th:href="@{'/edit-plant?plantID=' + ${plant.id}}">
+                                <button type="button">Edit</button>
+                            </a></td>
                     </tr>
                     </tbody>
                 </table>
