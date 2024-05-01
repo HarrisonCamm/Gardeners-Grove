@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case '/edit-plant':
                 const plantID = url.searchParams.get('plantID');
-                params.append('edit-plant', 'true');
+                params.append('edit-plant-picture', 'true');
                 params.append('plantID', plantID);
                 break;
             case '/create-plant':
