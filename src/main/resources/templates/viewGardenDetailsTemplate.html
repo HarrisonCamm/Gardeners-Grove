@@ -74,12 +74,10 @@
                         <td th:text="${plant.name}"></td>
                         <td th:text="${plant.count}"></td>
                         <td th:text="${plant.description}"></td>
-                        <td th:text="${#dates.format(plant.datePlanted, 'dd/MM/yyyy')}"></td>
-                        <td>
-                            <a th:href="@{'/edit-plant?plantID=' + ${plant.id}}">
+                        <td th:text="${plant.datePlanted}"></td>
+                        <td><a th:href="@{'/edit-plant?plantID=' + ${plant.id}}">
                                 <button type="button">Edit</button>
-                            </a>
-                        </td>
+                            </a></td>
                     </tr>
                     </tbody>
                 </table>

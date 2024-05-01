@@ -71,6 +71,7 @@ public class EditProfileController {
         model.addAttribute("email", currentUser.getEmail());
         model.addAttribute("changePasswordFormInput", false);
         model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
+        logger.info("current user + "  + currentUser.getDateOfBirth());
 
         return "editUserProfileTemplate";
     }
@@ -115,6 +116,14 @@ public class EditProfileController {
         User currentUser = userService.getAuthenicatedUser();
 
         logger.info("User retrieved from session: " + currentUser);
+        // Format and convert the data of birth
+        String formattedDateOfBirth;
+        if (dateOfBirth.isEmpty()) {
+            formattedDateOfBirth = "";
+        } else {
+            formattedDateOfBirth = convertDateFormat(dateOfBirth);
+        }
+
 
         // Pre-populate the model with submitted values to persist them in case of an error
         model.addAttribute("user", currentUser);
@@ -122,7 +131,7 @@ public class EditProfileController {
         model.addAttribute("lastName", lastName);
         model.addAttribute("noLastName", noLastName);
         model.addAttribute("changePasswordFormInput", changePasswordFormInput);
-        model.addAttribute("oldPassword", oldPassword);
+//        model.addAttribute("oldPassword", oldPassword);
         model.addAttribute("newPassword", newPassword);
         model.addAttribute("retypePassword", retypePassword);
         model.addAttribute("email", email);
@@ -168,9 +177,6 @@ public class EditProfileController {
             }
         }
 
-    // Format and convert the data of birth
-    String formattedDateOfBirth = convertDateFormat(dateOfBirth);
-
     // Begin User Details Validations
 
     // Check if email already exists
@@ -198,7 +204,7 @@ public class EditProfileController {
     if (!noLastName && lastName.isEmpty()) {
         model.addAttribute("lastNameError", "Last name cannot be empty");
     }
-    if (!formattedDateOfBirth.isEmpty() && !checkDateValidity(formattedDateOfBirth)) {
+    if (!dateOfBirth.isEmpty() && !checkDateValidity(formattedDateOfBirth)) {
         model.addAttribute("ageError", "Date in not in valid format, DD/MM/YYYY");
     }
     if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) < 13) {

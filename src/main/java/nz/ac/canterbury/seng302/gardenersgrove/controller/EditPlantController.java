@@ -12,12 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import java.util.ArrayList;
 
 import java.text.ParseException;
 import java.io.IOException;
@@ -25,6 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Optional;
 
@@ -50,24 +53,19 @@ public class EditPlantController {
     public String form(@RequestParam("plantID") Long plantID,
                        Model model) {
         logger.info("GET /edit-plant");
+//        RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
         User currentUser = userService.getAuthenicatedUser();
-        Optional<Plant> found = plantService.findPlant(plantID);
-        if (found.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant with ID " + plantID + " not found");
-        } else if (!found.get().getGarden().getOwner().equals(currentUser))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this plant.");
-        Plant plant = found.get();
+        // Attempt to retrieve plant or throw ResponseStatusException
+        Plant plant = retrievePlant(plantID, plantService);
+        if (!plant.getGarden().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this plant.")
 
-        String date = "";
-        if (plant.getDatePlanted() != null) {
-            date = new SimpleDateFormat("yyyy-MM-dd").format(plant.getDatePlanted());
-//            date = plant.getDatePlanted().toString();
-        }
+        RedirectService.addEndpoint("/view-garden?gardenID=" + plant.getGarden().getId());
 
         model.addAttribute("plantID", plantID); // Add gardenID to the model
         model.addAttribute("plant", plant);
-        model.addAttribute("datePlanted", date);
+        model.addAttribute("datePlanted", plant.getDatePlanted());
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
@@ -86,40 +84,37 @@ public class EditPlantController {
                              Model model) throws Exception {
         logger.info("PUT /edit-plant");
 
+        //Attempt to retrieve plant or throw ResponseStatusException
+        Plant plant = retrievePlant(plantID, plantService);
         User currentUser = userService.getAuthenicatedUser();
-        Optional<Plant> found = plantService.findPlant(plantID);
-        if (found.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant with ID " + plantID + " not found");
-        } else if (!found.get().getGarden().getOwner().equals(currentUser))
+        if (!plant.getGarden().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this plant.");
-        Plant plant = found.get();
 
-        bindingResult = new BeanPropertyBindingResult(newPlant, "plant");
-        //Validates input fields
-        checkName(newPlant.getName(), bindingResult);
-        checkDescription(newPlant.getDescription(), bindingResult);
-        checkCount(newPlant.getCount(), bindingResult);
+        RedirectService.addEndpoint("/view-garden?gardenID=" + plant.getGarden().getId());
+        String formattedDate;
 
-        Date date = null;
-        try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(datePlanted);
-        } catch (ParseException pe) {
-            date = new SimpleDateFormat("dd/MM/yyyy").parse(datePlanted);
-        } catch (Exception e) {
-            bindingResult.addError(new ObjectError(datePlanted, "Date is not valid"));
-        }
-        plant.setDatePlanted(date);
+        formattedDate = (datePlanted.isEmpty()) ? datePlanted : convertDateFormat(datePlanted);
+
+        ArrayList<FieldError> errors = checkFields(newPlant.getName(), newPlant.getDescription(), newPlant.getCount(), formattedDate);
+
+        //Sets assigns the new values to the original plant object ready to be saved to the database
+        plant.setDatePlanted(datePlanted);
         plant.setName(newPlant.getName());
-        plant.setCount(newPlant.getCount().replace(',', '.'));
+        plant.setCount(newPlant.getCount());
         plant.setDescription(newPlant.getDescription());
 
         model.addAttribute("plantID", plantID); // Add gardenID to the model
+//        model.addAttribute("datePlanted", formattedDate);
         model.addAttribute("plant", plant);
-        model.addAttribute("datePlanted", new SimpleDateFormat("yyyy-MM-dd").format(date));
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+        //Ternary operator to assign null date or assign a formatted date
+        model.addAttribute("datePlanted", datePlanted);
 
-        if (bindingResult.hasErrors()) {
-            // If there are validation errors, return to the form page
+
+        if (!errors.isEmpty()) {
+            for (FieldError error : errors) {
+                model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());}
+            model.addAttribute("plant", plant);             // I don't understand why but if I remove this line all fields EXCEPT name are cleared if they have errors
             return "editPlantFormTemplate";
         } else {
             plantService.addPlant(plant);
@@ -161,18 +156,72 @@ public class EditPlantController {
             bindingResult.addError(nameError);
         }
     }
+    /**
+     * Checks all input strings with PlantValidator validation methods
+     * And generates a list of errors
+     * @param plantName A string representing a plant name
+     * @param plantDescription A string representing a plant description
+     * @param plantCount A string representing a plant count
+     * @return An Arraylist<FieldError> object containing all
+     */
+    public ArrayList<FieldError> checkFields(String plantName, String plantDescription, String plantCount, String plantDatePlanted) {
+        ArrayList<FieldError> errors = new ArrayList<>();
 
-    public static void checkCount(String count, BindingResult bindingResult) {
-        ObjectError countError = validatePlantCount(count);
-        if (countError != null) {
-            bindingResult.addError(countError);
-        }
+        FieldError nameError = validatePlantName(plantName);
+        if (nameError != null) {errors.add(nameError);}
+
+        FieldError descriptionError = validatePlantDescription(plantDescription);
+        if (descriptionError != null) {errors.add(descriptionError);}
+
+        FieldError countError = validatePlantCount(plantCount);
+        if (countError != null) {errors.add(countError);}
+
+        FieldError dateError =  (plantDatePlanted.isEmpty()) ? null : validatePlantDate(plantDatePlanted);
+        if (dateError != null) {errors.add(dateError);}
+
+        return errors;
     }
 
-    public static void checkDescription(String description, BindingResult bindingResult) {
-        ObjectError descriptionError = validatePlantDescription(description);
-        if (descriptionError != null) {
-            bindingResult.addError(descriptionError);
+    /**
+     * Use to retrieve a plant from the database or throw a ResponseStatusException if the plant is not found
+     * @param plantID Long id should be an ID of an existing plant in the database
+     * @param plantService A PlantService object used to interact with the database
+     * @return The retrieved Plant object
+     */
+    private Plant retrievePlant(Long plantID, PlantService plantService) {
+        Optional<Plant> found = plantService.findPlant(plantID);
+        if (found.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant with ID " + plantID + " not found");
+        }
+        Plant plant = found.get();
+
+        return plant;
+    }
+
+    /**
+     * Converts a date string from the format "dd/MM/yyyy" to "yyyy-MM-dd"
+     * @param dateInput A string representing a date in the format "dd/MM/yyyy"
+     * @return A string representing a date in the format "yyyy-MM-dd"
+     */
+    public static String convertDateFormat(String dateInput) {
+        String[] parts = dateInput.split("/");
+        if (dateInput.length() < 10) {
+//            return "0000-00-00";
+            return dateInput;
+        } else {
+            // Reconstruct the date string in yyyy-MM-dd format
+            String yyyy = parts[2];
+            String mm = parts[1];
+            String dd = parts[0];
+
+            // Ensure mm and dd are formatted with leading zeros if necessary
+            if (mm.length() == 1) {
+                mm = "0" + mm;
+            }
+            if (dd.length() == 1) {
+                dd = "0" + dd;
+            }
+            return yyyy + "-" + mm + "-" + dd;
         }
     }
 
