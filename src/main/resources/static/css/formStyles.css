@@ -32,6 +32,12 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.confirmation-message {
+    display: block;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 button, label {
     font-size: 120%;
 }
