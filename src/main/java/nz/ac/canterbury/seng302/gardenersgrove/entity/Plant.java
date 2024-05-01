@@ -26,7 +26,7 @@ public class Plant {
     private String name;
 
     @Column
-    private String count;          //Todo: change to Float
+    private String count;
 
     @Column(length = 512)
     private String description;
