@@ -148,12 +148,6 @@ public class EditPlantController {
         return "redirect:/edit-plant?plantID=" + plantID;
     }
 
-    public static void checkName(String name, BindingResult bindingResult) {
-        ObjectError nameError = validatePlantName(name);
-        if (nameError != null) {
-            bindingResult.addError(nameError);
-        }
-    }
     /**
      * Checks all input strings with PlantValidator validation methods
      * And generates a list of errors

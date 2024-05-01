@@ -7,17 +7,13 @@
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
 </head>
 <body>
-<!--    <ul class="navBar">-->
-<!--        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>-->
-<!--        <li><a class="navLink" th:href="@{/view-gardens}">View Gardens</a></li>-->
-<!--    </ul>-->
     <ul th:insert="/fragments/navBar.html :: navBar"></ul>
     <div class="wrapper">
         <div class="container">
             <table class="sideBar">
                 <thead>
                 <tr>
-                    <th>Gardens</th>
+                    <th class="garden-header">Gardens</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -30,14 +26,14 @@
         <div class="gardenTable">
             <table>
                 <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Location</th>
-                    <th>Size</th>
+                <tr class="garden-header">
+                    <th>Name&nbsp;</th>
+                    <th>Location&nbsp;</th>
+                    <th>Size&nbsp;</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="garden : ${gardens}">
+                <tr class="garden-header" th:each="garden : ${gardens}">
                     <td><span th:text="${garden.name}"> Name </span></a></td>
                     <td><span th:text="${garden.location.streetAddress}"> Location </span></td>
                     <td><span th:text="${garden.size}"> Size </span></td>

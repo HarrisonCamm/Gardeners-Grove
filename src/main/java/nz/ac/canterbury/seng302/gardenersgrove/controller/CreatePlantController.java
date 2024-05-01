@@ -206,6 +206,10 @@ public class CreatePlantController {
             return "redirect:/create-plant?gardenID=" + gardenID;
         } else {
             plantService.addPlant(plant);
+            session.removeAttribute("name");
+            session.removeAttribute("count");
+            session.removeAttribute("description");
+            session.removeAttribute("datePlanted");
             return "redirect:/view-garden?gardenID=" + plant.getGarden().getId();
         }
     }

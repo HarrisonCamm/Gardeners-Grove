@@ -18,26 +18,26 @@
                 <input type="hidden" name="plantID" th:value="${plantID}">
                 <div style="position: relative; width: 82px; margin: auto;">
                     <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="" src="">
-                    <button class="image_picker" th:id="${'button_' + plant.id}">+</button>
+                    <button type="button" class="image_picker" th:id="${'button_' + plant.id}">+</button>
                 </div>
                 <div>
                     <label for="plantName"> Name: </label>
                     <br/>
-                    <input type="text" id="plantName" maxlength="254" placeholder="Name" th:value="*{name}" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
+                    <input type="text" id="plantName" maxlength="254" th:value="*{name}" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
                 </div>
                 <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
 
                 <div>
                     <label for="plantCount"> Count: </label>
                     <br/>
-                    <input type="text" id="plantCount" placeholder="Count" th:value="*{count}" th:field="*{count}" th:classappend="${countError} ? 'error' : ''">
+                    <input type="text" id="plantCount" th:value="*{count}" th:field="*{count}" th:classappend="${countError} ? 'error' : ''">
                 </div>
                 <p th:if="${countError}" class="error-message" th:text="${countError}"></p>
 
                 <div>
                     <label for="plantDescription"> Description: </label>
                     <br/>
-                    <input type="text" id="plantDescription" placeholder="Description" th:value="*{description}" th:field="*{description}" th:classappend="${descriptionError} ? 'error' : ''">
+                    <input type="text" id="plantDescription" th:value="*{description}" th:field="*{description}" th:classappend="${descriptionError} ? 'error' : ''">
                 </div>
                 <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
 
