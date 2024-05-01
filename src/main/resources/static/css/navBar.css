@@ -72,3 +72,13 @@ li {
 .navBar-logout-button:hover {
     background-color: #000;
 }
+
+@media only screen and (orientation: portrait) {
+    .navLink {
+        font-size: 200%;
+    }
+
+    .navBar-logout-button {
+        font-size: 200%;
+    }
+}

@@ -37,6 +37,7 @@ li {
 /* Table styles */
 .gardenTable {
     flex: 1;
+    align-items: center;
 }
 
 /* Form container styles */
@@ -248,5 +249,59 @@ button:hover, .button:hover {
     align-items: end;
 }
 
+@media only screen and (orientation: portrait) {
+    h2 {
+        font-size: 300%;
+    }
+    button {
+        font-size: 200%;
+    }
+    label {
+        font-size: 200%;
+    }
+    input {
+        font-size: 180%;
+        width: 540px;
+        border: 2px solid;
+        border-radius: 2px;
+    }
+    .message {
+        font-size: 182%;
+        width: 540px;
+    }
+    .form-control[disabled] {
+        border-color: #ccc;
+    }
+    .error {
+        font-size: 180%;
+        width: 540px;
+        border: 2px solid red;
+        border-radius: 2px;
+        outline: 2px solid red;
+    }
+    .error:focus {
+        outline: 4px solid red;
+    }
+    .error-message {
+        width: 540px;
+        font-size: 150%;
+    }
+    .checkbox {
+        transform: scale(1.5);
+    }
+    .link {
+        font-size: 200%;
+    }
+    .profile-picture {
+        width: 360px;
+    }
+    .garden-header, .gardenLink, h3{
+    font-size: 200%;
+    }
+
+    .garden-table, .plant-row{
+        font-size: 150%;
+    }
+}
 
 
