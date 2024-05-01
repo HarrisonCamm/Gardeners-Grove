@@ -91,6 +91,7 @@ public class CreateGardenController {
                              Model model) {
         logger.info("POST /create-garden");
 
+        RedirectService.addEndpoint("/main");
 
         User currentUser = userService.getAuthenicatedUser();
         if (currentUser == null) {
