@@ -51,15 +51,22 @@ public class EditPlantController {
         Plant plant = retrievePlant(plantID, plantService);
 
         //Converts the datePlanted into a string if it is not null from plant object
-        String date = "";
-        if (plant.getDatePlanted() != null) {
-            date = new SimpleDateFormat("yyyy-MM-dd").format(plant.getDatePlanted());
-
-        }
+//        String date = "";
+//        if (plant.getDatePlanted() != null) {
+//            date = new SimpleDateFormat("yyyy-MM-dd").format(plant.getDatePlanted());
+//
+//        }
+//        String date;
+//        try {
+//            Date dateObject = new SimpleDateFormat("yyyy-MM-d").parse(plant.getDatePlanted());
+//            date = new SimpleDateFormat("dd/MM/yyyy").format(dateObject);
+//        } catch (Exception e) {
+//            date = plant.getDatePlanted();
+//        }
 
         model.addAttribute("plantID", plantID); // Add gardenID to the model
         model.addAttribute("plant", plant);
-        model.addAttribute("datePlanted", date);
+        model.addAttribute("datePlanted", plant.getDatePlanted());
 
         return "editPlantFormTemplate";
     }
@@ -78,25 +85,27 @@ public class EditPlantController {
         //Attempt to retrieve plant or throw ResponseStatusException
         Plant plant = retrievePlant(plantID, plantService);
 
-        ArrayList<FieldError> errors = checkFields(newPlant.getName(), newPlant.getDescription(), newPlant.getCount());
-
         String formattedDate;
-        formattedDate = convertDateFormat(datePlanted);
+
+        formattedDate = (datePlanted == "") ? datePlanted : convertDateFormat(datePlanted);
         //Validates input fields
-        checkDateValidity(formattedDate, bindingResult);
+//        checkDateValidity(formattedDate, bindingResult);
+
+        ArrayList<FieldError> errors = checkFields(newPlant.getName(), newPlant.getDescription(), newPlant.getCount(), formattedDate);
+
 
         //Parses the datePlanted string into a Date object or leave as null if date is invalid
         //Currently a dateError can never be caused
-        Date date = null;
-        if (datePlanted != null && !datePlanted.trim().isEmpty()) {
-            try {
-                date = new SimpleDateFormat("yyyy-MM-dd").parse(datePlanted);
-            } catch (Exception e) {
-                errors.add(new FieldError("plant", "datePlanted", "Date should be in the format dd/mm/yyyy"));
-            }
-        }
+//        Date date = null;
+//        if (datePlanted != null && !datePlanted.trim().isEmpty()) {
+//            try {
+//                date = new SimpleDateFormat("yyyy-MM-dd").parse(datePlanted);
+//            } catch (Exception e) {
+//                errors.add(new FieldError("plant", "datePlanted", "Date should be in the format dd/mm/yyyy"));
+//            }
+//        }
         //Sets assigns the new values to the original plant object ready to be saved to the database
-        plant.setDatePlanted(date);
+        plant.setDatePlanted(datePlanted);
         plant.setName(newPlant.getName());
         plant.setCount(newPlant.getCount());
         plant.setDescription(newPlant.getDescription());
@@ -104,13 +113,13 @@ public class EditPlantController {
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         model.addAttribute("plantID", plantID); // Add gardenID to the model
         //Ternary operator to assign null date or assign a formatted date
-        model.addAttribute("datePlanted", (date != null) ? new SimpleDateFormat("yyyy-MM-dd").format(formattedDate) : "");
+        model.addAttribute("datePlanted", datePlanted);
 
 
         if (!errors.isEmpty()) {
             for (FieldError error : errors) {
                 model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());}
-            model.addAttribute("plant", plant);             // I don't understand why but if I remove this line all fields are cleared if they have errors, except name for no reason
+            model.addAttribute("plant", plant);             // I don't understand why but if I remove this line all fields EXCEPT name are cleared if they have errors
             return "editPlantFormTemplate";
         } else {
             plantService.addPlant(plant);
@@ -126,7 +135,7 @@ public class EditPlantController {
      * @param plantCount A string representing a plant count
      * @return An Arraylist<FieldError> object containing all
      */
-    public ArrayList<FieldError> checkFields(String plantName, String plantDescription, String plantCount) {
+    public ArrayList<FieldError> checkFields(String plantName, String plantDescription, String plantCount, String plantDateplanted) {
         ArrayList<FieldError> errors = new ArrayList<>();
 
         FieldError nameError = validatePlantName(plantName);
@@ -137,6 +146,9 @@ public class EditPlantController {
 
         FieldError countError = validatePlantCount(plantCount);
         if (countError != null) {errors.add(countError);}
+
+        FieldError dateError =  (plantDateplanted == "") ? null : validatePlantDate(plantDateplanted);
+        if (dateError != null) {errors.add(dateError);}
 
         return errors;
     }
@@ -159,7 +171,7 @@ public class EditPlantController {
 
 
     private void checkDateValidity(String date, BindingResult bindingResult) {
-        ObjectError dateError = validatePlantDate(date);
+        FieldError dateError = validatePlantDate(date);
         if (dateError != null) {
             bindingResult.addError(dateError);
         }
@@ -167,7 +179,8 @@ public class EditPlantController {
     public static String convertDateFormat(String dateInput) {
         String[] parts = dateInput.split("/");
         if (dateInput.length() < 10) {
-            return "0000-00-00";
+//            return "0000-00-00";
+            return dateInput;
         } else {
             // Reconstruct the date string in yyyy-MM-dd format
             String yyyy = parts[2];

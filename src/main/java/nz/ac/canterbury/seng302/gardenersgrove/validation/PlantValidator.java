@@ -46,13 +46,13 @@ public class PlantValidator {
         return null;
     }
 
-    public static ObjectError validatePlantDate(String date) {
+    public static FieldError validatePlantDate(String date) {
         try {
             LocalDate dob = LocalDate.parse(date);
             return null;
             // Continue with further processing
         } catch (DateTimeParseException e) {
-            return new ObjectError("plantDate", "Date is not in valid format, DD/MM/YYYY");
+            return new FieldError("plant", "datePlanted", "Date is not in valid format, DD/MM/YYYY");
 
             // Handle the case where the date string doesn't match the expected format
         }

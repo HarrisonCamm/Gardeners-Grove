@@ -43,8 +43,14 @@
                 <div class="formRow">
                     <label for="datePlanted"> Date Planted: </label>
                     <br/>
-                    <input type="date" name="datePlanted" id="datePlanted" th:value="${datePlanted}">
+                    <input type="text" name="datePlanted" id="datePlanted"
+                           th:name="datePlanted" th:value="${datePlanted}"
+                           placeholder="DD/MM/YYYY"
+                           data-cy="datePlanted"
+                           oninput="formatDateOfBirth(this)" th:field="*{datePlanted}"
+                           th:classappend="${datePlantedError} ? 'error' : ''">
                 </div>
+                <p th:if="${datePlantedError}" class="error-message" th:text="${datePlantedError}"></p>
                 <br/>
                     <button type="submit">Save</button>
 
@@ -55,7 +61,28 @@
         </div>
     </div>
 </div>
-</br>
 
 </body>
 </html>
+<script>
+    function formatDateOfBirth(input) {
+        let formattedValue = input.value.replace(/[^\d/]/g, '');
+
+        let matches = formattedValue.match(/\//g);
+        if (matches && matches.length > 2) {
+            formattedValue = formattedValue.substring(0, formattedValue.lastIndexOf('/'));
+        }
+
+        if (formattedValue.length > 2 && formattedValue.charAt(2) !== '/') {
+            formattedValue = formattedValue.slice(0, 2) + '/' + formattedValue.slice(2);
+        }
+        if (formattedValue.length > 5 && formattedValue.charAt(5) !== '/') {
+            formattedValue = formattedValue.slice(0, 5) + '/' + formattedValue.slice(5);
+        }
+
+        if (formattedValue.length > 10) {
+            formattedValue = formattedValue.slice(0, 10);
+        }
+        input.value = formattedValue;
+    }
+</script>
