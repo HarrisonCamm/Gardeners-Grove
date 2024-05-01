@@ -39,6 +39,7 @@ spring.datasource.password=password
 - These properties are to configure the application to work with the mail server and database used.
 
 ### 4 - Running the project
+We are not deploying on the PROD instance. We have a persistent database using h2.
 From the root directory ...
 
 1. Open a terminal in the root directory of the project.
