@@ -131,7 +131,7 @@ public class EditProfileController {
         model.addAttribute("lastName", lastName);
         model.addAttribute("noLastName", noLastName);
         model.addAttribute("changePasswordFormInput", changePasswordFormInput);
-//        model.addAttribute("oldPassword", oldPassword);
+        model.addAttribute("oldPassword", oldPassword);
         model.addAttribute("newPassword", newPassword);
         model.addAttribute("retypePassword", retypePassword);
         model.addAttribute("email", email);
