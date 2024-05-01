@@ -39,7 +39,7 @@ branch-build:
   except:
     - tags
     - main
-    - dev
+    - development
 
 deploy-staging:
   stage: deploy
@@ -63,7 +63,7 @@ deploy-staging:
     paths:
       - build/libs
   only:
-    - dev
+    - development
 
 deploy-production:
   stage: deploy

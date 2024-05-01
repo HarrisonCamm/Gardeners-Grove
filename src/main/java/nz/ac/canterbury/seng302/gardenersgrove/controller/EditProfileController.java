@@ -61,8 +61,6 @@ public class EditProfileController {
         logger.info("GET /edit-user-profile");
         User currentUser = userService.getAuthenicatedUser();
 
-        RedirectService.addEndpoint("/edit-user-profile");
-
         model.addAttribute("user", currentUser);
         model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
         model.addAttribute("firstName", currentUser.getFirstName());

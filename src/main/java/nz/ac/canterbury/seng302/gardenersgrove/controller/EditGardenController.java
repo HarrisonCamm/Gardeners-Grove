@@ -63,8 +63,6 @@ public class EditGardenController {
         Garden garden = result.get();
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
 
-        RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
-
         addAttributes(model, garden, garden.getId(), garden.getName(), garden.getLocation(), garden.getSize());
         return "editGardenTemplate";
     }

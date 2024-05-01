@@ -62,7 +62,7 @@ public class CreateGardenController {
         String gardenSize = garden.getSize();
         addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize);
 
-        RedirectService.addEndpoint("/create-garden");
+//        RedirectService.addEndpoint("/create-garden");
 
         return "createGardenFormTemplate";
     }
