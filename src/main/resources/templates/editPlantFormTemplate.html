@@ -9,7 +9,6 @@
 <body>
 <!-- Navigation Bar Fragment -->
 <ul th:insert="/fragments/navBar.html :: navBar"></ul>
-<div class="wrapper">
     <br/>
     <div class="form">
         <h2>Edit Plant</h2>
@@ -17,8 +16,8 @@
             <form th:action="@{/edit-plant}" method="post" th:object="${plant}">
                 <input type="hidden" name="_method" value="PUT">
                 <input type="hidden" name="plantID" th:value="${plantID}">
-                <div>
-                    <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="">
+                <div style="position: relative; width: 82px; margin: auto;">
+                    <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="" src="">
                     <button class="image_picker" th:id="${'button_' + plant.id}">+</button>
                 </div>
                 <div>
@@ -42,7 +41,6 @@
                 </div>
                 <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
 
-                <div class="formRow">
                     <label for="datePlanted"> Date Planted: </label>
                     <br/>
                     <input type="text" name="datePlanted" id="datePlanted"
@@ -51,18 +49,22 @@
                            data-cy="datePlanted"
                            oninput="formatDateOfBirth(this)" th:field="*{datePlanted}"
                            th:classappend="${datePlantedError} ? 'error' : ''">
-                </div>
+
                 <p th:if="${datePlantedError}" class="error-message" th:text="${datePlantedError}"></p>
                 <br/>
-                <button type="submit">Save</button>
-                <a th:href="@{${lastEndpoint}}" id="cancel">
-                    <button type="button">Cancel</button>
-                </a>
+                <br/>
+                <div class="buttons-centre">
+                    <button type="submit">Save</button>
+                    &nbsp;
+                    <a th:href="@{${lastEndpoint}}" id="cancel">
+                        <button type="button">Cancel</button>
+                    </a>
+                </div>
             </form>
         </div>
         <br/>
         <script src="/javascript/redirect_image_handler.js"></script>
-</div>
+        </div>
 
 </body>
 </html>

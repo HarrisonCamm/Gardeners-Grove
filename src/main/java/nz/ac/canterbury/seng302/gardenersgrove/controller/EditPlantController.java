@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -47,16 +48,16 @@ public class EditPlantController {
     public String form(@RequestParam("plantID") Long plantID,
                        Model model) {
         logger.info("GET /edit-plant");
-        RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
+//        RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
         //Attempt to retrieve plant or throw ResponseStatusException
         Plant plant = retrievePlant(plantID, plantService);
 
+        RedirectService.addEndpoint("/view-garden?gardenID=" + plant.getGarden().getId());
 
         model.addAttribute("plantID", plantID); // Add gardenID to the model
         model.addAttribute("plant", plant);
         model.addAttribute("datePlanted", plant.getDatePlanted());
-        model.addAttribute("datePlanted", date);
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
@@ -76,7 +77,7 @@ public class EditPlantController {
         logger.info("PUT /edit-plant");
         //Attempt to retrieve plant or throw ResponseStatusException
         Plant plant = retrievePlant(plantID, plantService);
-
+        RedirectService.addEndpoint("/view-garden?gardenID=" + plant.getGarden().getId());
         String formattedDate;
 
         formattedDate = (datePlanted.isEmpty()) ? datePlanted : convertDateFormat(datePlanted);
@@ -141,6 +142,7 @@ public class EditPlantController {
         if (nameError != null) {
             bindingResult.addError(nameError);
         }
+    }
     /**
      * Checks all input strings with PlantValidator validation methods
      * And generates a list of errors
