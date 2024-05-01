@@ -39,16 +39,15 @@ public class EditProfileController {
     private final UserService userService;
     private UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
+    private final MailService mailService;
 
     @Autowired
-    public EditProfileController(UserService userService, UserRepository newUserRepository, AuthenticationManager authenticationManager) {
+    public EditProfileController(UserService userService, UserRepository newUserRepository, AuthenticationManager authenticationManager, MailService mailService) {
         this.userService = userService;
         this.userRepository = newUserRepository;
         this.authenticationManager = authenticationManager;
+        this.mailService = mailService;
     }
-
-    @Autowired
-    private MailService mailService;
 
     /**
      * Gets form to be displayed, includes the ability to display results of previous form when linked to from POST form

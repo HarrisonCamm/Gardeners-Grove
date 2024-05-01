@@ -4,13 +4,35 @@
     <meta charset="UTF-8">
     <title>Create Plant</title>
     <link href="/css/gardenStyles.css" rel="stylesheet">
+    <link th:href="@{/css/navBar.css}" rel="stylesheet">
 </head>
 <body>
-<ul class="navBar">
-    <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>
-    <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
-</ul>
+    <ul class="navBar">
+        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>
+        <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
+    </ul>
 <!--    <h1>Create Plant</h1>-->
+    <ul th:insert="/fragments/navBar.html :: navBar"></ul>
+    <br/>
+
+    <div class="formContainer">
+        <h1>Create Plant</h1>
+        <form th:action="@{create-plant}" method="post" th:object="${plant}">
+            <input type="hidden" name="gardenID" th:value="${gardenID}">
+            <div class="formRow">
+                <label for="plantName"> Name: </label>
+                <input type="text" id="plantName" placeholder="Name" th:field="*{name}">
+            </div>
+            <div class="formRow">
+                <label for="plantCount"> Count: </label>
+                <input type="text" id="plantCount" placeholder="Count" th:field="*{count}">
+            </div>
+            <div class="formRow">
+                <label for="plantDescription"> Description: </label>
+                <input type="text" id="plantDescription" placeholder="Description" th:field="*{description}">
+            </div>
+            <div class="formRow">
+                <label for="plantDatePlanted"> Date Planted: </label>
 <br/>
 <div class="formContainer">
     <h1>Create Plant</h1>

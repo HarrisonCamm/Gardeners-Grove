@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <title>View Gardens</title>
     <link href="/css/gardenStyles.css" rel="stylesheet">
+    <link th:href="@{/css/navBar.css}" rel="stylesheet">
 </head>
 <body>
-    <ul class="navBar">
-        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>
-        <li><a class="navLink" th:href="@{/view-gardens}">View Gardens</a></li>
-    </ul>
+<!--    <ul class="navBar">-->
+<!--        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>-->
+<!--        <li><a class="navLink" th:href="@{/view-gardens}">View Gardens</a></li>-->
+<!--    </ul>-->
+    <ul th:insert="/fragments/navBar.html :: navBar"></ul>
     <div class="wrapper">
         <div class="container">
             <table class="sideBar">

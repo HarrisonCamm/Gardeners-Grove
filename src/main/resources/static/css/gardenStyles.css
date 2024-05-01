@@ -111,8 +111,15 @@ li {
 
 /* Garden container styles */
 .gardenContainer {
-    text-align: center;
-    flex: 1;
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: auto;
+}
+
+.gardenDetails {
+    width: 500px;
 }
 
 /* Disabled styles */
@@ -171,10 +178,12 @@ h2 {
 
 .plantContainer {
     height: 900px;
+    min-width: 500px;
     width: fit-content;
     overflow-y: auto;
     border: 1px solid #333333; /* Adding border style */
     border-radius: 2px;
+    margin-top: 5px;
 }
 
 .image_picker {
@@ -222,19 +231,36 @@ p {
     align-items: center;
 }
 
-.buttons {
+
+.buttons-left {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    padding: 10px;
 }
 
 button, label {
     font-size: 120%;
 }
+
 button {
     background-color : #8ffa8f;
     border-radius: 5px;
 }
 
-/*label {*/
-/*    width: 300px;*/
-/*}*/
+
+button:hover {
+    background-color: darkgreen;
+
+}
+.buttons-centre {
+    display: flex;
+    justify-content: flex-end;
+}
+.buttons-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: end;
+}
+
+
+

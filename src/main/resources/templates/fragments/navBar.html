@@ -6,14 +6,16 @@
 </head>
 <body>
 <ul th:fragment="navBar" class="navBar">
-    <li><a class="navLink" th:href="@{main}">Main</a></li>
-    <li><a class="navLink" th:href="@{view-user-profile}">View Profile</a></li>
-    <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>
-    <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
+    <div class="navBar-centre">
+        <li><a class="navLink" th:href="@{main}">Main</a></li>
+        <li><a class="navLink" th:href="@{view-user-profile}">View Profile</a></li>
+        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>
+        <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
+    </div>
     <!-- Logout form button -->
-    <li>
-        <form th:action="@{/logout}" method="post" class="navBar-form">
-            <input type="submit" value="Log Out" class="navBar-form-input">
+    <li class="navBar-logout">
+        <form th:action="@{/logout}" class="navBar-logout-form" method="post">
+            <input type="submit" value="Log Out" class="navBar-logout-button">
         </form>
     </li>
 </ul>

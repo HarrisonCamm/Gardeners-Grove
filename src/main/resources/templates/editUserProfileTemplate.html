@@ -115,15 +115,15 @@
                         <br/>
                         <br/>
 
-                        <!-- Submit Changed Password and Cancel Change Password Buttons -->
-                        <div class="buttons">
-                            <button type="submit" id="submitNewPasswordButton">Change Password</button>
-                            &nbsp;
-                            <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
-                        </div>
+                    <!-- Submit Changed Password and Cancel Change Password Buttons -->
+                    <div class="buttons-centre">
+                        <button type="submit" id="submitNewPasswordButton">Change Password</button>
+                        &nbsp;
+                        <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
                     </div>
-                    <!-- End Change Password Section -->
-                    <br/>
+                </div>
+                <!-- End Change Password Section -->
+                <br/>
 
                     <!-- Date of Birth Section -->
                     <label for="dateOfBirth"> Date of birth: </label>
@@ -150,28 +150,28 @@
                                 formattedValue = formattedValue.slice(0, 5) + '/' + formattedValue.slice(5);
                             }
 
-                            if (formattedValue.length > 10) {
-                                formattedValue = formattedValue.slice(0, 10);
-                            }
-                            input.value = formattedValue;
+                        if (formattedValue.length > 10) {
+                            formattedValue = formattedValue.slice(0, 10);
                         }
-                    </script>
-                    <br/>
-                    <div th:if="${ageError}" class="error-message" th:text="${ageError}"></div>
-                    <br/>
-                    <div class="buttons">
-                        <button type="submit" id="submitButton">Submit</button>
-                        &nbsp;
-                        <a th:href="@{/view-user-profile}" id="cancelButton">
-                            <button type="button">Cancel</button>
-                        </a>
-                    </div>
-                    <br/>
-                    <br/>
-                </form>
-            </div>
+                        input.value = formattedValue;
+                    }
+                </script>
+                <br/>
+                <div th:if="${ageError}" class="error-message" th:text="${ageError}"></div>
+                <br/>
+                <div class="buttons-centre">
+                    <button type="submit" id="submitButton">Submit</button>
+                    &nbsp;
+                    <a th:href="@{/view-user-profile}" id="cancelButton">
+                        <button type="button">Cancel</button>
+                    </a>
+                </div>
+                <br/>
+                <br/>
+            </form>
         </div>
     </div>
+</div>
     <script src="/javascript/redirect_image_handler.js"></script>
 </body>
 </html>
