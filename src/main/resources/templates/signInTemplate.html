@@ -31,7 +31,7 @@
                     <p class="message" id="message" th:text="${message}"></p>
                 </div>
                 <div>
-                    <p class="message" id="expiredTokenMessage" th:text="${expiredTokenMessage}"></p>
+                    <p class="error-message" th:if="${expiredTokenError}" id="expiredTokenMessage" th:text="${expiredTokenError}"></p>
                 </div>
                 <label for="email"> Email: </label>
                 <br/>
@@ -92,17 +92,6 @@
                 messageElement.style.display = 'none';
             }
 
-            let expiredTokenMessage = localStorage.getItem('expiredTokenMessage');
-            let expiredTokenMessageElement = document.getElementById("expiredTokenMessage");
-            if (expiredTokenMessage) {
-                // Set the message to the h4 element
-                expiredTokenMessageElement.innerText = expiredTokenMessage;
-                // Clear the message from the local storage
-                localStorage.removeItem('expiredTokenMessage');
-            } else {
-                // If there's no message, hide the h4 element
-                expiredTokenMessageElement.style.display = 'none';
-            }
         });
     function validateForm() {
         let emailInput = document.getElementById("email");
