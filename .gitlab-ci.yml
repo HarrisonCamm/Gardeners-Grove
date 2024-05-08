@@ -94,4 +94,3 @@ deploy-production:
       - build/libs
   only:
     - tags
-
