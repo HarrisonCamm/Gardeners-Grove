@@ -44,3 +44,6 @@ out/
 
 # Ignore application properties file
 src/main/resources/application-dev.properties
+
+# Ignore coverage report files
+htmlReport
