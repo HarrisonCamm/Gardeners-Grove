@@ -7,6 +7,8 @@
     <!-- Navbar styling -->
     <link href="/css/navBar.css" rel="stylesheet"/>
     <link href="/css/formStyles.css" rel="stylesheet"/>
+    <script th:src="@{javascript/redirect_image_handler.js}"></script>
+    <script th:src="@{javascript/enter_date.js}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('form').addEventListener('keydown', function(event) {
@@ -150,7 +152,5 @@
         </div>
     </div>
 </div>
-    <script src="/javascript/redirect_image_handler.js"></script>
-    <script src="/javascript/enter_date.js"></script>
 </body>
 </html>
