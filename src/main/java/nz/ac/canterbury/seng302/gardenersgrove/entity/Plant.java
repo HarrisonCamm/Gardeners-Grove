@@ -38,7 +38,7 @@ public class Plant {
     private String filePath;
 
     @Lob
-    @Column
+    @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] image;
 
     /**
