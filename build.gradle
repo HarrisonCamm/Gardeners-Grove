@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.2'
@@ -55,9 +57,26 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 
+	//Cucumber dependencies
+	testImplementation 'io.cucumber:cucumber-java:7.15.0'
+	testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.15.0'
+	testImplementation 'org.junit.platform:junit-platform-suite:1.10.2'
+
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 	finalizedBy jacocoTestReport
+}
+
+tasks.register("cucumber", Test) {
+	testLogging.showStandardStreams = true
+	useJUnitPlatform()
+	filter {
+		includeTestsMatching "nz.ac.canterbury.seng302.gardenersgrove.cucumber.*"
+	}
+	testLogging {
+		events "passed", "skipped", "failed", "standardOut", "standardError"
+		exceptionFormat TestExceptionFormat.FULL
+	}
 }
