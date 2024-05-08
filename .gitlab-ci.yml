@@ -50,8 +50,8 @@ deploy-staging:
     - cp -r ./build/libs /home/gitlab-runner/staging
     - cp runner-scripts/staging.sh /home/gitlab-runner/staging.sh
     - chmod u+x /home/gitlab-runner/staging.sh
-    - echo "export DB_USERNAME=${DB_USERNAME}" > /home/gitlab-runner/staging/.env
-    - echo "export DB_PASSWORD=${DB_PASSWORD}" >> /home/gitlab-runner/staging/.env
+    - echo "export DB_USERNAME=${DB_USERNAME_DEPLOY}" > /home/gitlab-runner/staging/.env
+    - echo "export DB_PASSWORD=${DB_PASSWORD_DEPLOY}" >> /home/gitlab-runner/staging/.env
     - echo "export SONARQUBE_TOKEN=${SONARQUBE_TOKEN}" >> /home/gitlab-runner/staging/.env
     - echo "export SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME_DEPLOY}" >> /home/gitlab-runner/staging/.env
     - echo "export SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD_DEPLOY}" >> /home/gitlab-runner/staging/.env
@@ -77,8 +77,8 @@ deploy-production:
     - cp -r ./build/libs /home/gitlab-runner/production
     - cp runner-scripts/production.sh /home/gitlab-runner/production.sh
     - chmod u+x /home/gitlab-runner/production.sh
-    - echo "export DB_USERNAME=${DB_USERNAME}" > /home/gitlab-runner/production/.env
-    - echo "export DB_PASSWORD=${DB_PASSWORD}" >> /home/gitlab-runner/production/.env
+    - echo "export DB_USERNAME=${DB_USERNAME_DEPLOY}" > /home/gitlab-runner/production/.env
+    - echo "export DB_PASSWORD=${DB_PASSWORD_DEPLOY}" >> /home/gitlab-runner/production/.env
     - echo "export SONARQUBE_TOKEN=${SONARQUBE_TOKEN}" >> /home/gitlab-runner/production/.env
     - echo "export SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME_DEPLOY}" >> /home/gitlab-runner/production/.env
     - echo "export SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD_DEPLOY}" >> /home/gitlab-runner/production/.env
@@ -94,4 +94,3 @@ deploy-production:
       - build/libs
   only:
     - tags
-
