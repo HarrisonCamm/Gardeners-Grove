@@ -55,6 +55,9 @@ deploy-staging:
     - echo "export SONARQUBE_TOKEN=${SONARQUBE_TOKEN}" >> /home/gitlab-runner/staging/.env
     - echo "export SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}" >> /home/gitlab-runner/staging/.env
     - echo "export SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}" >> /home/gitlab-runner/staging/.env
+    - echo "export SPRING_DATASOURCE_URL=${DB_URL_TEST}" >> /home/gitlab-runner/staging/.env
+    - echo "export SPRING_DATASOURCE_DRIVERCLASSNAME=${SPRING_DATASOURCE_DRIVERCLASSNAME}" >> /home/gitlab-runner/staging/.env
+    - echo "export SPRING_JPA_DATABASE_PLATFORM=${SPRING_JPA_DATABASE_PLATFORM}" >> /home/gitlab-runner/staging/.env
     - echo "export SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}" >> /home/gitlab-runner/staging/.env
     - echo "export SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}" >> /home/gitlab-runner/staging/.env
     - echo "export GEOAPIFY_API_KEY=${GEOAPIFY_API_KEY}" >> /home/gitlab-runner/staging/.env
@@ -79,6 +82,9 @@ deploy-production:
     - echo "export SONARQUBE_TOKEN=${SONARQUBE_TOKEN}" >> /home/gitlab-runner/production/.env
     - echo "export SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}" >> /home/gitlab-runner/production/.env
     - echo "export SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}" >> /home/gitlab-runner/production/.env
+    - echo "export SPRING_DATASOURCE_URL=${DB_URL_PROD}" >> /home/gitlab-runner/production/.env
+    - echo "export SPRING_DATASOURCE_DRIVERCLASSNAME=${SPRING_DATASOURCE_DRIVERCLASSNAME}" >> /home/gitlab-runner/production/.env
+    - echo "export SPRING_JPA_DATABASE_PLATFORM=${SPRING_JPA_DATABASE_PLATFORM}" >> /home/gitlab-runner/production/.env
     - echo "export SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}" >> /home/gitlab-runner/production/.env
     - echo "export SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}" >> /home/gitlab-runner/production/.env
     - echo "export GEOAPIFY_API_KEY=${GEOAPIFY_API_KEY}" >> /home/gitlab-runner/production/.env
