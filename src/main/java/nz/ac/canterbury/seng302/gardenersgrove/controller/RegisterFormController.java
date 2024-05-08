@@ -158,7 +158,7 @@ public class RegisterFormController {
             // All user details have passed validation
 
             // Create the user
-            User newUser = new User(firstName, lastName, noLastName, email, password, formattedDateOfBirth,  "defaultUserImage.png");
+            User newUser = new User(firstName, lastName, noLastName, email, password, dateOfBirth,  "defaultUserImage.png");
             // Create new user
 
             Path imagePath = Paths.get("src/main/resources/static/images/defaultUserImage.png");
