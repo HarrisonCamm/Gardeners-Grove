@@ -75,7 +75,7 @@ public class SecurityConfiguration {
                     // Could change .permitAll() to .anonymous() to give access to these pages only to non-Authenticated users
 
                     // Allow static resources to be accessed by anyone
-                    .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**")
+                    .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/javascript/**")
                     .permitAll()
 
                     // Only allow admins to reach the "/admin" page
