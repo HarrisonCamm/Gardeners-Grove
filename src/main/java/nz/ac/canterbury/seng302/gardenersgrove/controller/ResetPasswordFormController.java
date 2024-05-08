@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
@@ -28,6 +27,8 @@ public class ResetPasswordFormController {
     private final AuthenticationManager authenticationManager;
     private final VerificationTokenService verificationTokenService;
     private final MailService mailService;
+
+    private static final String GENERIC_ERROR_MESSAGE = "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.";
 
     @Autowired
     public ResetPasswordFormController(UserService userService, AuthenticationManager authenticationManager,
@@ -83,17 +84,37 @@ public class ResetPasswordFormController {
                              Model model) {
         logger.info("POST /reset-password-form");
 
+        // Getting the user for sending the confirmation email and validating retyped password
+        // To check if the user's fields match the password or not AC7
+        User currentUser = verificationTokenService.getUserByToken(token);
+
+
         model.addAttribute("newPassword", newPassword);
         model.addAttribute("retypePassword", retypedPassword);
         model.addAttribute("token", token);
 
+        //Converts date of birth for when it stored as yyyy-mm-dd
+//        String dateOfBirth = currentUser.getDateOfBirth();
+//        String[] dateParts = dateOfBirth.split("/");
+//
+//        String day = dateParts[0];
+//        String month = dateParts[1];
+//        String year = dateParts[2];
+//
+//        String convertedDateOfBirth = day + "/" + month + "/" + year;
+
         // Check if the new password is empty
         if (newPassword == null || newPassword.isEmpty()) {
-            model.addAttribute("newPasswordError", "New password is required.");
+            model.addAttribute("newPasswordError", GENERIC_ERROR_MESSAGE);
         } else {
             // Validate the new password strength
             if (!isPasswordValid(newPassword)) {
-                model.addAttribute("newPasswordError", "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+                model.addAttribute("newPasswordError", GENERIC_ERROR_MESSAGE);
+            } else if (newPassword.toLowerCase().contains(currentUser.getEmail().toLowerCase()) ||
+                    newPassword.toLowerCase().contains(currentUser.getFirstName().toLowerCase()) ||
+                    (!currentUser.getLastName().isEmpty() && newPassword.toLowerCase().contains(currentUser.getLastName().toLowerCase())) ||
+                    newPassword.contains(currentUser.getDateOfBirth())) {
+                model.addAttribute("newPasswordError", GENERIC_ERROR_MESSAGE);
             }
         }
 
@@ -107,11 +128,12 @@ public class ResetPasswordFormController {
             }
         }
 
+
+
         if (model.containsAttribute("newPasswordError") || model.containsAttribute("passwordMatchError")) {
             return "resetPasswordFormTemplate";
         } else {
             // new password and retyped password are valid
-            User currentUser = verificationTokenService.getUserByToken(token);
             logger.info("Password is valid, user has token " + token );
             logger.info("User first name is: " + currentUser.getFirstName());
 
