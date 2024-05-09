@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Register</title>
-    <link href="/css/formStyles.css" rel="stylesheet"/>
+    <link th:href="@{/css/formStyles.css}" rel="stylesheet"/>
     <script th:src="@{javascript/enter_date.js}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -11,7 +11,7 @@
                 let submitButton = document.getElementById("submitButton");
                 let cancelButton = document.getElementById("cancelButton");
                 if (event.key === 'Enter' && document.activeElement !== submitButton) {
-                    if(document.activeElement === cancelButton) {
+                    if (document.activeElement === cancelButton) {
                         cancelButton.click();
                     }
                     event.preventDefault();
