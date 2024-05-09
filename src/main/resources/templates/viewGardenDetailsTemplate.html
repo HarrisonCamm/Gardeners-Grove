@@ -12,7 +12,7 @@
 <!--        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>-->
 <!--        <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>-->
 <!--    </ul>-->
-    <ul th:insert="fragments/navBar.html :: navBar"></ul>
+    <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
     <div class="wrapper">
         <div class="container">
             <table class="sideBar">
@@ -84,7 +84,7 @@
             </div>
         </div>
     </div>
-    <script src="/javascript/redirect_image_handler.js"></script>
+    <script th:src="@{/javascript/redirect_image_handler.js}"></script>
 </body>
 </html>
 <script>

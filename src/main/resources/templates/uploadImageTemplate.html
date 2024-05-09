@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <title>Upload Image</title>
-    <link href="/css/gardenStyles.css" rel="stylesheet">
+    <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
 </head>
 <body>
-<ul th:insert="fragments/navBar.html :: navBar"></ul>
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
     <div style="text-align: center">
         <h1 style="text-align: center">Upload Image</h1>
         <p class="garden-header" style="margin-bottom: 25px">Includes .png, .jpg, .svg, less than 10Mb</p>
@@ -29,6 +29,6 @@
         </a>
     </div>
 
-<script src="/javascript/image_handling.js"></script>
+<script th:src="@{/javascript/image_handling.js}"></script>
 </body>
 </html>

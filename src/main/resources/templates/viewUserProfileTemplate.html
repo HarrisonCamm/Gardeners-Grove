@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
   <head>
-    <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>User Profile</title>
     <!-- Navbar styling -->
-    <link href="/css/navBar.css" rel="stylesheet"/>
-    <link href="/css/formStyles.css" rel="stylesheet"/>
+    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+    <link th:href="@{/css/formStyles.css}" rel="stylesheet"/>
   </head>
   <body>
   <!-- Navigation Bar Fragment -->
-  <ul th:insert="fragments/navBar.html :: navBar"></ul>
+  <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
   <div class="content">
     <div th:object="${user}">
       <h2>User Profile</h2>
@@ -56,6 +56,6 @@
                 </div>
             </div>
         </div>
-  <script src="/javascript/redirect_image_handler.js"></script>
+  <script th:src="@{/javascript/redirect_image_handler.js}"></script>
     </body>
 </html>
