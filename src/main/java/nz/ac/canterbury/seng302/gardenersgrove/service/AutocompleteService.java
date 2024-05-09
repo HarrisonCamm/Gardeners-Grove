@@ -45,4 +45,9 @@ public class AutocompleteService {
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
+
+    public int getRequestBodyLength(String inputText) throws IOException, InterruptedException {
+        HttpResponse<String> response = getApiResults(inputText);
+        return response.body().length();
+    }
 }
