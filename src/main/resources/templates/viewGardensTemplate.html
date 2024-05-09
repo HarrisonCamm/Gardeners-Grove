@@ -7,7 +7,7 @@
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
 </head>
 <body>
-    <ul th:insert="fragments/navBar.html :: navBar"></ul>
+    <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
     <div class="wrapper">
         <div class="container">
             <table class="sideBar">
