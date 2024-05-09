@@ -37,7 +37,8 @@ function addressAutocomplete(containerElement, callback, options) {
 
         /* Create a new promise and send geocoding request to the backend */
         const promise = new Promise((resolve, reject) => {
-            const url = `/getAutocompleteResults?inputString=${currentValue}`; //We create the getAutocompleteResults endpoint Java side
+            const deployPath = new URL(window.location.href).pathname.split('/')[1]
+            const url = '/' + deployPath + `/getAutocompleteResults?inputString=${currentValue}`; //We create the getAutocompleteResults endpoint Java side
             fetch(url)
                 .then(response => {
                     // check if the call was successful

@@ -5,10 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageSource = document.querySelectorAll('img');
 
     let params = new URLSearchParams();
+    let deployPath = '';
 
     function setParamsFromUrl() {
         const url = new URL(window.location.href);
-        const pathname = url.pathname;
+        deployPath = url.pathname.split('/')[1]
+        let pathname = url.pathname.replace('/' + deployPath, '');
 
         let gardenID = null;
 
@@ -57,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     params.set('plantID', buttonPlantID);
                 }
 
-                const fetchUrl = '/upload-image?' + params.toString();
+                const fetchUrl = '/' + deployPath + '/upload-image?' + params.toString();
                 console.log(fetchUrl);
 
                 fetch(fetchUrl, {
