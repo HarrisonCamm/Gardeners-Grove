@@ -42,7 +42,7 @@ public class GardenersGroveApplication {
 		return args -> {
 			// Check if the user already exists
 //			Path path = Paths.get("src/main/resources/static/images/defaultUserImage.png");
-			Path path = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
+			Path path = Paths.get(resourceLoader.getResource("classpath:static/images/defaultUserImage.png").getURI());
 			if (!userService.emailExists("startup@user.com")) {
 				User user = new User("Startup", "User", false, "startup@user.com", "password", "01/01/2000", "defaultUserImage.png");
                 user.setImage(Files.readAllBytes(path));
