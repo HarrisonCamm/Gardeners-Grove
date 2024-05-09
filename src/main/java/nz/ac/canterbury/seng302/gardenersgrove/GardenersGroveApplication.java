@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ResourceLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,6 +22,8 @@ import java.nio.file.Paths;
  */
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 public class GardenersGroveApplication {
+	@Autowired
+	private ResourceLoader resourceLoader;
 
 	@Autowired
 	private UserService userService;
@@ -38,7 +41,8 @@ public class GardenersGroveApplication {
 	public CommandLineRunner commandLineRunner() {
 		return args -> {
 			// Check if the user already exists
-			Path path = Paths.get("src/main/resources/static/images/defaultUserImage.png");
+//			Path path = Paths.get("src/main/resources/static/images/defaultUserImage.png");
+			Path path = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
 			if (!userService.emailExists("startup@user.com")) {
 				User user = new User("Startup", "User", false, "startup@user.com", "password", "01/01/2000", "defaultUserImage.png");
                 user.setImage(Files.readAllBytes(path));
