@@ -5,20 +5,19 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.ResetPasswordFormController;
-import nz.ac.canterbury.seng302.gardenersgrove.controller.UserProfileController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,7 +27,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@WebMvcTest(ResetPasswordFormController.class)
+@WebMvcTest(ResetPasswordFeature.class)
+@AutoConfigureMockMvc
 public class ResetPasswordFeature {
 
     @Autowired
@@ -49,7 +49,6 @@ public class ResetPasswordFeature {
         // This acts as our user that is logged in
         loggedInUser = new User("user@gmail.com", "Test", "User", "p@ssw0rd123");
 
-
         userService = Mockito.mock(UserService.class);
         verificationTokenService = Mockito.mock(VerificationTokenService.class);
 
@@ -69,7 +68,8 @@ public class ResetPasswordFeature {
     @WithMockUser
     @Given("I am on the reset password form")
     public void i_am_on_the_reset_password_form() throws Exception {
-        mockMvc.perform(get("/reset-password-form"))
+        mockMvc.perform(get("/reset-password-form")
+                        .param("token", verificationToken.getToken()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("resetPasswordFormTemplate"));
     }
