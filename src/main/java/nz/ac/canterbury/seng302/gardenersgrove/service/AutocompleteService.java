@@ -18,7 +18,6 @@ import java.net.http.HttpResponse;
 public class AutocompleteService {
 
     Logger logger = LoggerFactory.getLogger(AutocompleteService.class);
-    private final String COUNTRY_CODE = "nz";
     private final String LIMIT = "5";
 
     @Value("${geoapify.api.key}")
@@ -30,7 +29,6 @@ public class AutocompleteService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
                 .queryParam("text", inputText)
                 .queryParam("format", "json")
-                .queryParam("filter", "countrycode:" + COUNTRY_CODE)
                 .queryParam("limit", LIMIT)
                 .queryParam("apiKey", apiKey);
 
