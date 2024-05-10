@@ -1,61 +1,61 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-  <head>
+<head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>User Profile</title>
     <!-- Navbar styling -->
     <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
     <link th:href="@{/css/formStyles.css}" rel="stylesheet"/>
-  </head>
-  <body>
-  <!-- Navigation Bar Fragment -->
-  <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-  <div class="content">
+    <script th:src="@{/javascript/redirect-image-handler.js}"></script>
+</head>
+<body>
+<!-- Navigation Bar Fragment -->
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<div class="content">
     <div th:object="${user}">
-      <h2>User Profile</h2>
-      <div style="position: relative; width: 82px; margin: auto;">
-        <img class="image" th:data-user-id="${user.userId}" th:data-picture="${user.image}" alt="">
-        <button class="image_picker" th:id="${'button_' + user.userId}" style="position: absolute; top: 0; right: 0;">+</button>
-      </div>
-      <div>
-      <form>
-        <label for="name">Name: </label>
-        <br/>
-        <input type="text" class="form-control" id="name"
-        th:value="${displayName}" readonly>
-        <br/>
-
-                        <br/>
-                        <label for="email">Email: </label>
-                        <br/>
-                        <input type="text" class="form-control" id="email"
-                               th:value="${email}" readonly>
-                        <br/>
-                        <div th:if="${dateOfBirth != ''}" >
-                            <br/>
-                            <label for="date-of-birth">Date of birth: </label>
-                            <br/>
-                            <input type="text" class="form-control" id="date-of-birth"
-                                   th:value="${dateOfBirth}" readonly>
-                        </div>
-                        <br/>
-                        <div class="buttons-centre">
-                            <div>
-                                <a th:href="@{/edit-user-profile}">
-                                    <button type="button">Edit Profile</button>
-                                </a>
-                            </div>
-                            &nbsp;
-                            <div>
-                                <a th:href="@{/main}">
-                                    <button type="button">Main Page</button>
-                                </a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+        <h2>User Profile</h2>
+        <div style="position: relative; width: 82px; margin: auto;">
+            <img class="image" th:data-user-id="${user.userId}" th:data-picture="${user.image}" alt="">
+            <button class="image_picker" th:id="${'button_' + user.userId}" style="position: absolute; top: 0; right: 0;">+</button>
         </div>
-  <script th:src="@{/javascript/redirect_image_handler.js}"></script>
-    </body>
+        <div>
+            <form>
+                <label for="name">Name: </label>
+                <br/>
+                <input type="text" class="form-control" id="name"
+                       th:value="${displayName}" readonly>
+                <br/>
+
+                <br/>
+                <label for="email">Email: </label>
+                <br/>
+                <input type="text" class="form-control" id="email"
+                       th:value="${email}" readonly>
+                <br/>
+                <div th:if="${dateOfBirth != ''}" >
+                    <br/>
+                    <label for="date-of-birth">Date of birth: </label>
+                    <br/>
+                    <input type="text" class="form-control" id="date-of-birth"
+                           th:value="${dateOfBirth}" readonly>
+                </div>
+                <br/>
+                <div class="buttons-centre">
+                    <div>
+                        <a th:href="@{/edit-user-profile}">
+                            <button type="button">Edit Profile</button>
+                        </a>
+                    </div>
+                    &nbsp;
+                    <div>
+                        <a th:href="@{/main}">
+                            <button type="button">Main Page</button>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
 </html>
