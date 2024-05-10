@@ -1,3 +1,13 @@
+function getDeployPath(url) {
+    if (url == null)
+        url = new URL(window.location.href);
+    const deployPath = url.pathname.split('/')[1];
+    if (deployPath === 'test' || deployPath === 'prod')
+        return '/' + deployPath;
+    else
+        return '';
+}
+
 //Code taken from Geoapify's documentation. See Spike on wiki for details.
 function addressAutocomplete(containerElement, callback, options) {
 
@@ -37,7 +47,8 @@ function addressAutocomplete(containerElement, callback, options) {
 
         /* Create a new promise and send geocoding request to the backend */
         const promise = new Promise((resolve, reject) => {
-            const url = `/getAutocompleteResults?inputString=${currentValue}`; //We create the getAutocompleteResults endpoint Java side
+            const deployPath = getDeployPath(null);
+            const url = `${deployPath}/getAutocompleteResults?inputString=${currentValue}`; //We create the getAutocompleteResults endpoint Java side
             fetch(url)
                 .then(response => {
                     // check if the call was successful

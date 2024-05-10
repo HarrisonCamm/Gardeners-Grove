@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Edit profile</title>
+    <script th:src="@{javascript/editUserProfile.js}"></script>
     <!-- Navbar styling -->
     <link href="/css/navBar.css" rel="stylesheet"/>
     <link href="/css/formStyles.css" rel="stylesheet"/>
@@ -13,7 +14,7 @@
 </head>
     <body>
     <!-- Navigation Bar Fragment -->
-    <ul th:insert="fragments/navBar.html :: navBar"></ul>
+    <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
     <div class="content">
         <div>
             <h2>Edit Profile</h2>
