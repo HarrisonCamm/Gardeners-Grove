@@ -7,6 +7,7 @@ import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.ResetPasswordFormController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
+import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.mockito.Mockito;
@@ -15,9 +16,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,12 +31,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@WebMvcTest(ResetPasswordFeature.class)
-@AutoConfigureMockMvc
+//@WebMvcTest(ResetPasswordFeature.class)
+@SpringBootTest
 public class ResetPasswordFeature {
 
-    @Autowired
-    private MockMvc mockMvc;
+    private static MockMvc mockMvc;
 
     @MockBean
     private static VerificationTokenService verificationTokenService;
@@ -46,6 +49,15 @@ public class ResetPasswordFeature {
 
     @BeforeAll
     public static void before_or_after_all() {
+        AuthenticationManager authenticationManager = Mockito.mock(AuthenticationManager.class);
+        VerificationTokenService verificationTokenService = Mockito.mock(VerificationTokenService.class);
+        MailService mailService = Mockito.mock(MailService.class);
+        userService = Mockito.mock(UserService.class);
+        ResetPasswordFormController resetPasswordFormController = new ResetPasswordFormController( userService, authenticationManager, verificationTokenService, mailService);
+        // Allows us to bypass spring security
+
+        mockMvc = MockMvcBuilders.standaloneSetup(resetPasswordFormController).build();
+
         // This acts as our user that is logged in
         loggedInUser = new User("user@gmail.com", "Test", "User", "p@ssw0rd123");
 
