@@ -18,7 +18,7 @@
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="plantID" th:value="${plantID}">
             <div style="position: relative; width: 82px; margin: auto;">
-                <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="" src="">
+                <img class="image" th:data-plant-id="${plant.id}" th:src="@{/get-image?edit-plant=true(plantID=${plant.id})}" alt="" src="">
                 <button type="button" class="image_picker" th:id="${'button_' + plant.id}">+</button>
             </div>
             <div>

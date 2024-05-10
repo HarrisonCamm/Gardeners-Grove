@@ -19,7 +19,7 @@
     <div>
         <h2>Edit Profile</h2>
         <div style="position: relative; width: 82px; margin: auto;">
-            <img class="image" th:data-user-id="${user.userId}" th:data-picture="${user.image}" alt="">
+            <img class="image" th:data-user-id="${user.userId}" th:src="@{/get-image?edit-user-profile-image=true(userID=${user.userId})}" alt="">
             <button class="image_picker" th:id="${'button_' + user.userId}" style="position: absolute; top: 0; right: 0;">+</button>
         </div>
         <div>
