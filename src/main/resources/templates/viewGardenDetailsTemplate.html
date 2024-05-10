@@ -6,12 +6,9 @@
     <title>View Garden</title>
     <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
+    <script th:src="@{/javascript/redirect-image-handler.js}"></script>
 </head>
 <body>
-<!--    <ul class="navBar">-->
-<!--        <li><a class="navLink" th:href="@{create-garden}">Create a Garden</a></li>-->
-<!--        <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>-->
-<!--    </ul>-->
     <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
     <div class="wrapper">
         <div class="container">
@@ -84,7 +81,6 @@
             </div>
         </div>
     </div>
-    <script th:src="@{/javascript/redirect_image_handler.js}"></script>
 </body>
 </html>
 <script>
