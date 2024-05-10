@@ -93,6 +93,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = event.target.files[0];
         objectUrl = URL.createObjectURL(file);
         console.log("Object URL: " + objectUrl)
+        console.log("File name: " + file.name)
+        console.log("File pathname: " + file.pathname)
+        console.log("File keyPath: " + file.keyPath)
 
         imageSource.forEach(image => { //Should only be one image
             image.src = objectUrl;
