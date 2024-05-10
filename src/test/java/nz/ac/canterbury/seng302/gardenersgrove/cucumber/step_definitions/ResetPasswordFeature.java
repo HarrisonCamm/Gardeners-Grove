@@ -41,7 +41,13 @@ public class ResetPasswordFeature {
     private static VerificationTokenService verificationTokenService;
 
     @MockBean
+    private static AuthenticationManager authenticationManager;
+
+    @MockBean
     private static UserService userService;
+
+    @MockBean
+    private static MailService mailService;
 
     private static User loggedInUser;
 
@@ -49,32 +55,29 @@ public class ResetPasswordFeature {
 
     @BeforeAll
     public static void before_or_after_all() {
-        AuthenticationManager authenticationManager = Mockito.mock(AuthenticationManager.class);
-        VerificationTokenService verificationTokenService = Mockito.mock(VerificationTokenService.class);
-        MailService mailService = Mockito.mock(MailService.class);
-        userService = Mockito.mock(UserService.class);
-        ResetPasswordFormController resetPasswordFormController = new ResetPasswordFormController( userService, authenticationManager, verificationTokenService, mailService);
-        // Allows us to bypass spring security
-
-        mockMvc = MockMvcBuilders.standaloneSetup(resetPasswordFormController).build();
-
-        // This acts as our user that is logged in
-        loggedInUser = new User("user@gmail.com", "Test", "User", "p@ssw0rd123");
-
-        userService = Mockito.mock(UserService.class);
+        authenticationManager = Mockito.mock(AuthenticationManager.class);
         verificationTokenService = Mockito.mock(VerificationTokenService.class);
 
-        //Mock the getAuthenticatedUser method to return the loggedInUser
-        when(userService.getAuthenicatedUser()).thenReturn(loggedInUser);
-
-        // Trivial example of an expiry date
         LocalDateTime expiryDate = LocalDateTime.now().plusDays(1);
 
         verificationToken = new VerificationToken(loggedInUser, "123456", expiryDate);
 
-        // Return the token when the token is requested and return the user when any token is used
         when(verificationTokenService.findAllTokens()).thenReturn(List.of(verificationToken));
+        when(verificationTokenService.validateToken(any(String.class))).thenReturn(true);
         when(verificationTokenService.getUserByToken(any(String.class))).thenReturn(loggedInUser);
+
+        mailService = Mockito.mock(MailService.class);
+        userService = Mockito.mock(UserService.class);
+        ResetPasswordFormController resetPasswordFormController = new ResetPasswordFormController( userService, authenticationManager, verificationTokenService, mailService);
+
+        mockMvc = MockMvcBuilders.standaloneSetup(resetPasswordFormController).build();
+
+        loggedInUser = new User("user@gmail.com", "Test", "User", "p@ssw0rd123");
+
+        userService = Mockito.mock(UserService.class);
+
+        when(userService.getAuthenicatedUser()).thenReturn(loggedInUser);
+
     }
 
     @WithMockUser
