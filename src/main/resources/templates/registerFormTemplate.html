@@ -3,23 +3,9 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Register</title>
-    <link th:href="@{/css/formStyles.css}" rel="stylesheet"/>
-    <script th:src="@{javascript/enter_date.js}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelector('form').addEventListener('keydown', function(event) {
-                let submitButton = document.getElementById("submitButton");
-                let cancelButton = document.getElementById("cancelButton");
-                if (event.key === 'Enter' && document.activeElement !== submitButton) {
-                    if (document.activeElement === cancelButton) {
-                        cancelButton.click();
-                    }
-                    event.preventDefault();
-                    return false;
-                }
-            });
-        });
-    </script>
+    <link href="/css/formStyles.css" rel="stylesheet"/>
+    <script th:src="@{javascript/enter-date.js}"></script>
+    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
 </head>
 <body>
 <div class="content">
