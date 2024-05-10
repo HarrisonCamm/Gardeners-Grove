@@ -13,6 +13,7 @@ import org.apache.tomcat.util.http.parser.HttpParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -48,6 +49,9 @@ public class CreatePlantController {
     private final PlantService plantService;
     private final GardenService gardenService;
     private final UserService userService;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @Autowired
     public CreatePlantController(PlantService plantService, GardenService gardenService, UserService userService) {
@@ -150,10 +154,11 @@ public class CreatePlantController {
         if (plant.getPicture() == null) {
             plant.setPicture("leaves-80x80.png"); // Set default picture
 
-            Path imagePath = Paths.get("src/main/resources/static/images/leaves-80x80.png");
             try {
+//                Path imagePath = Paths.get("src/main/resources/static/images/leaves-80x80.png");
+                Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
                 plant.setImage(Files.readAllBytes(imagePath));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error("Failed to set default image", e);
             }
         }

@@ -9,6 +9,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,6 +43,9 @@ public class RegisterFormController {
     private final AuthenticationManager authenticationManager;
     private final VerificationTokenService verificationTokenService;
     private final MailService mailService;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @Autowired
     public RegisterFormController(UserService userService,
@@ -159,10 +163,10 @@ public class RegisterFormController {
 
             // Create the user
             User newUser = new User(firstName, lastName, noLastName, email, password, dateOfBirth,  "defaultUserImage.png");
-            // Create new user
 
-            Path imagePath = Paths.get("src/main/resources/static/images/defaultUserImage.png");
             try {
+                //            Path imagePath = Paths.get("src/main/resources/static/images/defaultUserImage.png");
+                Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/defaultUserImage.png").getURI());
                 newUser.setImage(Files.readAllBytes(imagePath));
             } catch (IOException e) {
                 logger.error("Failed to set default image", e);

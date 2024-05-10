@@ -1,10 +1,24 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Sign In</title>
-    <link href="/css/formStyles.css" rel="stylesheet"/>
-    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
+    <link th:href="@{/css/formStyles.css}" rel="stylesheet"/>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('form').addEventListener('keydown', function(event) {
+                let submitButton = document.getElementById("submitButton");
+                let cancelButton = document.getElementById("cancelButton");
+                if (event.key === 'Enter' && document.activeElement !== submitButton) {
+                    if(document.activeElement === cancelButton) {
+                        cancelButton.click();
+                    }
+                    event.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
 </head>
 <body>
 <div class="content">
