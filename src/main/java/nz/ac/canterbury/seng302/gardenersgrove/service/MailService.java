@@ -34,10 +34,10 @@ public class MailService {
     }
 
     public void sendSimpleMessage(String to, String subject, String text) {
-        logger.info("Mail Host: " + host);
-        logger.info("Mail Port: " + port);
-        logger.info("Mail Username: " + username);
-        logger.info("Mail Password: " + password);
+//        logger.info("Mail Host: " + host);
+//        logger.info("Mail Port: " + port);
+//        logger.info("Mail Username: " + username);
+//        logger.info("Mail Password: " + password);
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("gardenersgrovenoreply@gmail.com");
