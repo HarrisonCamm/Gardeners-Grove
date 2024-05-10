@@ -7,40 +7,40 @@
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
 </head>
 <body>
-    <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-    <div class="wrapper">
-        <div class="container">
-            <table class="sideBar">
-                <thead>
-                <tr>
-                    <th class="garden-header">Gardens</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="garden : ${gardens}">
-                    <td><a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}"><span th:text="${garden.name}"> Name </span></a></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="gardenTable">
-            <table>
-                <thead>
-                <tr class="garden-header">
-                    <th>Name&nbsp;</th>
-                    <th>Location&nbsp;</th>
-                    <th>Size&nbsp;</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr class="garden-header" th:each="garden : ${gardens}">
-                    <td><span th:text="${garden.name}"> Name </span></a></td>
-                    <td><span th:text="${garden.location.streetAddress}"> Location </span></td>
-                    <td><span th:text="${garden.size}"> Size </span></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<div class="wrapper">
+    <div class="container">
+        <table class="sideBar">
+            <thead>
+            <tr>
+                <th class="garden-header">Gardens</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="garden : ${gardens}">
+                <td><a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}"><span th:text="${garden.name}"> Name </span></a></td>
+            </tr>
+            </tbody>
+        </table>
     </div>
+    <div class="gardenTable">
+        <table>
+            <thead>
+            <tr class="garden-header">
+                <th>Name&nbsp;</th>
+                <th>Location&nbsp;</th>
+                <th>Size&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="garden-header" th:each="garden : ${gardens}">
+                <td><span th:text="${garden.name}"> Name </span></a></td>
+                <td><span th:text="${garden.location.streetAddress}"> Location </span></td>
+                <td><span th:text="${garden.size}"> Size </span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>

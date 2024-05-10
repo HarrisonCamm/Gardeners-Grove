@@ -1,37 +1,37 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Home</title>
-        <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
-    </head>
-    <body>
-    <div class="content">
-        <div>
-            <h1>Welcome to Gardener's Grove</h1>
-            <br/>
-            <div class="centre">
-                <div>
-                    <a th:href="@{/sign-in-form}">
-                        <button type="button">Sign In</button>
-                    </a>
-                </div>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <div>
-                    <a th:href="@{/register-form}">
-                        <button type="button">Register</button>
-                    </a>
-                </div>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Home</title>
+    <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="content">
+    <div>
+        <h1>Welcome to Gardener's Grove</h1>
+        <br/>
+        <div class="centre">
+            <div>
+                <a th:href="@{/sign-in-form}">
+                    <button type="button">Sign In</button>
+                </a>
+            </div>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <div>
+                <a th:href="@{/register-form}">
+                    <button type="button">Register</button>
+                </a>
             </div>
         </div>
     </div>
-    <script>
-        if (localStorage.getItem('email')) {
-            localStorage.removeItem('email');
-        }
-        if (localStorage.getItem('message')) {
-            localStorage.removeItem('message');
-        }
-    </script>
-    </body>
+</div>
+<script>
+    if (localStorage.getItem('email')) {
+        localStorage.removeItem('email');
+    }
+    if (localStorage.getItem('message')) {
+        localStorage.removeItem('message');
+    }
+</script>
+</body>
 </html>

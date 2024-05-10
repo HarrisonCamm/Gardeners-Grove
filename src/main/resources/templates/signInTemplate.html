@@ -55,29 +55,29 @@
     </div>
 </div>
 <script>
-        // When the page is loaded
-        window.addEventListener('load', function() {
-            let emailInput = document.getElementById("email");
-            // If there is an email in the local storage
-            if (localStorage.getItem('email')) {
-                // Populate the email field with the email from the local storage
-                emailInput.value = localStorage.getItem('email');
-                // Clear the email from the local storage
-                localStorage.removeItem('email');
-            }
+    // When the page is loaded
+    window.addEventListener('load', function() {
+        let emailInput = document.getElementById("email");
+        // If there is an email in the local storage
+        if (localStorage.getItem('email')) {
+            // Populate the email field with the email from the local storage
+            emailInput.value = localStorage.getItem('email');
+            // Clear the email from the local storage
+            localStorage.removeItem('email');
+        }
 
-            let message = localStorage.getItem('message');
-            let messageElement = document.getElementById("message");
-            if (message) {
-                // Set the message to the h4 element
-                messageElement.innerText = message;
-                // Clear the message from the local storage
-                localStorage.removeItem('message');
-            } else {
-                // If there's no message, hide the h4 element
-                messageElement.style.display = 'none';
-            }
-        });
+        let message = localStorage.getItem('message');
+        let messageElement = document.getElementById("message");
+        if (message) {
+            // Set the message to the h4 element
+            messageElement.innerText = message;
+            // Clear the message from the local storage
+            localStorage.removeItem('message');
+        } else {
+            // If there's no message, hide the h4 element
+            messageElement.style.display = 'none';
+        }
+    });
     function validateForm() {
         let emailInput = document.getElementById("email");
         let passwordInput = document.getElementById("password");
