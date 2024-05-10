@@ -65,7 +65,7 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests(auth -> auth.requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll())
                 .headers(headers -> headers
                         .frameOptions(Customizer.withDefaults())
-                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; img-src 'self' blob:; ..."))
+//                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; img-src 'self' blob:; ..."))
                         .disable()
                 )
                 .csrf(csrf -> csrf
@@ -75,12 +75,12 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request ->
                     // Allow "/", "/register", and "/login" to anyone (permitAll)
                     // Authenticated and non-Authenticated users can access these pages
-                    request.requestMatchers("/", "/register-form", SIGN_IN_FORM, "/home", "/confirm-registration", "/lost-password-form", "reset-password-form", "/api/user/**")
+                    request.requestMatchers("/", "/register-form", SIGN_IN_FORM, "/home", "/confirm-registration", "/lost-password-form", "reset-password-form")
                     .permitAll()
                     // Could change .permitAll() to .anonymous() to give access to these pages only to non-Authenticated users
 
                     // Allow static resources to be accessed by anyone
-                    .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/javascript/**", "/blob/**")
+                    .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/javascript/**")
                     .permitAll()
 
                     // Only allow admins to reach the "/admin" page
