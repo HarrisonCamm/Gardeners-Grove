@@ -37,8 +37,13 @@
 
             <div>
                 <label for="plantDescription"> Description: </label>
+
                 <br/>
-                <input type="text" id="plantDescription" th:value="*{description}" th:field="*{description}" th:classappend="${descriptionError} ? 'error' : ''">
+                <textarea maxlength="513" id="plantDescription"
+                          th:value="*{description}"
+                          th:field="*{description}"
+                          th:classappend="${descriptionError} ? 'error' : ''">
+                </textarea>
             </div>
             <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
 
