@@ -93,16 +93,6 @@ public class ResetPasswordFormController {
         model.addAttribute("retypePassword", retypedPassword);
         model.addAttribute("token", token);
 
-        //Converts date of birth for when it stored as yyyy-mm-dd
-//        String dateOfBirth = currentUser.getDateOfBirth();
-//        String[] dateParts = dateOfBirth.split("/");
-//
-//        String day = dateParts[0];
-//        String month = dateParts[1];
-//        String year = dateParts[2];
-//
-//        String convertedDateOfBirth = day + "/" + month + "/" + year;
-
         // Check if the new password is empty
         if (newPassword == null || newPassword.isEmpty()) {
             model.addAttribute("newPasswordError", GENERIC_ERROR_MESSAGE);
@@ -127,8 +117,6 @@ public class ResetPasswordFormController {
                 model.addAttribute("passwordMatchError", "The new passwords do not match");
             }
         }
-
-
 
         if (model.containsAttribute("newPasswordError") || model.containsAttribute("passwordMatchError")) {
             return "resetPasswordFormTemplate";
