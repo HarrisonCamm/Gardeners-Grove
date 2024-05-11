@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.BeforeAll;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -14,6 +16,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,18 +24,22 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -64,6 +71,8 @@ public class ResetPasswordSteps {
     private String reenteredPassword;
     private String enteredEmail;
     private ResultActions resultActions;
+    private static int emailCounter = 0; // We need to track how many emails are sent across all tests
+
 
     @BeforeAll
     public static void before_or_after_all() {
@@ -85,9 +94,12 @@ public class ResetPasswordSteps {
         when(verificationTokenService.findAllTokens()).thenReturn(List.of(verificationToken));
         when(verificationTokenService.validateToken(any(String.class))).thenReturn(true);
         when(verificationTokenService.getUserByToken(any(String.class))).thenReturn(loggedInUser);
+        when(verificationTokenService.createVerificationToken(any(User.class))).thenReturn(verificationToken);
 
         // Mock the user service
         when(userService.getAuthenicatedUser()).thenReturn(loggedInUser);
+        when(userService.getUserByEmail(any(String.class))).thenReturn(loggedInUser);
+        when(userService.emailExists(any(String.class))).thenReturn(true);
 
         //Mock the mail service
         doNothing().when(mailService).sendSimpleMessage(any(String.class), any(String.class), any(String.class));
@@ -113,13 +125,24 @@ public class ResetPasswordSteps {
                 .andExpect(view().name("signInTemplate"));
     }
 
-    //AC2, AC3
+    //AC2, AC3, AC4
     @Given("I am on the lost password form")
     public void i_am_on_the_lost_password_form() throws Exception {
         // Write code here that turns the phrase above into concrete actions
         mockMvcLostPassword.perform(get("/lost-password-form"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("lostPasswordFormTemplate"));
+    }
+
+    //AC5
+    @Given("I received an email to reset my password using email {string}")
+    public void i_received_an_email_to_reset_my_password_using_email(String email) throws Exception {
+        // Write code here that turns the phrase above into concrete actions
+        this.enteredEmail = email;
+        resultActions = mockMvcLostPassword.perform(post("/lost-password-form")
+                .param("email", email));
+        emailCounter++;
+        verify(mailService, times(emailCounter)).sendSimpleMessage(any(String.class), any(String.class), any(String.class));
     }
 
     //AC3
@@ -153,13 +176,32 @@ public class ResetPasswordSteps {
         resultActions = mockMvcLostPassword.perform(get("/lost-password-form"));
     }
 
-    //AC2, AC3
+    //AC2, AC3, AC4
     @When("I click the {string} button")
     public void i_click_the_button(String string) throws Exception {
         resultActions = mockMvcLostPassword.perform(post("/lost-password-form")
                 .param("email", enteredEmail));
     }
 
+    //AC5
+    @When("I go to the given URL passed in the email")
+    public void i_go_to_the_given_url_passed_in_the_email() throws Exception {
+        String emailText = LostPasswordFormController.generateResetPasswordEmail(verificationToken, userService.getUserByEmail(enteredEmail));
+        Pattern pattern = Pattern.compile("(reset-password-form)\\?token=(\\w+)");
+        Matcher matcher = pattern.matcher(emailText);
+        String path = "";
+        String token = "";
+
+        if (matcher.find()) {
+            path = matcher.group(1); // Get the path
+            token = matcher.group(2); // Get the token
+        }
+
+        resultActions = mockMvcResetPassword.perform(get("/" + path)
+                        .param("token", token)) // Include the token in the parameters
+                .andExpect(status().isOk())
+                .andExpect(view().name("resetPasswordFormTemplate"));
+    }
 
     //AC7
     @WithMockUser
@@ -204,6 +246,26 @@ public class ResetPasswordSteps {
                 .andExpect(status().isOk())
                 .andExpect(view().name("lostPasswordFormTemplate"))
                 .andExpect(model().attribute("confirmationMessage", stringContainsInOrder(Collections.singletonList(string))));
+        emailCounter++;
+    }
+
+    //AC4
+    @Then("an email is sent to the email address with a link containing a unique reset token to update the password of the profile associated to that email")
+    public void an_email_is_sent_to_the_email_address_with_a_link_containing_a_unique_reset_token_to_update_the_password_of_the_profile_associated_to_that_email() {
+        // Write code here that turns the phrase above into concrete actions
+        verify(mailService, times(emailCounter)).sendSimpleMessage(any(String.class), any(String.class), any(String.class));
+    }
+
+    //AC5
+    @Then("I am asked to supply a new password with “new password” and “retype password” fields")
+    public void i_am_asked_to_supply_a_new_password_with_new_password_and_retype_password_fields() throws Exception {
+        // Write code here that turns the phrase above into concrete actions
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(view().name("resetPasswordFormTemplate"))
+                .andExpect(model().attribute("token", verificationToken.getToken()))
+                .andExpect(model().attribute("newPassword", ""))
+                .andExpect(model().attribute("retypedPassword", ""));
     }
 
 
@@ -216,5 +278,4 @@ public class ResetPasswordSteps {
                 .andExpect(view().name("resetPasswordFormTemplate")) // We are on the same page with errors
                 .andExpect(model().attribute("newPasswordError", message)); // Check that the model contains the expected error message
     }
-
 }

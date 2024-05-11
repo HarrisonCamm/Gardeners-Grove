@@ -48,6 +48,8 @@ public class ResetPasswordFormController {
                        Model model) {
         logger.info("GET /reset-password-form");
         model.addAttribute("token", token);
+        model.addAttribute("newPassword", "");
+        model.addAttribute("retypedPassword", "");
         Timer t = new Timer();
         t.schedule(new TimerTask() {
             @Override

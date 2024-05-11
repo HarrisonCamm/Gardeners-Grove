@@ -28,6 +28,30 @@ Feature: U16 As Sarah, I want to be able to change my password over email, so th
     Examples:
       | email           |
       | "startup@user.com" |
+      | "testUser@gmail.com"|
+      | "fakeEmail@asdf.com" |
+
+  Scenario Outline: AC4 - Entering an email that is known to the system in the lost password form
+    Given I am on the lost password form
+    And I enter a valid email that is not known to the system <email>
+    When I click the "Submit" button
+    Then a confirmation message tells me "An email was sent to the address if it was recognised"
+    And an email is sent to the email address with a link containing a unique reset token to update the password of the profile associated to that email
+    Examples:
+      | email           |
+      | "startup@user.com" |
+      | "testUser@gmail.com"|
+      | "fakeEmail@asdf.com" |
+
+  Scenario Outline: AC5 - Accessing the reset password form from the email link
+    Given I received an email to reset my password using email <email>
+    When I go to the given URL passed in the email
+    Then I am asked to supply a new password with “new password” and “retype password” fields
+    Examples:
+      | email           |
+      | "startup@user.com" |
+      | "testUser@gmail.com"|
+      | "fakeEmail@asdf.com" |
 
 
   Scenario Outline: AC7 - Weak password error message

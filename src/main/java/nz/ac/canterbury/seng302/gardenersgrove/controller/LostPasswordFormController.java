@@ -90,6 +90,8 @@ public class LostPasswordFormController {
 
                 String emailText = generateResetPasswordEmail(verificationToken, newUser);
 
+                model.addAttribute("emailText", emailText); // For testing purposes :)
+
 
                 // Try to send confirmation email
                 try {
@@ -106,7 +108,7 @@ public class LostPasswordFormController {
         }
     }
 
-    private static String generateResetPasswordEmail(VerificationToken verificationToken, User newUser) {
+    public static String generateResetPasswordEmail(VerificationToken verificationToken, User newUser) {
         String tokenLink = "http://localhost:8080/reset-password-form?token=" + verificationToken.getToken();
 
         String emailText = "Dear " + newUser.getFirstName() + ",\n\n" +
