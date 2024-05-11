@@ -10,15 +10,15 @@ Feature: U16 As Sarah, I want to be able to change my password over email, so th
     Given I am on the lost password form
     And I enter an empty or malformed email address <email>
     When I click the "Submit" button
-    Then an error message tells me "Email address must be in the form ‘jane@doe.nz’"
+    Then an error message tells me <message>
     Examples:
-      | email           |
-      | ""              |
-      | "user"          |
-      | "user@"         |
-      | "user@domain"   |
-      | "user@domain."  |
-      | "user@domain.c" |
+      | email           | message         |
+      | ""              | "Email address must be in the form ‘jane@doe.nz’" |
+      | "user"          | "Email address must be in the form ‘jane@doe.nz’" |
+      | "user@"         | "Email address must be in the form ‘jane@doe.nz’" |
+      | "user@domain"   | "Email address must be in the form ‘jane@doe.nz’" |
+      | "user@domain."  | "Email address must be in the form ‘jane@doe.nz’" |
+      | "user@domain.c" | "Email address must be in the form ‘jane@doe.nz’" |
 
   Scenario Outline: AC3 - Entering a valid email that is not known to the system in the lost password form
     Given I am on the lost password form
@@ -53,17 +53,30 @@ Feature: U16 As Sarah, I want to be able to change my password over email, so th
       | "testUser@gmail.com"|
       | "fakeEmail@asdf.com" |
 
+  Scenario Outline: AC6 - Entering two different passwords in the "new" and "retype password" fields
+    Given I am on the reset password form
+    And I enter two different passwords in “new” and “retype password” fields <password1> <password2>
+    When I hit the save button
+    Then an error message tells me <message>
+    Examples:
+      | password1 | password2 | message |
+      | "Bob1!@#$" | "Bob1!@$" | "The new passwords do not match" |
+      | "Alice123!" | "Alice321!" | "The new passwords do not match" |
+      | "Password1!" | "Password2!" | "The new passwords do not match" |
+      | "MySecret1!" | "MySecret2!" | "The new passwords do not match" |
+      | "Test1234!" | "Test4321!" | "The new passwords do not match" |
+
 
   Scenario Outline: AC7 - Weak password error message
     Given I am on the reset password form
     When I enter the password <password>
     And I hit the save button
-    Then an error message tells "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character."
+    Then an error message tells me <message>
     Examples:
-      | password |
-      | "12345678" |
-      | "12345678a" |
-      | "user@gmail.com123456" |
-      | "Test123456!" |
-      | "User123456!@#" |
-      | "passw0rd123!@#$^&*()" |
+      | password               | message |
+      | "12345678"             | "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character." |
+      | "12345678a"            | "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character." |
+      | "user@gmail.com123456" | "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character." |
+      | "Test123456!"          | "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character." |
+      | "User123456!@#"        | "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character." |
+      | "passw0rd123!@#$^&*()" | "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character." |

@@ -159,6 +159,13 @@ public class ResetPasswordSteps {
         this.enteredEmail = email;
     }
 
+    //AC6
+    @And("I enter two different passwords in “new” and “retype password” fields {string} {string}")
+    public void i_enter_two_different_passwords_in_new_and_retype_password_fields(String enteredPassword, String reenteredPassword) {
+        this.enteredPassword = enteredPassword;
+        this.reenteredPassword = reenteredPassword;
+    }
+
     //AC7
     @WithMockUser
     @Given("I am on the reset password form")
@@ -230,15 +237,6 @@ public class ResetPasswordSteps {
                 .andExpect(model().attribute("email", "")); // The email field is empty
     }
 
-    //AC2
-    @Then("an error message tells me {string}")
-    public void an_error_message_tells_me(String string) throws Exception {
-        resultActions
-                .andExpect(status().isOk())
-                .andExpect(view().name("lostPasswordFormTemplate"))
-                .andExpect(model().attribute("lostPasswordEmailError", string));
-    }
-
     //AC3
     @Then("a confirmation message tells me {string}")
     public void a_confirmation_message_tells_me(String string) throws Exception {
@@ -269,13 +267,26 @@ public class ResetPasswordSteps {
     }
 
 
-    //AC7
+    //AC2, AC6, AC7
     @WithMockUser
-    @Then("an error message tells {string}")
+    @Then("an error message tells me {string}")
     public void an_error_message_tells(String message) throws Exception {
-        resultActions
-                .andExpect(status().isOk()) // No HTTP errors
-                .andExpect(view().name("resetPasswordFormTemplate")) // We are on the same page with errors
-                .andExpect(model().attribute("newPasswordError", message)); // Check that the model contains the expected error message
+        switch (message) {
+            case "Email address must be in the form ‘jane@doe.nz’", "The email address is empty or malformed":
+                resultActions
+                        .andExpect(status().isOk())
+                        .andExpect(model().attribute("lostPasswordEmailError", message));
+                break;
+            case "The new passwords do not match":
+                resultActions
+                        .andExpect(status().isOk())
+                        .andExpect(model().attribute("passwordMatchError", message));
+                break;
+            default:
+                resultActions
+                        .andExpect(status().isOk())
+                        .andExpect(model().attribute("newPasswordError", message));
+                break;
+        }
     }
 }

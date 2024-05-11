@@ -105,7 +105,7 @@ public class ResetPasswordFormController {
             } else if (newPassword.toLowerCase().contains(currentUser.getEmail().toLowerCase()) ||
                     newPassword.toLowerCase().contains(currentUser.getFirstName().toLowerCase()) ||
                     (!currentUser.getLastName().isEmpty() && newPassword.toLowerCase().contains(currentUser.getLastName().toLowerCase())) ||
-                    newPassword.contains(currentUser.getDateOfBirth())) {
+                    (!currentUser.getDateOfBirth().isEmpty() && newPassword.contains(currentUser.getDateOfBirth()))) {
                 model.addAttribute("newPasswordError", GENERIC_ERROR_MESSAGE);
             }
         }
