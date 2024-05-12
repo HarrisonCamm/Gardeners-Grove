@@ -34,13 +34,13 @@ public class GardenValidator {
     public static FieldError validateGardenLocation(Location location, boolean isCity) {
         if (isCity) {
             if (validateWithRegex("^$", location.getCity())) {
-                return new FieldError("garden", "location.city", "City cannot be empty");
+                return new FieldError("garden", "location.city", "City and Country are required");
             } else if (!validateWithRegex("[\\p{L}\\s'-]+", location.getCity())) {
                 return new FieldError("garden", "location.city", "City must only include letters and spaces");
             }
         } else {
             if (validateWithRegex("^$", location.getCountry())) {
-                return new FieldError("garden", "location.country", "Country cannot be empty");
+                return new FieldError("garden", "location.country", "City and Country are required");
             } else if (!validateWithRegex("[\\p{L}\\s'-]+", location.getCountry())) {
                 return new FieldError("garden", "location.country", "Country must only include letters and spaces");
             }
