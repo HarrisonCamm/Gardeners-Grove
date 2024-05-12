@@ -3,68 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <title>Edit Plant</title>
-    <link href="/css/gardenStyles.css" rel="stylesheet">
+    <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
+    <script th:src="@{/javascript/redirect-image-handler.js}"></script>
 </head>
 <body>
 <!-- Navigation Bar Fragment -->
-<ul th:insert="fragments/navBar.html :: navBar"></ul>
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<br/>
+<div class="form">
+    <h2>Edit Plant</h2>
+    <div class="formContainer">
+        <form th:action="@{/edit-plant}" method="post" th:object="${plant}">
+            <input type="hidden" name="_method" value="PUT">
+            <input type="hidden" name="plantID" th:value="${plantID}">
+            <div style="position: relative; width: 82px; margin: auto;">
+                <img class="image" th:data-plant-id="${plant.id}" th:src="@{/get-image?edit-plant=true(plantID=${plant.id})}" alt="" src="">
+                <button type="button" class="image_picker" th:id="${'button_' + plant.id}">+</button>
+            </div>
+            <div>
+                <label for="plantName"> Name: </label>
+                <br/>
+                <input type="text" id="plantName" maxlength="254" th:value="*{name}" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
+            </div>
+            <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
+
+            <div>
+                <label for="plantCount"> Count: </label>
+                <br/>
+                <input type="text" id="plantCount" th:value="*{count}" th:field="*{count}" th:classappend="${countError} ? 'error' : ''">
+            </div>
+            <p th:if="${countError}" class="error-message" th:text="${countError}"></p>
+
+            <div>
+                <label for="plantDescription"> Description: </label>
+                <br/>
+                <input type="text" id="plantDescription" th:value="*{description}" th:field="*{description}" th:classappend="${descriptionError} ? 'error' : ''">
+            </div>
+            <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
+
+            <label for="datePlanted"> Date Planted: </label>
+            <br/>
+            <input type="text" name="datePlanted" id="datePlanted"
+                   th:name="datePlanted" th:value="${datePlanted}"
+                   placeholder="DD/MM/YYYY"
+                   data-cy="datePlanted"
+                   oninput="formatDateOfBirth(this)" th:field="*{datePlanted}"
+                   th:classappend="${datePlantedError} ? 'error' : ''">
+
+            <p th:if="${datePlantedError}" class="error-message" th:text="${datePlantedError}"></p>
+            <br/>
+            <br/>
+            <div class="buttons-centre">
+                <button type="submit">Save</button>
+                &nbsp;
+                <a th:href="@{${lastEndpoint}}" id="cancel">
+                    <button type="button">Cancel</button>
+                </a>
+            </div>
+        </form>
+    </div>
     <br/>
-    <div class="form">
-        <h2>Edit Plant</h2>
-        <div class="formContainer">
-            <form th:action="@{/edit-plant}" method="post" th:object="${plant}">
-                <input type="hidden" name="_method" value="PUT">
-                <input type="hidden" name="plantID" th:value="${plantID}">
-                <div style="position: relative; width: 82px; margin: auto;">
-                    <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="" src="">
-                    <button type="button" class="image_picker" th:id="${'button_' + plant.id}">+</button>
-                </div>
-                <div>
-                    <label for="plantName"> Name: </label>
-                    <br/>
-                    <input type="text" id="plantName" maxlength="254" th:value="*{name}" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
-                </div>
-                <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
 
-                <div>
-                    <label for="plantCount"> Count: </label>
-                    <br/>
-                    <input type="text" id="plantCount" th:value="*{count}" th:field="*{count}" th:classappend="${countError} ? 'error' : ''">
-                </div>
-                <p th:if="${countError}" class="error-message" th:text="${countError}"></p>
-
-                <div>
-                    <label for="plantDescription"> Description: </label>
-                    <br/>
-                    <input type="text" id="plantDescription" th:value="*{description}" th:field="*{description}" th:classappend="${descriptionError} ? 'error' : ''">
-                </div>
-                <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
-
-                    <label for="datePlanted"> Date Planted: </label>
-                    <br/>
-                    <input type="text" name="datePlanted" id="datePlanted"
-                           th:name="datePlanted" th:value="${datePlanted}"
-                           placeholder="DD/MM/YYYY"
-                           data-cy="datePlanted"
-                           oninput="formatDateOfBirth(this)" th:field="*{datePlanted}"
-                           th:classappend="${datePlantedError} ? 'error' : ''">
-
-                <p th:if="${datePlantedError}" class="error-message" th:text="${datePlantedError}"></p>
-                <br/>
-                <br/>
-                <div class="buttons-centre">
-                    <button type="submit">Save</button>
-                    &nbsp;
-                    <a th:href="@{${lastEndpoint}}" id="cancel">
-                        <button type="button">Cancel</button>
-                    </a>
-                </div>
-            </form>
-        </div>
-        <br/>
-        <script src="/javascript/redirect_image_handler.js"></script>
-        </div>
+</div>
 
 </body>
 </html>

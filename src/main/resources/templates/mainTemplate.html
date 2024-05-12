@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
-    <head>
-        <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
-        <title>Gardener's Grove</title>
-        <!-- Navbar styling -->
-        <link href="/css/navBar.css" rel="stylesheet"/>
-        <link href="/css/homeMainStyles.css" rel="stylesheet"/>
-    </head>
-    <body>
-    <!-- Navigation Bar Fragment -->
-    <ul th:insert="fragments/navBar.html :: navBar"></ul>
-        <div class="content">
-            <div>
-                <h1>Main Page</h1>
-                <br/>
-            </div>
-        </div>
-    </body>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Gardener's Grove</title>
+    <!-- Navbar styling -->
+    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+    <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+</head>
+<body>
+<!-- Navigation Bar Fragment -->
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<div class="content">
+    <div>
+        <h1>Main Page</h1>
+        <br/>
+    </div>
+</div>
+</body>
 </html>

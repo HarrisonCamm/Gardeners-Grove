@@ -13,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
@@ -62,7 +63,11 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth.requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll())
-                .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable())
+                .headers(headers -> headers
+                        .frameOptions(Customizer.withDefaults())
+//                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; img-src 'self' blob:; ..."))
+                        .disable()
+                )
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/h2/**"))
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -75,7 +80,7 @@ public class SecurityConfiguration {
                     // Could change .permitAll() to .anonymous() to give access to these pages only to non-Authenticated users
 
                     // Allow static resources to be accessed by anyone
-                    .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**")
+                    .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/javascript/**")
                     .permitAll()
 
                     // Only allow admins to reach the "/admin" page

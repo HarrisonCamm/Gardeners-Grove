@@ -1,24 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta http-equiv="Content-Type" context="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Register</title>
-    <link href="/css/formStyles.css" rel="stylesheet"/>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelector('form').addEventListener('keydown', function(event) {
-                let submitButton = document.getElementById("submitButton");
-                let cancelButton = document.getElementById("cancelButton");
-                if (event.key === 'Enter' && document.activeElement !== submitButton) {
-                    if(document.activeElement === cancelButton) {
-                        cancelButton.click();
-                    }
-                    event.preventDefault();
-                    return false;
-                }
-            });
-        });
-    </script>
+    <link th:href="@{/css/formStyles.css}" rel="stylesheet"/>
+    <script th:src="@{javascript/enter-date.js}"></script>
+    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
 </head>
 <body>
 <div class="content">
@@ -88,29 +75,7 @@
                        placeholder="DD/MM/YYYY"
                        th:class="${ageError != null ? 'error' : 'form-control'}"
                        data-cy="dateOfBirth" autofocus
-                       oninput="formatDateOfBirth(this)">
-                <script>
-                    function formatDateOfBirth(input) {
-                        let formattedValue = input.value.replace(/[^\d/]/g, '');
-
-                        let matches = formattedValue.match(/\//g);
-                        if (matches && matches.length > 2) {
-                            formattedValue = formattedValue.substring(0, formattedValue.lastIndexOf('/'));
-                        }
-
-                        if (formattedValue.length > 2 && formattedValue.charAt(2) !== '/') {
-                            formattedValue = formattedValue.slice(0, 2) + '/' + formattedValue.slice(2);
-                        }
-                        if (formattedValue.length > 5 && formattedValue.charAt(5) !== '/') {
-                            formattedValue = formattedValue.slice(0, 5) + '/' + formattedValue.slice(5);
-                        }
-
-                        if (formattedValue.length > 10) {
-                            formattedValue = formattedValue.slice(0, 10);
-                        }
-                        input.value = formattedValue;
-                    }
-                </script>
+                       oninput="formatDate(this)">
                 <br/>
                 <div th:if="${ageError}" class="error-message" th:text="${ageError}"></div>
                 <br/>
