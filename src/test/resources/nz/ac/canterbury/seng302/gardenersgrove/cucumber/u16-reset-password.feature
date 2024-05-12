@@ -80,3 +80,16 @@ Feature: U16 As Sarah, I want to be able to change my password over email, so th
       | "Test123456!"          | "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character." |
       | "User123456!@#"        | "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character." |
       | "passw0rd123!@#$^&*()" | "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character." |
+
+  Scenario Outline: AC8 - Entering fully compliant details in the reset password form
+    Given I am on the reset password form
+    When I enter fully compliant details with <password1> and <password2>
+    Then my password is updated
+    And an email is sent to my email address to confirm that my password has been updated
+    And I am redirected to the login page
+    Examples:
+      | password1 | password2 |
+      | "Bob1!@#$" | "Bob1!@#$" |
+      | "Alice123!" | "Alice123!" |
+      | "Password1!" | "Password1!" |
+      | "V3eryS3cure___!" | "V3eryS3cure___!" |

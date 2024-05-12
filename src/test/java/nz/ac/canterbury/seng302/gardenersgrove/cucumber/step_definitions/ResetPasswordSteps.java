@@ -71,6 +71,8 @@ public class ResetPasswordSteps {
     private String reenteredPassword;
     private String enteredEmail;
     private ResultActions resultActions;
+
+    private static int passwordUpdateCounter = 0; // We need to track how many passwords are updated across all tests
     private static int emailCounter = 0; // We need to track how many emails are sent across all tests
 
 
@@ -100,6 +102,7 @@ public class ResetPasswordSteps {
         when(userService.getAuthenicatedUser()).thenReturn(loggedInUser);
         when(userService.getUserByEmail(any(String.class))).thenReturn(loggedInUser);
         when(userService.emailExists(any(String.class))).thenReturn(true);
+        when(userService.updateUserPassword(any(User.class), any(String.class))).thenReturn(loggedInUser);
 
         //Mock the mail service
         doNothing().when(mailService).sendSimpleMessage(any(String.class), any(String.class), any(String.class));
@@ -218,6 +221,21 @@ public class ResetPasswordSteps {
         this.reenteredPassword = password;
     }
 
+    //AC8
+    @When("I enter fully compliant details with {string} and {string}")
+    public void i_enter_fully_compliant_details(String enteredPassword, String reenteredPassword) throws Exception {
+        this.enteredPassword = enteredPassword;
+        this.reenteredPassword = reenteredPassword;
+
+        resultActions = mockMvcResetPassword.perform(post("/reset-password-form")
+                .param("newPassword", enteredPassword)
+                .param("retypedPassword", reenteredPassword)
+                .param("token", verificationToken.getToken()));
+
+        passwordUpdateCounter++;
+        emailCounter++;
+    }
+
     //AC7
     @WithMockUser
     @And("I hit the save button")
@@ -288,5 +306,27 @@ public class ResetPasswordSteps {
                         .andExpect(model().attribute("newPasswordError", message));
                 break;
         }
+    }
+
+    //AC8
+    @Then("my password is updated")
+    public void my_password_is_updated() {
+        // Write code here that turns the phrase above into concrete actions
+        verify(userService, times(passwordUpdateCounter)).updateUserPassword(any(User.class), any(String.class));
+    }
+
+    //AC8
+    @Then("an email is sent to my email address to confirm that my password has been updated")
+    public void an_email_is_sent_to_my_email_address_to_confirm_that_my_password_has_been_updated() {
+        // Write code here that turns the phrase above into concrete actions
+        verify(mailService, times(emailCounter)).sendSimpleMessage(any(String.class), any(String.class), any(String.class));
+    }
+
+    //AC8
+    @Then("I am redirected to the login page")
+    public void i_am_redirected_to_the_login_page() throws Exception {
+        resultActions
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/sign-in-form"));
     }
 }
