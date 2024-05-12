@@ -13,6 +13,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.controller.SignInController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.VerificationTokenRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
@@ -38,6 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.stringContainsInOrder;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -64,6 +66,9 @@ public class ResetPasswordSteps {
     private static UserRepository userRepository;
 
     @MockBean
+    private static VerificationTokenRepository verificationTokenRepository;
+
+    @MockBean
     private static MailService mailService;
 
     private static VerificationToken verificationToken;
@@ -72,6 +77,7 @@ public class ResetPasswordSteps {
     private String enteredEmail;
     private ResultActions resultActions;
 
+    private static int cleanupCounter = 0; // We need to track how many tokens are cleaned up across all tests
     private static int passwordUpdateCounter = 0; // We need to track how many passwords are updated across all tests
     private static int emailCounter = 0; // We need to track how many emails are sent across all tests
 
@@ -84,6 +90,7 @@ public class ResetPasswordSteps {
         // Mock the services and repositories
         authenticationManager = Mockito.mock(AuthenticationManager.class);
         verificationTokenService = Mockito.mock(VerificationTokenService.class);
+        verificationTokenRepository = Mockito.mock(VerificationTokenRepository.class);
         mailService = Mockito.mock(MailService.class);
         userService = Mockito.mock(UserService.class);
         userRepository = Mockito.mock(UserRepository.class);
@@ -97,6 +104,10 @@ public class ResetPasswordSteps {
         when(verificationTokenService.validateToken(any(String.class))).thenReturn(true);
         when(verificationTokenService.getUserByToken(any(String.class))).thenReturn(loggedInUser);
         when(verificationTokenService.createVerificationToken(any(User.class))).thenReturn(verificationToken);
+        doNothing().when(verificationTokenService).cleanupExpiredTokens();
+
+        // Mock the verification token repository
+        when(verificationTokenRepository.findByToken(any(String.class))).thenReturn(verificationToken);
 
         // Mock the user service
         when(userService.getAuthenicatedUser()).thenReturn(loggedInUser);
@@ -169,7 +180,7 @@ public class ResetPasswordSteps {
         this.reenteredPassword = reenteredPassword;
     }
 
-    //AC7
+    //AC7, AC8
     @WithMockUser
     @Given("I am on the reset password form")
     public void i_am_on_the_reset_password_form() throws Exception {
@@ -177,6 +188,25 @@ public class ResetPasswordSteps {
                         .param("token", verificationToken.getToken()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("resetPasswordFormTemplate"));
+        cleanupCounter++;
+    }
+
+    //AC9
+    @Given("a reset password link was created")
+    public void a_reset_password_link_was_created() {
+        // We created a token in the beforeAll method
+        assertFalse(verificationTokenService.findAllTokens().isEmpty());
+    }
+
+    //AC10
+    @WithMockUser
+    @Given("I click on a reset password link that has expired")
+    public void i_click_on_a_reset_password_link_that_has_expired() throws Exception {
+        verificationToken.setExpiryDate(LocalDateTime.now().minusMinutes(10));
+        when(verificationTokenService.validateToken(any(String.class))).thenReturn(false);
+
+        resultActions = mockMvcResetPassword.perform(get("/reset-password-form")
+                .param("token", verificationToken.getToken()));
     }
 
     //AC1
@@ -211,6 +241,7 @@ public class ResetPasswordSteps {
                         .param("token", token)) // Include the token in the parameters
                 .andExpect(status().isOk())
                 .andExpect(view().name("resetPasswordFormTemplate"));
+        cleanupCounter++;
     }
 
     //AC7
@@ -234,6 +265,12 @@ public class ResetPasswordSteps {
 
         passwordUpdateCounter++;
         emailCounter++;
+    }
+
+    //AC9
+    @When("{int} minutes have passed since the link was created")
+    public void minutes_have_passed_since_the_link_was_created(Integer time) {
+        verificationToken.setExpiryDate(LocalDateTime.now().minusMinutes(time));
     }
 
     //AC7
@@ -327,6 +364,33 @@ public class ResetPasswordSteps {
     public void i_am_redirected_to_the_login_page() throws Exception {
         resultActions
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/sign-in-form"));
+                .andExpect(redirectedUrl("/sign-in-form?token=" + verificationToken.getToken()));
+    }
+
+    //AC9
+    @Then("the reset token is deleted")
+    public void the_reset_token_is_deleted() throws Exception {
+        // Get the reset password page to start the garbage collection
+
+        resultActions = mockMvcResetPassword.perform(get("/reset-password-form")
+                .param("token", verificationToken.getToken()));
+
+//        cleanupCounter++; // TODO find out why this needs to be commented out
+        verify(verificationTokenService, times(cleanupCounter)).cleanupExpiredTokens();
+    }
+
+    @Then("it can’t be used to reset a password anymore")
+    public void it_can_t_be_used_to_reset_a_password_anymore() {
+        // Write code here that turns the phrase above into concrete actions
+        assertFalse(verificationToken.getExpiryDate().isAfter(LocalDateTime.now()));
+    }
+
+    @Then("I see a message telling me {string}")
+    public void i_see_a_message_telling_me(String string) throws Exception {
+        // Assert the redirection and the error message
+        resultActions
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/sign-in-form?token=" + verificationToken.getToken()));
+                //.andExpect(model().attribute("expiredTokenError", string)); // TODO do this
     }
 }

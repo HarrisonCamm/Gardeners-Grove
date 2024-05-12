@@ -93,3 +93,15 @@ Feature: U16 As Sarah, I want to be able to change my password over email, so th
       | "Alice123!" | "Alice123!" |
       | "Password1!" | "Password1!" |
       | "V3eryS3cure___!" | "V3eryS3cure___!" |
+
+  Scenario: AC9 - Reset password link expires after 10 minutes
+    Given a reset password link was created
+    When 10 minutes have passed since the link was created
+    Then the reset token is deleted
+    And it can’t be used to reset a password anymore
+
+
+  Scenario: AC10 - User is redirected to the login page with an error message when clicking on an expired reset password link
+    Given I click on a reset password link that has expired
+    Then I am redirected to the login page
+    And I see a message telling me "Reset password link has expired"
