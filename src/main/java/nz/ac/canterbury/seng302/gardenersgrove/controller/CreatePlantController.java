@@ -77,7 +77,6 @@ public class CreatePlantController {
         if (sessionPlant != null) {
             plant = sessionPlant;
         }
-//        model.addAttribute("gardenID", gardenID); // Add gardenID to the model
         model.addAttribute("gardens", gardenService.getGardens());
         model.addAttribute("plant", plant);
 
