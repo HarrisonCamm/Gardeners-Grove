@@ -144,7 +144,7 @@ public class ResetPasswordFormController {
                 // Password updated, allow user to login page
                 // todo check authentication of user??
 
-                return "redirect:/sign-in-form";
+                return "redirect:/sign-in-form?token=" + token;
             } catch (Exception e) {
                 // Log the error
                 logger.error("Failed to send password change confirmation email to " + emailAddress, e);
