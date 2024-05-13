@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Create Plant</title>
-    <link href="/css/gardenStyles.css" rel="stylesheet">
+    <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
+    <script th:src="@{javascript/redirect-image-handler.js}"></script>
+    <script th:src="@{javascript/enter-date.js}"></script>
+    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
 </head>
 <body>
-    <ul th:insert="/fragments/navBar.html :: navBar"></ul>
+    <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
     <br/>
     <div class="form">
         <h1>Create Plant</h1>
@@ -46,7 +49,7 @@
                        th:name="datePlanted" th:value="${datePlanted}"
                        placeholder="DD/MM/YYYY"
                        data-cy="datePlanted"
-                       oninput="formatDateOfBirth(this)"
+                       oninput="formatDate(this)"
                        th:class="${dateError != null ? 'error' : ''}" autofocus>
                 <br/>
                 <div th:if="${dateError}" class="error-message" th:text="${dateError}"></div>
@@ -63,27 +66,5 @@
     </div>
     <br/>
 </body>
-<script src="/javascript/redirect_image_handler.js"></script>
 </html>
-<script>
-    function formatDateOfBirth(input) {
-        let formattedValue = input.value.replace(/[^\d/]/g, '');
 
-        let matches = formattedValue.match(/\//g);
-        if (matches && matches.length > 2) {
-            formattedValue = formattedValue.substring(0, formattedValue.lastIndexOf('/'));
-        }
-
-        if (formattedValue.length > 2 && formattedValue.charAt(2) !== '/') {
-            formattedValue = formattedValue.slice(0, 2) + '/' + formattedValue.slice(2);
-        }
-        if (formattedValue.length > 5 && formattedValue.charAt(5) !== '/') {
-            formattedValue = formattedValue.slice(0, 5) + '/' + formattedValue.slice(5);
-        }
-
-        if (formattedValue.length > 10) {
-            formattedValue = formattedValue.slice(0, 10);
-        }
-        input.value = formattedValue;
-    }
-</script>

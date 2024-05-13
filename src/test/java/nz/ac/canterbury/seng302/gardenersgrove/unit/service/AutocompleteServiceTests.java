@@ -33,6 +33,8 @@ public class AutocompleteServiceTests {
 
         assertEquals(HttpStatus.OK.value(), actualResponse.statusCode());
     }
+
+
 }
 
     //TODO make test to parse the JSON to check if body has 5 elements, and test if bad input has 0 results

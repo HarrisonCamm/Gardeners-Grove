@@ -40,7 +40,7 @@ public class User {
     private String filePath;
 
     @Lob
-    @Column
+    @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] image;
 
     @Column()
