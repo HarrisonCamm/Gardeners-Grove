@@ -36,12 +36,9 @@ public class User {
     @Column(name = "dateOfBirth")
     private String dateOfBirth;
 
-    @Column
-    private String filePath;
-
-    @Lob
-    @Column(columnDefinition = "MEDIUMBLOB")
-    private byte[] image;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn
+    private Image image;
 
     @Column()
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -93,17 +90,6 @@ public class User {
         List<GrantedAuthority> authorities = new ArrayList<>();
         this.userRoles.forEach(authority -> authorities.add(new SimpleGrantedAuthority(authority.getRole())));
         return authorities;
-    }
-
-    public User(String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth, String filePath) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.noLastName = noLastName;
-        this.email = email;
-        this.password = password;
-        this.dateOfBirth = dateOfBirth;
-        this.filePath = filePath;
-        this.image = null;
     }
 
     public void setUserId(Long userId) {
@@ -161,19 +147,12 @@ public class User {
         return password;
     }
 
-    public void setFilePath(String newFilePath) {
-        this.filePath = newFilePath;
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setImage(byte[] newImage) {
-        this.image = newImage;
-    }
-
-    public byte[] getImage() {
+    public Image getImage() {
         return image;
     }
 
