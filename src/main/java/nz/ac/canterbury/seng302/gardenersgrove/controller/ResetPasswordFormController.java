@@ -96,7 +96,7 @@ public class ResetPasswordFormController {
         model.addAttribute("token", token);
 
         // Check if the new password is empty
-        if (newPassword == null || newPassword.isEmpty()) {
+        if (newPassword == null || newPassword.isEmpty() || newPassword.length() > 512){
             model.addAttribute("newPasswordError", GENERIC_ERROR_MESSAGE);
         } else {
             // Validate the new password strength
