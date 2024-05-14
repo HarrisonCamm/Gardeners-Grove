@@ -21,7 +21,8 @@
             </thead>
             <tbody>
             <tr th:each="garden : ${gardens}">
-                <td><a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}"><span th:text="${garden.name}"> Name </span></a></td>
+                <td><a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
+                    <span class = "garden-name" th:text="${garden.name}"> Name </span></a></td>
             </tr>
             </tbody>
         </table>
