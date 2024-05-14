@@ -377,7 +377,7 @@ public class ResetPasswordSteps {
         resultActions = mockMvcResetPassword.perform(get("/reset-password-form")
                 .param("token", verificationToken.getToken()));
 
-        cleanupCounter++;
+//        cleanupCounter++;
         verify(verificationTokenService, times(cleanupCounter)).cleanupExpiredTokens();
     }
 
