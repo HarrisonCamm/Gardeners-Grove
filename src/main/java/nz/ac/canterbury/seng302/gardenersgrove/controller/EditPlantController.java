@@ -1,11 +1,10 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +40,14 @@ public class EditPlantController {
     private final PlantService plantService;
     private final GardenService gardenService;
     private final UserService userService;
+    private final ImageService imageService;
 
     @Autowired
-    public EditPlantController(PlantService plantService, GardenService gardenService, UserService userService) {
+    public EditPlantController(PlantService plantService, GardenService gardenService, UserService userService, ImageService imageService) {
         this.plantService = plantService;
         this.gardenService = gardenService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     @GetMapping("/edit-plant")
@@ -137,10 +138,15 @@ public class EditPlantController {
         Plant plant = found.get();
 
         try {
-            byte[] imageBytes = file.getBytes();
-            plant.setImage(imageBytes);
-        } catch (IOException e) {
-            logger.error("Failed to convert image to byte array", e);
+            Image image = new Image(file, false);
+
+            Image oldImage = plant.getImage();
+            plant.setImage(image);
+            if (oldImage != null) {
+                imageService.deleteImage(oldImage);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to upload new plant image", e);
         }
 
         plantService.addPlant(plant);

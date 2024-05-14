@@ -1,10 +1,13 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -29,13 +32,15 @@ public class UserProfileController {
     @Autowired
     private UserService userService;
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final ImageService imageService;
 
     @Autowired
-    public UserProfileController(UserService newUserService, UserRepository newUserRepository) {
+    public UserProfileController(UserService newUserService, UserRepository newUserRepository, ImageService imageService) {
         this.userService = newUserService;
         this.userRepository = newUserRepository;
 
+        this.imageService = imageService;
     }
 
     /**
@@ -67,9 +72,14 @@ public class UserProfileController {
         Optional<User> user = userRepository.findById(userID);
         if (user.isPresent()) {
             User userToEdit = user.get();
-            userToEdit.setImage(file.getBytes());
-            userToEdit.setFilePath(file.getOriginalFilename());
+            Image image = new Image(file, false);
+
+            Image oldImage = userToEdit.getImage();
+            userToEdit.setImage(image);
             userRepository.save(userToEdit);
+            if (oldImage != null) {
+                imageService.deleteImage(oldImage);
+            }
         }
         return "redirect:/view-user-profile";
     }

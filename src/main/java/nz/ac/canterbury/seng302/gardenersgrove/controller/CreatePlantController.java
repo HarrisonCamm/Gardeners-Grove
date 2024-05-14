@@ -1,14 +1,10 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpSession;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.apache.tomcat.util.http.parser.HttpParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,15 +45,17 @@ public class CreatePlantController {
     private final PlantService plantService;
     private final GardenService gardenService;
     private final UserService userService;
+    private final ImageService imageService;
 
     @Autowired
     private ResourceLoader resourceLoader;
 
     @Autowired
-    public CreatePlantController(PlantService plantService, GardenService gardenService, UserService userService) {
+    public CreatePlantController(PlantService plantService, GardenService gardenService, UserService userService, ImageService imageService) {
         this.plantService = plantService;
         this.gardenService = gardenService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     @GetMapping("/create-plant")
@@ -139,7 +137,7 @@ public class CreatePlantController {
 
         if (sessionPlant != null) {
             plant.setImage(sessionPlant.getImage());
-            plant.setPicture(sessionPlant.getPicture());
+//            plant.setPicture(sessionPlant.getPicture());
             session.removeAttribute("plant");
         }
 
@@ -151,21 +149,23 @@ public class CreatePlantController {
         checkCount(plant.getCount(), bindingResult);
         checkDateValidity(formattedDate, bindingResult);
 
-        if (plant.getPicture() == null) {
-            plant.setPicture("leaves-80x80.png"); // Set default picture
-
+        if (plant.getImage() == null) {
+            Image image = null;
             try {
-//                Path imagePath = Paths.get("src/main/resources/static/images/leaves-80x80.png");
                 Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
-                plant.setImage(Files.readAllBytes(imagePath));
+                image = new Image(Files.readAllBytes(imagePath), "png", false);
+//                image = imageService.saveImage(image);
+                plant.setImage(image);
             } catch (Exception e) {
                 logger.error("Failed to set default image", e);
             }
+        } else {
+            Image image = (Image) session.getAttribute("image");
+            imageService.deleteImage(image);
+            plant.setImage(new Image(image));
         }
 
-
         plant.setCount(plant.getCount().replace(',', '.'));
-
         plant.setGarden(ownerGarden); // Set the garden for the plant
 
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
@@ -226,16 +226,16 @@ public class CreatePlantController {
         logger.info("POST /create-plant-picture");
         Garden garden = gardenService.findGarden(gardenID).get();
 
-        Plant plant = new Plant(garden, "", "", "", "", file.getOriginalFilename());
-        plant.setImage(file.getBytes());
+        Image image = new Image(file, true);
+        image = imageService.saveImage(image);
+        Plant plant = new Plant(garden, "", "", "", "", image);
 
         // Add the plant object to the session
         session.setAttribute("plant", plant);
+        session.setAttribute("image", image);
 
         return "redirect:/create-plant?gardenID=" + plant.getGarden().getId();
     }
-
-
 
     private void checkName(String name, BindingResult bindingResult) {
         ObjectError nameError = validatePlantName(name);

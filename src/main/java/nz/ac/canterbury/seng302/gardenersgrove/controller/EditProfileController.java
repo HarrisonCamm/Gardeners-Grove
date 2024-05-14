@@ -1,11 +1,14 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +43,16 @@ public class EditProfileController {
     private UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final MailService mailService;
+    private final ImageService imageService;
 
     @Autowired
-    public EditProfileController(UserService userService, UserRepository newUserRepository, AuthenticationManager authenticationManager, MailService mailService) {
+    public EditProfileController(UserService userService, UserRepository newUserRepository,
+                                 AuthenticationManager authenticationManager, MailService mailService, ImageService imageService) {
         this.userService = userService;
         this.userRepository = newUserRepository;
         this.authenticationManager = authenticationManager;
         this.mailService = mailService;
+        this.imageService = imageService;
     }
 
     /**
@@ -278,9 +284,13 @@ public class EditProfileController {
         Optional<User> user = userRepository.findById(userID);
         if (user.isPresent()) {
             User userToEdit = user.get();
-            userToEdit.setImage(file.getBytes());
-            userToEdit.setFilePath(file.getOriginalFilename());
+            Image image = new Image(file, false);
+
+            Image oldImage = userToEdit.getImage();
+            userToEdit.setImage(image);
             userRepository.save(userToEdit);
+            if (oldImage != null)
+                imageService.deleteImage(oldImage);
         }
 
         return "redirect:/edit-user-profile";

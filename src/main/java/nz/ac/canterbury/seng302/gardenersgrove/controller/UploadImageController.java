@@ -1,11 +1,14 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,11 +39,13 @@ public class UploadImageController {
 
     private final PlantService plantService;
     private final UserService userService;
+    private final ImageService imageService;
 
     @Autowired
-    public UploadImageController(PlantService plantService, UserService userService) {
+    public UploadImageController(PlantService plantService, UserService userService, ImageService imageService) {
         this.plantService = plantService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     /**
@@ -83,6 +88,19 @@ public class UploadImageController {
         return "uploadImageTemplate";
     }
 
+    /**
+     * Uploads a temporary image
+     * @param file The image file to upload
+     * @param model Spring Boot model
+     * @return The ID of the image
+     * @throws IOException If the file cannot be read
+     */
+    @PostMapping("/upload-image")
+    public ResponseEntity<String> uploadTemporaryImage(@RequestParam("file") MultipartFile file, Model model) throws IOException {
+        Image image = new Image(file, true);
+        Long id = imageService.saveImage(image).getId();
+        return new ResponseEntity<>(id.toString(), new HttpHeaders(), HttpStatus.CREATED);
+    }
 
     /**
      * This method gets the image for a plant
@@ -98,30 +116,38 @@ public class UploadImageController {
                                                 @RequestParam(value = "edit-plant", required = false) boolean editPlant,
                                                 @RequestParam(value = "view-user-profile", required = false) boolean viewUser,
                                                 @RequestParam(value = "edit-user-profile-image", required = false) boolean editUserProfile,
+                                                @RequestParam(value = "temporary", required = false) boolean temporary,
                                                 @RequestParam(value = "gardenID", required = false) Long gardenID,
                                                 @RequestParam(value = "userID", required = false) Long userID,
                                                 @RequestParam(value = "plantID", required = false) Long plantID,
+                                                @RequestParam(value = "imageID", required = false) Long imageID,
                                                 Model model) {
 
-        byte[] image;
+        Image image;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_JPEG);
 
         //Add cases for required image (plant or user)
-        if (!viewUser && !editUserProfile) {
+        if (temporary) {
+            image = imageService.findImage(imageID).get();
+            if (image.getExpiryDate() == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image is not temporary");
+            }
+            model.addAttribute("id", imageID);
+            model.addAttribute("picture", image.getData());
+        } else if (!viewUser && !editUserProfile) {
             Plant plant = plantService.findPlant(plantID).get();
             image = plant.getImage();
             model.addAttribute("id", plantID);
-            model.addAttribute("picture", image);
+            model.addAttribute("picture", image.getData());
         } else {
             User user = userService.getUserByID(userID);
             image = user.getImage();
             model.addAttribute("id", userID);
-            model.addAttribute("picture", image);
+            model.addAttribute("picture", image.getData());
         }
 
-
-        return new ResponseEntity<>(image, headers, HttpStatus.OK);
+        return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);
     }
 }

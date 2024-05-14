@@ -3,12 +3,11 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -32,16 +31,18 @@ import java.util.Optional;
 @Controller
 public class ViewGardenController {
 
+    private final ImageService imageService;
     Logger logger = LoggerFactory.getLogger(ViewGardenController.class);
 
     private final GardenService gardenService;
     private final PlantService plantService;
     private final UserService userService;
 
-    public ViewGardenController(GardenService gardenService, PlantService plantService, UserService userService) {
+    public ViewGardenController(GardenService gardenService, PlantService plantService, UserService userService, ImageService imageService) {
         this.gardenService = gardenService;
         this.plantService  = plantService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     @GetMapping("/view-garden")
@@ -89,15 +90,17 @@ public class ViewGardenController {
         Plant plant = plantService.findPlant(plantID).get();
 
         try {
-            byte[] imageBytes = file.getBytes();
-            plant.setImage(imageBytes);
-        } catch (IOException e) {
-            logger.error("Failed to convert image to byte array", e);
+            Image image = new Image(file, false);
+
+            Image oldImage = plant.getImage();
+            plant.setImage(image);
+            plantService.addPlant(plant);
+            if (oldImage != null) {
+                imageService.deleteImage(oldImage);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to upload new plant image", e);
         }
-
-        plant.setPicture(file.getOriginalFilename()); // Set the new image
-
-        plantService.addPlant(plant);
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService);
 
