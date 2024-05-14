@@ -65,7 +65,7 @@ public class CreatePlantController {
                        @ModelAttribute Plant plant,
                        Model model, HttpSession session) {
         logger.info("GET /create-plant");
-
+        session.setAttribute("gardenID", gardenID);
         User currentUser = userService.getAuthenicatedUser();
         Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
         if (foundGarden.isEmpty()) {
@@ -77,18 +77,18 @@ public class CreatePlantController {
         if (sessionPlant != null) {
             plant = sessionPlant;
         }
-        model.addAttribute("gardenID", gardenID); // Add gardenID to the model
         model.addAttribute("gardens", gardenService.getGardens());
         model.addAttribute("plant", plant);
 
         addErrors(session, model);
         Garden ownerGarden = foundGarden.get();
         plant.setGarden(ownerGarden); // Set the garden for the plant
+        model.addAttribute("gardenID", session.getAttribute("gardenID"));
         model.addAttribute("name", session.getAttribute("name"));
         model.addAttribute("description", session.getAttribute("description"));
         model.addAttribute("count", session.getAttribute("count"));
         model.addAttribute("datePlanted", session.getAttribute("datePlanted"));
-        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+
 
         // Remove attributes from the session
         session.removeAttribute("name");
@@ -179,12 +179,9 @@ public class CreatePlantController {
         session.setAttribute("count", count);
         session.setAttribute("description", description);
         session.setAttribute("datePlanted", plant.getDatePlanted());
+        session.setAttribute("gardenID", plant.getGarden().getId());
 
 
-//        model.addAttribute("plantName", plant.getName());
-//        model.addAttribute("plantCount", plant.getCount());
-//        model.addAttribute("plantDescription", plant.getDescription());
-//        model.addAttribute("datePlanted", formattedDate);
 
         Map<String, String> errors = new HashMap<>();
 
