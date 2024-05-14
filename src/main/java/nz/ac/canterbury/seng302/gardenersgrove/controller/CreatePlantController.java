@@ -100,6 +100,7 @@ public class CreatePlantController {
     }
 
     private void addErrors(HttpSession session, Model model) {
+        @SuppressWarnings("unchecked")
         HashMap<String, String> errors = (HashMap<String, String>) session.getAttribute("errors");
         if (errors != null) {
             for (Map.Entry<String, String> entry : errors.entrySet()) {
