@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import static nz.ac.canterbury.seng302.gardenersgrove.validation.UserValidator.isEmailValid;
+
 /**
  * Controller for reset password  form.
  * Note the @link{Autowired} annotation giving us access to the @link{FormService} class automatically
@@ -117,15 +119,5 @@ public class LostPasswordFormController {
                 "\n\nIf you did not request this code or have any questions, please contact our support team.\n\n" +
                 "Thank you for using Gardener's Grove! Happy gardening!";
         return emailText;
-    }
-
-    private boolean isEmailValid(String email) {
-        // Regex to check for a specific email pattern
-        boolean isValid = email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$") && !email.contains("..");
-
-        // Check if the email exceeds the SQL limit
-        boolean isWithinSqlLimit = email.length() <= 255;
-
-        return isValid && isWithinSqlLimit;
     }
 }

@@ -28,7 +28,7 @@ public class ResetPasswordFormController {
     private final VerificationTokenService verificationTokenService;
     private final MailService mailService;
 
-    private static final String GENERIC_ERROR_MESSAGE = "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.";
+    private static final String PASSWORD_ERROR = "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.";
 
     @Autowired
     public ResetPasswordFormController(UserService userService, AuthenticationManager authenticationManager,
@@ -97,16 +97,16 @@ public class ResetPasswordFormController {
 
         // Check if the new password is empty
         if (newPassword == null || newPassword.isEmpty() || newPassword.length() > 512){
-            model.addAttribute("newPasswordError", GENERIC_ERROR_MESSAGE);
+            model.addAttribute("newPasswordError", PASSWORD_ERROR);
         } else {
             // Validate the new password strength
             if (!isPasswordValid(newPassword)) {
-                model.addAttribute("newPasswordError", GENERIC_ERROR_MESSAGE);
+                model.addAttribute("newPasswordError", PASSWORD_ERROR);
             } else if (newPassword.toLowerCase().contains(currentUser.getEmail().toLowerCase()) ||
                     newPassword.toLowerCase().contains(currentUser.getFirstName().toLowerCase()) ||
                     (!currentUser.getLastName().isEmpty() && newPassword.toLowerCase().contains(currentUser.getLastName().toLowerCase())) ||
                     (!currentUser.getDateOfBirth().isEmpty() && newPassword.contains(currentUser.getDateOfBirth()))) {
-                model.addAttribute("newPasswordError", GENERIC_ERROR_MESSAGE);
+                model.addAttribute("newPasswordError", PASSWORD_ERROR);
             }
         }
 
