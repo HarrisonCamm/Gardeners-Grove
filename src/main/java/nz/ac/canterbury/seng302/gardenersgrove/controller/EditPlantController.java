@@ -130,7 +130,7 @@ public class EditPlantController {
     public String changePicture(@RequestParam("plantID") Long plantID,
                                 @RequestParam("file") MultipartFile file) {
         logger.info("POST /edit-plant");
-        Optional<Plant> found = plantService.findPlant(plantID);
+         Optional<Plant> found = plantService.findPlant(plantID);
         if (found.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant with ID " + plantID + " not found");
         }
