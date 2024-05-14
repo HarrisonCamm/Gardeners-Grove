@@ -96,14 +96,17 @@ document.addEventListener('DOMContentLoaded', () => {
             userID = image.getAttribute('data-user-id');
             params.set('userID', userID);
         }
-        if (!params.has('create-plant-picture')) { //We don't to get the image if we are creating a plant
-            fetch(deployPath + '/get-image?' + params.toString(), {
-            })
-                .then(response => response.blob())
-                .then(blob => {
-                    image.src = URL.createObjectURL(blob);
-                })
-                .catch(error => console.error(error));
-        }
+        // if (!params.has('create-plant-picture')) { //We don't to get the image if we are creating a plant
+        //     fetch(deployPath + '/get-image?' + params.toString(), {
+        //     })
+        //         // .then(response => {
+        //         //     image.src = response.url;
+        //         // })
+        //         // .then(response => response.blob())
+        //         // .then(blob => {
+        //         //     image.src = URL.createObjectURL(blob);
+        //         // })
+        //         .catch(error => console.error(error));
+        // }
     });
 });

@@ -64,7 +64,7 @@
                 <tr th:each="plant : ${plants}" class="plant-row">
                     <td>
                         <div style="position: relative;">
-                            <img class="image" th:data-plant-id="${plant.id}" th:data-picture="${plant.picture}" alt="">
+                            <img class="image" th:data-plant-id="${plant.id}" th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
                             <button class="image_picker" th:id="${'button_' + plant.id}">+</button>
                         </div>
                     </td>
