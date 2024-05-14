@@ -14,16 +14,11 @@ public class PlantValidator {
      * @return FieldError if the plant name is empty or contains invalid characters
      */
     public static FieldError validatePlantName(String name) {
-        if (name.isEmpty() ){
+        if (name.isEmpty() || !isValidPlantName(name)) {
             return new FieldError("plant", "name",
-                    "Plant name cannot by empty and must only include letters, numbers, spaces, dots, hyphens or apostrophes.");
+                    "Plant name cannot be empty and must only include letters, numbers, spaces, dots, " +
+                            "hyphens or apostrophes.");
         }
-        else if (!isValidPlantName(name)) {
-            return new FieldError("plant", "name",
-                    "Plant name cannot by empty and must only include letters, numbers, spaces, dots, hyphens or apostrophes.");
-
-        }
-
         return null;
     }
 
