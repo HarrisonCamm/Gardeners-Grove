@@ -104,4 +104,4 @@ Feature: U16 As Sarah, I want to be able to change my password over email, so th
   Scenario: AC10 - User is redirected to the login page with an error message when clicking on an expired reset password link
     Given I click on a reset password link that has expired
     Then I am redirected to the login page
-    And I see a message telling me "Reset password link has expired"
+    And I see a message telling me "Reset link has expired."

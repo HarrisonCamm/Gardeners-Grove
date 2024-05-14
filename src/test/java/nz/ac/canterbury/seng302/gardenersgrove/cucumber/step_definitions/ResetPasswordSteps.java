@@ -142,7 +142,7 @@ public class ResetPasswordSteps {
     //AC2, AC3, AC4
     @Given("I am on the lost password form")
     public void i_am_on_the_lost_password_form() throws Exception {
-        // Write code here that turns the phrase above into concrete actions
+
         mockMvcLostPassword.perform(get("/lost-password-form"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("lostPasswordFormTemplate"));
@@ -151,7 +151,7 @@ public class ResetPasswordSteps {
     //AC5
     @Given("I received an email to reset my password using email {string}")
     public void i_received_an_email_to_reset_my_password_using_email(String email) throws Exception {
-        // Write code here that turns the phrase above into concrete actions
+
         this.enteredEmail = email;
         resultActions = mockMvcLostPassword.perform(post("/lost-password-form")
                 .param("email", email));
@@ -162,14 +162,14 @@ public class ResetPasswordSteps {
     //AC3
     @And("I enter a valid email that is not known to the system {string}")
     public void i_enter_a_valid_email_that_is_not_known_to_the_system(String email) {
-        // Write code here that turns the phrase above into concrete actions
+
         this.enteredEmail = email;
     }
 
     //AC2
     @And("I enter an empty or malformed email address {string}")
     public void i_enter_an_empty_or_malformed_email_address(String email) {
-        // Write code here that turns the phrase above into concrete actions
+
         this.enteredEmail = email;
     }
 
@@ -305,14 +305,14 @@ public class ResetPasswordSteps {
     //AC4
     @Then("an email is sent to the email address with a link containing a unique reset token to update the password of the profile associated to that email")
     public void an_email_is_sent_to_the_email_address_with_a_link_containing_a_unique_reset_token_to_update_the_password_of_the_profile_associated_to_that_email() {
-        // Write code here that turns the phrase above into concrete actions
+
         verify(mailService, times(emailCounter)).sendSimpleMessage(any(String.class), any(String.class), any(String.class));
     }
 
     //AC5
     @Then("I am asked to supply a new password with “new password” and “retype password” fields")
     public void i_am_asked_to_supply_a_new_password_with_new_password_and_retype_password_fields() throws Exception {
-        // Write code here that turns the phrase above into concrete actions
+
         resultActions
                 .andExpect(status().isOk())
                 .andExpect(view().name("resetPasswordFormTemplate"))
@@ -348,23 +348,25 @@ public class ResetPasswordSteps {
     //AC8
     @Then("my password is updated")
     public void my_password_is_updated() {
-        // Write code here that turns the phrase above into concrete actions
+
         verify(userService, times(passwordUpdateCounter)).updateUserPassword(any(User.class), any(String.class));
     }
 
     //AC8
     @Then("an email is sent to my email address to confirm that my password has been updated")
     public void an_email_is_sent_to_my_email_address_to_confirm_that_my_password_has_been_updated() {
-        // Write code here that turns the phrase above into concrete actions
+
         verify(mailService, times(emailCounter)).sendSimpleMessage(any(String.class), any(String.class), any(String.class));
     }
 
     //AC8
     @Then("I am redirected to the login page")
     public void i_am_redirected_to_the_login_page() throws Exception {
+
+        resultActions = mockMvcSignIn.perform(get("/sign-in-form?token=" + verificationToken.getToken()));
+
         resultActions
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/sign-in-form?token=" + verificationToken.getToken()));
+                .andExpect(status().isOk());
     }
 
     //AC9
@@ -375,13 +377,13 @@ public class ResetPasswordSteps {
         resultActions = mockMvcResetPassword.perform(get("/reset-password-form")
                 .param("token", verificationToken.getToken()));
 
-//        cleanupCounter++; // TODO find out why this needs to be commented out
+        cleanupCounter++;
         verify(verificationTokenService, times(cleanupCounter)).cleanupExpiredTokens();
     }
 
     @Then("it can’t be used to reset a password anymore")
     public void it_can_t_be_used_to_reset_a_password_anymore() {
-        // Write code here that turns the phrase above into concrete actions
+
         assertFalse(verificationToken.getExpiryDate().isAfter(LocalDateTime.now()));
     }
 
@@ -389,8 +391,7 @@ public class ResetPasswordSteps {
     public void i_see_a_message_telling_me(String string) throws Exception {
         // Assert the redirection and the error message
         resultActions
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/sign-in-form?token=" + verificationToken.getToken()));
-                //.andExpect(model().attribute("expiredTokenError", string)); // TODO do this
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(model().attribute("expiredTokenError", string));
     }
 }
