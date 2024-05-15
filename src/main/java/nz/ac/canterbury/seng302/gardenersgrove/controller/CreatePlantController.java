@@ -1,6 +1,10 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpSession;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.apache.tomcat.util.http.parser.HttpParser;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -44,15 +48,17 @@ public class CreatePlantController {
     private final PlantService plantService;
     private final GardenService gardenService;
     private final UserService userService;
+    private final ImageService imageService;
 
     @Autowired
     private ResourceLoader resourceLoader;
 
     @Autowired
-    public CreatePlantController(PlantService plantService, GardenService gardenService, UserService userService) {
+    public CreatePlantController(PlantService plantService, GardenService gardenService, UserService userService, ImageService imageService) {
         this.plantService = plantService;
         this.gardenService = gardenService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     @GetMapping("/create-plant")
@@ -135,29 +141,33 @@ public class CreatePlantController {
         Plant sessionPlant = (Plant) session.getAttribute("plant");
 
         if (sessionPlant != null) {
-            plant.setImage(sessionPlant.getImage());
-            plant.setPicture(sessionPlant.getPicture());
             session.removeAttribute("plant");
         }
 
         String formattedDate;
         formattedDate = convertDateFormat(datePlanted);
 
-        if (plant.getPicture() == null) {
-            plant.setPicture("leaves-80x80.png"); // Set default picture
-
+        Image image = Image.removeTemporaryImage(session, imageService);
+        if (image == null) {
             try {
-//                Path imagePath = Paths.get("src/main/resources/static/images/leaves-80x80.png");
-                Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
-                plant.setImage(Files.readAllBytes(imagePath));
+                MultipartFile imageFile = (MultipartFile) session.getAttribute("imageFile");
+                if (imageFile != null) {
+                    image = new Image(imageFile, false);
+                    session.removeAttribute("imageFile");
+                } else {
+                    Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
+                    image = new Image(Files.readAllBytes(imagePath), "png", false);
+                }
+                plant.setImage(image);
             } catch (Exception e) {
-                logger.error("Failed to set default image", e);
+                logger.error("Failed to set plant image", e);
             }
+        } else {
+            image.makePermanent();
+            plant.setImage(image);
         }
 
-
         plant.setCount(plant.getCount().replace(',', '.'));
-
         plant.setGarden(ownerGarden); // Set the garden for the plant
 
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
@@ -215,11 +225,11 @@ public class CreatePlantController {
         logger.info("POST /create-plant-picture");
         Garden garden = gardenService.findGarden(gardenID).get();
 
-        Plant plant = new Plant(garden, "", "", "", "", file.getOriginalFilename());
-        plant.setImage(file.getBytes());
+        Plant plant = new Plant(garden, "", "", "", "", Image.getTemporaryImage(session));
 
         // Add the plant object to the session
         session.setAttribute("plant", plant);
+        session.setAttribute("imageFile", file);
 
         return "redirect:/create-plant?gardenID=" + plant.getGarden().getId();
     }

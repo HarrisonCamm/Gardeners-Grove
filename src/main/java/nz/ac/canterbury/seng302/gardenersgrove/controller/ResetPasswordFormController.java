@@ -58,7 +58,7 @@ public class ResetPasswordFormController {
                     verificationTokenService.cleanupExpiredTokens();
                 }
             }
-        }, 0, 5000);
+        }, 0, 10000);
 
         // If token is expired or null
         if (!verificationTokenService.validateToken(token)) {
