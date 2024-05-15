@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.validation;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
@@ -125,12 +127,30 @@ public class UserValidator {
      * @return true if the password is valid, false otherwise.
      */
     public static boolean isPasswordValid(String password) {
+
+
         String specialCharacters = "[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]+";
         return password.length() >= 8 &&
                 password.matches(".*\\d.*") &&
                 password.matches(".*[A-Z].*") &&
                 password.matches(".*[a-z].*") &&
                 Pattern.compile(specialCharacters).matcher(password).find();
+    }
+
+    /**
+     * Checks if the password contains the user's details. (For AC4)
+     * @param user logged in user
+     * @param password users new password that is being validated
+     * @return true if the password contains the user's details, false otherwise
+     */
+    public static boolean passwordContainsDetails(User user, String password) {
+
+        boolean containsFirstName = password.toLowerCase().contains(user.getFirstName().toLowerCase());
+        boolean containsLastName = !user.getLastName().isEmpty() && password.toLowerCase().contains(user.getLastName().toLowerCase());
+
+        boolean containsEmail = password.toLowerCase().contains(user.getEmail().toLowerCase());
+
+        return containsFirstName || containsLastName || containsEmail;
     }
 
     /**

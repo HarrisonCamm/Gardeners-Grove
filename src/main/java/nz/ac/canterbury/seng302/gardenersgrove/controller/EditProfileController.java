@@ -41,6 +41,9 @@ public class EditProfileController {
     private final AuthenticationManager authenticationManager;
     private final MailService mailService;
 
+    private static final String PASSWORD_ERROR = "Your password must be at least 8 characters long and include at  " +
+            "least one uppercase letter, one lowercase letter, one number, and one special character.";
+
     @Autowired
     public EditProfileController(UserService userService, UserRepository newUserRepository, AuthenticationManager authenticationManager, MailService mailService) {
         this.userService = userService;
@@ -143,7 +146,7 @@ public class EditProfileController {
 
             // Check if the old password is empty
             if (oldPassword == null || oldPassword.isEmpty()) {
-                model.addAttribute("oldPasswordError", "Old password is required.");
+                model.addAttribute("oldPasswordError", PASSWORD_ERROR);
             } else {
                 // Attempt to validate the user with the provided old password
                 Optional<User> validatedUser = userService.validateUser(currentUser.getEmail(), oldPassword);
@@ -156,17 +159,17 @@ public class EditProfileController {
 
             // Check if the new password is empty
             if (newPassword == null || newPassword.isEmpty()) {
-                model.addAttribute("newPasswordError", "New password is required.");
+                model.addAttribute("newPasswordError", PASSWORD_ERROR);
             } else {
                 // Validate the new password strength
-                if (!isPasswordValid(newPassword)) {
-                    model.addAttribute("newPasswordError", "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+                if (!isPasswordValid(newPassword) || passwordContainsDetails(currentUser, newPassword)) {
+                    model.addAttribute("newPasswordError", PASSWORD_ERROR);
                 }
             }
 
             // Check if the retyped password is empty
             if (retypePassword == null || retypePassword.isEmpty()) {
-                model.addAttribute("passwordMatchError", "Retyping the new password is required.");
+                model.addAttribute("passwordMatchError", PASSWORD_ERROR);
             } else {
                 // Check if the new password and retype password match
                 if (!newPassword.equals(retypePassword)) {
