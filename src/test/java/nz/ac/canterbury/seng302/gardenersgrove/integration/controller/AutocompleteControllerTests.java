@@ -68,6 +68,9 @@ public class AutocompleteControllerTests {
     @MockBean
     private PlantService PlantService;
 
+    @MockBean
+    private ImageService imageService;
+
     @Mock
     Authentication authentication;
 

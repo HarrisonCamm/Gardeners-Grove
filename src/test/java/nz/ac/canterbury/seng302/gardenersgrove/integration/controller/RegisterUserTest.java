@@ -3,10 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.RegisterFormController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
-import nz.ac.canterbury.seng302.gardenersgrove.service.AuthorityService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -51,6 +48,9 @@ public class RegisterUserTest {
 
     @MockBean
     private AuthenticationManager authenticationManager;
+
+    @MockBean
+    private ImageService imageService;
 
     @BeforeEach
     public void setUp() {
