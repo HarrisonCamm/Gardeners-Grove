@@ -55,11 +55,12 @@ public class GardenValidator {
      */
     public static FieldError validateSize(String size) {
         if (!size.isEmpty()
-                && ((!validateWithRegex("[1-9]+([\\.,]?[0-9]+)*$", size)
+                && ((!validateWithRegex("[1-9]+[[\\.,]?([0-9]+)]$", size)
                 && !validateWithRegex("[0]*([\\.,]?[0-9]+)+$", size))
-                || validateWithRegex("[0]*([\\.,]?[0]+)*$", size))) {
+                || validateWithRegex("[0]*([\\.,]?[0]+)*$", size))
+                || validateWithRegex("^(?=.*[.,].*[.,]).*$", size)) {
             return new FieldError("garden", "size", "Garden size must be a positive number");
-        } // todo fix regex for case 1.1.1 and 0.0.1
+        }
         return null;
     }
 
