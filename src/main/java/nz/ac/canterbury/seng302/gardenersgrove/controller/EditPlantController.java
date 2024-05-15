@@ -1,11 +1,11 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import jakarta.servlet.http.HttpSession;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,24 +14,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
-
-import java.text.ParseException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.Date;
 import java.util.Optional;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.PlantValidator.*;
+import static nz.ac.canterbury.seng302.gardenersgrove.validation.UserValidator.*;
 
 @Controller
 public class EditPlantController {
@@ -41,20 +32,21 @@ public class EditPlantController {
     private final PlantService plantService;
     private final GardenService gardenService;
     private final UserService userService;
+    private final ImageService imageService;
 
     @Autowired
-    public EditPlantController(PlantService plantService, GardenService gardenService, UserService userService) {
+    public EditPlantController(PlantService plantService, GardenService gardenService, UserService userService, ImageService imageService) {
         this.plantService = plantService;
         this.gardenService = gardenService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     @GetMapping("/edit-plant")
     public String form(@RequestParam("plantID") Long plantID,
+                       HttpSession session,
                        Model model) {
         logger.info("GET /edit-plant");
-//        RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
-
         User currentUser = userService.getAuthenicatedUser();
         // Attempt to retrieve plant or throw ResponseStatusException
         Plant plant = retrievePlant(plantID, plantService);
@@ -66,6 +58,9 @@ public class EditPlantController {
         model.addAttribute("datePlanted", plant.getDatePlanted());
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
+
+        Image.removeTemporaryImage(session, imageService);
+        session.removeAttribute("imageFile");
 
         return "editPlantFormTemplate";
     }
@@ -79,6 +74,7 @@ public class EditPlantController {
                              @RequestParam("datePlanted") String datePlanted,
                              @ModelAttribute("plant") Plant newPlant,
                              BindingResult bindingResult,
+                             HttpSession session,
                              Model model) throws Exception {
         logger.info("PUT /edit-plant");
 
@@ -108,6 +104,7 @@ public class EditPlantController {
         //Ternary operator to assign null date or assign a formatted date
         model.addAttribute("datePlanted", datePlanted);
 
+//        Image.removeTemporaryImage(session, imageService);
 
         if (!errors.isEmpty()) {
             for (FieldError error : errors) {
@@ -128,7 +125,8 @@ public class EditPlantController {
      */
     @PostMapping("edit-plant-picture")
     public String changePicture(@RequestParam("plantID") Long plantID,
-                                @RequestParam("file") MultipartFile file) {
+                                @RequestParam("file") MultipartFile file,
+                                HttpSession session) {
         logger.info("POST /edit-plant");
          Optional<Plant> found = plantService.findPlant(plantID);
         if (found.isEmpty()) {
@@ -137,10 +135,17 @@ public class EditPlantController {
         Plant plant = found.get();
 
         try {
-            byte[] imageBytes = file.getBytes();
-            plant.setImage(imageBytes);
-        } catch (IOException e) {
-            logger.error("Failed to convert image to byte array", e);
+//            Image image = new Image(file, false);
+            Image image = Image.removeTemporaryImage(session, imageService);
+            image = (image == null ? new Image(file, false) : image.makePermanent());
+
+            Image oldImage = plant.getImage();
+            plant.setImage(image);
+            if (oldImage != null) {
+                imageService.deleteImage(oldImage);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to upload new plant image", e);
         }
 
         plantService.addPlant(plant);
@@ -188,33 +193,6 @@ public class EditPlantController {
         Plant plant = found.get();
 
         return plant;
-    }
-
-    /**
-     * Converts a date string from the format "dd/MM/yyyy" to "yyyy-MM-dd"
-     * @param dateInput A string representing a date in the format "dd/MM/yyyy"
-     * @return A string representing a date in the format "yyyy-MM-dd"
-     */
-    public static String convertDateFormat(String dateInput) {
-        String[] parts = dateInput.split("/");
-        if (dateInput.length() < 10) {
-//            return "0000-00-00";
-            return dateInput;
-        } else {
-            // Reconstruct the date string in yyyy-MM-dd format
-            String yyyy = parts[2];
-            String mm = parts[1];
-            String dd = parts[0];
-
-            // Ensure mm and dd are formatted with leading zeros if necessary
-            if (mm.length() == 1) {
-                mm = "0" + mm;
-            }
-            if (dd.length() == 1) {
-                dd = "0" + dd;
-            }
-            return yyyy + "-" + mm + "-" + dd;
-        }
     }
 
 }
