@@ -65,7 +65,7 @@ public class CreateGardenController {
         return "createGardenFormTemplate";
     }
 
-    @GetMapping("/cancel")
+    @GetMapping("/Cancel")
     public String cancel() {
         String prevUrl = RedirectService.getPreviousPage();
         return "redirect:" + prevUrl;
