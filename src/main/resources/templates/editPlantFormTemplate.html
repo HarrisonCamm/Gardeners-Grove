@@ -7,6 +7,7 @@
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
     <script th:src="@{/javascript/redirect-image-handler.js}"></script>
     <script th:src="@{javascript/enter-date.js}"></script>
+    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
 </head>
 <body>
 <!-- Navigation Bar Fragment -->
@@ -25,6 +26,7 @@
             <div>
                 <label for="plantName"> Name: </label>
                 <br/>
+<!--                todo maxlength will need to be update along with plant validator and plant class sql string length for the defined limit from Fabian-->
                 <input type="text" id="plantName" maxlength="254" th:value="*{name}" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
             </div>
             <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
@@ -40,7 +42,7 @@
                 <label for="plantDescription"> Description: </label>
 
                 <br/>
-                <textarea maxlength="513" id="plantDescription"
+                <textarea maxlength="1028" id="plantDescription"
                           th:value="*{description}"
                           th:field="*{description}"
                           th:classappend="${descriptionError} ? 'error' : ''">
