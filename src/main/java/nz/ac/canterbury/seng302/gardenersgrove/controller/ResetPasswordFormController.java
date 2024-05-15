@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
@@ -29,6 +28,8 @@ public class ResetPasswordFormController {
     private final VerificationTokenService verificationTokenService;
     private final MailService mailService;
 
+    private static final String PASSWORD_ERROR = "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.";
+
     @Autowired
     public ResetPasswordFormController(UserService userService, AuthenticationManager authenticationManager,
                                       VerificationTokenService verificationTokenService, MailService mailService) {
@@ -47,6 +48,8 @@ public class ResetPasswordFormController {
                        Model model) {
         logger.info("GET /reset-password-form");
         model.addAttribute("token", token);
+        model.addAttribute("newPassword", "");
+        model.addAttribute("retypedPassword", "");
         Timer t = new Timer();
         t.schedule(new TimerTask() {
             @Override
@@ -55,7 +58,7 @@ public class ResetPasswordFormController {
                     verificationTokenService.cleanupExpiredTokens();
                 }
             }
-        }, 0, 5000);
+        }, 0, 10000);
 
         // If token is expired or null
         if (!verificationTokenService.validateToken(token)) {
@@ -83,17 +86,27 @@ public class ResetPasswordFormController {
                              Model model) {
         logger.info("POST /reset-password-form");
 
+        // Getting the user for sending the confirmation email and validating retyped password
+        // To check if the user's fields match the password or not AC7
+        User currentUser = verificationTokenService.getUserByToken(token);
+
+
         model.addAttribute("newPassword", newPassword);
         model.addAttribute("retypePassword", retypedPassword);
         model.addAttribute("token", token);
 
         // Check if the new password is empty
-        if (newPassword == null || newPassword.isEmpty()) {
-            model.addAttribute("newPasswordError", "New password is required.");
+        if (newPassword == null || newPassword.isEmpty() || newPassword.length() > 512){
+            model.addAttribute("newPasswordError", PASSWORD_ERROR);
         } else {
             // Validate the new password strength
             if (!isPasswordValid(newPassword)) {
-                model.addAttribute("newPasswordError", "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+                model.addAttribute("newPasswordError", PASSWORD_ERROR);
+            } else if (newPassword.toLowerCase().contains(currentUser.getEmail().toLowerCase()) ||
+                    newPassword.toLowerCase().contains(currentUser.getFirstName().toLowerCase()) ||
+                    (!currentUser.getLastName().isEmpty() && newPassword.toLowerCase().contains(currentUser.getLastName().toLowerCase())) ||
+                    (!currentUser.getDateOfBirth().isEmpty() && newPassword.contains(currentUser.getDateOfBirth()))) {
+                model.addAttribute("newPasswordError", PASSWORD_ERROR);
             }
         }
 
@@ -111,7 +124,6 @@ public class ResetPasswordFormController {
             return "resetPasswordFormTemplate";
         } else {
             // new password and retyped password are valid
-            User currentUser = verificationTokenService.getUserByToken(token);
             logger.info("Password is valid, user has token " + token );
             logger.info("User first name is: " + currentUser.getFirstName());
 
@@ -132,7 +144,7 @@ public class ResetPasswordFormController {
                 // Password updated, allow user to login page
                 // todo check authentication of user??
 
-                return "redirect:/sign-in-form";
+                return "redirect:/sign-in-form?token=" + token;
             } catch (Exception e) {
                 // Log the error
                 logger.error("Failed to send password change confirmation email to " + emailAddress, e);

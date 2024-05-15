@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
-import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
@@ -63,7 +62,7 @@ public class CreatePlantController {
                        @ModelAttribute Plant plant,
                        Model model, HttpSession session) {
         logger.info("GET /create-plant");
-
+        session.setAttribute("gardenID", gardenID);
         User currentUser = userService.getAuthenicatedUser();
         Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
         if (foundGarden.isEmpty()) {
@@ -75,18 +74,18 @@ public class CreatePlantController {
         if (sessionPlant != null) {
             plant = sessionPlant;
         }
-        model.addAttribute("gardenID", gardenID); // Add gardenID to the model
         model.addAttribute("gardens", gardenService.getGardens());
         model.addAttribute("plant", plant);
 
         addErrors(session, model);
         Garden ownerGarden = foundGarden.get();
         plant.setGarden(ownerGarden); // Set the garden for the plant
+        model.addAttribute("gardenID", session.getAttribute("gardenID"));
         model.addAttribute("name", session.getAttribute("name"));
         model.addAttribute("description", session.getAttribute("description"));
         model.addAttribute("count", session.getAttribute("count"));
         model.addAttribute("datePlanted", session.getAttribute("datePlanted"));
-        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+
 
         // Remove attributes from the session
         session.removeAttribute("name");
@@ -98,6 +97,7 @@ public class CreatePlantController {
     }
 
     private void addErrors(HttpSession session, Model model) {
+        @SuppressWarnings("unchecked")
         HashMap<String, String> errors = (HashMap<String, String>) session.getAttribute("errors");
         if (errors != null) {
             for (Map.Entry<String, String> entry : errors.entrySet()) {
@@ -180,6 +180,9 @@ public class CreatePlantController {
         session.setAttribute("count", count);
         session.setAttribute("description", description);
         session.setAttribute("datePlanted", plant.getDatePlanted());
+        session.setAttribute("gardenID", plant.getGarden().getId());
+
+
 
         Map<String, String> errors = new HashMap<>();
 

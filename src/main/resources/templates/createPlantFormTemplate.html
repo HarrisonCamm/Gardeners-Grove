@@ -39,8 +39,11 @@
                 <br/>
                 <label for="plantDescription"> Description: </label>
                 <br/>
-                <input type="text" id="plantDescription" th:name="description" th:value="${description}"
-                       th:class="${descriptionError != null ? 'error' : ''}" autofocus>
+                <textarea maxlength="513" id="plantDescription"
+                          th:value="*{description}"
+                          th:field="*{description}"
+                          th:classappend="${descriptionError} ? 'error' : ''">
+                </textarea>
                 <br/>
                 <div th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></div>
                 <br/>
@@ -58,7 +61,7 @@
                 <div class="buttons-centre">
                     <button type="submit">Create</button>
                     &nbsp;
-                    <a th:href="@{${lastEndpoint}}" id="cancelButton">
+                    <a th:href="@{'/view-garden?gardenID=' + ${gardenID}}" id="cancelButton">
                         <button type="button">Cancel</button>
                     </a>
                 </div>

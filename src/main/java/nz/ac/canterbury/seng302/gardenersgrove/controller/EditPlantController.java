@@ -139,7 +139,7 @@ public class EditPlantController {
                                 @RequestParam("file") MultipartFile file,
                                 HttpSession session) {
         logger.info("POST /edit-plant");
-        Optional<Plant> found = plantService.findPlant(plantID);
+         Optional<Plant> found = plantService.findPlant(plantID);
         if (found.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant with ID " + plantID + " not found");
         }
