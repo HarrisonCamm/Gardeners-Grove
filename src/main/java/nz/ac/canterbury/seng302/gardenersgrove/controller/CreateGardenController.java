@@ -62,12 +62,10 @@ public class CreateGardenController {
         String gardenSize = garden.getSize();
         addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize);
 
-//        RedirectService.addEndpoint("/create-garden");
-
         return "createGardenFormTemplate";
     }
 
-    @GetMapping("/Cancel")
+    @GetMapping("/cancel")
     public String cancel() {
         String prevUrl = RedirectService.getPreviousPage();
         return "redirect:" + prevUrl;
@@ -90,8 +88,6 @@ public class CreateGardenController {
                             @RequestParam(name="size", required = false) String gardenSize,
                              Model model) {
         logger.info("POST /create-garden");
-
-        RedirectService.addEndpoint("/main");
 
         User currentUser = userService.getAuthenicatedUser();
         if (currentUser == null) {
