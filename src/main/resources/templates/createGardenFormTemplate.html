@@ -7,6 +7,7 @@
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
     <script th:src="@{/javascript/hover-enter.js}"></script>
     <script th:src="@{/javascript/autocomplete.js}"></script>
+    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
 </head>
 <body>
 <!-- Navigation Bar Fragment -->
@@ -98,7 +99,7 @@
                                th:name="size"
                                th:value="*{size}"
                                th:classappend="${sizeError} ? 'error' : ''">
-                        <p th:if="${location_countryError}" class="error-message" th:text="${sizeError}"></p>
+                        <p th:if="${sizeError}" class="error-message" th:text="${sizeError}"></p>
                     </div>
                 </div>
                 <br/>
