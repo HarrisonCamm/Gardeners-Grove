@@ -20,10 +20,14 @@ import java.util.UUID;
 @Service
 public class VerificationTokenService {
 
-    @Autowired
-    private VerificationTokenRepository verificationTokenRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
 
     Logger logger = LoggerFactory.getLogger(VerificationTokenService.class);
+
+    @Autowired
+    public VerificationTokenService(VerificationTokenRepository verificationTokenRepository) {
+        this.verificationTokenRepository = verificationTokenRepository;
+    }
 
 
     /**
