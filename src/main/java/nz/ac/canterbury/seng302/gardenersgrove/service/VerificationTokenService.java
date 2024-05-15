@@ -88,7 +88,6 @@ public class VerificationTokenService {
     public void cleanupExpiredTokens() {
         verificationTokenRepository.deleteAllExpiredSince(LocalDateTime.now());
         logger.info("Removing expired tokens");
-
     }
 
     public List<VerificationToken> findAllTokens() {

@@ -104,7 +104,11 @@ public class ResetPasswordSteps {
         when(verificationTokenService.validateToken(any(String.class))).thenReturn(true);
         when(verificationTokenService.getUserByToken(any(String.class))).thenReturn(loggedInUser);
         when(verificationTokenService.createVerificationToken(any(User.class))).thenReturn(verificationToken);
-//        doNothing().when(verificationTokenService).cleanupExpiredTokens();
+
+        doAnswer(invocation -> {
+            cleanupCounter++;
+            return null; // This method is void, so we return null
+        }).when(verificationTokenService).cleanupExpiredTokens();
 
         // Mock the verification token repository
         when(verificationTokenRepository.findByToken(any(String.class))).thenReturn(verificationToken);
@@ -188,7 +192,7 @@ public class ResetPasswordSteps {
                         .param("token", verificationToken.getToken()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("resetPasswordFormTemplate"));
-        cleanupCounter++;
+//        cleanupCounter++;
     }
 
     //AC9
@@ -241,7 +245,7 @@ public class ResetPasswordSteps {
                         .param("token", token)) // Include the token in the parameters
                 .andExpect(status().isOk())
                 .andExpect(view().name("resetPasswordFormTemplate"));
-        cleanupCounter++;
+//        cleanupCounter++;
     }
 
     //AC7
@@ -373,11 +377,10 @@ public class ResetPasswordSteps {
     @Then("the reset token is deleted")
     public void the_reset_token_is_deleted() throws Exception {
         // Get the reset password page to start the garbage collection
-
         resultActions = mockMvcResetPassword.perform(get("/reset-password-form")
                 .param("token", verificationToken.getToken()));
 
-        cleanupCounter++;
+//        cleanupCounter++;
         verify(verificationTokenService, times(cleanupCounter)).cleanupExpiredTokens();
     }
 
