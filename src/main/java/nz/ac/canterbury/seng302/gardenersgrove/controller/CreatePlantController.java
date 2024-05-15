@@ -1,15 +1,17 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpSession;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.apache.tomcat.util.http.parser.HttpParser;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
-import org.apache.tomcat.util.http.parser.HttpParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,24 +20,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.PlantValidator.*;
+import static nz.ac.canterbury.seng302.gardenersgrove.validation.UserValidator.*;
 
 
 /**
@@ -49,15 +48,17 @@ public class CreatePlantController {
     private final PlantService plantService;
     private final GardenService gardenService;
     private final UserService userService;
+    private final ImageService imageService;
 
     @Autowired
     private ResourceLoader resourceLoader;
 
     @Autowired
-    public CreatePlantController(PlantService plantService, GardenService gardenService, UserService userService) {
+    public CreatePlantController(PlantService plantService, GardenService gardenService, UserService userService, ImageService imageService) {
         this.plantService = plantService;
         this.gardenService = gardenService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     @GetMapping("/create-plant")
@@ -65,6 +66,7 @@ public class CreatePlantController {
                        @ModelAttribute Plant plant,
                        Model model, HttpSession session) {
         logger.info("GET /create-plant");
+        RedirectService.addEndpoint("/create-plant?gardenID=" + gardenID);
         session.setAttribute("gardenID", gardenID);
         User currentUser = userService.getAuthenicatedUser();
         Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
@@ -139,34 +141,33 @@ public class CreatePlantController {
         Plant sessionPlant = (Plant) session.getAttribute("plant");
 
         if (sessionPlant != null) {
-            plant.setImage(sessionPlant.getImage());
-            plant.setPicture(sessionPlant.getPicture());
             session.removeAttribute("plant");
         }
 
         String formattedDate;
         formattedDate = convertDateFormat(datePlanted);
-        //Validates input fields
-        checkName(plant.getName(), bindingResult);
-        checkDescription(plant.getDescription(), bindingResult);
-        checkCount(plant.getCount(), bindingResult);
-        checkDateValidity(formattedDate, bindingResult);
 
-        if (plant.getPicture() == null) {
-            plant.setPicture("leaves-80x80.png"); // Set default picture
-
+        Image image = Image.removeTemporaryImage(session, imageService);
+        if (image == null) {
             try {
-//                Path imagePath = Paths.get("src/main/resources/static/images/leaves-80x80.png");
-                Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
-                plant.setImage(Files.readAllBytes(imagePath));
+                MultipartFile imageFile = (MultipartFile) session.getAttribute("imageFile");
+                if (imageFile != null) {
+                    image = new Image(imageFile, false);
+                    session.removeAttribute("imageFile");
+                } else {
+                    Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
+                    image = new Image(Files.readAllBytes(imagePath), "png", false);
+                }
+                plant.setImage(image);
             } catch (Exception e) {
-                logger.error("Failed to set default image", e);
+                logger.error("Failed to set plant image", e);
             }
+        } else {
+            image.makePermanent();
+            plant.setImage(image);
         }
 
-
         plant.setCount(plant.getCount().replace(',', '.'));
-
         plant.setGarden(ownerGarden); // Set the garden for the plant
 
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
@@ -224,59 +225,13 @@ public class CreatePlantController {
         logger.info("POST /create-plant-picture");
         Garden garden = gardenService.findGarden(gardenID).get();
 
-        Plant plant = new Plant(garden, "", "", "", "", file.getOriginalFilename());
-        plant.setImage(file.getBytes());
+        Plant plant = new Plant(garden, "", "", "", "", Image.getTemporaryImage(session));
 
         // Add the plant object to the session
         session.setAttribute("plant", plant);
+        session.setAttribute("imageFile", file);
 
         return "redirect:/create-plant?gardenID=" + plant.getGarden().getId();
     }
 
-
-
-    private void checkName(String name, BindingResult bindingResult) {
-        ObjectError nameError = validatePlantName(name);
-        if (nameError != null) {
-            bindingResult.addError(nameError);
-        }
-    }
-
-    private void checkCount(String count, BindingResult bindingResult) {
-        ObjectError countError = validatePlantCount(count);
-        if (countError != null) {
-            bindingResult.addError(countError);
-        }
-    }
-
-    private void checkDescription(String description, BindingResult bindingResult) {
-        ObjectError descriptionError = validatePlantDescription(description);
-        if (descriptionError != null) {
-            bindingResult.addError(descriptionError);
-        }
-    }
-
-    private ObjectError checkDateValidity(String date, BindingResult bindingResult) {
-        return validatePlantDate(date);
-    }
-    public static String convertDateFormat(String dateInput) {
-        String[] parts = dateInput.split("/");
-        if (dateInput.length() < 10) {
-            return "0000-00-00";
-        } else {
-            // Reconstruct the date string in yyyy-MM-dd format
-            String yyyy = parts[2];
-            String mm = parts[1];
-            String dd = parts[0];
-
-            // Ensure mm and dd are formatted with leading zeros if necessary
-            if (mm.length() == 1) {
-                mm = "0" + mm;
-            }
-            if (dd.length() == 1) {
-                dd = "0" + dd;
-            }
-            return yyyy + "-" + mm + "-" + dd;
-        }
-    }
 }

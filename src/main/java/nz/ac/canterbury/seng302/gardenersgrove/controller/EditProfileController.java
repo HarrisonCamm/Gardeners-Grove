@@ -1,11 +1,15 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +44,19 @@ public class EditProfileController {
     private UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final MailService mailService;
+    private final ImageService imageService;
+
+    private static final String PASSWORD_ERROR = "Your password must be at least 8 characters long and include at  " +
+            "least one uppercase letter, one lowercase letter, one number, and one special character.";
 
     @Autowired
-    public EditProfileController(UserService userService, UserRepository newUserRepository, AuthenticationManager authenticationManager, MailService mailService) {
+    public EditProfileController(UserService userService, UserRepository newUserRepository,
+                                 AuthenticationManager authenticationManager, MailService mailService, ImageService imageService) {
         this.userService = userService;
         this.userRepository = newUserRepository;
         this.authenticationManager = authenticationManager;
         this.mailService = mailService;
+        this.imageService = imageService;
     }
 
     /**
@@ -57,8 +67,9 @@ public class EditProfileController {
      * @return thymeleaf demoFormTemplate
      */
     @GetMapping("/edit-user-profile")
-    public String form(HttpServletRequest request, Model model) {
+    public String form(HttpSession session, HttpServletRequest request, Model model) {
         logger.info("GET /edit-user-profile");
+        RedirectService.addEndpoint("/edit-user-profile");
         User currentUser = userService.getAuthenicatedUser();
 
         model.addAttribute("user", currentUser);
@@ -70,6 +81,9 @@ public class EditProfileController {
         model.addAttribute("changePasswordFormInput", false);
         model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
         logger.info("current user + "  + currentUser.getDateOfBirth());
+
+        Image.removeTemporaryImage(session, imageService);
+        session.removeAttribute("imageFile");
 
         return "editUserProfileTemplate";
     }
@@ -143,7 +157,7 @@ public class EditProfileController {
 
             // Check if the old password is empty
             if (oldPassword == null || oldPassword.isEmpty()) {
-                model.addAttribute("oldPasswordError", "Old password is required.");
+                model.addAttribute("oldPasswordError", PASSWORD_ERROR);
             } else {
                 // Attempt to validate the user with the provided old password
                 Optional<User> validatedUser = userService.validateUser(currentUser.getEmail(), oldPassword);
@@ -156,17 +170,17 @@ public class EditProfileController {
 
             // Check if the new password is empty
             if (newPassword == null || newPassword.isEmpty()) {
-                model.addAttribute("newPasswordError", "New password is required.");
+                model.addAttribute("newPasswordError", PASSWORD_ERROR);
             } else {
                 // Validate the new password strength
-                if (!isPasswordValid(newPassword)) {
-                    model.addAttribute("newPasswordError", "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+                if (!isPasswordValid(newPassword) || passwordContainsDetails(currentUser, newPassword)) {
+                    model.addAttribute("newPasswordError", PASSWORD_ERROR);
                 }
             }
 
             // Check if the retyped password is empty
             if (retypePassword == null || retypePassword.isEmpty()) {
-                model.addAttribute("passwordMatchError", "Retyping the new password is required.");
+                model.addAttribute("passwordMatchError", PASSWORD_ERROR);
             } else {
                 // Check if the new password and retype password match
                 if (!newPassword.equals(retypePassword)) {
@@ -268,6 +282,7 @@ public class EditProfileController {
     @PostMapping("/edit-user-profile-image")
     public String uploadImage(@RequestParam(value = "userID", required = false) Long userID,
                               @RequestParam(value = "file", required = false) MultipartFile file,
+                              HttpSession session,
                               Model model) throws IOException {
         logger.info("PUT /edit-user-profile");
 
@@ -278,9 +293,14 @@ public class EditProfileController {
         Optional<User> user = userRepository.findById(userID);
         if (user.isPresent()) {
             User userToEdit = user.get();
-            userToEdit.setImage(file.getBytes());
-            userToEdit.setFilePath(file.getOriginalFilename());
+            Image image = Image.removeTemporaryImage(session, imageService);
+            image = (image == null ? new Image(file, false) : image.makePermanent());
+
+            Image oldImage = userToEdit.getImage();
+            userToEdit.setImage(image);
             userRepository.save(userToEdit);
+            if (oldImage != null)
+                imageService.deleteImage(oldImage);
         }
 
         return "redirect:/edit-user-profile";

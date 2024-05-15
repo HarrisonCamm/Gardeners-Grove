@@ -2,13 +2,13 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -32,20 +32,25 @@ import java.util.Optional;
 @Controller
 public class ViewGardenController {
 
+    private final ImageService imageService;
     Logger logger = LoggerFactory.getLogger(ViewGardenController.class);
 
     private final GardenService gardenService;
     private final PlantService plantService;
     private final UserService userService;
 
-    public ViewGardenController(GardenService gardenService, PlantService plantService, UserService userService) {
+    public ViewGardenController(GardenService gardenService, PlantService plantService, UserService userService, ImageService imageService) {
         this.gardenService = gardenService;
         this.plantService  = plantService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     @GetMapping("/view-garden")
-    public String viewGarden(@RequestParam("gardenID") Long gardenID, Model model, HttpServletResponse response) {
+    public String viewGarden(@RequestParam("gardenID") Long gardenID,
+                             HttpSession session,
+                             Model model,
+                             HttpServletResponse response) {
         // Add cache control headers
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
         response.setHeader("Pragma", "no-cache"); // HTTP 1.0
@@ -53,6 +58,9 @@ public class ViewGardenController {
 
         logger.info("GET /view-garden");
         RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
+
+        Image.removeTemporaryImage(session, imageService);
+        session.removeAttribute("imageFile");
 
         Optional<Garden> garden = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenicatedUser();
@@ -76,6 +84,7 @@ public class ViewGardenController {
     public String addPlantPicture(@RequestParam("plantID") Long plantID,
                                   @RequestParam("gardenID") Long gardenID,
                                   @RequestParam("file") MultipartFile file,
+                                  HttpSession session,
                                   Model model) {
         logger.info("POST /view-garden");
 
@@ -89,15 +98,19 @@ public class ViewGardenController {
         Plant plant = plantService.findPlant(plantID).get();
 
         try {
-            byte[] imageBytes = file.getBytes();
-            plant.setImage(imageBytes);
-        } catch (IOException e) {
-            logger.error("Failed to convert image to byte array", e);
+//            Image image = new Image(file, false);
+            Image image = Image.removeTemporaryImage(session, imageService);
+            image = (image == null ? new Image(file, false) : image.makePermanent());
+
+            Image oldImage = plant.getImage();
+            plant.setImage(image);
+            plantService.addPlant(plant);
+            if (oldImage != null) {
+                imageService.deleteImage(oldImage);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to upload new plant image", e);
         }
-
-        plant.setPicture(file.getOriginalFilename()); // Set the new image
-
-        plantService.addPlant(plant);
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService);
 

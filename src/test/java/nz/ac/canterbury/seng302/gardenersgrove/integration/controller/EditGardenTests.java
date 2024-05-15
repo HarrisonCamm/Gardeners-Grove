@@ -70,6 +70,9 @@ public class EditGardenTests {
     @MockBean
     private MailService mailService;
 
+    @MockBean
+    private ImageService imageService;
+
     private User mockUser;
 
     @BeforeEach

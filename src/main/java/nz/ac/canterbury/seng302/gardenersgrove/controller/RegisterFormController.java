@@ -1,11 +1,14 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,7 @@ public class RegisterFormController {
     private final AuthenticationManager authenticationManager;
     private final VerificationTokenService verificationTokenService;
     private final MailService mailService;
+    private final ImageService imageService;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -51,11 +55,12 @@ public class RegisterFormController {
     public RegisterFormController(UserService userService,
                                   AuthenticationManager authenticationManager,
                                   VerificationTokenService verificationTokenService,
-                                  MailService mailService) {
+                                  MailService mailService, ImageService imageService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.verificationTokenService = verificationTokenService;
         this.mailService = mailService;
+        this.imageService = imageService;
     }
 
     /**
@@ -162,13 +167,13 @@ public class RegisterFormController {
             // All user details have passed validation
 
             // Create the user
-            User newUser = new User(firstName, lastName, noLastName, email, password, dateOfBirth,  "defaultUserImage.png");
-
+            User newUser = new User(firstName, lastName, noLastName, email, password, dateOfBirth);
             try {
-                //            Path imagePath = Paths.get("src/main/resources/static/images/defaultUserImage.png");
                 Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/defaultUserImage.png").getURI());
-                newUser.setImage(Files.readAllBytes(imagePath));
-            } catch (IOException e) {
+                byte[] imageBytes = Files.readAllBytes(imagePath);
+                Image image = new Image(imageBytes, "png", false);
+                newUser.setImage(image);
+            } catch (Exception e) {
                 logger.error("Failed to set default image", e);
             }
 
