@@ -34,12 +34,12 @@ public class Image {
      */
     protected Image() {}
 
-//    public Image(Image tempImage) {
-//        this.data = tempImage.getData();
-//        this.contentType = tempImage.getContentType();
-//        this.expiryDate = null;
-//    }
-
+    /**
+     * Constructor for an image from a file that has been picked.
+     * @param file The file that has been picked
+     * @param isTemporary Whether the image is temporary or not
+     * @throws IOException If the file cannot be read
+     */
     public Image(MultipartFile file, boolean isTemporary) throws IOException {
         byte[] imageBytes = file.getBytes();
         String ext = file.getContentType();
@@ -99,6 +99,10 @@ public class Image {
         return expiryDate;
     }
 
+    /**
+     * Make the image permanent by removing its expiry date and old ID.
+     * @return The same image
+     */
     public Image makePermanent() {
         this.Id = null;
         this.expiryDate = null;

@@ -63,6 +63,16 @@ public class User {
         this.setValues(firstName, lastName, noLastName, email, dateOfBirth);
     }
 
+    public User(String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth, Image image) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.noLastName = noLastName;
+        this.email = email;
+        this.password = password;
+        this.dateOfBirth = dateOfBirth;
+        this.image = image;
+    }
+
     public User setValues(String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
         this.firstName = firstName;
         this.lastName = lastName;

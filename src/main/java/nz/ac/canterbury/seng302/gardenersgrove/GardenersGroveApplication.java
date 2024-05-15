@@ -50,44 +50,38 @@ public class GardenersGroveApplication {
 		return args -> {
 			// Check if the user already exists
 			if (!userService.emailExists("startup@user.com")) {
-				User user = new User("Startup", "User", false, "startup@user.com", "password", "01/01/2000");
 				Image image = new Image(imageBytes, "png", false);
-				user.setImage(image);
+				User user = new User("Startup", "User", false, "startup@user.com", "password", "01/01/2000", image);
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}
 			if (!userService.emailExists("sarah@email.com")) {
-				User user = new User("Sarah", "", true, "sarah@email.com", "password123", "24/08/1987");
 				Image image = new Image(imageBytes, "png", false);
-				user.setImage(image);
+				User user = new User("Sarah", "", true, "sarah@email.com", "password123", "24/08/1987", image);
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}
 			if (!userService.emailExists("inaya@email.com")) {
-				User user = new User("Inaya", "Singh", false, "inaya@email.com", "password123", "07/01/2000");
 				Image image = new Image(imageBytes, "png", false);
-				user.setImage(image);
+				User user = new User("Inaya", "Singh", false, "inaya@email.com", "password123", "07/01/2000", image);
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}
 			if (!userService.emailExists("kaia@email.com")) {
-				User user = new User("Kaia", "Pene", false, "kaia@email.com", "password123", "");
 				Image image = new Image(imageBytes, "png", false);
-				user.setImage(image);
+				User user = new User("Kaia", "Pene", false, "kaia@email.com", "password123", "", image);
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}
 			if (!userService.emailExists("lei@email.com")) {
-				User user = new User("Lei", "Yuan", false, "lei@email.com", "password123", "27/02/1994");
 				Image image = new Image(imageBytes, "png", false);
-				user.setImage(image);
+				User user = new User("Lei", "Yuan", false, "lei@email.com", "password123", "27/02/1994", image);
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}
 			if (!userService.emailExists("liam@email.com")) {
-				User user = new User("Liam", "Müller", false, "liam@email.com", "password123", "");
 				Image image = new Image(imageBytes, "png", false);
-				user.setImage(image);
+				User user = new User("Liam", "Müller", false, "liam@email.com", "password123", "", image);
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}

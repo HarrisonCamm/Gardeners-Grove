@@ -172,7 +172,6 @@ public class RegisterFormController {
                 Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/defaultUserImage.png").getURI());
                 byte[] imageBytes = Files.readAllBytes(imagePath);
                 Image image = new Image(imageBytes, "png", false);
-//                image = imageService.saveImage(image);
                 newUser.setImage(image);
             } catch (Exception e) {
                 logger.error("Failed to set default image", e);

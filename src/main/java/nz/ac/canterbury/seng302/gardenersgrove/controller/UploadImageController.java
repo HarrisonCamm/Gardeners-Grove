@@ -127,10 +127,8 @@ public class UploadImageController {
                                                 @RequestParam(value = "imageID", required = false) Long imageID,
                                                 Model model) {
 
-        Image image;
-
+        Image image = null;
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);
 
         //Add cases for required image (plant or user)
         if (temporary) {
@@ -150,6 +148,17 @@ public class UploadImageController {
             image = user.getImage();
             model.addAttribute("id", userID);
             model.addAttribute("picture", image.getData());
+        }
+
+        if (image.getContentType().equals("gif")) {
+            headers.setContentType(MediaType.IMAGE_GIF);
+        } else if (image.getContentType().equals("jpg") || image.getContentType().equals("jpeg")) {
+            headers.setContentType(MediaType.IMAGE_JPEG);
+        } else if (image.getContentType().equals("png") || image.getContentType().equals("svg")) {
+            // TODO there seems to be no IMAGE_SVG, look into this
+            headers.setContentType(MediaType.IMAGE_PNG);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid image type");
         }
 
         return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);

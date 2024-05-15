@@ -77,7 +77,6 @@ public class UserProfileController {
         Optional<User> user = userRepository.findById(userID);
         if (user.isPresent()) {
             User userToEdit = user.get();
-//            Image image = new Image(file, false);
             Image image = Image.removeTemporaryImage(session, imageService);
             image = (image == null ? new Image(file, false) : image.makePermanent());
 

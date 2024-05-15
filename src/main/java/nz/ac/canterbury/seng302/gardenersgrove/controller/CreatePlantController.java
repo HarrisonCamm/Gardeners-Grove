@@ -136,14 +136,12 @@ public class CreatePlantController {
         Plant sessionPlant = (Plant) session.getAttribute("plant");
 
         if (sessionPlant != null) {
-//            plant.setImage(sessionPlant.getImage());
-//            plant.setPicture(sessionPlant.getPicture());
             session.removeAttribute("plant");
         }
 
         String formattedDate;
         formattedDate = convertDateFormat(datePlanted);
-        //Validates input fields
+        // Validates input fields
         checkName(plant.getName(), bindingResult);
         checkDescription(plant.getDescription(), bindingResult);
         checkCount(plant.getCount(), bindingResult);
@@ -165,8 +163,6 @@ public class CreatePlantController {
                 logger.error("Failed to set plant image", e);
             }
         } else {
-//            Image image = (Image) session.getAttribute("image");
-//            imageService.deleteImage(image);
             image.makePermanent();
             plant.setImage(image);
         }
@@ -184,12 +180,6 @@ public class CreatePlantController {
         session.setAttribute("count", count);
         session.setAttribute("description", description);
         session.setAttribute("datePlanted", plant.getDatePlanted());
-
-
-//        model.addAttribute("plantName", plant.getName());
-//        model.addAttribute("plantCount", plant.getCount());
-//        model.addAttribute("plantDescription", plant.getDescription());
-//        model.addAttribute("datePlanted", formattedDate);
 
         Map<String, String> errors = new HashMap<>();
 
@@ -232,14 +222,11 @@ public class CreatePlantController {
         logger.info("POST /create-plant-picture");
         Garden garden = gardenService.findGarden(gardenID).get();
 
-//        Image image = new Image(file, true);
-//        image = imageService.saveImage(image);
         Plant plant = new Plant(garden, "", "", "", "", Image.getTemporaryImage(session));
 
         // Add the plant object to the session
         session.setAttribute("plant", plant);
         session.setAttribute("imageFile", file);
-//        session.setAttribute("image", image);
 
         return "redirect:/create-plant?gardenID=" + plant.getGarden().getId();
     }
