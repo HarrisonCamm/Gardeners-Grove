@@ -104,7 +104,7 @@ public class ResetPasswordSteps {
         when(verificationTokenService.validateToken(any(String.class))).thenReturn(true);
         when(verificationTokenService.getUserByToken(any(String.class))).thenReturn(loggedInUser);
         when(verificationTokenService.createVerificationToken(any(User.class))).thenReturn(verificationToken);
-        doNothing().when(verificationTokenService).cleanupExpiredTokens();
+//        doNothing().when(verificationTokenService).cleanupExpiredTokens();
 
         // Mock the verification token repository
         when(verificationTokenRepository.findByToken(any(String.class))).thenReturn(verificationToken);
@@ -377,7 +377,7 @@ public class ResetPasswordSteps {
         resultActions = mockMvcResetPassword.perform(get("/reset-password-form")
                 .param("token", verificationToken.getToken()));
 
-//        cleanupCounter++;
+        cleanupCounter++;
         verify(verificationTokenService, times(cleanupCounter)).cleanupExpiredTokens();
     }
 
