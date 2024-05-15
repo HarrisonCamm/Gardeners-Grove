@@ -59,6 +59,7 @@ public class EditProfileController {
     @GetMapping("/edit-user-profile")
     public String form(HttpServletRequest request, Model model) {
         logger.info("GET /edit-user-profile");
+        RedirectService.addEndpoint("/edit-user-profile");
         User currentUser = userService.getAuthenicatedUser();
 
         model.addAttribute("user", currentUser);

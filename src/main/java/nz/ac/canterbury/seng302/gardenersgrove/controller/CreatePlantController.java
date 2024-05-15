@@ -65,6 +65,7 @@ public class CreatePlantController {
                        @ModelAttribute Plant plant,
                        Model model, HttpSession session) {
         logger.info("GET /create-plant");
+        RedirectService.addEndpoint("/create-plant?gardenID=" + gardenID);
         session.setAttribute("gardenID", gardenID);
         User currentUser = userService.getAuthenicatedUser();
         Optional<Garden> foundGarden = gardenService.findGarden(gardenID);

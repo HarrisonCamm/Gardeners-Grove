@@ -40,7 +40,6 @@ public class MainController {
                               Model model) {
         User currentUser = (User) request.getSession().getAttribute("user");
         logger.info("GET /main");
-
         RedirectService.addEndpoint("/main");
 
         model.addAttribute("name", name);

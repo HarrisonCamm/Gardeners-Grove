@@ -53,8 +53,6 @@ public class EditPlantController {
     public String form(@RequestParam("plantID") Long plantID,
                        Model model) {
         logger.info("GET /edit-plant");
-//        RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
-
         User currentUser = userService.getAuthenicatedUser();
         // Attempt to retrieve plant or throw ResponseStatusException
         Plant plant = retrievePlant(plantID, plantService);
