@@ -6,6 +6,8 @@
     <!-- Navbar styling -->
     <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
     <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
+    <script th:src="@{/javascript/hover-enter.js}"></script>
 </head>
 <body>
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
@@ -21,7 +23,15 @@
                     <div th:if="${showSearch}" class="search-friend" id="searchFriend">
                         <br/>
                         <label for="search"></label>
-                        <input th:name="searchQuery" th:value="${searchQuery}" class="search-field" id="search" type="text" placeholder="Search for a friend">
+                        <input
+                                th:name="searchQuery"
+                                th:value="${searchQuery}"
+                                th:classappend="${searchError} ? 'error' : ''"
+                                class="search-field"
+                                id="search"
+                                type="text"
+                                placeholder="Search for a friend">
+                        <p th:if="${searchError}" class="error-message" th:text="${searchError}"></p>
                         <br/>
                         <br/>
                         <div class="search-button">
