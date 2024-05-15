@@ -192,7 +192,6 @@ public class ResetPasswordSteps {
                         .param("token", verificationToken.getToken()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("resetPasswordFormTemplate"));
-//        cleanupCounter++;
     }
 
     //AC9
@@ -245,7 +244,6 @@ public class ResetPasswordSteps {
                         .param("token", token)) // Include the token in the parameters
                 .andExpect(status().isOk())
                 .andExpect(view().name("resetPasswordFormTemplate"));
-//        cleanupCounter++;
     }
 
     //AC7
@@ -380,7 +378,6 @@ public class ResetPasswordSteps {
         resultActions = mockMvcResetPassword.perform(get("/reset-password-form")
                 .param("token", verificationToken.getToken()));
 
-//        cleanupCounter++;
         verify(verificationTokenService, times(cleanupCounter)).cleanupExpiredTokens();
     }
 
