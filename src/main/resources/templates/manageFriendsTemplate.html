@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Manage Friends</title>
+    <!-- Navbar styling -->
+    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+    <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+</head>
+<body>
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<div style="margin: 50px">
+    <div style="margin: 50px">
+        <div class="headings">
+            <div style="width: 300px;">
+                <div>
+                    <div class="buttons-centre">
+                    <button onclick=toggleSearchFriend()>Add Friend</button>
+                </div>
+                <form th:action="@{/manage-friends}" method="post" novalidate>
+                    <div th:if="${showSearch}" class="search-friend" id="searchFriend">
+                        <br/>
+                        <label for="search"></label>
+                        <input th:name="searchQuery" th:value="${searchQuery}" class="search-field" id="search" type="text" placeholder="Search for a friend">
+                        <br/>
+                        <br/>
+                        <div class="search-button">
+                            <button type="submit">Search</button>
+                        </div>
+                    </div>
+                </form>
+                </div>
+
+            </div>
+            <div>
+                <h1>Sent Requests</h1>
+            </div>
+            <div>
+                <h1>Pending Requests</h1>
+            </div>
+            <div>
+                <h1>Friends</h1>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function toggleSearchFriend() {
+
+        const searchFriend = document.getElementById("searchFriend");
+
+        // console.log(searchFriend);
+
+        searchFriend.hidden = !searchFriend.hidden;
+
+    }
+</script>
+</body>
+</html>
