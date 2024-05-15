@@ -34,12 +34,9 @@ public class Plant {
     @Column
     private String datePlanted;
 
-    @Column
-    private String filePath;
-
-    @Lob
-    @Column(columnDefinition = "MEDIUMBLOB")
-    private byte[] image;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn
+    private Image image;
 
     /**
      * Required constructor
@@ -52,8 +49,7 @@ public class Plant {
      * @param name Plant name
      */
     public Plant(Garden garden, String name) {
-        this.garden = garden;
-        this.name = name;
+        this(garden, name, null, null, null);
     }
 
     /**
@@ -64,14 +60,26 @@ public class Plant {
      * @param description Plant description
      * @param datePlanted Plant date planted
      */
-    public Plant(Garden garden, String name, String count, String description, String datePlanted, String filePath) throws ParseException, IOException {
+    public Plant(Garden garden, String name, String count, String description, String datePlanted) {
+        this(garden, name, count, description, datePlanted, null);
+    }
+
+    /**
+     * Constructor for Plant class
+     * @param garden Plant's garden
+     * @param name Plant name
+     * @param count Plant count
+     * @param description Plant description
+     * @param datePlanted Plant date planted
+     * @param image Plant image
+     */
+    public Plant(Garden garden, String name, String count, String description, String datePlanted, Image image) {
         this.garden = garden;
         this.name = name;
         this.count = count;
         this.description = description;
         this.datePlanted = datePlanted;
-        this.filePath = filePath;
-        this.image = null;
+        this.image = image;
     }
 
     // Setter for id
@@ -115,19 +123,11 @@ public class Plant {
     //Getter for datePlanted
     public String getDatePlanted() { return datePlanted; }
 
-    public String getPicture() {
-        return filePath;
-    }
-
-    public void setPicture(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public byte[] getImage() {
+    public Image getImage() {
         return image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(Image image) {
         this.image = image;
     }
 
