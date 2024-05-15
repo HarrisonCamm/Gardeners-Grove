@@ -99,7 +99,7 @@
                                th:name="size"
                                th:value="*{size}"
                                th:classappend="${sizeError} ? 'error' : ''">
-                        <p th:if="${location_countryError}" class="error-message" th:text="${sizeError}"></p>
+                        <p th:if="${sizeError}" class="error-message" th:text="${sizeError}"></p>
                     </div>
                 </div>
                 <br/>
