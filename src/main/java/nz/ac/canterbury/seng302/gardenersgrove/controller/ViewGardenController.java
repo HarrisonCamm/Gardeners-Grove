@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
@@ -46,7 +47,10 @@ public class ViewGardenController {
     }
 
     @GetMapping("/view-garden")
-    public String viewGarden(@RequestParam("gardenID") Long gardenID, Model model, HttpServletResponse response) {
+    public String viewGarden(@RequestParam("gardenID") Long gardenID,
+                             HttpSession session,
+                             Model model,
+                             HttpServletResponse response) {
         // Add cache control headers
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
         response.setHeader("Pragma", "no-cache"); // HTTP 1.0
@@ -54,6 +58,9 @@ public class ViewGardenController {
 
         logger.info("GET /view-garden");
         RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
+
+        Image.removeTemporaryImage(session, imageService);
+        session.removeAttribute("imageFile");
 
         Optional<Garden> garden = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenicatedUser();
@@ -77,6 +84,7 @@ public class ViewGardenController {
     public String addPlantPicture(@RequestParam("plantID") Long plantID,
                                   @RequestParam("gardenID") Long gardenID,
                                   @RequestParam("file") MultipartFile file,
+                                  HttpSession session,
                                   Model model) {
         logger.info("POST /view-garden");
 
@@ -90,7 +98,9 @@ public class ViewGardenController {
         Plant plant = plantService.findPlant(plantID).get();
 
         try {
-            Image image = new Image(file, false);
+//            Image image = new Image(file, false);
+            Image image = Image.removeTemporaryImage(session, imageService);
+            image = (image == null ? new Image(file, false) : image.makePermanent());
 
             Image oldImage = plant.getImage();
             plant.setImage(image);

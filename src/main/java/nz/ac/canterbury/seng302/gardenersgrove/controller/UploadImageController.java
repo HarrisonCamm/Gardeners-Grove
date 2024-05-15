@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -96,10 +97,13 @@ public class UploadImageController {
      * @throws IOException If the file cannot be read
      */
     @PostMapping("/upload-image")
-    public ResponseEntity<String> uploadTemporaryImage(@RequestParam("file") MultipartFile file, Model model) throws IOException {
+    public ResponseEntity<String> uploadTemporaryImage(@RequestParam("file") MultipartFile file,
+                                                       HttpSession session,
+                                                       Model model) throws IOException {
         Image image = new Image(file, true);
-        Long id = imageService.saveImage(image).getId();
-        return new ResponseEntity<>(id.toString(), new HttpHeaders(), HttpStatus.CREATED);
+        image = imageService.saveImage(image);
+        Image.setTemporaryImage(session, image);
+        return new ResponseEntity<>(image.getId().toString(), new HttpHeaders(), HttpStatus.CREATED);
     }
 
     /**

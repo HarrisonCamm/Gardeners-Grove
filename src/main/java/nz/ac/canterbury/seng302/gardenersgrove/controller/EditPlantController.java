@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -52,6 +53,7 @@ public class EditPlantController {
 
     @GetMapping("/edit-plant")
     public String form(@RequestParam("plantID") Long plantID,
+                       HttpSession session,
                        Model model) {
         logger.info("GET /edit-plant");
 //        RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
@@ -68,6 +70,9 @@ public class EditPlantController {
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
+        Image.removeTemporaryImage(session, imageService);
+        session.removeAttribute("imageFile");
+
         return "editPlantFormTemplate";
     }
 
@@ -80,6 +85,7 @@ public class EditPlantController {
                              @RequestParam("datePlanted") String datePlanted,
                              @ModelAttribute("plant") Plant newPlant,
                              BindingResult bindingResult,
+                             HttpSession session,
                              Model model) throws Exception {
         logger.info("PUT /edit-plant");
 
@@ -109,6 +115,7 @@ public class EditPlantController {
         //Ternary operator to assign null date or assign a formatted date
         model.addAttribute("datePlanted", datePlanted);
 
+//        Image.removeTemporaryImage(session, imageService);
 
         if (!errors.isEmpty()) {
             for (FieldError error : errors) {
@@ -129,7 +136,8 @@ public class EditPlantController {
      */
     @PostMapping("edit-plant-picture")
     public String changePicture(@RequestParam("plantID") Long plantID,
-                                @RequestParam("file") MultipartFile file) {
+                                @RequestParam("file") MultipartFile file,
+                                HttpSession session) {
         logger.info("POST /edit-plant");
         Optional<Plant> found = plantService.findPlant(plantID);
         if (found.isEmpty()) {
@@ -138,7 +146,9 @@ public class EditPlantController {
         Plant plant = found.get();
 
         try {
-            Image image = new Image(file, false);
+//            Image image = new Image(file, false);
+            Image image = Image.removeTemporaryImage(session, imageService);
+            image = (image == null ? new Image(file, false) : image.makePermanent());
 
             Image oldImage = plant.getImage();
             plant.setImage(image);

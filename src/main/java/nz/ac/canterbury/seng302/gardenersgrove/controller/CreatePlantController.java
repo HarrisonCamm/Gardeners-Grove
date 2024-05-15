@@ -136,7 +136,7 @@ public class CreatePlantController {
         Plant sessionPlant = (Plant) session.getAttribute("plant");
 
         if (sessionPlant != null) {
-            plant.setImage(sessionPlant.getImage());
+//            plant.setImage(sessionPlant.getImage());
 //            plant.setPicture(sessionPlant.getPicture());
             session.removeAttribute("plant");
         }
@@ -149,20 +149,26 @@ public class CreatePlantController {
         checkCount(plant.getCount(), bindingResult);
         checkDateValidity(formattedDate, bindingResult);
 
-        if (plant.getImage() == null) {
-            Image image = null;
+        Image image = Image.removeTemporaryImage(session, imageService);
+        if (image == null) {
             try {
-                Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
-                image = new Image(Files.readAllBytes(imagePath), "png", false);
-//                image = imageService.saveImage(image);
+                MultipartFile imageFile = (MultipartFile) session.getAttribute("imageFile");
+                if (imageFile != null) {
+                    image = new Image(imageFile, false);
+                    session.removeAttribute("imageFile");
+                } else {
+                    Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
+                    image = new Image(Files.readAllBytes(imagePath), "png", false);
+                }
                 plant.setImage(image);
             } catch (Exception e) {
-                logger.error("Failed to set default image", e);
+                logger.error("Failed to set plant image", e);
             }
         } else {
-            Image image = (Image) session.getAttribute("image");
-            imageService.deleteImage(image);
-            plant.setImage(new Image(image));
+//            Image image = (Image) session.getAttribute("image");
+//            imageService.deleteImage(image);
+            image.makePermanent();
+            plant.setImage(image);
         }
 
         plant.setCount(plant.getCount().replace(',', '.'));
@@ -226,13 +232,14 @@ public class CreatePlantController {
         logger.info("POST /create-plant-picture");
         Garden garden = gardenService.findGarden(gardenID).get();
 
-        Image image = new Image(file, true);
-        image = imageService.saveImage(image);
-        Plant plant = new Plant(garden, "", "", "", "", image);
+//        Image image = new Image(file, true);
+//        image = imageService.saveImage(image);
+        Plant plant = new Plant(garden, "", "", "", "", Image.getTemporaryImage(session));
 
         // Add the plant object to the session
         session.setAttribute("plant", plant);
-        session.setAttribute("image", image);
+        session.setAttribute("imageFile", file);
+//        session.setAttribute("image", image);
 
         return "redirect:/create-plant?gardenID=" + plant.getGarden().getId();
     }

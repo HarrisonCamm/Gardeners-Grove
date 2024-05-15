@@ -40,7 +40,7 @@ public class ImageService {
                 public void run() {
                     cleanupExpiredTemporaries();
                 }
-            }, 630000);
+            }, 300000);
         }
         return imageRepository.save(image);
     }

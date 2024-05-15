@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
 import jakarta.persistence.*;
+import jakarta.servlet.http.HttpSession;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,11 +34,11 @@ public class Image {
      */
     protected Image() {}
 
-    public Image(Image tempImage) {
-        this.data = tempImage.getData();
-        this.contentType = tempImage.getContentType();
-        this.expiryDate = null;
-    }
+//    public Image(Image tempImage) {
+//        this.data = tempImage.getData();
+//        this.contentType = tempImage.getContentType();
+//        this.expiryDate = null;
+//    }
 
     public Image(MultipartFile file, boolean isTemporary) throws IOException {
         byte[] imageBytes = file.getBytes();
@@ -46,11 +48,11 @@ public class Image {
         } else {
             ext = ext.substring(ext.lastIndexOf('/') + 1);
         }
-        this.init(imageBytes, ext, isTemporary, LocalDateTime.now().plusMinutes(10L));
+        this.init(imageBytes, ext, isTemporary, LocalDateTime.now().plusMinutes(5L));
     }
 
     public Image(byte[] data, String contentType, boolean isTemporary) {
-        this(data, contentType, isTemporary, LocalDateTime.now().plusMinutes(10L));
+        this(data, contentType, isTemporary, LocalDateTime.now().plusMinutes(5L));
     }
 
     public Image(byte[] data, String contentType, boolean isTemporary, LocalDateTime temporaryExpiryDate) {
@@ -61,6 +63,23 @@ public class Image {
         this.data = data;
         this.contentType = contentType;
         this.expiryDate = (isTemporary ? temporaryExpiryDate : null);
+    }
+
+    public static Image getTemporaryImage(HttpSession session) {
+        return (Image) session.getAttribute("temporaryImage");
+    }
+
+    public static void setTemporaryImage(HttpSession session, Image image) {
+        session.setAttribute("temporaryImage", image);
+    }
+
+    public static Image removeTemporaryImage(HttpSession session, ImageService imageService) {
+        Image temporaryImage = getTemporaryImage(session);
+        if (temporaryImage != null) {
+            session.removeAttribute("temporaryImage");
+            imageService.deleteImage(temporaryImage);
+        }
+        return temporaryImage;
     }
 
 
@@ -78,5 +97,11 @@ public class Image {
 
     public LocalDateTime getExpiryDate() {
         return expiryDate;
+    }
+
+    public Image makePermanent() {
+        this.Id = null;
+        this.expiryDate = null;
+        return this;
     }
 }
