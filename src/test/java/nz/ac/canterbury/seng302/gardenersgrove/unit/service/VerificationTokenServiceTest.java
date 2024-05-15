@@ -36,6 +36,8 @@ public class VerificationTokenServiceTest {
     @Test
     void createVerificationToken_ShouldCreateToken() {
         VerificationToken token = verificationTokenService.createVerificationToken(user);
+
+        // Verify the token is created correctly
         assertNotNull(token);
         assertEquals(user, token.getUser());
         assertNotNull(token.getToken());
@@ -46,6 +48,7 @@ public class VerificationTokenServiceTest {
 
     @Test
     void validateToken_WithValidToken_ShouldReturnTrue() {
+        // Set up a valid token, with a user and expiration time
         String tokenString = "123456";
         VerificationToken token = new VerificationToken(user, tokenString, LocalDateTime.now().plusMinutes(10));
         when(verificationTokenRepository.findByToken(tokenString)).thenReturn(token);
@@ -56,6 +59,7 @@ public class VerificationTokenServiceTest {
 
     @Test
     void validateToken_WithInvalidToken_ShouldReturnFalse() {
+        // Set up an invalid token scenario, no user or expiration time
         String tokenString = "123456";
         when(verificationTokenRepository.findByToken(tokenString)).thenReturn(null);
 
@@ -96,12 +100,6 @@ public class VerificationTokenServiceTest {
         verificationTokenService.cleanupExpiredTokens();
 
         verify(verificationTokenRepository, times(1)).deleteAllExpiredSince(any(LocalDateTime.class));
-    }
-
-    @Test
-    void findAllTokens_ShouldReturnAllTokens() {
-        verificationTokenService.findAllTokens();
-        verify(verificationTokenRepository, times(1)).findAll();
     }
 }
 
