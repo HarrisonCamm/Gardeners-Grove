@@ -52,7 +52,7 @@ public class EditGardenController {
     public String form(@RequestParam("gardenID") Long gardenID,
                        Model model) throws ResponseStatusException {
         logger.info("GET /edit-garden");
-
+        RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
         Optional<Garden> result = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenicatedUser();
         if (result.isEmpty())
