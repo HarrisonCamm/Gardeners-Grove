@@ -63,4 +63,11 @@ public class GardenValidatorTests {
         ObjectError objectError = GardenValidator.validateSize(gardenSize);
         assertNull(objectError);
     }
+
+    @Test
+    public void ValidatingGardenName_WithPeriod_Valid() {
+        String gardenName = "My.Garden";
+        ObjectError objectError = GardenValidator.validateGardenName(gardenName);
+        assertNull(objectError, "Garden name with period should be valid");
+    }
 }
