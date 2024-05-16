@@ -23,4 +23,7 @@ public interface UserRepository extends CrudRepository<User, Long>{
     @Query("DELETE FROM User u WHERE u = :user")
     void deleteUser(User user);
 
+    @Query("SELECT u FROM User u WHERE u.email = :searchQuery")
+    List<User> searchForUsers(String searchQuery);
+
 }
