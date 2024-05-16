@@ -39,9 +39,12 @@
                 </form>
                 <div>
                     <div th:if="${matchedUsers}">
-                        <ul>
+                        <ul style="padding: 0; text-align: left">
                             <li th:each="matchedUser : ${matchedUsers}">
-                                <h3 th:text="${matchedUser.firstName + ' - ' + matchedUser.email}"></h3>
+                                <div style="display: flex">
+                                    <h3 th:text="${matchedUser.firstName + ' - ' + matchedUser.email}"></h3>
+                                    <button>Invite as Friend</button>
+                                </div>
                                 <hr class="solid">
                             </li>
                         </ul>
