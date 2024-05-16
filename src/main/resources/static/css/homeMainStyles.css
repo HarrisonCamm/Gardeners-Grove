@@ -68,6 +68,22 @@ h1 {
     align-items: end;
 }
 
+.error {
+    border: 1px solid red;
+    outline: 1px solid red;
+    border-radius: 2px;
+}
+.error:focus {
+    outline: 2px solid red;
+}
+.error-message {
+    color: red;
+    display: block;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 @media only screen and (orientation: portrait) {
     .content {
         padding-top: 25%; /* Decrease top padding for vertical screens */
