@@ -17,8 +17,8 @@
             <div style="width: 300px;">
                 <div>
                     <div class="buttons-centre">
-                    <button onclick=toggleSearchFriend()>Add Friend</button>
-                </div>
+                        <button onclick=toggleSearchFriend()>Add Friend</button>
+                    </div>
                 <form th:action="@{/manage-friends}" method="post" novalidate>
                     <div th:if="${showSearch}" class="search-friend" id="searchFriend">
                         <br/>
@@ -58,13 +58,8 @@
 
 <script>
     function toggleSearchFriend() {
-
         const searchFriend = document.getElementById("searchFriend");
-
-        // console.log(searchFriend);
-
         searchFriend.hidden = !searchFriend.hidden;
-
     }
 </script>
 </body>
