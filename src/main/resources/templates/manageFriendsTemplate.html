@@ -15,10 +15,9 @@
     <div style="margin: 50px">
         <div class="headings">
             <div style="width: 300px;">
-                <div>
-                    <div class="buttons-centre">
-                        <button onclick=toggleSearchFriend()>Add Friend</button>
-                    </div>
+                <div class="buttons-centre">
+                    <button onclick=toggleSearchFriend()>Add Friend</button>
+                </div>
                 <form th:action="@{/manage-friends}" method="post" novalidate>
                     <div th:if="${showSearch}" class="search-friend" id="searchFriend">
                         <br/>
@@ -26,20 +25,18 @@
                         <input
                                 th:name="searchQuery"
                                 th:value="${searchQuery}"
-                                th:classappend="${searchError} ? 'error' : 'search-field'"
+                                class="search-field"
                                 id="search"
                                 type="text"
                                 placeholder="Search for a friend">
-                        <p th:if="${searchError}" class="error-message" th:text="${searchError}"></p>
-                        <br/>
-                        <br/>
-                        <div class="search-button">
-                            <button type="submit">Search</button>
-                        </div>
+                        <p th:if="${searchResultMessage}" class="search-field-message" th:text="${searchResultMessage}"></p>
+                    </div>
+                    <br/>
+                    <br/>
+                    <div class="search-button">
+                        <button type="submit">Search</button>
                     </div>
                 </form>
-                </div>
-
             </div>
             <div>
                 <h1>Sent Requests</h1>
@@ -51,7 +48,6 @@
                 <h1>Friends</h1>
             </div>
         </div>
-
     </div>
 </div>
 

@@ -68,6 +68,10 @@ h1 {
     align-items: end;
 }
 
+.search-field-message {
+    text-align: left;
+}
+
 .error {
     border: 1px solid red;
     outline: 1px solid red;

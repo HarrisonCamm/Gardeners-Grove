@@ -37,7 +37,6 @@ public class ManageFriendsController {
 
         RedirectService.addEndpoint("/manage-friends");
 
-//        model.addAttribute("searchQuery", "");
 
         model.addAttribute("showSearch", true);
 
@@ -51,6 +50,11 @@ public class ManageFriendsController {
         logger.info("POST /manage-friends");
 
         List<User> searchedUsers = userService.searchForUsers(searchQuery);
+
+        if (searchedUsers.isEmpty()) {
+            model.addAttribute("searchResultMessage",
+                    "Nobody with that name or email in Gardener’s Grove");
+        }
 
         model.addAttribute("matchedUsers", searchedUsers);
 
