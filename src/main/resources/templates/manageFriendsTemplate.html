@@ -37,6 +37,16 @@
                         <button type="submit">Search</button>
                     </div>
                 </form>
+                <div>
+                    <div th:if="${matchedUsers}">
+                        <ul>
+                            <li th:each="matchedUser : ${matchedUsers}">
+                                <h3 th:text="${matchedUser.firstName + ' - ' + matchedUser.email}"></h3>
+                                <hr class="solid">
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div>
                 <h1>Sent Requests</h1>

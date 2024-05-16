@@ -144,6 +144,9 @@ public class UserService {
      * @return A list of users that exactly match the search query
      */
     public List<User> searchForUsers(String searchQuery) {
-        return userRepository.searchForUsers(searchQuery);
+        String[] parts = searchQuery.split(" ");
+        String firstName = parts[0];
+        String lastName = parts.length > 1 ? parts[1] : "";
+        return userRepository.searchForUsers(searchQuery, firstName, lastName);
     }
 }

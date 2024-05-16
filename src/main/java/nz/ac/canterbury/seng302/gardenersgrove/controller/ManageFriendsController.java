@@ -57,9 +57,7 @@ public class ManageFriendsController {
         }
 
         model.addAttribute("matchedUsers", searchedUsers);
-
         model.addAttribute("showSearch", true);
-
         model.addAttribute("searchQuery", searchQuery);
 
         return "manageFriendsTemplate";
