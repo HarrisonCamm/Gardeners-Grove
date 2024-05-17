@@ -49,7 +49,7 @@ public class ManageFriendsController {
 
         logger.info("POST /manage-friends");
 
-        List<User> searchedUsers = userService.searchForUsers(searchQuery);
+        List<User> searchedUsers = userService.searchForUsers(searchQuery.toLowerCase());
 
         if (searchedUsers.isEmpty()) {
             model.addAttribute("searchResultMessage",

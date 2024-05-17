@@ -24,9 +24,9 @@ public interface UserRepository extends CrudRepository<User, Long>{
     @Query("DELETE FROM User u WHERE u = :user")
     void deleteUser(User user);
 
-    @Query("SELECT u FROM User u WHERE u.email = :searchQuery OR " +
-            "(u.firstName = :firstName AND u.lastName = :lastName AND u.noLastName = false) OR " +
-            "(u.firstName = :searchQuery AND u.noLastName = true)")
+    @Query("SELECT u FROM User u WHERE LOWER(u.email) = LOWER(:searchQuery) OR " +
+            "(LOWER(u.firstName) = LOWER(:firstName) AND LOWER(u.lastName) = LOWER(:lastName) AND u.noLastName = false) OR " +
+            "(LOWER(u.firstName) = LOWER(:searchQuery) AND u.noLastName = true)")
     List<User> searchForUsers(@Param("searchQuery") String searchQuery,
                               @Param("firstName") String firstName,
                               @Param("lastName") String lastName);
