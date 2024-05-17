@@ -91,6 +91,7 @@ public class CreatePlantController {
         model.addAttribute("count", session.getAttribute("count"));
         model.addAttribute("datePlanted", session.getAttribute("datePlanted"));
 
+//        model.addAttribute("imageError", "");
 
         // Remove attributes from the session
         session.removeAttribute("name");
@@ -123,6 +124,7 @@ public class CreatePlantController {
             @RequestParam("description") String description,
             @RequestParam("count") String count,
             @RequestParam("datePlanted") String datePlanted,
+            @RequestParam("imageError") String imageError,
             @ModelAttribute("plant") Plant plant,
             BindingResult bindingResult,
             HttpSession session,
@@ -182,8 +184,6 @@ public class CreatePlantController {
         session.setAttribute("datePlanted", plant.getDatePlanted());
         session.setAttribute("gardenID", plant.getGarden().getId());
 
-
-
         Map<String, String> errors = new HashMap<>();
 
         if (validatePlantName(plant.getName()) != null) {
@@ -205,7 +205,7 @@ public class CreatePlantController {
         session.setAttribute("errors", errors);
         // If there are validation errors, return to the form page
         if (errors.containsKey("nameError") || errors.containsKey("countError")
-                || errors.containsKey("descriptionError") || errors.containsKey("dateError")) {
+                || errors.containsKey("descriptionError") || errors.containsKey("dateError") || !imageError.isEmpty()) {
             model.addAttribute("gardenID", gardenID); // Add gardenID to the model before forwarding to error display page
             return "redirect:/create-plant?gardenID=" + gardenID;
         } else {

@@ -122,11 +122,17 @@ function validateFile(file) {
     const contentType = file.type.split('/').pop();
     const maxSize = 10 * 1024 * 1024; // 10MB
 
+    let imageError = document.getElementById('imageError');
+    console.log('image error: ' + imageError);
+    console.log('image error text: ' + imageError.value);
+
     if (!allowedImageTypes.includes(contentType)) {
-        alert('Image must be of type png, jpg or svg');
+        // alert('Image must be of type png, jpg or svg');
+        imageError.value = 'Image must be of type png, jpg or svg';
         return false;
     } else if (file.size > maxSize) {
-        alert('Image must be less than 10MB');
+        // alert('Image must be less than 10MB');
+        imageError.value = 'Image must be less than 10MB';
         return false;
     }
     return true;
