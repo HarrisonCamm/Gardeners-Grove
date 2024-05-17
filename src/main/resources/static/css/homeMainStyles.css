@@ -34,7 +34,56 @@ button:hover {
 h1 {
     font-size: 200%;
     text-align: center;
+    margin: 0;
 }
+
+.headings {
+    display: flex;
+    justify-content: space-between;
+}
+
+.buttons-centre {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 150%;
+}
+
+.search-friend {
+    text-align: center;
+    /*display: none;*/
+}
+
+.search-field {
+    margin: 40px 0 0 0;
+    font-size: 150%;
+    /*width: 100%;*/
+    max-width: 292px;
+    border-radius: 2px;
+    background-color: #b2eab2;
+}
+
+.search-button {
+    text-align: right;
+    align-items: end;
+}
+
+.error {
+    border: 1px solid red;
+    outline: 1px solid red;
+    border-radius: 2px;
+}
+.error:focus {
+    outline: 2px solid red;
+}
+.error-message {
+    color: red;
+    display: block;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 @media only screen and (orientation: portrait) {
     .content {
         padding-top: 25%; /* Decrease top padding for vertical screens */
