@@ -11,7 +11,7 @@
 </head>
 <body>
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-<div style="width: 90%; margin: 50px auto; text-align: center">
+<div style="width: 75%; margin: 50px auto; text-align: center">
     <div style="display: flex; justify-content: space-between">
         <div style="width: 500px; min-width: 500px">
             <div class="buttons-centre">
@@ -20,26 +20,28 @@
             <form th:action="@{/manage-friends}" method="post" novalidate>
                 <div th:if="${showSearch}" class="search-friend" id="searchFriend">
                     <br/>
-                    <label for="search"></label>
-                    <input th:name="searchQuery"
-                           th:value="${searchQuery}"
-                           class="search-field"
-                           id="search"
-                           type="text"
-                           placeholder="Search for a friend">
-                    <p th:if="${searchResultMessage}" class="search-field-message" th:text="${searchResultMessage}"></p>
-                    <br/>
-                    <br/>
-                    <div class="search-button">
-                        <button type="submit">Search</button>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end">
+                        <label for="search"></label>
+                        <input th:name="searchQuery"
+                               th:value="${searchQuery}"
+                               class="search-field"
+                               id="search"
+                               type="text"
+                               placeholder="Search for a friend">
+                        <p th:if="${searchResultMessage}" class="search-field-message" th:text="${searchResultMessage}"></p>
+                        <br/>
+                        <br/>
+                        <div class="search-button">
+                            <button type="submit">Search</button>
+                        </div>
                     </div>
                     <div>
-                        <div th:if="${matchedUsers}">
+                        <div th:if="${matchedUsers}" class="results-container">
                             <ul style="padding: 0; text-align: left">
                                 <li th:each="matchedUser : ${matchedUsers}">
                                     <div style="display: flex; justify-content: space-between">
                                         <h3 th:text="${matchedUser.firstName + ' - ' + matchedUser.email}"></h3>
-                                        <button style="height: 50px">Invite as Friend</button>
+                                        <button type="button" style="height: 50px">Invite as Friend</button>
                                     </div>
                                     <hr class="solid">
                                 </li>
@@ -52,7 +54,7 @@
         <div style="justify-content: flex-end; margin: 0; padding: 0">
             <h1>Friends</h1>
             <div class="friends-container">
-
+                <h3>Your friends will be shown here</h3>
             </div>
         </div>
     </div>
