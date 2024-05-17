@@ -30,7 +30,8 @@
         </div>
         <div class="formContainer">
             <form th:action="@{create-plant}" method="post" th:object="${plant}">
-                <input type="text" readonly id="imageError" class="error-message"  name="imageError" th:value="${imageError}">
+                <input type="hidden" id="imageError" name="imageError" th:value="${imageError}">
+                <div th:if="${displayImageError}" class="error-message" th:text="${displayImageError}"></div>
 
                 <input type="hidden" name="gardenID" th:value="${gardenID}">
                 <label for="plantName"> Name: </label>
