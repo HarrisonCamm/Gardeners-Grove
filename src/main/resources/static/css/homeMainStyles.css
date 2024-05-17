@@ -39,7 +39,12 @@ h1 {
 
 .headings {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
+}
+
+.rows {
+    margin-bottom: 150px;
 }
 
 .buttons-centre {
@@ -70,6 +75,14 @@ h1 {
 
 .search-field-message {
     text-align: left;
+}
+
+.friends-container {
+    background-color: rgba(245, 245, 245, 0.5); /* #f5f5f5 in RGB is 245, 245, 245 */
+    border-radius: 10px;
+    border: solid black 1px;
+    width: 500px;
+    height: 700px;
 }
 
 .error {
