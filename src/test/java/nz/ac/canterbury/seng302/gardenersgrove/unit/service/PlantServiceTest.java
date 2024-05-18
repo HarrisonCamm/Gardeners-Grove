@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.repository.GardenRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.PlantRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,6 +38,9 @@ public class PlantServiceTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private ImageService imageService;
 
     private Garden mockGarden;
     private User mockOwner;

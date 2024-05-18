@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.integration.repository;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class UserRepositoryTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private ImageService imageService;
 
     @Test
     public void findById_ShouldReturnUser_WhenUserExists() {

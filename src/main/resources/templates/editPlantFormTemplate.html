@@ -6,6 +6,8 @@
     <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
     <script th:src="@{/javascript/redirect-image-handler.js}"></script>
+    <script th:src="@{javascript/enter-date.js}"></script>
+    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
 </head>
 <body>
 <!-- Navigation Bar Fragment -->
@@ -24,6 +26,7 @@
             <div>
                 <label for="plantName"> Name: </label>
                 <br/>
+<!--                todo maxlength will need to be update along with plant validator and plant class sql string length for the defined limit from Fabian-->
                 <input type="text" id="plantName" maxlength="254" th:value="*{name}" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
             </div>
             <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
@@ -39,7 +42,7 @@
                 <label for="plantDescription"> Description: </label>
 
                 <br/>
-                <textarea maxlength="513" id="plantDescription"
+                <textarea maxlength="1028" id="plantDescription"
                           th:value="*{description}"
                           th:field="*{description}"
                           th:classappend="${descriptionError} ? 'error' : ''">
@@ -53,7 +56,7 @@
                    th:name="datePlanted" th:value="${datePlanted}"
                    placeholder="DD/MM/YYYY"
                    data-cy="datePlanted"
-                   oninput="formatDateOfBirth(this)" th:field="*{datePlanted}"
+                   oninput="formatDate(this)" th:field="*{datePlanted}"
                    th:classappend="${datePlantedError} ? 'error' : ''">
 
             <p th:if="${datePlantedError}" class="error-message" th:text="${datePlantedError}"></p>
@@ -74,25 +77,3 @@
 
 </body>
 </html>
-<script>
-    function formatDateOfBirth(input) {
-        let formattedValue = input.value.replace(/[^\d/]/g, '');
-
-        let matches = formattedValue.match(/\//g);
-        if (matches && matches.length > 2) {
-            formattedValue = formattedValue.substring(0, formattedValue.lastIndexOf('/'));
-        }
-
-        if (formattedValue.length > 2 && formattedValue.charAt(2) !== '/') {
-            formattedValue = formattedValue.slice(0, 2) + '/' + formattedValue.slice(2);
-        }
-        if (formattedValue.length > 5 && formattedValue.charAt(5) !== '/') {
-            formattedValue = formattedValue.slice(0, 5) + '/' + formattedValue.slice(5);
-        }
-
-        if (formattedValue.length > 10) {
-            formattedValue = formattedValue.slice(0, 10);
-        }
-        input.value = formattedValue;
-    }
-</script>

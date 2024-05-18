@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.gardenersgrove.integration.service;
+package nz.ac.canterbury.seng302.gardenersgrove.unit.service;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;

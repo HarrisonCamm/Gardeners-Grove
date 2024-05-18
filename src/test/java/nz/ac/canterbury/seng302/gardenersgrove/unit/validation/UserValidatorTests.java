@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.unit.validation;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -271,5 +273,17 @@ public class UserValidatorTests {
     })
     public void testPasswordValidity(String password, boolean expected) {
         assertEquals(expected, isPasswordValid(password));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "test@email.com1234!!!", // Email in password
+            "john1234!!!@#@$#% ", // First name in password
+            " Doe12345SDFGS342562*__)) " }) // Last name in password
+    public void testUserDetailsInPassword(String password) {
+
+        User user = new User("test@email.com", "John", "Doe", password);
+
+        assertTrue(passwordContainsDetails(user, password));
     }
 }
