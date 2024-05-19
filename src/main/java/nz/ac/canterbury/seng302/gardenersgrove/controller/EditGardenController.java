@@ -129,15 +129,6 @@ public class EditGardenController {
             errors.add(nameError);
         }
 
-//        FieldError locationCityError = validateGardenLocation(gardenLocation, true);
-//        if (locationCityError != null) {
-//            errors.add(locationCityError);
-//        }
-//
-//        FieldError locationCountryError = validateGardenLocation(gardenLocation, false);
-//        if (locationCountryError != null) {
-//            errors.add(locationCountryError);
-//        }
 
         List<FieldError> locationErrors = validateGardenLocation(gardenLocation);
         errors.addAll(locationErrors);
