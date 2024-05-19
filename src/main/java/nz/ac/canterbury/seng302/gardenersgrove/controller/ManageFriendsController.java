@@ -64,8 +64,9 @@ public class ManageFriendsController {
             return handleSearchRequest(searchQuery, model);
         } else if (action.equals("invite")) {
             return handleInviteRequest(email, model);
+        } else {
+            return "manageFriendsTemplate"; // Should never reach this
         }
-        return "";
     }
 
     /**
