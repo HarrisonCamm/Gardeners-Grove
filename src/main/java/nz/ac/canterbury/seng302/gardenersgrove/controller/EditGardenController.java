@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -36,7 +37,7 @@ public class EditGardenController {
     private final GardenService gardenService;
     private final UserService userService;
 
-//    @Autowired
+    //    @Autowired
     public EditGardenController(GardenService gardenService, UserService userService) {
         this.gardenService = gardenService;
         this.userService = userService;
@@ -50,7 +51,8 @@ public class EditGardenController {
      */
     @GetMapping("/edit-garden")
     public String form(@RequestParam("gardenID") Long gardenID,
-                       Model model) throws ResponseStatusException {
+                       Model model,
+                       HttpSession session) throws ResponseStatusException {
         logger.info("GET /edit-garden");
         RedirectService.addEndpoint("/edit-garden?gardenID=" + gardenID);
         Optional<Garden> result = gardenService.findGarden(gardenID);
@@ -62,8 +64,8 @@ public class EditGardenController {
 
         Garden garden = result.get();
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
-
-        addAttributes(model, garden, garden.getId(), garden.getName(), garden.getLocation(), garden.getSize());
+        session.setAttribute("gardenID", gardenID);
+        addAttributes(model, session, garden, garden.getId(), garden.getName(), garden.getLocation(), garden.getSize());
         return "editGardenTemplate";
     }
 
@@ -77,7 +79,8 @@ public class EditGardenController {
     public String submitForm(@RequestParam("gardenID") Long gardenID,
                              @ModelAttribute Garden garden,
                              BindingResult bindingResult,
-                             Model model) throws ResponseStatusException {
+                             Model model,
+                             HttpSession session) throws ResponseStatusException {
         logger.info("PUT /edit-garden");
 
         Optional<Garden> result = gardenService.findGarden(gardenID);
@@ -94,8 +97,8 @@ public class EditGardenController {
         ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize);
         garden.setId(result.get().getId());
         garden.setOwner(currentUser);
-
-        addAttributes(model, garden, garden.getId(), gardenName, gardenLocation, gardenSize);
+        session.setAttribute("gardenID", gardenID);
+        addAttributes(model, session, garden, garden.getId(), gardenName, gardenLocation, gardenSize);
 
 
         if (!errors.isEmpty()) {
@@ -144,13 +147,13 @@ public class EditGardenController {
         return errors;
     }
 
-    public void addAttributes(Model model, Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize) {
+    public void addAttributes(Model model, HttpSession session, Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize) {
         model.addAttribute("id", gardenID);
 
         model.addAttribute("name", gardenName);
 
         model.addAttribute("garden", garden);
-
+        model.addAttribute("gardenID", session.getAttribute("gardenID"));
         model.addAttribute("location.streetAddress", gardenLocation.getStreetAddress());
         model.addAttribute("location.suburb", gardenLocation.getSuburb());
         model.addAttribute("location.city", gardenLocation.getCity());
