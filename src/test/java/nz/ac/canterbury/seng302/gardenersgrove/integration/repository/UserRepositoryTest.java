@@ -5,12 +5,15 @@ import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 
+import java.util.List;
 import java.util.Optional;
 
 @DataJpaTest
@@ -67,5 +70,27 @@ public class UserRepositoryTest {
         Assertions.assertEquals(savedUser.getEmail(), retrievedUser.get().getEmail());
         Assertions.assertEquals(savedUser.getFirstName(), retrievedUser.get().getFirstName());
         Assertions.assertEquals(savedUser.getLastName(), retrievedUser.get().getLastName());
+    }
+
+
+    @ParameterizedTest
+    @CsvSource({
+            "Test User, Test, 'User'",
+            "test user, test, 'user'",
+            "test@example.com, '', ''"
+    })
+    public void searchForUsers_ShouldReturnUser_WhenUserExists(String searchQuery, String firstName, String lastName) {
+        // Create a new user
+        User user = new User();
+        user.setEmail("test@example.com");
+        user.setFirstName("Test");
+        user.setLastName("User");
+
+        User savedUser = userRepository.save(user);
+
+        List<User> users = userRepository.searchForUsers(searchQuery, firstName, lastName);
+
+        Assertions.assertNotEquals(0, users.size());
+        Assertions.assertEquals(savedUser.getEmail(), users.get(0).getEmail());
     }
 }
