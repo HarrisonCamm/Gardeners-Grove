@@ -25,6 +25,9 @@ import java.util.List;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.GardenValidator.*;
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.LocationValidator.*;
+import java.util.logging.Level;
+
+
 
 /**
  * This sprint boot controller sets up a form to create a new garden
@@ -166,6 +169,7 @@ public class CreateGardenController {
 
         FieldError streetAddressError = validateStreetAddress(gardenLocation.getStreetAddress());
         if (streetAddressError != null) {
+            logger.info("adress error");
             errors.add(streetAddressError);
         }
 
