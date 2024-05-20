@@ -1,5 +1,5 @@
 body {
-    background-color: #d4ffd4;
+    background-color: #E2F1CA;
     font-family: Verdana, sans-serif;
 }
 .content {
@@ -8,47 +8,68 @@ body {
     align-items: center;
     padding-top: 5%;
 }
-.error, .form-control {
-    width: 300px;
+.form-control {
+    width: 350px;
     font-size: 100%;
-    background-color: #b2eab2;
+    background-color: #BEE186;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #3D7B36;
+    outline: 1px solid #3D7B36;
+}
+.form-control:focus {
+    outline: 2px solid #3D7B36;
+}
+
+.form-control:disabled {
+    background-color: #f1faf2;
+    border: 1px solid #c8cec9;
+    outline: 1px solid #c8cec9;
 }
 .message {
-    width: 300px;
+    width: 350px;
     font-size: 101%;
 }
+
 .error {
-    border: 1px solid red;
-    outline: 1px solid red;
-    border-radius: 2px;
+    border: 1px solid #DE2929;
+    outline: 1px solid #DE2929;
 }
 .error:focus {
-    outline: 2px solid red;
+    outline: 2px solid #DE2929;
 }
 .error-message {
-    color: red;
+    color: #DE2929;
     display: block;
-    width: 300px;
+    width: 350px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 .confirmation-message {
     display: block;
-    width: 300px;
+    width: 350px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 button, label {
     font-size: 120%;
 }
+.checkbox {
+    accent-color: #80A444;
+    transform: scale(1.2);
+}
 
 button {
-    background-color : #8ffa8f;
-    border-radius: 5px;
+    background-color: #3D7B36;
+    color: white;
+    border-radius: 10px;
+    border-width: 0;
+    padding: 5px 10px 5px 10px;
+    margin: 2px;
 }
 button:hover {
-    background-color: darkgreen;
-
+    background-color: #72543C;
+    cursor: pointer;
 }
 
 .buttons-centre {
@@ -62,9 +83,11 @@ button:hover {
 
 h2 {
     text-align: center;
+    color: #0A3407;
 }
 .link {
-    font-size: 100%;
+    font-size: 120%;
+    color: #72543C;
 }
 .profile-picture {
     width: 200px;
@@ -78,7 +101,6 @@ h2 {
     top: 0; right: 0;
     cursor: pointer;
     background-color: #dedede;
-    /*font-weight: bold;*/
     border-radius: 25px;
     width: 15px;
     height: 15px;
@@ -113,25 +135,26 @@ h2 {
     .form-control {
         font-size: 180%;
         width: 540px;
-        border: 2px solid;
-        border-radius: 2px;
+        border: 2px solid #3D7B36;
+    }
+    .form-control:focus {
+        outline: 4px solid #3D7B36;
     }
     .message {
         font-size: 182%;
         width: 540px;
     }
     .form-control[disabled] {
-        border-color: #ccc;
+        border: 2px solid #c8cec9;
     }
     .error {
         font-size: 180%;
         width: 540px;
-        border: 2px solid red;
-        border-radius: 2px;
-        outline: 2px solid red;
+        border: 2px solid #DE2929;
+        outline: 2px solid #DE2929;
     }
     .error:focus {
-        outline: 4px solid red;
+        outline: 4px solid #DE2929;
     }
     .error-message {
         width: 540px;
@@ -147,3 +170,4 @@ h2 {
         width: 360px;
     }
 }
+

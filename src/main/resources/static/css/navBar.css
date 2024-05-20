@@ -3,11 +3,10 @@
     list-style-type: none;
     margin: 0;
     padding: 0;
-    background-color: #333;
+    background-color: #0A3407;
     overflow: hidden;
     line-height: 50px;
     display: flex;
-    /*justify-content: center;*/
 }
 
 ul {
@@ -27,20 +26,14 @@ li {
     padding: 14px 16px;
     text-decoration: none;
     display: inline;
-    /*display: flex;*/
-    /*justify-content: center;*/
 }
 
 .navLink:hover {
-    background-color: #000;
+    color: #80A444;
 }
 
 /* Navigation bar form styling */
 .navBar-logout {
-    /*display: inline;*/
-    /*margin: 0;*/
-    /*display: flex;*/
-    /*justify-content: flex-end;*/
     margin-left: auto;
 }
 
@@ -50,13 +43,9 @@ li {
     flex-grow: 1;
 }
 
-.navBar-logout-form {
-    /*padding: 0;*/
-}
 
 .navBar-logout-button {
-    background-color: #333;
-    border: none;
+    background-color: #0A3407;
     color: white;
     font-size: 120%;
     text-align: center;
@@ -67,10 +56,13 @@ li {
     font-family: inherit;
     width: 100%;
     margin-right: 30px;
+    border: 0 none;
+    outline: 0 none;
+
 }
 
 .navBar-logout-button:hover {
-    background-color: #000;
+    color: #80A444;
 }
 
 @media only screen and (orientation: portrait) {
