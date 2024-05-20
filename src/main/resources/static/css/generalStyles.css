@@ -28,6 +28,23 @@ body {
     border: 1px solid #c8cec9;
     outline: 1px solid #c8cec9;
 }
+
+textarea {
+    min-width: 350px;
+    max-width: 350px;
+    font-size: 100%;
+    background-color: #BEE186;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #3D7B36;
+    outline: 1px solid #3D7B36;
+    height: auto;
+    font-family: Verdana, sans-serif;
+}
+
+textarea:focus {
+    outline: 2px solid #3D7B36;
+}
 .message {
     width: 350px;
     font-size: 101%;
@@ -175,47 +192,61 @@ h2 {
     color: #72543C;
     padding-top: 10px;
 }
-.profile-picture {
-    width: 200px;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-}
 
-.image_picker {
+.image-picker, .image-picker-small {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 7.5%;
+    right: 7.5%;
     cursor: pointer;
     background-color: #dedede;
     border-radius: 25px;
-    width: 15px;
-    height: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0.7;
     border: solid black 1px;
     padding: 0;
     margin: 0;
     color: black;
 }
-
-.image {
-    width: 80px;
-    height: 80px;
-    border-radius: 50px;
-    border: black solid 1px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-
+.image-picker {
+    width: 20px;
+    height: 20px;
 }
 
-.image-plus-icon {
+.image-picker-small {
+    width: 15px;
+    height: 15px;
+    font-size: small;
+}
+
+
+.image-icon-div, .image-icon-div-small {
     position: relative;
-    width: 82px;
     margin: auto;
+}
+
+.image-icon-div {
+    width: 200px;
+}
+.image-icon-div-small {
+    width: 80px;
+}
+
+.image {
+    width: 200px;
+    height: 200px;
+    border-radius: 100px;
+    border: black solid 1px;
+}
+
+.image-small {
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+    border: black solid 1px;
+}
+
+.image-upload, .image-picker {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .autocomplete-items {
@@ -257,18 +288,7 @@ h2 {
 .locationTable {
     margin: auto;
 }
-textarea {
-    min-width: 350px;
-    max-width: 350px;
-    font-size: 100%;
-    background-color: #BEE186;
-    padding: 5px;
-    border-radius: 4px;
-    border: 1px solid #3D7B36;
-    outline: 1px solid #3D7B36;
-    height: auto;
-    font-family: Verdana, sans-serif;
-}
+
 p {
     margin: 0
 }
@@ -304,12 +324,23 @@ p {
     .form-control:disabled {
         border: 2px solid #c8cec9;
     }
+
+    textarea {
+        min-width: 540px;
+        max-width: 540px;
+        font-size: 180%;
+        border: 2px solid #3D7B36;
+    }
+    textarea:focus {
+        outline: 4px solid #3D7B36;
+    }
     .error {
         font-size: 180%;
         width: 540px;
         border: 2px solid #DE2929;
         outline: 2px solid #DE2929;
     }
+
     .error:focus {
         outline: 4px solid #DE2929;
     }
@@ -323,9 +354,6 @@ p {
     .link {
         font-size: 200%;
     }
-    .profile-picture {
-        width: 360px;
-    }
     .garden-header, .gardenLink, h3{
         font-size: 200%;
     }
@@ -333,5 +361,36 @@ p {
     .garden-table, .plant-row{
         font-size: 150%;
     }
+
+    .image-picker {
+        width: 30px;
+        height: 30px;
+    }
+    .image-icon-div {
+        width: 300px;
+    }
+
+    .image {
+        width: 300px;
+        height: 300px;
+        border-radius: 150px;
+    }
+
+    .image-icon-div-small {
+        width: 120px;
+    }
+
+    .image-picker-small {
+        width: 20px;
+        height: 20px;
+        font-size: medium;
+    }
+
+    .image-small {
+        width: 120px;
+        height: 120px;
+        border-radius: 60px;
+    }
+
 }
 

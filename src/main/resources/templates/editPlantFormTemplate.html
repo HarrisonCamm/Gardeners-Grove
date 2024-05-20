@@ -19,9 +19,13 @@
         <form th:action="@{/edit-plant}" method="post" th:object="${plant}">
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="plantID" th:value="${plantID}">
-            <div class="image-plus-icon">
-                <img class="image" th:data-plant-id="${plant.id}" th:src="@{/get-image?edit-plant=true(plantID=${plant.id})}" alt="" src="">
-                <button type="button" class="image_picker" th:id="${'button_' + plant.id}">+</button>
+            <div class="image-icon-div">
+                <div class="image-upload">
+                    <img class="image"
+                         th:data-plant-id="${plant.id}"
+                         th:src="@{/get-image?edit-plant=true(plantID=${plant.id})}" alt="" src="">
+                    <button type="button" class="image-picker" th:id="${'button_' + plant.id}">+</button>
+                </div>
             </div>
             <div>
                 <label for="plantName"> Name: </label>

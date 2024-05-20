@@ -18,9 +18,13 @@
 <div class="content">
     <div>
         <h2>Edit Profile</h2>
-        <div class="image-plus-icon">
-            <img class="image" th:data-user-id="${user.userId}" th:src="@{/get-image?edit-user-profile-image=true(userID=${user.userId})}" alt="">
-            <button class="image_picker" th:id="${'button_' + user.userId}">+</button>
+        <div class="image-icon-div">
+            <div class="image-upload">
+                <img class="image"
+                     th:data-user-id="${user.userId}"
+                     th:src="@{/get-image?edit-user-profile-image=true(userID=${user.userId})}" alt="">
+                <button class="image-picker" th:id="${'button_' + user.userId}">+</button>
+            </div>
         </div>
         <div>
             <form th:action="@{/edit-user-profile}" method="post" novalidate>

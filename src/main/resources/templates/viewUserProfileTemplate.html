@@ -14,9 +14,13 @@
 <div class="content">
     <div th:object="${user}">
         <h2>User Profile</h2>
-        <div class="image-plus-icon">
-            <img class="image" th:data-user-id="${user.userId}" th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="">
-            <button class="image_picker" th:id="${'button_' + user.userId}">+</button>
+        <div class="image-icon-div">
+            <div class="image-upload">
+                <img class="image"
+                     th:data-user-id="${user.userId}"
+                     th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="">
+                <button class="image-picker" th:id="${'button_' + user.userId}">+</button>
+            </div>
         </div>
         <div>
             <form>

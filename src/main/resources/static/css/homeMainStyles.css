@@ -76,15 +76,14 @@ h1 {
 }
 
 .error {
-    border: 1px solid red;
-    outline: 1px solid red;
-    border-radius: 2px;
+    border: 1px solid #DE2929;
+    outline: 1px solid #DE2929;
 }
 .error:focus {
-    outline: 2px solid red;
+    outline: 2px solid #DE2929;
 }
 .error-message {
-    color: red;
+    color: #DE2929;
     display: block;
     width: 300px;
     overflow: hidden;

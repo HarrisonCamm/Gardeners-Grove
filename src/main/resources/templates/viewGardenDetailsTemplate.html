@@ -63,9 +63,13 @@
                 <tbody>
                 <tr th:each="plant : ${plants}" class="plant-row">
                     <td>
-                        <div class="image-plus-icon">
-                            <img class="image" th:data-plant-id="${plant.id}" th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
-                            <button class="image_picker" th:id="${'button_' + plant.id}">+</button>
+                        <div class="image-icon-div-small">
+                            <div class="image-upload">
+                                <img class="image-small"
+                                     th:data-plant-id="${plant.id}"
+                                     th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
+                                <button class="image-picker-small" th:id="${'button_' + plant.id}">+</button>
+                            </div>
                         </div>
                     </td>
                     <td th:text="${plant.name}"></td>
