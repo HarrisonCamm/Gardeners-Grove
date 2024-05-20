@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <title>View Garden</title>
-    <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
+    <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
     <script th:src="@{/javascript/redirect-image-handler.js}"></script>
 </head>
@@ -63,7 +63,7 @@
                 <tbody>
                 <tr th:each="plant : ${plants}" class="plant-row">
                     <td>
-                        <div style="position: relative;">
+                        <div class="image-plus-icon">
                             <img class="image" th:data-plant-id="${plant.id}" th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
                             <button class="image_picker" th:id="${'button_' + plant.id}">+</button>
                         </div>

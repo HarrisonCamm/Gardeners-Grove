@@ -5,7 +5,7 @@
     <title>User Profile</title>
     <!-- Navbar styling -->
     <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
-    <link th:href="@{/css/formStyles.css}" rel="stylesheet"/>
+    <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
     <script th:src="@{/javascript/redirect-image-handler.js}"></script>
 </head>
 <body>
@@ -14,9 +14,9 @@
 <div class="content">
     <div th:object="${user}">
         <h2>User Profile</h2>
-        <div style="position: relative; width: 82px; margin: auto;">
+        <div class="image-plus-icon">
             <img class="image" th:data-user-id="${user.userId}" th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="">
-            <button class="image_picker" th:id="${'button_' + user.userId}" style="position: absolute; top: 0; right: 0;">+</button>
+            <button class="image_picker" th:id="${'button_' + user.userId}">+</button>
         </div>
         <div>
             <form>

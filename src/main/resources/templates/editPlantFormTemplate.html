@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Edit Plant</title>
-    <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
+    <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
     <script th:src="@{/javascript/redirect-image-handler.js}"></script>
     <script th:src="@{javascript/enter-date.js}"></script>
@@ -19,7 +19,7 @@
         <form th:action="@{/edit-plant}" method="post" th:object="${plant}">
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="plantID" th:value="${plantID}">
-            <div style="position: relative; width: 82px; margin: auto;">
+            <div class="image-plus-icon">
                 <img class="image" th:data-plant-id="${plant.id}" th:src="@{/get-image?edit-plant=true(plantID=${plant.id})}" alt="" src="">
                 <button type="button" class="image_picker" th:id="${'button_' + plant.id}">+</button>
             </div>
@@ -27,14 +27,18 @@
                 <label for="plantName"> Name: </label>
                 <br/>
 <!--                todo maxlength will need to be update along with plant validator and plant class sql string length for the defined limit from Fabian-->
-                <input type="text" id="plantName" maxlength="254" th:value="*{name}" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
+                <input type="text" class="form-control" id="plantName"
+                       maxlength="254" th:value="*{name}" th:field="*{name}"
+                       th:classappend="${nameError} ? 'error' : 'form-control'">
             </div>
             <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
 
             <div>
                 <label for="plantCount"> Count: </label>
                 <br/>
-                <input type="text" id="plantCount" th:value="*{count}" th:field="*{count}" th:classappend="${countError} ? 'error' : ''">
+                <input type="text" class="form-control" id="plantCount"
+                       th:value="*{count}" th:field="*{count}"
+                       th:classappend="${countError} ? 'error' : 'form-control'">
             </div>
             <p th:if="${countError}" class="error-message" th:text="${countError}"></p>
 
@@ -52,12 +56,12 @@
 
             <label for="datePlanted"> Date Planted: </label>
             <br/>
-            <input type="text" name="datePlanted" id="datePlanted"
+            <input type="text" class="form-control" id="datePlanted"
                    th:name="datePlanted" th:value="${datePlanted}"
                    placeholder="DD/MM/YYYY"
                    data-cy="datePlanted"
                    oninput="formatDate(this)" th:field="*{datePlanted}"
-                   th:classappend="${datePlantedError} ? 'error' : ''">
+                   th:classappend="${datePlantedError} ? 'error' : 'form-control'">
 
             <p th:if="${datePlantedError}" class="error-message" th:text="${datePlantedError}"></p>
             <br/>

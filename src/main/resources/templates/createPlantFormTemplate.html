@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Create Plant</title>
-    <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
+    <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
     <script th:src="@{javascript/redirect-image-handler.js}"></script>
     <script th:src="@{javascript/enter-date.js}"></script>
@@ -14,26 +14,28 @@
     <br/>
     <div class="form">
         <h1>Create Plant</h1>
-        <div style="position: relative; width: 82px; margin: auto;">
-            <img class="image" th:if="${plant.image != null}" th:data-plant-id="${plant.id}"
+        <div class="image-plus-icon">
+            <img class="image" th:if="${plant.image}" th:data-plant-id="${plant.id}"
                  th:src="@{/get-image?temporary=true(imageID=${plant.image.getId()})}" alt="IMAGE UPDATED :)">
             <img class="image" th:unless="${plant.image != null}" src="/images/leaves-80x80.png" alt="">
-            <button class="image_picker" th:id="${'button_null'}" style="position: absolute; top: 0; right: 0;">+</button>
+            <button class="image_picker" th:id="${'button_null'}">+</button>
         </div>
         <div class="formContainer">
             <form th:action="@{create-plant}" method="post" th:object="${plant}">
                 <input type="hidden" name="gardenID" th:value="${gardenID}">
                 <label for="plantName"> Name: </label>
                 <br/>
-                <input type="text" id="plantName" th:name="name" th:value="${name}"
-                       th:class="${nameError != null ? 'error' : ''}" autofocus>
+                <input type="text" class="form-control" id="plantName"
+                       th:name="name" th:value="${name}"
+                       th:classappend="${nameError} ? 'error' : 'form-control'" autofocus>
                 <br/>
                 <div th:if="${nameError}" class="error-message" th:text="${nameError}"></div>
                 <br/>
                 <label for="plantCount"> Count: </label>
                 <br/>
-                <input type="text" id="plantCount" th:name="count" th:value="${count}"
-                       th:class="${countError != null ? 'error' : ''}" autofocus>
+                <input type="text" class="form-control" id="plantCount"
+                       th:name="count" th:value="${count}"
+                       th:classappend="${countError} ? 'error' : 'form-control'" autofocus>
                 <br/>
                 <div th:if="${countError}" class="error-message" th:text="${countError}"></div>
                 <br/>
@@ -42,19 +44,19 @@
                 <textarea id="plantDescription"
                           th:name="description"
                           th:text="${description}"
-                          th:class="${descriptionError} ? 'error' : ''">
+                          th:classappend="${descriptionError} ? 'error' : ''">
                 </textarea>
                 <br/>
                 <div th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></div>
                 <br/>
                 <label for="datePlanted"> Date Planted: </label>
                 <br/>
-                <input type="text" name="datePlanted" id="datePlanted"
+                <input type="text" class="form-control" name="datePlanted" id="datePlanted"
                        th:name="datePlanted" th:value="${datePlanted}"
                        placeholder="DD/MM/YYYY"
                        data-cy="datePlanted"
                        oninput="formatDate(this)"
-                       th:class="${dateError != null ? 'error' : ''}" autofocus>
+                       th:classappend="${dateError} ? 'error' : 'form-control'" autofocus>
                 <br/>
                 <div th:if="${dateError}" class="error-message" th:text="${dateError}"></div>
                 <br/>
