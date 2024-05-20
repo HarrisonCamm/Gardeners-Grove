@@ -18,7 +18,7 @@ public class LocationValidator {
      * @return FieldError if the validation fails, otherwise null if the input is valid.
      */
     public static FieldError validateStreetAddress(String address) {
-        if (!validateWithRegex("[\\p{L}\\s'-]+", address)) {
+        if (!validateWithRegex("[\\p{L}\\p{N}\\s,'-]+", address)) {
             return new FieldError("garden", "location.streetAddress", "Street address must only include letters, numbers, spaces, commas, periods, hyphens, or apostrophes");
         }
         return null;
