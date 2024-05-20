@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="content">
-    <div>
+    <div class="top-padding">
         <h2>Registration Form</h2>
         <div>
             <form th:action="@{/register-form}" method="post" novalidate>
@@ -17,7 +17,7 @@
                 <br/>
                 <input type="text" class="form-control" id="firstName"
                        th:name="firstName" th:value="${firstName}" data-cy="firstName"
-                       th:class="${firstNameError != null ? 'error' : 'form-control'}" autofocus>
+                       th:classappend="${firstNameError != null ? 'error' : 'form-control'}" autofocus>
                 <br/>
                 <div th:if="${firstNameError}" class="error-message" th:text="${firstNameError}"></div>
                 <br/>
@@ -25,7 +25,7 @@
                 <br/>
                 <input type="text" class="form-control" id="lastName"
                        th:name="lastName" th:value="${lastName}" th:disabled="${noLastName}" data-cy="lastName"
-                       th:class="${lastNameError != null ? 'error' : 'form-control'}" autofocus>
+                       th:classappend="${lastNameError != null ? 'error' : 'form-control'}" autofocus>
                 <br/>
                 <div th:if="${lastNameError}" class="error-message" th:text="${lastNameError}"></div>
                 <label for="noLastName">I have no surname</label>
@@ -47,7 +47,7 @@
                 <br/>
                 <input type="text" class="form-control" id="email"
                        th:name="email" th:value="${email}" data-cy="email"
-                       th:class="${registrationEmailError != null ? 'error' : 'form-control'}" autofocus>
+                       th:classappend="${registrationEmailError != null ? 'error' : 'form-control'}" autofocus>
                 <br/>
                 <!-- Display error message if there is an error with the email existing-->
                 <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
@@ -56,7 +56,7 @@
                 <br/>
                 <input type="password" class="form-control" id="password"
                        th:name="password" th:value="*{password}" data-cy="password"
-                       th:class="${passwordValidityError != null ? 'error' : 'form-control'}" autofocus>
+                       th:classappend="${passwordValidityError != null ? 'error' : 'form-control'}" autofocus>
                 <br/>
                 <div th:if="${passwordValidityError}" class="error-message" th:text="${passwordValidityError}"></div>
                 <br/>
@@ -64,7 +64,7 @@
                 <br/>
                 <input type="password" class="form-control" id="password2"
                        th:name="password2" th:value="*{password2}" data-cy="password2"
-                       th:class="${passwordMatchError != null ? 'error' : 'form-control'}" autofocus>
+                       th:classappend="${passwordMatchError != null ? 'error' : 'form-control'}" autofocus>
                 <br/>
                 <div th:if="${passwordMatchError}" class="error-message" th:text="${passwordMatchError}"></div>
                 <br/>
@@ -73,7 +73,7 @@
                 <input type="text" class="form-control" id="dateOfBirth"
                        th:name="dateOfBirth" th:value="${dateOfBirth}"
                        placeholder="DD/MM/YYYY"
-                       th:class="${ageError != null ? 'error' : 'form-control'}"
+                       th:classappend="${ageError != null ? 'error' : 'form-control'}"
                        data-cy="dateOfBirth" autofocus
                        oninput="formatDate(this)">
                 <br/>

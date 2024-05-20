@@ -8,11 +8,11 @@
             localStorage.setItem('message',"Your account has been activated, please log in");
         }
     </script>
-    <link th:href="@{/css/formStyles.css}" rel="stylesheet">
+    <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
 </head>
 <body>
 <div class="content">
-    <div>
+    <div class="top-padding">
         <h2>Confirm Registration</h2>
         <div>
             <form th:action="@{/confirm-registration}" method="post" novalidate>
@@ -20,7 +20,7 @@
                 <br/>
                 <input type="text" class="form-control" id="registrationCode"
                        th:name="registrationCode" th:value="${registrationCode}" data-cy="registrationCode"
-                       th:class="${signupCodeError != null ? 'error' : 'form-control'}" autofocus>
+                       th:classappend="${signupCodeError != null ? 'error' : 'form-control'}" autofocus>
                 <br/>
                 <div th:if="${signupCodeError}" class="error-message" th:text="${signupCodeError}"></div>
                 <br/>
