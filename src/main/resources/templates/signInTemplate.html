@@ -26,7 +26,7 @@
                 <!-- Email input box -->
                 <input type="text" class="form-control" id="email"
                        th:name="username" th:value="${email}" data-cy="email" required autofocus
-                       th:class="${signInError != null ? 'error' : 'form-control'}">
+                       th:classappend="${signInError != null ? 'error' : 'form-control'}">
                 <br/>
                 <!-- Display error message if there is an error with the email format-->
                 <div id="emailError" class="error-message"></div>
@@ -38,7 +38,7 @@
                 <br/>
                 <input type="password" class="form-control" id="password"
                        th:name="password" th:value="${password}" data-cy="password" required
-                       th:class="${signInError != null ? 'error' : 'form-control'}">
+                       th:classappend="${signInError != null ? 'error' : 'form-control'}">
                 <br/>
                 <!-- Display error message if there is an error with the email or password validation -->
                 <div id="signInError" class="error-message"></div>
