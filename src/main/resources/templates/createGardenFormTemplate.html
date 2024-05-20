@@ -34,7 +34,9 @@
             <form th:action="@{/create-garden}" method="post" th:object="${garden}">
                 <div>
                     <div>
-                        <label for="name"> Garden Name: </label>
+                        <label for="name"> Garden Name:
+                            <span class="required-input"> * </span>
+                        </label>
                         <br/>
                         <input type="text" class="form-control" id="name"
                                th:name="name"
@@ -63,7 +65,9 @@
                                th:value="*{location.suburb}">
                         <br/>
                         <br/>
-                        <label for="city" id="cityLabel">City: </label>
+                        <label for="city" id="cityLabel">City:
+                            <span class="required-input"> * </span>
+                        </label>
                         <br/>
                         <input type="text" class="form-control" id="city"
                                th:name="location.city"
@@ -79,7 +83,9 @@
                                th:value="*{location.postcode}">
                         <br/>
                         <br/>
-                        <label for="country" id="countryLabel">Country: </label>
+                        <label for="country" id="countryLabel">Country:
+                            <span class="required-input"> * </span>
+                        </label>
                         <br/>
                         <input type="text" class="form-control" id="country"
                                th:name="location.country"

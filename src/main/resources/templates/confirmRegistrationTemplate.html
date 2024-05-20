@@ -16,7 +16,9 @@
         <h2>Confirm Registration</h2>
         <div>
             <form th:action="@{/confirm-registration}" method="post" novalidate>
-            <label for="registrationCode"> Registration Code: </label>
+                <label for="registrationCode"> Registration Code:
+                    <span class="required-input"> * </span>
+                </label>
                 <br/>
                 <input type="text" class="form-control" id="registrationCode"
                        th:name="registrationCode" th:value="${registrationCode}" data-cy="registrationCode"

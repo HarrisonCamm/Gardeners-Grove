@@ -19,7 +19,9 @@
                 <div>
                     <p class="error-message" th:if="${expiredTokenError}" id="expiredTokenMessage" th:text="${expiredTokenError}"></p>
                 </div>
-                <label for="email"> Email: </label>
+                <label for="email"> Email:
+                    <span class="required-input"> * </span>
+                </label>
                 <br/>
                 <!-- Email input box -->
                 <input type="text" class="form-control" id="email"
@@ -30,7 +32,9 @@
                 <div id="emailError" class="error-message"></div>
                 <br/>
                 <!-- Password input box -->
-                <label for="password"> Password: </label>
+                <label for="password"> Password:
+                    <span class="required-input"> * </span>
+                </label>
                 <br/>
                 <input type="password" class="form-control" id="password"
                        th:name="password" th:value="${password}" data-cy="password" required

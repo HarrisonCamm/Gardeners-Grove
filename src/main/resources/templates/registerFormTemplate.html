@@ -9,11 +9,13 @@
 </head>
 <body>
 <div class="content">
-    <div class="top-padding">
+    <div class="register-top-padding">
         <h2>Registration Form</h2>
         <div>
             <form th:action="@{/register-form}" method="post" novalidate>
-                <label for="firstName"> First Name: </label>
+                <label for="firstName"> First Name:
+                    <span class="required-input"> * </span>
+                </label>
                 <br/>
                 <input type="text" class="form-control" id="firstName"
                        th:name="firstName" th:value="${firstName}" data-cy="firstName"
@@ -21,7 +23,9 @@
                 <br/>
                 <div th:if="${firstNameError}" class="error-message" th:text="${firstNameError}"></div>
                 <br/>
-                <label for="lastName"> Last Name: </label>
+                <label for="lastName"> Last Name:
+                    <span id="lastNameLabel" class="required-input"></span>
+                </label>
                 <br/>
                 <input type="text" class="form-control" id="lastName"
                        th:name="lastName" th:value="${lastName}" th:disabled="${noLastName}" data-cy="lastName"
@@ -32,18 +36,38 @@
                 <input type="checkbox" class="checkbox" id="noLastName" th:name="noLastName" th:value="${noLastName}"
                        th:checked="${noLastName}" onchange="toggleLastNameField()" />
                 <script>
+                    window.addEventListener('load', function() {
+                        let checkbox = document.getElementById('noLastName');
+                        let lastNameLabel = document.getElementById('lastNameLabel');
+                        if (checkbox.checked) {
+                            lastNameLabel.textContent = "";
+                        } else {
+                            lastNameLabel.textContent = "*";
+                        }
+
+                    });
                     function toggleLastNameField() {
                         // Check the checkbox state and enable/disable the last name field accordingly
                         let checkbox = document.getElementById('noLastName');
                         let lastNameField = document.getElementById('lastName');
+                        let lastNameLabel = document.getElementById('lastNameLabel');
+
                         lastNameField.value = "";
                         lastNameField.disabled = checkbox.checked;
                         checkbox.value = checkbox.checked;
+                        if (checkbox.checked) {
+                            lastNameLabel.textContent = "";
+                        } else {
+                            lastNameLabel.textContent = "*";
+                        }
+
                     }
                 </script>
                 <br/>
                 <br/>
-                <label for="email"> Email: </label>
+                <label for="email"> Email:
+                    <span class="required-input"> * </span>
+                </label>
                 <br/>
                 <input type="text" class="form-control" id="email"
                        th:name="email" th:value="${email}" data-cy="email"
@@ -52,7 +76,9 @@
                 <!-- Display error message if there is an error with the email existing-->
                 <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
                 <br/>
-                <label for="password"> Password: </label>
+                <label for="password"> Password:
+                    <span class="required-input"> * </span>
+                </label>
                 <br/>
                 <input type="password" class="form-control" id="password"
                        th:name="password" th:value="*{password}" data-cy="password"
@@ -60,7 +86,9 @@
                 <br/>
                 <div th:if="${passwordValidityError}" class="error-message" th:text="${passwordValidityError}"></div>
                 <br/>
-                <label for="password2"> Repeat Password: </label>
+                <label for="password2"> Repeat Password:
+                    <span class="required-input"> * </span>
+                </label>
                 <br/>
                 <input type="password" class="form-control" id="password2"
                        th:name="password2" th:value="*{password2}" data-cy="password2"

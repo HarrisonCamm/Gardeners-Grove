@@ -8,9 +8,13 @@ body {
     align-items: center;
 }
 
+.register-top-padding {
+    padding-top: 5%;
+}
 .top-padding {
     padding-top: 10%;
 }
+
 
 /*Form styles*/
 .form-control {
@@ -27,11 +31,14 @@ body {
 }
 
 .form-control:disabled {
-    background-color: #f1faf2;
-    border: 1px solid #c8cec9;
-    outline: 1px solid #c8cec9;
+    background-color: #CEDACF;
+    border: 1px solid #ABB2AC;
+    outline: 1px solid #ABB2AC;
 }
 
+.required-input {
+    color: #DE2929;
+}
 textarea {
     min-width: 350px;
     max-width: 350px;
@@ -60,7 +67,7 @@ textarea:focus {
 .error:focus {
     outline: 2px solid #DE2929;
 }
-.error-message {
+.error-message, .password-error-message {
     color: #DE2929;
     display: block;
     width: 350px;
@@ -325,7 +332,7 @@ p {
         width: 540px;
     }
     .form-control:disabled {
-        border: 2px solid #c8cec9;
+        border: 2px solid #ABB2AC;
     }
 
     textarea {
@@ -347,7 +354,7 @@ p {
     .error:focus {
         outline: 4px solid #DE2929;
     }
-    .error-message {
+    .error-message, .password-error-message {
         width: 540px;
         font-size: 150%;
     }

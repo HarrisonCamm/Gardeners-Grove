@@ -25,7 +25,9 @@
         <div class="formContainer">
             <form th:action="@{create-plant}" method="post" th:object="${plant}">
                 <input type="hidden" name="gardenID" th:value="${gardenID}">
-                <label for="plantName"> Name: </label>
+                <label for="plantName"> Name:
+                    <span class="required-input"> * </span>
+                </label>
                 <br/>
                 <input type="text" class="form-control" id="plantName"
                        th:name="name" th:value="${name}"
