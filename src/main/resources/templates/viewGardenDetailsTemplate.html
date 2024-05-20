@@ -30,16 +30,16 @@
     <div class="gardenContainer">
         <div class="gardenDetails">
             <div class="containerRow">
-                <label> Garden Name:&nbsp;</label>
-                <h3 th:text="${gardenName}">  </h3>
+                <label></label>
+                <h3 th:text="${gardenName}"> </h3>
             </div>
             <div class="containerRow">
-                <label>Garden Location:&nbsp;</label>
-                <h3 th:text="${gardenLocation}">  </h3>
+                <label></label>
+                <h3 th:text="${gardenLocation}"> </h3>
             </div>
             <div class="containerRow" th:classappend="${gardenSize == '' ? 'disabled' : ''}">
-                <label>Garden Size:&nbsp;</label>
-                <h3 th:text="${gardenSize}"></h3>
+                <label></label>
+                <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
             </div>
             <div class="buttons-right">
                 <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}">

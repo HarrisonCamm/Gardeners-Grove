@@ -15,7 +15,11 @@ body {
     padding-top: 10%;
 }
 
-
+.background {
+    background-color: #BEE186;
+    border-radius: 15px;
+    padding: 20px;
+}
 /*Form styles*/
 .form-control {
     width: 350px;
@@ -243,14 +247,14 @@ h2 {
     width: 200px;
     height: 200px;
     border-radius: 100px;
-    border: black solid 1px;
+    border: #3D7B36 solid 1px;
 }
 
 .image-small {
     width: 80px;
     height: 80px;
     border-radius: 40px;
-    border: black solid 1px;
+    border: #3D7B36 solid 1px;
 }
 
 .image-upload, .image-picker {
