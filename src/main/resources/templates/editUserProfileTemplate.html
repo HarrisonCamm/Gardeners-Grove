@@ -10,6 +10,7 @@
     <script th:src="@{javascript/redirect-image-handler.js}"></script>
     <script th:src="@{javascript/enter-date.js}"></script>
     <script th:src="@{javascript/prevent-enter-submit.js}"></script>
+    <script th:src="@{javascript/last-name-box.js}"></script>
 </head>
 <body>
 <!-- Navigation Bar Fragment -->
@@ -49,32 +50,6 @@
                 <label for="noLastName">I have no surname</label>
                 <input type="checkbox" class="checkbox" id="noLastName" th:name="noLastName" th:value="${noLastName}"
                        th:checked="${noLastName}" onchange="toggleLastNameField()" />
-                <script>
-                    window.addEventListener('load', function() {
-                        let checkbox = document.getElementById('noLastName');
-                        let lastNameLabel = document.getElementById('lastNameLabel');
-                        if (checkbox.checked) {
-                            lastNameLabel.textContent = "";
-                        } else {
-                            lastNameLabel.textContent = "*";
-                        }
-
-                    });
-                    function toggleLastNameField() {
-                        // Check the checkbox state and enable/disable the last name field accordingly
-                        let checkbox = document.getElementById('noLastName');
-                        let lastNameField = document.getElementById('lastName');
-                        let lastNameLabel = document.getElementById('lastNameLabel');
-                        lastNameField.value = "";
-                        lastNameField.disabled = checkbox.checked;
-                        checkbox.value = checkbox.checked;
-                        if (checkbox.checked) {
-                            lastNameLabel.textContent = "";
-                        } else {
-                            lastNameLabel.textContent = "*";
-                        }
-                    }
-                </script>
                 <br/>
                 <br/>
                 <label for="email"> Email:
