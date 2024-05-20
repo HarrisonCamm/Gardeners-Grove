@@ -156,7 +156,6 @@ public class EditGardenController {
 
         FieldError streetAddressError = validateStreetAddress(gardenLocation.getStreetAddress());
         if (streetAddressError != null) {
-            logger.info("adress error");
             errors.add(streetAddressError);
         }
 
