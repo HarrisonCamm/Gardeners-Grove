@@ -52,11 +52,12 @@ public class ManageFriendsTests {
         loggedUser = new User("logged@email.com", "foo", "bar", "password");
         testUser = new User("test@email.com", "test", "user", "password");
 
+        friendRequest = new FriendRequest(loggedUser, testUser);
+
         when(userService.getAuthenicatedUser()).thenReturn(loggedUser);
         when(userService.searchForUsers(any(String.class))).thenReturn(List.of(testUser));
         when(userService.getUserByEmail(any(String.class))).thenReturn(testUser);
-
-        friendRequest = new FriendRequest(loggedUser, testUser);
+        when(userService.getSentFriendRequests(any(User.class))).thenReturn(List.of(friendRequest));
 
         doNothing().when(friendRequestService).sendRequest(friendRequest);
     }
@@ -87,12 +88,28 @@ public class ManageFriendsTests {
     @Test
     public void OnManageFriends_InviteUser_IsOkay() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
+                .with(csrf())
+                    .param("action", "invite")
+                    .param("email", testUser.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("manageFriendsTemplate"))
+                .andExpect(model().attribute("sentRequests", List.of(friendRequest)));
+
+    }
+
+    @WithMockUser
+    @Test
+    public void OnManageFriends_CancelInvite_IsOkay() throws Exception {
+
+        List <FriendRequest> emptyList = List.of();
+        when(userService.getSentFriendRequests(any(User.class))).thenReturn(emptyList);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
                         .with(csrf())
-                        .param("action", "invite")
+                        .param("action", "cancel")
                         .param("email", testUser.getEmail()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("manageFriendsTemplate"));
-
-        verify(friendRequestService, times(1)).sendRequest(friendRequest);
+                .andExpect(view().name("manageFriendsTemplate"))
+                .andExpect(model().attribute("sentRequests", emptyList));
     }
 }
