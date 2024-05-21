@@ -53,6 +53,29 @@
             </div>
             <div class="requests-container">
                 <h3 style="text-align: left; margin-left: 20px">Friend Requests</h3>
+                <div th:if="${pendingRequests}">
+                    <ul style="padding: 0; text-align: left">
+                        <li th:each="pendingRequest : ${pendingRequests}">
+                            <form th:action="@{/manage-friends}" method="post" novalidate>
+                                <div style="display: flex; justify-content: space-between; align-items: center">
+                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
+                                    <h3 th:text="${pendingRequest.receiver.firstName}"></h3>
+                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
+<!--                                    <input type="hidden" th:name="email" th:value="${sentRequest.receiver.email}" />-->
+                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
+                                    <input type="hidden" th:name="action" th:value="cancel" />
+                                    <button type="submit" style="height: 50px">
+                                        Delete
+                                    </button>
+                                    <button type="submit" style="height: 50px">
+                                        Accept
+                                    </button>
+                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <hr>
             <div class="requests-container">
