@@ -32,8 +32,7 @@ Feature: U12 As Kaia, I want to update the plants I have in my garden so that I 
     Given I have 1 plants in my garden with the details <name>, <count>, <description>, and <date planted>
     And I am on the garden details page
     When I hit the edit button for the first plant
-    And I update the plant details with <new name>, <new count>, <new description>, and <new date planted>
-    And I hit the save button on the edit plant form
+    And I hit the save button with the details <new name>, <new count>, <new description>, and <new date planted>
     Then The plant details are updated with <new name>, <new count>, <new description>, and <new date planted>
     Examples:
       | name     | count | description     | date planted | new name | new count | new description             | new date planted |
@@ -45,13 +44,12 @@ Feature: U12 As Kaia, I want to update the plants I have in my garden so that I 
     Given I have 1 plants in my garden with the details <name>, <count>, <description>, and <date planted>
     And I am on the garden details page
     When I hit the edit button for the first plant
-    And I update the plant details with <new name>, <new count>, <new description>, and <new date planted>
-    And I hit the save button on the edit plant form
+    And I hit the save button with the details <new name>, <new count>, <new description>, and <new date planted>
     Then The plant details are not updated and stay as <name>, <count>, <description>, and <date planted>
     And An error message tells me "Plant name cannot be empty and must only include letters,numbers, spaces, dots, hyphens or apostrophes"
     Examples:
       | name     | count | description        | date planted | new name      | new count | new description              | new date planted |
-      | "plant1" | "1"   | "Small cactus"     | "01/02/2002" | "test"        | "2"       | "Thrives in dry environments" | "15/03/2022"     |
+      | "plant1" | "1"   | "Small cactus"     | "01/02/2002" | ""        | "2"       | "Thrives in dry environments" | "15/03/2022"     |
       | "plant2" | "2"   | "Orchid bloom"     | "01/02/2022" | "123*Orch"    | "3"       | "Needs indirect sunlight"     | "16/04/2023"     |
       | "plant3" | "3"   | "Rose bush"        | "01/02/2023" | "Rose#"       | "1"       | "Requires frequent watering"  | "17/05/2024"     |
       | "plant4" | "4"   | "Lavender field"   | "12/08/2019" | "Rose@home"   | "2"       | "Fragrant and calming"        | "18/06/2025"     |
@@ -63,8 +61,7 @@ Feature: U12 As Kaia, I want to update the plants I have in my garden so that I 
     Given I have 1 plants in my garden with the details <name>, <count>, <description>, and <date planted>
     And I am on the garden details page
     When I hit the edit button for the first plant
-    And I update the plant details with <new name>, <new count>, <new description>, and <new date planted>
-    And I hit the save button on the edit plant form
+    And I hit the save button with the details <new name>, <new count>, <new description>, and <new date planted>
     Then The plant details are not updated and stay as <name>, <count>, <description>, and <date planted>
     And An error message tells me "Plant description must be less than 512 characters"
     Examples:
@@ -75,8 +72,7 @@ Feature: U12 As Kaia, I want to update the plants I have in my garden so that I 
     Given I have 1 plants in my garden with the details <name>, <count>, <description>, and <date planted>
     And I am on the garden details page
     When I hit the edit button for the first plant
-    And I update the plant details with <new name>, <new count>, <new description>, and <new date planted>
-    And I hit the save button on the edit plant form
+    And I hit the save button with the details <new name>, <new count>, <new description>, and <new date planted>
     Then The plant details are not updated and stay as <name>, <count>, <description>, and <date planted>
     And An error message tells me "Plant count must be a positive number"
     Examples:
@@ -91,8 +87,7 @@ Feature: U12 As Kaia, I want to update the plants I have in my garden so that I 
     Given I have 1 plants in my garden with the details <name>, <count>, <description>, and <date planted>
     And I am on the garden details page
     When I hit the edit button for the first plant
-    And I update the plant details with <new name>, <new count>, <new description>, and <new date planted>
-    And I hit the save button on the edit plant form
+    And I hit the save button with the details <new name>, <new count>, <new description>, and <new date planted>
     Then The plant details are not updated and stay as <name>, <count>, <description>, and <date planted>
     And An error message tells me "Date is not in valid format, DD/MM/YYYY"
     Examples:
