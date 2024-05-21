@@ -71,6 +71,8 @@ public class ManageFriendsController {
             case "search" -> handleSearchRequest(searchQuery, model);
             case "invite" -> handleInviteRequest(email, model);
             case "cancel" -> handleCancelRequest(email, model);
+            case "accept" -> handleAcceptRequest(email, model);
+            case "delete" -> handleRejectRequest(email, model);
             default -> "manageFriendsTemplate"; // Should never reach this
 
         };
@@ -141,6 +143,14 @@ public class ManageFriendsController {
 
         return "manageFriendsTemplate";
 
+    }
+
+    private String handleRejectRequest(String email, Model model) {
+        return "";
+    }
+
+    private String handleAcceptRequest(String email, Model model) {
+        return "";
     }
 
 
