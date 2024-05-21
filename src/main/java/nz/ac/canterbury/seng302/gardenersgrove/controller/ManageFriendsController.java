@@ -137,6 +137,7 @@ public class ManageFriendsController {
 
         model.addAttribute("pendingRequests", pendingFriendRequests);
         model.addAttribute("sentRequests", sentFriendRequests);
+        model.addAttribute("friends", currentUser.getFriends()); // TODO handle in thyme leaf
         model.addAttribute("showSearch", true);
 
         return "manageFriendsTemplate";
@@ -154,7 +155,18 @@ public class ManageFriendsController {
     }
 
     private String handleAcceptRequest(String email, Model model) {
-        return "";
+        logger.info("POST /manage-friends (accept)");
+
+        User currentUser = userService.getAuthenicatedUser();
+        User acceptedFriend = userService.getUserByEmail(email);
+
+        // Remove the request from the database
+        friendRequestService.cancelRequest(currentUser, acceptedFriend);
+
+        // Add the user to the current user's friends list
+        currentUser.addFriend(acceptedFriend);
+
+        return addAttributes(model, currentUser);
     }
 
 

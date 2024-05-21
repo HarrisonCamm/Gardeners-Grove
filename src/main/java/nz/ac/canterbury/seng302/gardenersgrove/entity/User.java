@@ -36,6 +36,14 @@ public class User {
     @Column(name = "dateOfBirth")
     private String dateOfBirth;
 
+    @ManyToMany
+    @JoinTable(
+            name = "User_Friends",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    private List<User> friends = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn
     private Image image;
@@ -175,5 +183,17 @@ public class User {
         return String.format(
                 "User[id=%d, firstName='%s', lastName='%s', email='%s', password='%s', dateOfBirth='%s']",
                 userId, firstName, lastName, email, password, dateOfBirth);
+    }
+
+    /**
+     * Adds a friend to the user's friend list
+     * @param acceptedFriend the user to add as a friend
+     */
+    public void addFriend(User acceptedFriend) {
+        friends.add(acceptedFriend);
+    }
+
+    public List<User> getFriends() {
+        return friends;
     }
 }
