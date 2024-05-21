@@ -166,6 +166,10 @@ public class User {
         return image;
     }
 
+    public List<FriendRequest> getSentFriendRequests() {
+        return null;
+    }
+
     @Override
     public String toString() {
         return String.format(

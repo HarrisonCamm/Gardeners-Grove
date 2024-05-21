@@ -1,8 +1,10 @@
 package nz.ac.canterbury.seng302.gardenersgrove.repository;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,4 +15,8 @@ public interface FriendRequestRepository extends CrudRepository<FriendRequest, L
 
     Optional<FriendRequest> findById(long id);
     List<FriendRequest> findAll();
+
+    @Query("SELECT CASE WHEN COUNT(f) > 0 THEN true ELSE false END FROM FriendRequest f WHERE f.receiver = :receiver AND f.sender = :sender")
+    boolean hasRequestSent(@Param("sender")  User sender,
+                           @Param("receiver") User receiver);
 }

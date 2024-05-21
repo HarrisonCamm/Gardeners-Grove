@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.repository;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -31,4 +32,6 @@ public interface UserRepository extends CrudRepository<User, Long>{
                               @Param("firstName") String firstName,
                               @Param("lastName") String lastName);
 
+    @Query("SELECT r from FriendRequest r WHERE r.sender.userId = :userId")
+    List<FriendRequest> getSentFriendRequests(Long userId);
 }

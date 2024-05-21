@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.FriendRequestService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
@@ -21,8 +22,8 @@ public class ManageFriendsController {
 
     Logger logger = LoggerFactory.getLogger(ManageFriendsController.class);
 
-    private UserService userService;
-    private FriendRequestService friendRequestService;
+    private final UserService userService;
+    private final FriendRequestService friendRequestService;
 
     @Autowired
     public ManageFriendsController(UserService userService, FriendRequestService friendRequestService) {
@@ -40,7 +41,10 @@ public class ManageFriendsController {
 
         RedirectService.addEndpoint("/manage-friends");
 
+        User currentUser = userService.getAuthenicatedUser();
 
+        List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
+        model.addAttribute("sentRequests", sentFriendRequests);
         model.addAttribute("showSearch", true);
 
         return "manageFriendsTemplate";
@@ -89,6 +93,11 @@ public class ManageFriendsController {
         model.addAttribute("showSearch", true);
         model.addAttribute("searchQuery", searchQuery);
 
+        User currentUser = userService.getAuthenicatedUser();
+
+        List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
+        model.addAttribute("sentRequests", sentFriendRequests);
+
         return "manageFriendsTemplate";
     }
 
@@ -102,9 +111,16 @@ public class ManageFriendsController {
         logger.info("POST /manage-friends (invite)");
 
         User currentUser = userService.getAuthenicatedUser();
-        User invitedUser = userService.getUserByEmail(email);
 
-        friendRequestService.sendRequest(currentUser, invitedUser);
+        User invitedUser = userService.getUserByEmail(email);
+        FriendRequest friendRequest = new FriendRequest(currentUser, invitedUser);
+        FriendRequest req = friendRequestService.sendRequest(friendRequest);
+
+        List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
+
+        model.addAttribute("sentRequests", sentFriendRequests);
+
+        model.addAttribute("showSearch", true);
 
         return "manageFriendsTemplate";
     }

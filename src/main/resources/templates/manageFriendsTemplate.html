@@ -57,7 +57,17 @@
             <hr>
             <div class="requests-container">
                 <h3 style="text-align: left; margin-left: 20px">Sent Requests</h3>
+                <div if="${sentRequests}">
+                    <ul style="padding: 0; text-align: left">
+                        <li th:each="sentRequest : ${sentRequests}">
+                            <div style="display: flex; justify-content: space-between">
+                                <h3 th:text="${sentRequest.receiver.firstName + ' - ' + sentRequest.receiver.email}"></h3>
+                                <button type="submit" style="height: 50px" onclick="document.getElementById('action').value='cancel'">Cancel Request</button>
+                            </div>
+                        </li>
+                    </ul>
             </div>
+        </div>
         </div>
         <div style="justify-content: flex-end; margin: 0; padding: 0">
             <div class="friends-container">
@@ -65,12 +75,6 @@
             </div>
         </div>
     </div>
-    <!-- <div class="rows">
-        <h1>Sent Requests</h1>
-    </div>
-    <div class="rows">
-        <h1>Pending Requests</h1>
-    </div> -->
 </div>
 <script>
     function toggleSearchFriend() {

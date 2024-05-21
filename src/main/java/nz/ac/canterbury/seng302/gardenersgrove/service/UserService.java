@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,5 +149,9 @@ public class UserService {
         String firstName = parts[0];
         String lastName = parts.length > 1 ? parts[1] : "";
         return userRepository.searchForUsers(searchQuery, firstName, lastName);
+    }
+
+    public List<FriendRequest> getSentFriendRequests(User user) {
+        return userRepository.getSentFriendRequests(user.getUserId());
     }
 }

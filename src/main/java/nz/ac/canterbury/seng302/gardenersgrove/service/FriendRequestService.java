@@ -18,13 +18,13 @@ public class FriendRequestService {
 
     /**
      * Sends a friend request from the sender to the receiver by persisting a new FriendRequest object
-     * @param sender the user sending the request
-     * @param receiver the user receiving the request
      */
-    public void sendRequest(User sender, User receiver) {
-        FriendRequest friendRequest = new FriendRequest();
-        friendRequest.setSender(sender);
-        friendRequest.setReceiver(receiver);
-        friendRequestRepository.save(friendRequest);
+    public FriendRequest sendRequest(FriendRequest friendRequest) {
+        if (friendRequestRepository.hasRequestSent(friendRequest.getSender(), friendRequest.getReceiver())) {
+            return null;
+        } else {
+            return friendRequestRepository.save(friendRequest);
+        }
+
     }
 }

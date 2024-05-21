@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.controller.ManageFriendsController;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeAll;
@@ -44,6 +45,8 @@ public class ManageFriendsTests {
     private static User loggedUser;
     private static User testUser;
 
+    private static FriendRequest friendRequest;
+
     @BeforeEach
     public void setUp() {
         loggedUser = new User("logged@email.com", "foo", "bar", "password");
@@ -53,7 +56,9 @@ public class ManageFriendsTests {
         when(userService.searchForUsers(any(String.class))).thenReturn(List.of(testUser));
         when(userService.getUserByEmail(any(String.class))).thenReturn(testUser);
 
-        doNothing().when(friendRequestService).sendRequest(loggedUser, testUser);
+        friendRequest = new FriendRequest(loggedUser, testUser);
+
+        doNothing().when(friendRequestService).sendRequest(friendRequest);
     }
 
     @WithMockUser
@@ -88,6 +93,6 @@ public class ManageFriendsTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("manageFriendsTemplate"));
 
-        verify(friendRequestService, times(1)).sendRequest(loggedUser, testUser);
+        verify(friendRequestService, times(1)).sendRequest(friendRequest);
     }
 }
