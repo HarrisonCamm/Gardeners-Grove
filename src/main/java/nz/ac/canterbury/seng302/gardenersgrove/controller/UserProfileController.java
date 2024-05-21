@@ -70,8 +70,8 @@ public class UserProfileController {
     }
 
     @PostMapping("/view-user-profile")
-    public String uploadImage(@RequestParam(value = "userID", required = false) Long userID,
-                              @RequestParam(value = "file", required = false) MultipartFile file,
+    public String uploadImage(@RequestParam(value = "userID") Long userID,
+                              @RequestParam(value = "file") MultipartFile file,
                               HttpSession session,
                               Model model) throws IOException {
         Optional<User> user = userRepository.findById(userID);

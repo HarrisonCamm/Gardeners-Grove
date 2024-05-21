@@ -280,8 +280,8 @@ public class EditProfileController {
     }
 
     @PostMapping("/edit-user-profile-image")
-    public String uploadImage(@RequestParam(value = "userID", required = false) Long userID,
-                              @RequestParam(value = "file", required = false) MultipartFile file,
+    public String uploadImage(@RequestParam(value = "userID") Long userID,
+                              @RequestParam(value = "file") MultipartFile file,
                               HttpSession session,
                               Model model) throws IOException {
         logger.info("PUT /edit-user-profile");
