@@ -11,9 +11,9 @@
 </head>
 <body>
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-<div style="width: 50%; margin: 50px auto; text-align: center">
+<div style="width: 70%; margin: 50px auto; text-align: center">
     <div style="display: flex; justify-content: space-between">
-        <div style="width: 500px; min-width: 500px; display: flex; flex-direction: column">
+        <div style="width: 700px; min-width: 700px; display: flex; flex-direction: column">
             <div>
                 <div class="buttons-centre">
                     <button onclick="toggleSearchFriend()">Add Friend</button>
@@ -57,17 +57,28 @@
             <hr>
             <div class="requests-container">
                 <h3 style="text-align: left; margin-left: 20px">Sent Requests</h3>
-                <div if="${sentRequests}">
+                <div th:if="${sentRequests}">
                     <ul style="padding: 0; text-align: left">
                         <li th:each="sentRequest : ${sentRequests}">
-                            <div style="display: flex; justify-content: space-between">
-                                <h3 th:text="${sentRequest.receiver.firstName + ' - ' + sentRequest.receiver.email}"></h3>
-                                <button type="submit" style="height: 50px" onclick="document.getElementById('action').value='cancel'">Cancel Request</button>
-                            </div>
+                            <form th:action="@{/manage-friends}" method="post" novalidate>
+                                <div style="display: flex; justify-content: space-between; align-items: center">
+                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
+                                    <h3 th:text="${sentRequest.receiver.firstName + ' - ' + sentRequest.receiver.email}"></h3>
+                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
+                                    <input type="hidden" th:name="email" th:value="${sentRequest.receiver.email}" />
+                                    <h3 th:text="${sentRequest.status}"></h3>
+                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
+                                    <input type="hidden" th:name="action" th:value="cancel" />
+                                    <button type="submit" style="height: 50px">
+                                        Cancel
+                                    </button>
+                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
+                                </div>
+                            </form>
                         </li>
                     </ul>
+                </div>
             </div>
-        </div>
         </div>
         <div style="justify-content: flex-end; margin: 0; padding: 0">
             <div class="friends-container">

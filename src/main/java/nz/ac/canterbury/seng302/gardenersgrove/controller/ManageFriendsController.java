@@ -64,13 +64,13 @@ public class ManageFriendsController {
                                     @RequestParam(name="searchQuery", required = false) String searchQuery,
                                     Model model) {
 
-        if (action.equals("search")) {
-            return handleSearchRequest(searchQuery, model);
-        } else if (action.equals("invite")) {
-            return handleInviteRequest(email, model);
-        } else {
-            return "manageFriendsTemplate"; // Should never reach this
-        }
+        return switch (action) {
+            case "search" -> handleSearchRequest(searchQuery, model);
+            case "invite" -> handleInviteRequest(email, model);
+            case "cancel" -> handleCancelRequest(email, model);
+            default -> "manageFriendsTemplate"; // Should never reach this
+
+        };
     }
 
     /**
@@ -111,18 +111,33 @@ public class ManageFriendsController {
         logger.info("POST /manage-friends (invite)");
 
         User currentUser = userService.getAuthenicatedUser();
-
         User invitedUser = userService.getUserByEmail(email);
+
         FriendRequest friendRequest = new FriendRequest(currentUser, invitedUser);
-        FriendRequest req = friendRequestService.sendRequest(friendRequest);
+        friendRequestService.sendRequest(friendRequest);
 
         List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
 
         model.addAttribute("sentRequests", sentFriendRequests);
-
         model.addAttribute("showSearch", true);
 
         return "manageFriendsTemplate";
+    }
+
+    public String handleCancelRequest(String email, Model model) {
+        logger.info("POST /manage-friends (cancel)");
+
+        User currentUser = userService.getAuthenicatedUser();
+        User canceledUser = userService.getUserByEmail(email);
+
+        friendRequestService.cancelRequest(currentUser, canceledUser);
+        List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
+
+        model.addAttribute("sentRequests", sentFriendRequests);
+        model.addAttribute("showSearch", true);
+
+        return "manageFriendsTemplate";
+
     }
 
 
