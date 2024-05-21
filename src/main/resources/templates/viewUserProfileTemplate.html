@@ -6,8 +6,6 @@
     <!-- Navbar styling -->
     <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
     <link th:href="@{/css/formStyles.css}" rel="stylesheet"/>
-    <script th:src="@{/javascript/redirect-image-handler.js}"></script>
-
     <script th:src="@{/javascript/image-handling.js}"></script>
 </head>
 <body>
@@ -20,9 +18,10 @@
             <img class="image" th:data-user-id="${user.userId}" th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="">
 <!--            <button class="image_picker" th:id="${'button_' + user.userId}" style="position: absolute; top: 0; right: 0;">+</button>-->
             <input style="display: none" th:value="imagePath" class="fileInput" type="file" name="file" id="file">
-            <label for="file" class="image_picker" style="position: absolute; top: 0; right: 0;">+</label>
+            <label for="file" class="image_picker" th:image-button-id="${user.userId}" style="position: absolute; top: 0; right: 0;">+</label>
         </div>
         <div>
+            <div id="imageError" class="error-message"></div>
             <form>
                 <label for="name">Name: </label>
                 <br/>

@@ -5,80 +5,81 @@
     <title>Edit Plant</title>
     <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
-    <script th:src="@{/javascript/redirect-image-handler.js}"></script>
     <script th:src="@{javascript/enter-date.js}"></script>
     <script th:src="@{javascript/prevent-enter-submit.js}"></script>
-
     <script th:src="@{/javascript/image-handling.js}"></script>
 </head>
 <body>
-<!-- Navigation Bar Fragment -->
-<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-<br/>
-<div class="form">
-    <h2>Edit Plant</h2>
-    <div class="formContainer">
-        <form th:action="@{/edit-plant}" method="post" th:object="${plant}">
-            <input type="hidden" name="_method" value="PUT">
-            <input type="hidden" name="plantID" th:value="${plantID}">
-            <div style="position: relative; width: 82px; margin: auto;">
-                <img class="image" th:data-plant-id="${plant.id}" th:src="@{/get-image?edit-plant=true(plantID=${plant.id})}" alt="" src="">
+    <!-- Navigation Bar Fragment -->
+    <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+    <br/>
+    <div class="form">
+        <h2>Edit Plant</h2>
+        <div style="position: relative; width: 82px; margin: auto;">
+            <img class="image" th:data-plant-id="${plant.id}" th:src="@{/get-image?edit-plant=true(plantID=${plant.id})}" alt="" src="">
 <!--                <button type="button" class="image_picker" th:id="${'button_' + plant.id}">+</button>-->
 
-                <input style="display: none" th:value="imagePath" class="fileInput" type="file" name="file" id="file">
-                <label for="file" class="image_picker" style="position: absolute; top: 0; right: 0;">+</label>
-            </div>
-            <div>
-                <label for="plantName"> Name: </label>
+            <input style="display: none" th:value="imagePath" class="fileInput" type="file" name="file" id="file">
+            <label for="file" class="image_picker" th:image-button-id="${plant.id}" style="position: absolute; top: 0; right: 0;">+</label>
+        </div>
+        <div class="formContainer">
+            <form class="hasImage" th:action="@{edit-plant}" method="post" th:object="${plant}">
+                <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" name="plantID" th:value="${plantID}">
+
+                <div id="imageError" class="error-message"></div>
+
+                <div>
+                    <label for="plantName"> Name: </label>
+                    <br/>
+    <!--                todo maxlength will need to be update along with plant validator and plant class sql string length for the defined limit from Fabian-->
+                    <input type="text" id="plantName" maxlength="254" th:value="*{name}" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
+                </div>
+                <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
+
+                <div>
+                    <label for="plantCount"> Count: </label>
+                    <br/>
+                    <input type="text" id="plantCount" th:value="*{count}" th:field="*{count}" th:classappend="${countError} ? 'error' : ''">
+                </div>
+                <p th:if="${countError}" class="error-message" th:text="${countError}"></p>
+
+                <div>
+                    <label for="plantDescription"> Description: </label>
+
+                    <br/>
+                    <textarea maxlength="1028" id="plantDescription"
+                              th:value="*{description}"
+                              th:field="*{description}"
+                              th:classappend="${descriptionError} ? 'error' : ''">
+                    </textarea>
+                </div>
+                <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
+
+                <label for="datePlanted"> Date Planted: </label>
                 <br/>
-<!--                todo maxlength will need to be update along with plant validator and plant class sql string length for the defined limit from Fabian-->
-                <input type="text" id="plantName" maxlength="254" th:value="*{name}" th:field="*{name}" th:classappend="${nameError} ? 'error' : ''">
-            </div>
-            <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
+                <input type="text" name="datePlanted" id="datePlanted"
+                       th:name="datePlanted" th:value="${datePlanted}"
+                       placeholder="DD/MM/YYYY"
+                       data-cy="datePlanted"
+                       oninput="formatDate(this)" th:field="*{datePlanted}"
+                       th:classappend="${datePlantedError} ? 'error' : ''">
 
-            <div>
-                <label for="plantCount"> Count: </label>
+                <p th:if="${datePlantedError}" class="error-message" th:text="${datePlantedError}"></p>
                 <br/>
-                <input type="text" id="plantCount" th:value="*{count}" th:field="*{count}" th:classappend="${countError} ? 'error' : ''">
-            </div>
-            <p th:if="${countError}" class="error-message" th:text="${countError}"></p>
-
-            <div>
-                <label for="plantDescription"> Description: </label>
-
                 <br/>
-                <textarea maxlength="1028" id="plantDescription"
-                          th:value="*{description}"
-                          th:field="*{description}"
-                          th:classappend="${descriptionError} ? 'error' : ''">
-                </textarea>
-            </div>
-            <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
+                <div class="buttons-centre">
+                    <button type="submit" class="submitButton">Save</button>
+                    &nbsp;
+                    <a th:href="@{${lastEndpoint}}" id="cancel">
+                        <button type="button">Cancel</button>
+                    </a>
+                </div>
+            </form>
+        </div>
+        <br/>
 
-            <label for="datePlanted"> Date Planted: </label>
-            <br/>
-            <input type="text" name="datePlanted" id="datePlanted"
-                   th:name="datePlanted" th:value="${datePlanted}"
-                   placeholder="DD/MM/YYYY"
-                   data-cy="datePlanted"
-                   oninput="formatDate(this)" th:field="*{datePlanted}"
-                   th:classappend="${datePlantedError} ? 'error' : ''">
-
-            <p th:if="${datePlantedError}" class="error-message" th:text="${datePlantedError}"></p>
-            <br/>
-            <br/>
-            <div class="buttons-centre">
-                <button type="submit">Save</button>
-                &nbsp;
-                <a th:href="@{${lastEndpoint}}" id="cancel">
-                    <button type="button">Cancel</button>
-                </a>
-            </div>
-        </form>
     </div>
-    <br/>
-
-</div>
 
 </body>
 </html>

@@ -3,15 +3,12 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Edit profile</title>
-    <script th:src="@{javascript/editUserProfile.js}"></script>
     <!-- Navbar styling -->
     <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
     <link th:href="@{/css/formStyles.css}" rel="stylesheet"/>
     <script th:src="@{javascript/edit-user-profile.js}"></script>
-    <script th:src="@{javascript/redirect-image-handler.js}"></script>
     <script th:src="@{javascript/enter-date.js}"></script>
     <script th:src="@{javascript/prevent-enter-submit.js}"></script>
-
     <script th:src="@{/javascript/image-handling.js}"></script>
 </head>
 <body>
@@ -24,10 +21,12 @@
             <img class="image" th:data-user-id="${user.userId}" th:src="@{/get-image?edit-user-profile-image=true(userID=${user.userId})}" alt="">
 <!--            <button class="image_picker" th:id="${'button_' + user.userId}" style="position: absolute; top: 0; right: 0;">+</button>-->
             <input style="display: none" th:value="imagePath" class="fileInput" type="file" name="file" id="file">
-            <label for="file" class="image_picker" style="position: absolute; top: 0; right: 0;">+</label>
+            <label for="file" class="image_picker" th:image-button-id="${user.userId}" style="position: absolute; top: 0; right: 0;">+</label>
         </div>
         <div>
-            <form th:action="@{/edit-user-profile}" method="post" novalidate>
+            <div id="imageError" class="error-message"></div>
+
+            <form class="hasImage" th:action="@{/edit-user-profile}" method="post" novalidate>
                 <label for="firstName"> First Name: </label>
                 <br/>
                 <input type="text" class="form-control" id="firstName"
@@ -131,7 +130,7 @@
                 <div th:if="${ageError}" class="error-message" th:text="${ageError}"></div>
                 <br/>
                 <div class="buttons-centre">
-                    <button type="submit" id="submitButton">Submit</button>
+                    <button type="submit" class="submitButton" id="submitButton">Submit</button>
                     &nbsp;
                     <a th:href="@{/view-user-profile}" id="cancelButton">
                         <button type="button">Cancel</button>

@@ -5,10 +5,8 @@
     <title>Create Plant</title>
     <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
-    <script th:src="@{javascript/redirect-image-handler.js}"></script>
     <script th:src="@{javascript/enter-date.js}"></script>
     <script th:src="@{javascript/prevent-enter-submit.js}"></script>
-
     <script th:src="@{/javascript/image-handling.js}"></script>
 </head>
 <body>
@@ -19,17 +17,13 @@
         <div style="position: relative; width: 82px; margin: auto;">
             <img class="image" th:if="${plant.image != null}" th:data-plant-id="${plant.id}"
                  th:src="@{/get-image?temporary=true(imageID=${plant.image.getId()})}" alt="IMAGE UPDATED :)">
-            <img class="image" th:unless="${plant.image != null}" th:src="@{/images/leaves-80x80.png}" alt="">
-<!--            <button class="image_picker" th:id="${'button_null'}" style="position: absolute; top: 0; right: 0;">+</button>-->
-
+            <img class="image" th:unless="${plant.image != null}" th:data-plant-id="${-1}" th:src="@{/images/leaves-80x80.png}" alt="">
             <input style="display: none" th:value="imagePath" class="fileInput" type="file" name="file" id="file">
-            <label for="file" class="image_picker" style="position: absolute; top: 0; right: 0;">+</label>
-
-<!--            <div id="imageError" class="error-message" th:name="imageError" th:text="${imageError}"></div>-->
+            <label for="file" class="image_picker" th:image-button-id="${-1}" style="position: absolute; top: 0; right: 0;">+</label>
             <br/>
         </div>
         <div class="formContainer">
-            <form th:action="@{create-plant}" method="post" th:object="${plant}">
+            <form class="hasImage" th:action="@{create-plant}" method="post" th:object="${plant}">
                 <div id="imageError" class="error-message"></div>
 
                 <input type="hidden" name="gardenID" th:value="${gardenID}">
@@ -69,7 +63,7 @@
                 <div th:if="${dateError}" class="error-message" th:text="${dateError}"></div>
                 <br/>
                 <div class="buttons-centre">
-                    <button type="submit">Create</button>
+                    <button type="submit" class="submitButton">Create</button>
                     &nbsp;
                     <a th:href="@{'/view-garden?gardenID=' + ${gardenID}}" id="cancelButton">
                         <button type="button">Cancel</button>

@@ -6,7 +6,6 @@
     <title>View Garden</title>
     <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
-    <script th:src="@{/javascript/redirect-image-handler.js}"></script>
     <script th:src="@{/javascript/image-handling.js}"></script>
 </head>
 <body>
@@ -53,32 +52,31 @@
         <div class="plantContainer">
             <table>
                 <thead>
-                <tr class="garden-table">
-                    <th>Picture &nbsp;</th>
-                    <th>Plant Name &nbsp;</th>
-                    <th>Count &nbsp;</th>
-                    <th>Description &nbsp;</th>
-                    <th>Date Planted</th>
-                </tr>
+                    <tr class="garden-table">
+                        <th>Picture &nbsp;</th>
+                        <th>Plant Name &nbsp;</th>
+                        <th>Count &nbsp;</th>
+                        <th>Description &nbsp;</th>
+                        <th>Date Planted</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr th:each="plant : ${plants}" class="plant-row">
-                    <td>
-                        <div style="position: relative;">
-                            <img class="image" th:id="${plant.id}" th:data-plant-id="${plant.id}" th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
-<!--                            <button class="image_picker" th:id="${'button_' + plant.id}">+</button>-->
-                            <input style="display: none" th:value="imagePath" class="fileInput" type="file" name="file" id="file">
-                            <label for="file" th:image-button-id="${plant.id}"  class="image_picker" style="position: absolute; top: 0; right: 0;">+</label>
-                        </div>
-                    </td>
-                    <td th:text="${plant.name}"></td>
-                    <td th:text="${plant.count}"></td>
-                    <td th:text="${plant.description}"></td>
-                    <td th:text="${plant.datePlanted}"></td>
-                    <td><a th:href="@{'/edit-plant?plantID=' + ${plant.id}}">
-                        <button type="button">Edit</button>
-                    </a></td>
-                </tr>
+                    <tr th:each="plant : ${plants}" class="plant-row">
+                        <td>
+                            <div style="position: relative;">
+                                <img class="image" th:id="${plant.id}" th:data-plant-id="${plant.id}" th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
+                                <input style="display: none" th:value="imagePath" class="fileInput" type="file" name="file" id="file">
+                                <label for="file" class="image_picker" th:image-button-id="${plant.id}" style="position: absolute; top: 0; right: 0;">+</label>
+                            </div>
+                        </td>
+                        <td th:text="${plant.name}"></td>
+                        <td th:text="${plant.count}"></td>
+                        <td th:text="${plant.description}"></td>
+                        <td th:text="${plant.datePlanted}"></td>
+                        <td><a th:href="@{'/edit-plant?plantID=' + ${plant.id}}">
+                            <button type="button">Edit</button>
+                        </a></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
