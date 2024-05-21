@@ -113,6 +113,12 @@ public class CreatePlantController {
         }
     }
 
+    @PostMapping("/set-model-attribute")
+    public void setModelAttribute(@RequestParam("attributeName") String attributeName,
+                                  @RequestParam("attributeValue") String attributeValue,
+                                  Model model) {
+        model.addAttribute(attributeName, attributeValue);
+    }
 
     /**
      * Submits the form when the user clicks "Create Plant" on the form.
@@ -124,7 +130,6 @@ public class CreatePlantController {
             @RequestParam("description") String description,
             @RequestParam("count") String count,
             @RequestParam("datePlanted") String datePlanted,
-            @RequestParam("imageError") String imageError,
             @ModelAttribute("plant") Plant plant,
             BindingResult bindingResult,
             HttpSession session,
@@ -186,10 +191,6 @@ public class CreatePlantController {
 
         Map<String, String> errors = new HashMap<>();
 
-        if (!imageError.isEmpty()) {
-            errors.put("displayImageError", imageError);
-        }
-
         if (validatePlantName(plant.getName()) != null) {
             errors.put("nameError", Objects.requireNonNull(validatePlantName(plant.getName())).getDefaultMessage());
         }
@@ -209,7 +210,7 @@ public class CreatePlantController {
         session.setAttribute("errors", errors);
         // If there are validation errors, return to the form page
         if (errors.containsKey("nameError") || errors.containsKey("countError")
-                || errors.containsKey("descriptionError") || errors.containsKey("dateError") || errors.containsKey("displayImageError")) {
+                || errors.containsKey("descriptionError") || errors.containsKey("dateError")) {
             model.addAttribute("gardenID", gardenID); // Add gardenID to the model before forwarding to error display page
             return "redirect:/create-plant?gardenID=" + gardenID;
         } else {

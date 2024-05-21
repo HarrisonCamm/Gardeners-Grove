@@ -12,16 +12,25 @@ function getDeployPath(url) {
 document.addEventListener('DOMContentLoaded', () => {
     // Select the button
     const submitButton = document.querySelector('button');
-
     const fileInput = document.querySelector('.fileInput');
-
     const imageSource = document.querySelectorAll('img');
+    const labels = document.querySelectorAll('label.image_picker');
 
     let plantID = null;
+    let imageButtonID = null;
 
-    imageSource.forEach(image => { //Should only be one image
-        plantID = image.getAttribute('data-plant-id');
+    labels.forEach(label => {
+        label.addEventListener('click', function(event) {
+            const labelID = label.getAttribute('image-button-id');
+            if (labelID != null) {
+                imageButtonID = labelID;
+            }
+        });
     })
+
+    // imageSource.forEach(image => { //Should only be one image
+    //     plantID = image.getAttribute('data-plant-id');
+    // });
 
     // Add an event listener to the file input
     fileInput.addEventListener('change', async function(event) {
@@ -36,6 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
 async function filePicked(event, plantID, imageSource) {
     console.log("Plant ID: " + plantID)
     const file = event.target.files[0];
+
+    if (!validateFile(file)) {
+        return;
+    }
 
     const deployPath = getDeployPath();
     let tempImageId = null;
@@ -127,18 +140,17 @@ function validateFile(file) {
     const maxSize = 10 * 1024 * 1024; // 10MB
 
     let imageError = document.getElementById('imageError');
-    console.log('image error: ' + imageError);
-    console.log('image error text: ' + imageError.value);
 
     if (!allowedImageTypes.includes(contentType)) {
         // alert('Image must be of type png, jpg or svg');
-        imageError.value = 'Image must be of type png, jpg or svg';
+        imageError.textContent = 'Image must be of type png, jpg or svg';
         return false;
     } else if (file.size > maxSize) {
         // alert('Image must be less than 10MB');
-        imageError.value = 'Image must be less than 10MB';
+        imageError.textContent = 'Image must be less than 10MB';
         return false;
     }
+
     return true;
 }
 

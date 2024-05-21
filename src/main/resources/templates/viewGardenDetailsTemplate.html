@@ -7,6 +7,7 @@
     <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet">
     <script th:src="@{/javascript/redirect-image-handler.js}"></script>
+    <script th:src="@{/javascript/image-handling.js}"></script>
 </head>
 <body>
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
@@ -64,8 +65,10 @@
                 <tr th:each="plant : ${plants}" class="plant-row">
                     <td>
                         <div style="position: relative;">
-                            <img class="image" th:data-plant-id="${plant.id}" th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
-                            <button class="image_picker" th:id="${'button_' + plant.id}">+</button>
+                            <img class="image" th:id="${plant.id}" th:data-plant-id="${plant.id}" th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
+<!--                            <button class="image_picker" th:id="${'button_' + plant.id}">+</button>-->
+                            <input style="display: none" th:value="imagePath" class="fileInput" type="file" name="file" id="file">
+                            <label for="file" th:image-button-id="${plant.id}"  class="image_picker" style="position: absolute; top: 0; right: 0;">+</label>
                         </div>
                     </td>
                     <td th:text="${plant.name}"></td>

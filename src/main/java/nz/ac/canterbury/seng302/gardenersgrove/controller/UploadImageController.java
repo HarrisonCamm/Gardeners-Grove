@@ -127,6 +127,8 @@ public class UploadImageController {
                                                 @RequestParam(value = "imageID", required = false) Long imageID,
                                                 Model model) {
 
+        logger.info("GET /get-image");
+
         Image image = null;
         HttpHeaders headers = new HttpHeaders();
 
