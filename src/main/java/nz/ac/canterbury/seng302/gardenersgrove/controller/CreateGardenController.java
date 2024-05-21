@@ -169,10 +169,6 @@ public class CreateGardenController {
 
         FieldError streetAddressError = validateStreetAddress(gardenLocation.getStreetAddress());
         if (streetAddressError != null) {
-            logger.info("Field error in object '{}', field '{}': {}",
-                    streetAddressError.getObjectName(),
-                    streetAddressError.getField(),
-                    streetAddressError.getDefaultMessage());
             errors.add(streetAddressError);
         }
 
@@ -183,6 +179,7 @@ public class CreateGardenController {
 
         FieldError postCodeError = validatePostcode(gardenLocation.getPostcode());
         if (postCodeError != null) {
+            logger.info("postcode error");
             errors.add(postCodeError);
         }
 

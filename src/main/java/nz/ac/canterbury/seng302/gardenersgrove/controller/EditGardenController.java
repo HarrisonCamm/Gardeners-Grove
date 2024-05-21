@@ -165,7 +165,7 @@ public class EditGardenController {
         }
 
         FieldError postCodeError = validatePostcode(gardenLocation.getPostcode());
-        if (suburbError != null) {
+        if (postCodeError != null) {
             errors.add(postCodeError);
         }
 
