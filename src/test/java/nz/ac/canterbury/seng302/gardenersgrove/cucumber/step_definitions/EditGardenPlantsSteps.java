@@ -1,32 +1,22 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
 import io.cucumber.java.Before;
-import io.cucumber.java.BeforeAll;
-import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.EditPlantController;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.ViewGardenController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
-import org.junit.Assert;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.internal.matchers.Null;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.*;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
+import io.cucumber.java.en.*;
 
 import org.mockito.Mockito;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,15 +29,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class EditGardenPlantsSteps {
     private static MockMvc mockMvcEditPlant;
     private static MockMvc mockMvcViewGarden;
-    private ResultActions resultActions;
     private MvcResult mvcResult;
 
     @MockBean
@@ -103,7 +90,7 @@ public class EditGardenPlantsSteps {
             mockPlantDB.put( plant.getId(), copyPlant(plant) );
             return plant;
         });
-        when(plantService.findPlant(any(Long.class))).thenAnswer(invocation -> Optional.of( copyPlant(mockPlantDB.get(invocation.getArgument(0)))));     //Suspicious stew
+        when(plantService.findPlant(any(Long.class))).thenAnswer(invocation -> Optional.of( copyPlant(mockPlantDB.get((Long) invocation.getArgument(0)))));     //Suspicious stew
         when(plantService.getGardenPlant(any(Long.class))).thenAnswer(invocation -> new ArrayList<>(mockPlantDB.values()));     //Todo update to actually check for garden ownership
         when(plantService.getGardenPlant(any(Long.class))).thenAnswer(invocation ->
                 mockPlantDB.values().stream()
@@ -214,6 +201,20 @@ public class EditGardenPlantsSteps {
         List<Object> test2 = new ArrayList<>(test.values());        //Get
         Assertions.assertTrue(test2.contains(errorMessage));
     }
-
-
+    //AC9
+    @When("I hit the cancel button on the edit plant form")
+    public void i_hit_the_cancel_button_on_the_edit_plant_form() throws Exception {
+        // Write code here that turns the phrase above into concrete actions
+        String cancelButtonEndpoint = (String) this.mvcResult.getModelAndView().getModel().get("lastEndpoint");
+        this.mvcResult = mockMvcViewGarden.perform(get(cancelButtonEndpoint))       //attempting to use last endpoint as cancel button would use
+                .andExpect(status().isOk())                                         //Will fail if not a view garden link as last endpoint as it is mockmvc only for view garden page
+                .andExpect(view().name("viewGardenDetailsTemplate"))
+                .andReturn();
+    }
+    //AC9
+    @Then("I am taken back to the garden details page")
+    public void i_am_taken_back_to_the_garden_details_page() {
+        Assertions.assertEquals("viewGardenDetailsTemplate", this.mvcResult.getModelAndView().getViewName());
+        Assertions.assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
+    }
 }
