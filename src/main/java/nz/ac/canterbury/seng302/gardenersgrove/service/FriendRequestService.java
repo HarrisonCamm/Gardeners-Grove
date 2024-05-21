@@ -35,4 +35,8 @@ public class FriendRequestService {
     public void cancelRequest(User sender, User userToCancel) {
         friendRequestRepository.deleteBySender(sender, userToCancel);
     }
+
+    public void rejectRequest(User currentUser, User rejectedUser) {
+        friendRequestRepository.alterStatus(currentUser, rejectedUser, "Declined");
+    }
 }

@@ -43,14 +43,7 @@ public class ManageFriendsController {
 
         User currentUser = userService.getAuthenicatedUser();
 
-        List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
-        List<FriendRequest> pendingFriendRequests = userService.getPendingFriendRequests(currentUser);
-
-        model.addAttribute("pendingRequests", pendingFriendRequests);
-        model.addAttribute("sentRequests", sentFriendRequests);
-        model.addAttribute("showSearch", true);
-
-        return "manageFriendsTemplate";
+        return addAttributes(model, currentUser);
     }
 
     /**
@@ -101,6 +94,9 @@ public class ManageFriendsController {
         User currentUser = userService.getAuthenicatedUser();
 
         List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
+        List<FriendRequest> pendingFriendRequests = userService.getPendingFriendRequests(currentUser);
+
+        model.addAttribute("pendingRequests", pendingFriendRequests);
         model.addAttribute("sentRequests", sentFriendRequests);
 
         return "manageFriendsTemplate";
@@ -121,12 +117,7 @@ public class ManageFriendsController {
         FriendRequest friendRequest = new FriendRequest(currentUser, invitedUser);
         friendRequestService.sendRequest(friendRequest);
 
-        List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
-
-        model.addAttribute("sentRequests", sentFriendRequests);
-        model.addAttribute("showSearch", true);
-
-        return "manageFriendsTemplate";
+        return addAttributes(model, currentUser);
     }
 
     public String handleCancelRequest(String email, Model model) {
@@ -136,17 +127,30 @@ public class ManageFriendsController {
         User canceledUser = userService.getUserByEmail(email);
 
         friendRequestService.cancelRequest(currentUser, canceledUser);
-        List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
+        return addAttributes(model, currentUser);
 
+    }
+
+    private String addAttributes(Model model, User currentUser) {
+        List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
+        List<FriendRequest> pendingFriendRequests = userService.getPendingFriendRequests(currentUser);
+
+        model.addAttribute("pendingRequests", pendingFriendRequests);
         model.addAttribute("sentRequests", sentFriendRequests);
         model.addAttribute("showSearch", true);
 
         return "manageFriendsTemplate";
-
     }
 
     private String handleRejectRequest(String email, Model model) {
-        return "";
+        logger.info("POST /manage-friends (reject)");
+
+        User currentUser = userService.getAuthenicatedUser();
+        User rejectedUser = userService.getUserByEmail(email);
+
+        friendRequestService.rejectRequest(currentUser, rejectedUser);
+
+        return addAttributes(model, currentUser);
     }
 
     private String handleAcceptRequest(String email, Model model) {
