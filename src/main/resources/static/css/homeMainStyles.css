@@ -1,5 +1,5 @@
 body {
-    background-color: #E2F1CA;
+    background-color: white;
     font-family: Verdana, sans-serif;
 }
 .content {
@@ -63,13 +63,19 @@ h1 {
     margin: 40px 0 0 0;
     font-size: 150%;
     max-width: 292px;
-    background-color: #BEE186;
+    /*background-color: #BEE186;*/
+    background-color: #E2F1CA;
     padding: 5px;
     border-radius: 4px;
-    border: 1px solid #3D7B36;
-    outline: 1px solid #3D7B36;
+    /*border: 1px solid #3D7B36;*/
+    /*outline: 1px solid #3D7B36;*/
+    border: 1px solid #BEE186;
+    outline: 1px solid #BEE186;
 }
 
+.search-field:focus {
+    outline: 2px solid #3D7B36;
+}
 .search-button {
     text-align: right;
     align-items: end;
