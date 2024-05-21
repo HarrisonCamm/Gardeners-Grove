@@ -34,4 +34,7 @@ public interface UserRepository extends CrudRepository<User, Long>{
 
     @Query("SELECT r from FriendRequest r WHERE r.sender.userId = :userId")
     List<FriendRequest> getSentFriendRequests(Long userId);
+
+    @Query("SELECT r from FriendRequest r WHERE r.receiver.userId = :userId")
+    List<FriendRequest> getPendingFriendRequests(Long userId);
 }

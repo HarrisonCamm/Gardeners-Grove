@@ -119,7 +119,6 @@ public class UserService {
     public User getAuthenicatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication == null ? null : this.getUserByEmail(authentication.getName());
-
     }
 
     /**
@@ -153,5 +152,9 @@ public class UserService {
 
     public List<FriendRequest> getSentFriendRequests(User user) {
         return userRepository.getSentFriendRequests(user.getUserId());
+    }
+
+    public List<FriendRequest> getPendingFriendRequests(User currentUser) {
+        return userRepository.getPendingFriendRequests(currentUser.getUserId());
     }
 }

@@ -44,6 +44,9 @@ public class ManageFriendsController {
         User currentUser = userService.getAuthenicatedUser();
 
         List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
+        List<FriendRequest> pendingFriendRequests = userService.getPendingFriendRequests(currentUser);
+
+        model.addAttribute("pendingRequests", pendingFriendRequests);
         model.addAttribute("sentRequests", sentFriendRequests);
         model.addAttribute("showSearch", true);
 
