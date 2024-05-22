@@ -105,7 +105,20 @@
         </div>
         <div style="justify-content: flex-end; margin: 0; padding: 0">
             <div class="friends-container">
-                <h3>Your friends will be shown here</h3>
+                <div th:if="${#lists.isEmpty(friends)}">
+                    <h3>Your friends will be shown here</h3>
+                </div>
+                <div th:if="${!#lists.isEmpty(friends)}">
+                    <h3>Your Friends</h3>
+                    <ul style="padding: 0; text-align: left; margin: 10px">
+                        <li th:each="friend : ${friends}">
+                            <div style="display: flex; justify-content: space-between">
+                                <h3 th:text="${friend.firstName + ' ' + friend.lastName}"></h3>
+<!--                                <img th:src="@{${friend.image}}" style="height: 50px; width: 50px; border-radius: 50%; margin-right: 10px" alt="pfp"/>-->
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

@@ -4,14 +4,11 @@ import nz.ac.canterbury.seng302.gardenersgrove.controller.ManageFriendsControlle
 import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -59,7 +56,7 @@ public class ManageFriendsTests {
         when(userService.getUserByEmail(any(String.class))).thenReturn(testUser);
         when(userService.getSentFriendRequests(any(User.class))).thenReturn(List.of(friendRequest));
 
-        doNothing().when(friendRequestService).sendRequest(friendRequest);
+        doNothing().when(friendRequestService).save(friendRequest);
     }
 
     @WithMockUser

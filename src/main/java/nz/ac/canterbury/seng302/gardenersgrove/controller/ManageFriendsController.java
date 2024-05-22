@@ -115,11 +115,17 @@ public class ManageFriendsController {
         User invitedUser = userService.getUserByEmail(email);
 
         FriendRequest friendRequest = new FriendRequest(currentUser, invitedUser);
-        friendRequestService.sendRequest(friendRequest);
+        friendRequestService.save(friendRequest);
 
         return addAttributes(model, currentUser);
     }
 
+    /**
+     * Handles the cancel request
+     * @param email the email of the user to be canceled
+     * @param model the model to add attributes to
+     * @return the template to be rendered
+     */
     public String handleCancelRequest(String email, Model model) {
         logger.info("POST /manage-friends (cancel)");
 
@@ -127,22 +133,17 @@ public class ManageFriendsController {
         User canceledUser = userService.getUserByEmail(email);
 
         friendRequestService.cancelRequest(currentUser, canceledUser);
+
         return addAttributes(model, currentUser);
 
     }
 
-    private String addAttributes(Model model, User currentUser) {
-        List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
-        List<FriendRequest> pendingFriendRequests = userService.getPendingFriendRequests(currentUser);
-
-        model.addAttribute("pendingRequests", pendingFriendRequests);
-        model.addAttribute("sentRequests", sentFriendRequests);
-        model.addAttribute("friends", currentUser.getFriends()); // TODO handle in thyme leaf
-        model.addAttribute("showSearch", true);
-
-        return "manageFriendsTemplate";
-    }
-
+    /**
+     * Handles the reject request
+     * @param email the email of the user to be rejected
+     * @param model the model to add attributes to
+     * @return the template to be rendered
+     */
     private String handleRejectRequest(String email, Model model) {
         logger.info("POST /manage-friends (reject)");
 
@@ -154,19 +155,43 @@ public class ManageFriendsController {
         return addAttributes(model, currentUser);
     }
 
+    /**
+     * Handles the accept request
+     * @param email the email of the user to be accepted
+     * @param model the model to add attributes to
+     * @return the template to be rendered
+     */
     private String handleAcceptRequest(String email, Model model) {
         logger.info("POST /manage-friends (accept)");
 
         User currentUser = userService.getAuthenicatedUser();
         User acceptedFriend = userService.getUserByEmail(email);
 
-        // Remove the request from the database
-        friendRequestService.cancelRequest(currentUser, acceptedFriend);
+        // Remove the request from the database, notice the order of the params
+        friendRequestService.cancelRequest(acceptedFriend, currentUser);
 
-        // Add the user to the current user's friends list
+        // Add each user to the other's friends list
         currentUser.addFriend(acceptedFriend);
+        acceptedFriend.addFriend(currentUser);
+
+        // Save the users
+        userService.addUser(currentUser);
+        userService.addUser(acceptedFriend);
 
         return addAttributes(model, currentUser);
+    }
+
+    private String addAttributes(Model model, User currentUser) {
+        List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
+        List<FriendRequest> pendingFriendRequests = userService.getPendingFriendRequests(currentUser);
+        List<User> friends = currentUser.getFriends();
+
+        model.addAttribute("pendingRequests", pendingFriendRequests);
+        model.addAttribute("sentRequests", sentFriendRequests);
+        model.addAttribute("friends", friends); // TODO handle in thyme leaf
+        model.addAttribute("showSearch", true);
+
+        return "manageFriendsTemplate";
     }
 
 

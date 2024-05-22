@@ -19,7 +19,7 @@ public class FriendRequestService {
     /**
      * Sends a friend request from the sender to the receiver by persisting a new FriendRequest object
      */
-    public void sendRequest(FriendRequest friendRequest) {
+    public void save(FriendRequest friendRequest) {
 
         // Only send the request if the sender has not already sent a request to the receiver
         if (!friendRequestRepository.hasRequestSent(friendRequest.getSender(), friendRequest.getReceiver())) {
