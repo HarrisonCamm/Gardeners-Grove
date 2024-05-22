@@ -176,8 +176,7 @@ public class EditGardenController {
     }
 
 
-    public void addAttributes(Model model, Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize) {
-    public void addAttributes(Model model, HttpSession session, Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize) {
+    public void addAttributes(Model model,HttpSession session,  Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize) {
         model.addAttribute("id", gardenID);
 
         model.addAttribute("name", gardenName);

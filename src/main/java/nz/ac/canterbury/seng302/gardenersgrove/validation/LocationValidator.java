@@ -49,7 +49,7 @@ public class LocationValidator {
      * @return FieldError if the validation fails, otherwise null if the input is valid.
      */
     public static FieldError validatePostcode(String postcode) {
-        if (!validateWithRegex("^[0-9]{4}$", postcode)) { // Assuming postcode is 5 digits. Adjust regex as needed.
+        if (!postcode.isEmpty() &&  !validateWithRegex("^[0-9]{4}$", postcode)) { // Assuming postcode is 5 digits. Adjust regex as needed.
             return new FieldError("garden", "location.postcode", "Postcode must be a 4 digit number");
         }
         return null;
