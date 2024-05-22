@@ -82,7 +82,7 @@ public class ManageFriendsController {
 
         if (searchedUsers.isEmpty()) {
             model.addAttribute("searchResultMessage",
-                    "Nobody with that name or email in Gardener’s Grove");
+                    "There is nobody with that name or email in Gardener’s Grove");
         }
 
         model.addAttribute("matchedUsers", searchedUsers);
