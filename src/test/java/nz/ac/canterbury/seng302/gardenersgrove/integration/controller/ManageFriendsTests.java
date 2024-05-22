@@ -109,4 +109,32 @@ public class ManageFriendsTests {
                 .andExpect(view().name("manageFriendsTemplate"))
                 .andExpect(model().attribute("sentRequests", emptyList));
     }
+
+    @WithMockUser
+    @Test
+    public void OnManageFriends_AcceptFriendRequest_IsOkay() throws Exception {
+        List<User> friends = List.of(testUser);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
+                        .with(csrf())
+                        .param("action", "accept")
+                        .param("email", testUser.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("manageFriendsTemplate"))
+                .andExpect(model().attribute("friends", friends));
+    }
+
+    @WithMockUser
+    @Test
+    public void OnManageFriends_DenyFriendRequest_IsOkay() throws Exception {
+        List<User> friends = List.of();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
+                        .with(csrf())
+                        .param("action", "delete")
+                        .param("email", testUser.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("manageFriendsTemplate"))
+                .andExpect(model().attribute("friends", friends));
+    }
 }

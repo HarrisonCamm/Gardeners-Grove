@@ -25,7 +25,7 @@ public interface FriendRequestRepository extends CrudRepository<FriendRequest, L
     @Transactional
     @Modifying
     @Query("DELETE FROM FriendRequest f WHERE f.sender = :sender AND f.receiver = :receiver")
-    int deleteBySender(@Param("sender") User sender, @Param("receiver") User receiver);
+    void deleteBySender(@Param("sender") User sender, @Param("receiver") User receiver);
 
     @Transactional
     @Modifying
