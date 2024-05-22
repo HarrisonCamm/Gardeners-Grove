@@ -93,4 +93,24 @@ public class UserRepositoryTest {
         Assertions.assertNotEquals(0, users.size());
         Assertions.assertEquals(savedUser.getEmail(), users.get(0).getEmail());
     }
+
+    @Test
+    public void searchForUsers_ShouldReturnTwoUsers_WhenSameName() {
+        User user1 = new User();
+        user1.setEmail("test1@example.com");
+        user1.setFirstName("Test");
+        user1.setLastName("User");
+
+        User user2 = new User();
+        user2.setEmail("test2@example.com");
+        user2.setFirstName("Test");
+        user2.setLastName("User");
+
+        userRepository.save(user1);
+        userRepository.save(user2);
+
+        List<User> users = userRepository.searchForUsers("Test User", "Test", "User");
+
+        Assertions.assertEquals(2, users.size());
+    }
 }
