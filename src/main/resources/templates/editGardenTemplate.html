@@ -79,8 +79,8 @@
                     <input type="text" id="postcode"
                            th:name="location.postcode"
                            th:value="*{location.postcode}"
-                           th:class="${location_postCodeError != null ? 'error' : ''}">
-                    <p th:if="${location_postCodeError}" class="error-message" th:text="${location_postCodeError}"></p>
+                           th:classappend="${location_postcodeError != null ? 'error' : ''}">
+                    <p th:if="${location_postcodeError}" class="error-message" th:text="${location_postcodeError}"></p>
                     <br/>
                     <br/>
                     <label for="country" id="countryLabel">Country: </label>

@@ -179,7 +179,6 @@ public class CreateGardenController {
 
         FieldError postCodeError = validatePostcode(gardenLocation.getPostcode());
         if (postCodeError != null) {
-            logger.info("postcode error");
             errors.add(postCodeError);
         }
 
