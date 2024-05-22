@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -24,10 +25,17 @@ public class UserRepositoryTest {
     private UserRepository userRepository;
 
     @MockBean
-    private UserService userService;
+    private static UserService userService;
 
     @MockBean
     private ImageService imageService;
+
+    private static User loggedUser;
+
+    @BeforeAll
+    public static void setUp() {
+        loggedUser = new User("logged@email.com", "logged", "person", "password");
+    }
 
     @Test
     public void findById_ShouldReturnUser_WhenUserExists() {
@@ -87,8 +95,9 @@ public class UserRepositoryTest {
         user.setLastName("User");
 
         User savedUser = userRepository.save(user);
+        userRepository.save(loggedUser);
 
-        List<User> users = userRepository.searchForUsers(searchQuery, firstName, lastName);
+        List<User> users = userRepository.searchForUsers(searchQuery, firstName, lastName, loggedUser.getUserId());
 
         Assertions.assertNotEquals(0, users.size());
         Assertions.assertEquals(savedUser.getEmail(), users.get(0).getEmail());
@@ -108,8 +117,9 @@ public class UserRepositoryTest {
 
         userRepository.save(user1);
         userRepository.save(user2);
+        userRepository.save(loggedUser);
 
-        List<User> users = userRepository.searchForUsers("Test User", "Test", "User");
+        List<User> users = userRepository.searchForUsers("Test User", "Test", "User", loggedUser.getUserId());
 
         Assertions.assertEquals(2, users.size());
     }

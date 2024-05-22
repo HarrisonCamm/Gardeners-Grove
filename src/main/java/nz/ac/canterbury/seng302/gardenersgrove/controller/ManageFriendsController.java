@@ -80,7 +80,9 @@ public class ManageFriendsController {
     private String handleSearchRequest(String searchQuery, Model model) {
         logger.info("POST /manage-friends (search)");
 
-        List<User> searchedUsers = userService.searchForUsers(searchQuery.toLowerCase());
+        User currentUser = userService.getAuthenicatedUser();
+
+        List<User> searchedUsers = userService.searchForUsers(searchQuery.toLowerCase(), currentUser);
 
         if (searchedUsers.isEmpty()) {
             model.addAttribute("searchResultMessage",
@@ -90,8 +92,6 @@ public class ManageFriendsController {
         model.addAttribute("matchedUsers", searchedUsers);
         model.addAttribute("showSearch", true);
         model.addAttribute("searchQuery", searchQuery);
-
-        User currentUser = userService.getAuthenicatedUser();
 
         List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
         List<FriendRequest> pendingFriendRequests = userService.getPendingFriendRequests(currentUser);
@@ -188,7 +188,7 @@ public class ManageFriendsController {
 
         model.addAttribute("pendingRequests", pendingFriendRequests);
         model.addAttribute("sentRequests", sentFriendRequests);
-        model.addAttribute("friends", friends); // TODO handle in thyme leaf
+        model.addAttribute("friends", friends);
         model.addAttribute("showSearch", true);
 
         return "manageFriendsTemplate";

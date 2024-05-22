@@ -52,7 +52,7 @@ public class ManageFriendsTests {
         friendRequest = new FriendRequest(loggedUser, testUser);
 
         when(userService.getAuthenicatedUser()).thenReturn(loggedUser);
-        when(userService.searchForUsers(any(String.class))).thenReturn(List.of(testUser));
+        when(userService.searchForUsers(any(String.class), any(User.class))).thenReturn(List.of(testUser));
         when(userService.getUserByEmail(any(String.class))).thenReturn(testUser);
         when(userService.getSentFriendRequests(any(User.class))).thenReturn(List.of(friendRequest));
 

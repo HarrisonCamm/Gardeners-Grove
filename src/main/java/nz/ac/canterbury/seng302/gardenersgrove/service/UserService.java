@@ -143,11 +143,11 @@ public class UserService {
      * @param searchQuery The search query
      * @return A list of users that exactly match the search query
      */
-    public List<User> searchForUsers(String searchQuery) {
+    public List<User> searchForUsers(String searchQuery, User currentUser) {
         String[] parts = searchQuery.split(" ");
         String firstName = parts[0];
         String lastName = parts.length > 1 ? parts[1] : "";
-        return userRepository.searchForUsers(searchQuery, firstName, lastName);
+        return userRepository.searchForUsers(searchQuery, firstName, lastName, currentUser.getUserId());
     }
 
     public List<FriendRequest> getSentFriendRequests(User user) {
