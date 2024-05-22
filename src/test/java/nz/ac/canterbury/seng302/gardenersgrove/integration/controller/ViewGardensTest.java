@@ -52,6 +52,12 @@ public class ViewGardensTest {
     @MockBean
     private MailService mailService;
 
+    @MockBean
+    private ImageService imageService;
+
+    @MockBean
+    private FriendRequestService friendRequestService;
+
     private User testUser;
 
     @BeforeEach

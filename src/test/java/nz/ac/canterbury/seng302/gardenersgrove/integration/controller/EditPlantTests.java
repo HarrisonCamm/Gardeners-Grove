@@ -8,6 +8,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +50,11 @@ public class EditPlantTests {
     private UserRepository userRepository;
     @MockBean
     private AuthenticationManager authenticationManager;
+
+    @MockBean
+    private ImageService imageService;
+
+
 
     private Garden testGarden;
     private Location testLocation;
@@ -109,8 +115,8 @@ public class EditPlantTests {
     })
     public void OnForm_ValidValues_PlantRecordAdded(
             Long plantID, String plantName, String count, String date, String description) throws Exception {
-        Plant oldPlant = new Plant(testGarden, "default plant", "1", "a regular plant", "1/1/1111", "default.png");
-        Plant newPlant = new Plant(testGarden, plantName, count, description, date, "default.png");
+        Plant oldPlant = new Plant(testGarden, "default plant", "1", "a regular plant", "1/1/1111");
+        Plant newPlant = new Plant(testGarden, plantName, count, description, date);
         when(plantService.findPlant(plantID)).thenReturn(Optional.of(oldPlant));
 
         mockMvc.perform(put("/edit-plant")

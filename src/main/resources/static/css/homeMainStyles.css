@@ -33,8 +33,98 @@ button:hover {
 }
 h1 {
     font-size: 200%;
-    text-align: center;
+    text-align: left;
 }
+
+.headings {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.rows {
+    margin-bottom: 150px;
+}
+
+.buttons-centre {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 150%;
+}
+
+.search-friend {
+    text-align: center;
+    /*display: none;*/
+}
+
+.search-field {
+    margin: 40px 0 0 0;
+    font-size: 150%;
+    /*width: 100%;*/
+    max-width: 292px;
+    border-radius: 2px;
+    background-color: #b2eab2;
+}
+
+.search-button {
+    justify-content: flex-end;
+}
+
+.search-field-message {
+    text-align: center;
+
+}
+
+.friends-container {
+    background-color: rgba(245, 245, 245, 0.5); /* #f5f5f5 in RGB is 245, 245, 245 */
+    border-radius: 10px;
+    border: solid black 1px;
+    width: 100%;
+    min-width: 400px;
+    height: 700px;
+}
+
+.requests-container {
+    background-color: rgba(245, 245, 245, 0.5); /* #f5f5f5 in RGB is 245, 245, 245 */
+    border-radius: 10px;
+    border: solid black 1px;
+    width: 100%;
+    min-width: 400px;
+    height: 200px;
+    margin: 20px 0 20px 0;
+    padding: 10px;
+}
+
+.results-container {
+    background-color: rgba(245, 245, 245, 0.5); /* #f5f5f5 in RGB is 245, 245, 245 */
+    border-radius: 10px;
+    border: solid black 1px;
+    width: 500px;
+    height: 300px;
+    max-height: 300px;
+    overflow: auto;
+    margin: 20px 0 0 0;
+    padding: 10px;
+}
+
+
+.error {
+    border: 1px solid red;
+    outline: 1px solid red;
+    border-radius: 2px;
+}
+.error:focus {
+    outline: 2px solid red;
+}
+.error-message {
+    color: red;
+    display: block;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 @media only screen and (orientation: portrait) {
     .content {
         padding-top: 25%; /* Decrease top padding for vertical screens */

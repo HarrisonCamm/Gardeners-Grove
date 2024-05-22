@@ -15,7 +15,8 @@
     <div class="form">
         <h1>Create Plant</h1>
         <div style="position: relative; width: 82px; margin: auto;">
-            <img class="image" th:if="${plant.image != null}" th:data-plant-id="${plant.id}" th:data-picture="${plant.image}" alt="IMAGE UPDATED :)">
+            <img class="image" th:if="${plant.image != null}" th:data-plant-id="${plant.id}"
+                 th:src="@{/get-image?temporary=true(imageID=${plant.image.getId()})}" alt="IMAGE UPDATED :)">
             <img class="image" th:unless="${plant.image != null}" src="/images/leaves-80x80.png" alt="">
             <button class="image_picker" th:id="${'button_null'}" style="position: absolute; top: 0; right: 0;">+</button>
         </div>
@@ -38,10 +39,10 @@
                 <br/>
                 <label for="plantDescription"> Description: </label>
                 <br/>
-                <textarea maxlength="513" id="plantDescription"
-                          th:value="*{description}"
-                          th:field="*{description}"
-                          th:classappend="${descriptionError} ? 'error' : ''">
+                <textarea id="plantDescription"
+                          th:name="description"
+                          th:text="${description}"
+                          th:class="${descriptionError} ? 'error' : ''">
                 </textarea>
                 <br/>
                 <div th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></div>

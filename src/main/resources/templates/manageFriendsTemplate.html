@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Manage Friends</title>
+    <!-- Navbar styling -->
+    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+    <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
+    <script th:src="@{/javascript/hover-enter.js}"></script>
+</head>
+<body>
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<div style="width: 50%; margin: 50px auto; text-align: center">
+    <div style="display: flex; justify-content: space-between">
+        <div style="width: 500px; min-width: 500px; display: flex; flex-direction: column">
+            <div>
+                <div class="buttons-centre">
+                    <button onclick="toggleSearchFriend()">Add Friend</button>
+                </div>
+                <form th:action="@{/manage-friends}" method="post" novalidate>
+                    <input type="hidden" name="action" id="action" />
+                    <div th:if="${showSearch}" class="search-friend" id="searchFriend">
+                        <br/>
+                        <p th:if="${searchResultMessage}" class="search-field-message" th:text="${searchResultMessage}"></p>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; height: 50px">
+                            <label for="search"></label>
+                            <input th:name="searchQuery"
+                                   th:value="${searchQuery}"
+                                   class="search-field"
+                                   id="search"
+                                   type="text"
+                                   placeholder="Search for a friend">
+                            <div class="search-button">
+                                <button type="submit" style="height: 50px" onclick="document.getElementById('action').value='search'">Search</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div th:if="${matchedUsers}" class="results-container">
+                                <ul style="padding: 0; text-align: left">
+                                    <li th:each="matchedUser : ${matchedUsers}">
+                                        <div style="display: flex; justify-content: space-between">
+                                            <h3 th:text="${matchedUser.firstName + ' - ' + matchedUser.email}"></h3>
+                                            <input type="hidden" name="email" th:value="${matchedUser.email}" />
+                                            <button type="submit" style="height: 50px" onclick="document.getElementById('action').value='invite'">Invite as Friend</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="requests-container">
+                <h3 style="text-align: left; margin-left: 20px">Friend Requests</h3>
+            </div>
+            <hr>
+            <div class="requests-container">
+                <h3 style="text-align: left; margin-left: 20px">Sent Requests</h3>
+            </div>
+        </div>
+        <div style="justify-content: flex-end; margin: 0; padding: 0">
+            <div class="friends-container">
+                <h3>Your friends will be shown here</h3>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="rows">
+        <h1>Sent Requests</h1>
+    </div>
+    <div class="rows">
+        <h1>Pending Requests</h1>
+    </div> -->
+</div>
+<script>
+    function toggleSearchFriend() {
+        const searchFriend = document.getElementById("searchFriend");
+        searchFriend.hidden = !searchFriend.hidden;
+    }
+</script>
+</body>
+</html>

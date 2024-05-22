@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.gardenersgrove;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class GardenersGroveApplication {
 	private UserService userService;
 	private VerificationTokenService verificationTokenService;
 
+	@Autowired
+	private ImageService imageService;
+
 	/**
 	 * Main entry point, runs the Spring application
 	 * @param args command line arguments
@@ -38,44 +43,45 @@ public class GardenersGroveApplication {
 	}
 
 	@Bean
-	public CommandLineRunner commandLineRunner() {
+	public CommandLineRunner commandLineRunner() throws IOException {
+		Path path = Paths.get(resourceLoader.getResource("classpath:static/images/defaultUserImage.png").getURI());
+		byte[] imageBytes = Files.readAllBytes(path);
+
 		return args -> {
 			// Check if the user already exists
-//			Path path = Paths.get("src/main/resources/static/images/defaultUserImage.png");
-			Path path = Paths.get(resourceLoader.getResource("classpath:static/images/defaultUserImage.png").getURI());
 			if (!userService.emailExists("startup@user.com")) {
-				User user = new User("Startup", "User", false, "startup@user.com", "password", "01/01/2000", "defaultUserImage.png");
-                user.setImage(Files.readAllBytes(path));
+				Image image = new Image(imageBytes, "png", false);
+				User user = new User("Startup", "User", false, "startup@user.com", "password", "01/01/2000", image);
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}
 			if (!userService.emailExists("sarah@email.com")) {
-				User user = new User("Sarah", "", true, "sarah@email.com", "password123", "24/08/1987", "defaultUserImage.png");
-                user.setImage(Files.readAllBytes(path));
+				Image image = new Image(imageBytes, "png", false);
+				User user = new User("Sarah", "", true, "sarah@email.com", "password123", "24/08/1987", image);
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}
 			if (!userService.emailExists("inaya@email.com")) {
-				User user = new User("Inaya", "Singh", false, "inaya@email.com", "password123", "07/01/2000", "defaultUserImage.png");
-                user.setImage(Files.readAllBytes(path));
+				Image image = new Image(imageBytes, "png", false);
+				User user = new User("Inaya", "Singh", false, "inaya@email.com", "password123", "07/01/2000", image);
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}
 			if (!userService.emailExists("kaia@email.com")) {
-				User user = new User("Kaia", "Pene", false, "kaia@email.com", "password123", "", "defaultUserImage.png");
-                user.setImage(Files.readAllBytes(path));
+				Image image = new Image(imageBytes, "png", false);
+				User user = new User("Kaia", "Pene", false, "kaia@email.com", "password123", "", image);
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}
 			if (!userService.emailExists("lei@email.com")) {
-				User user = new User("Lei", "Yuan", false, "lei@email.com", "password123", "27/02/1994", "defaultUserImage.png");
-                user.setImage(Files.readAllBytes(path));
+				Image image = new Image(imageBytes, "png", false);
+				User user = new User("Lei", "Yuan", false, "lei@email.com", "password123", "27/02/1994", image);
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}
 			if (!userService.emailExists("liam@email.com")) {
-				User user = new User("Liam", "Müller", false, "liam@email.com", "password123", "", "defaultUserImage.png");
-                user.setImage(Files.readAllBytes(path));
+				Image image = new Image(imageBytes, "png", false);
+				User user = new User("Liam", "Müller", false, "liam@email.com", "password123", "", image);
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}
