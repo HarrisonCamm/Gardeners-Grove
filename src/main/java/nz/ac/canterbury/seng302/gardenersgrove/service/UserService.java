@@ -79,11 +79,6 @@ public class UserService {
      * @return The updated and persisted user entity.
      */
     public User updateUser(User user, String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
-//        user.setFirstName(firstName);
-//        user.setLastName(lastName);
-//        user.setNoLastName(noLastName);
-//        user.setEmail(email);
-//        user.setDateOfBirth(dateOfBirth);
         user.setValues(firstName, lastName, noLastName, email, dateOfBirth);
         return userRepository.save(user);
     }
@@ -141,5 +136,17 @@ public class UserService {
      */
     public void deleteUser(User user) {
         userRepository.deleteUser(user);
+    }
+
+    /**
+     * Searches for users based on a search query
+     * @param searchQuery The search query
+     * @return A list of users that exactly match the search query
+     */
+    public List<User> searchForUsers(String searchQuery) {
+        String[] parts = searchQuery.split(" ");
+        String firstName = parts[0];
+        String lastName = parts.length > 1 ? parts[1] : "";
+        return userRepository.searchForUsers(searchQuery, firstName, lastName);
     }
 }

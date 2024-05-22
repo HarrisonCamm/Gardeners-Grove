@@ -63,6 +63,9 @@ public class CreatePlantTests {
     @MockBean
     private ImageService imageService;
 
+    @MockBean
+    private FriendRequestService friendRequestService;
+
     private Garden testGarden;
     private Location testLocation;
     private Plant testPlant;

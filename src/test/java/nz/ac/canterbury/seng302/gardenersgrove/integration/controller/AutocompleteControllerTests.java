@@ -71,6 +71,9 @@ public class AutocompleteControllerTests {
     @MockBean
     private ImageService imageService;
 
+    @MockBean
+    private FriendRequestService friendRequestService;
+
     @Mock
     Authentication authentication;
 
