@@ -171,12 +171,15 @@ public class ManageFriendsController {
         friendRequestService.cancelRequest(acceptedFriend, currentUser);
 
         // Add each user to the other's friends list
-        currentUser.addFriend(acceptedFriend);
-        acceptedFriend.addFriend(currentUser);
+        if (!currentUser.getFriends().contains(acceptedFriend)) {
+            currentUser.addFriend(acceptedFriend);
+            userService.addUser(currentUser);
+        }
+        if (!acceptedFriend.getFriends().contains(currentUser)) {
+            acceptedFriend.addFriend(currentUser);
+            userService.addUser(acceptedFriend);
+        }
 
-        // Save the users
-        userService.addUser(currentUser);
-        userService.addUser(acceptedFriend);
 
         return addAttributes(model, currentUser);
     }
