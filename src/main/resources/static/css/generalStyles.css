@@ -1,5 +1,5 @@
 body {
-    background-color: white;
+    background-color: floralwhite;
     font-family: Verdana, sans-serif;
 }
 .content {
@@ -41,9 +41,9 @@ body {
 }
 
 .form-control:disabled {
-    background-color: #CEDACF;
-    border: 1px solid #ABB2AC;
-    outline: 1px solid #ABB2AC;
+    background-color: #DFDEDC;
+    border: 1px solid #C4C3C1;
+    outline: 1px solid #C4C3C1;
 }
 
 .required-input {
@@ -98,9 +98,13 @@ button, label {
     transform: scale(1.2);
 }
 
+.checkbox:hover {
+    cursor: pointer;
+}
+
 button, .button {
     background-color: #3D7B36;
-    color: white;
+    color: floralwhite;
     border-radius: 10px;
     border-width: 0;
     padding: 5px 10px 5px 10px;
@@ -147,7 +151,7 @@ h2 {
 /* Sidebar styles */
 .sideBar {
     width: 20px;
-    color: white;
+    color: floralwhite;
 }
 
 /* Table styles */
@@ -170,7 +174,7 @@ h2 {
 
 /* Garden link styles */
 .gardenLink {
-    color: white;
+    color: floralwhite;
     text-align: center;
     padding: 3px;
     text-decoration: none;
@@ -336,7 +340,7 @@ p {
         width: 540px;
     }
     .form-control:disabled {
-        border: 2px solid #ABB2AC;
+        border: 2px solid #C4C3C1;
     }
 
     textarea {

@@ -20,7 +20,7 @@ li {
 
 /* Navigation link styles */
 .navLink {
-    color: white;
+    color: floralwhite;
     font-size: 120%;
     text-align: center;
     padding: 14px 16px;
@@ -46,7 +46,7 @@ li {
 
 .navBar-logout-button {
     background-color: #0A3407;
-    color: white;
+    color: floralwhite;
     font-size: 120%;
     text-align: center;
     padding: 14px 16px;

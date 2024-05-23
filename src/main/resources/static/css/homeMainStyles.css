@@ -1,5 +1,5 @@
 body {
-    background-color: white;
+    background-color: floralwhite;
     font-family: Verdana, sans-serif;
 }
 .content {
@@ -16,7 +16,7 @@ body {
 button {
     font-size: 150%;
     background-color: #3D7B36;
-    color: white;
+    color: floralwhite;
     border-radius: 10px;
     border-width: 0;
     padding: 5px 10px 5px 10px;
