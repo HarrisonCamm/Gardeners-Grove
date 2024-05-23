@@ -1,5 +1,5 @@
 body {
-    background-color: #d4ffd4;
+    background-color: floralwhite;
     font-family: Verdana, sans-serif;
 }
 .content {
@@ -12,22 +12,27 @@ body {
     justify-content: center;
     display: flex;
 }
+
 button {
-    font-size: 140%;
-    border-radius: 5px;
-    background-color : #8ffa8f;
+    font-size: 150%;
+    background-color: #3D7B36;
+    color: floralwhite;
+    border-radius: 10px;
+    border-width: 0;
+    padding: 5px 10px 5px 10px;
+    margin: 2px;
+}
+button:hover {
+    background-color: #72543C;
+    cursor: pointer;
 }
 
 .logout-button {
     font-size: 140%;
     border-radius: 5px;
-    background-color : #8ffa8f;
+    background-color : #BEE186;
 }
 
-button:hover {
-    background-color: darkgreen;
-
-}
 .form {
     font-size: 140%;
 }
@@ -35,11 +40,17 @@ h1 {
     font-size: 200%;
     text-align: center;
     margin: 0;
+    color: #0A3407;
 }
 
 .headings {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
+}
+
+.rows {
+    margin-bottom: 150px;
 }
 
 .buttons-centre {
@@ -51,33 +62,76 @@ h1 {
 
 .search-friend {
     text-align: center;
-    /*display: none;*/
 }
 
 .search-field {
     margin: 40px 0 0 0;
     font-size: 150%;
-    /*width: 100%;*/
     max-width: 292px;
-    border-radius: 2px;
-    background-color: #b2eab2;
+    /*background-color: #BEE186;*/
+    background-color: #E2F1CA;
+    padding: 5px;
+    border-radius: 4px;
+    /*border: 1px solid #3D7B36;*/
+    /*outline: 1px solid #3D7B36;*/
+    border: 1px solid #BEE186;
+    outline: 1px solid #BEE186;
 }
 
-.search-button {
-    text-align: right;
-    align-items: end;
+.search-field:focus {
+    outline: 2px solid #3D7B36;
 }
+.search-button {
+    justify-content: flex-end;
+}
+
+.search-field-message {
+    text-align: center;
+
+}
+
+.friends-container {
+    background-color: rgba(245, 245, 245, 0.5); /* #f5f5f5 in RGB is 245, 245, 245 */
+    border-radius: 10px;
+    border: solid black 1px;
+    width: 100%;
+    min-width: 400px;
+    height: 700px;
+}
+
+.requests-container {
+    background-color: rgba(245, 245, 245, 0.5); /* #f5f5f5 in RGB is 245, 245, 245 */
+    border-radius: 10px;
+    border: solid black 1px;
+    width: 100%;
+    min-width: 400px;
+    height: 200px;
+    margin: 20px 0 20px 0;
+    padding: 10px;
+}
+
+.results-container {
+    background-color: rgba(245, 245, 245, 0.5); /* #f5f5f5 in RGB is 245, 245, 245 */
+    border-radius: 10px;
+    border: solid black 1px;
+    width: 500px;
+    height: 300px;
+    max-height: 300px;
+    overflow: auto;
+    margin: 20px 0 0 0;
+    padding: 10px;
+}
+
 
 .error {
-    border: 1px solid red;
-    outline: 1px solid red;
-    border-radius: 2px;
+    border: 1px solid #DE2929;
+    outline: 1px solid #DE2929;
 }
 .error:focus {
-    outline: 2px solid red;
+    outline: 2px solid #DE2929;
 }
 .error-message {
-    color: red;
+    color: #DE2929;
     display: block;
     width: 300px;
     overflow: hidden;

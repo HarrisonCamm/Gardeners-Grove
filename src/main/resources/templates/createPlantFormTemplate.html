@@ -1,78 +1,83 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Create Plant</title>
-    <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
-    <link th:href="@{/css/navBar.css}" rel="stylesheet">
-    <script th:src="@{javascript/enter-date.js}"></script>
-    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
-    <script th:src="@{/javascript/image-handling.js}"></script>
-</head>
-<body>
-    <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-    <br/>
-    <div class="form">
-        <h1>Create Plant</h1>
-        <div style="position: relative; width: 82px; margin: auto;">
-            <img class="image" th:if="${plant.image != null}" th:data-plant-id="${plant.id}"
-                 th:src="@{/get-image?temporary=true(imageID=${plant.image.getId()})}" alt="IMAGE UPDATED :)">
-            <img class="image" th:unless="${plant.image != null}" th:data-plant-id="${-1}" th:src="@{/images/leaves-80x80.png}" alt="">
-            <input style="display: none" th:value="imagePath" class="fileInput" type="file" name="file" id="file">
-            <label for="file" class="image_picker" th:image-button-id="${-1}" style="position: absolute; top: 0; right: 0;">+</label>
-            <br/>
-        </div>
-        <div class="formContainer">
-            <form class="hasImage" th:action="@{create-plant}" method="post" th:object="${plant}">
-                <div id="imageError" class="error-message"></div>
-
-                <input type="hidden" name="gardenID" th:value="${gardenID}">
-                <label for="plantName"> Name: </label>
-                <br/>
-                <input type="text" id="plantName" th:name="name" th:value="${name}"
-                       th:class="${nameError != null ? 'error' : ''}" autofocus>
-                <br/>
-                <div th:if="${nameError}" class="error-message" th:text="${nameError}"></div>
-                <br/>
-                <label for="plantCount"> Count: </label>
-                <br/>
-                <input type="text" id="plantCount" th:name="count" th:value="${count}"
-                       th:class="${countError != null ? 'error' : ''}" autofocus>
-                <br/>
-                <div th:if="${countError}" class="error-message" th:text="${countError}"></div>
-                <br/>
-                <label for="plantDescription"> Description: </label>
-                <br/>
-                <textarea id="plantDescription"
-                          th:name="description"
-                          th:text="${description}"
-                          th:class="${descriptionError} ? 'error' : ''">
-                </textarea>
-                <br/>
-                <div th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></div>
-                <br/>
-                <label for="datePlanted"> Date Planted: </label>
-                <br/>
-                <input type="text" name="datePlanted" id="datePlanted"
-                       th:name="datePlanted" th:value="${datePlanted}"
-                       placeholder="DD/MM/YYYY"
-                       data-cy="datePlanted"
-                       oninput="formatDate(this)"
-                       th:class="${dateError != null ? 'error' : ''}" autofocus>
-                <br/>
-                <div th:if="${dateError}" class="error-message" th:text="${dateError}"></div>
-                <br/>
-                <div class="buttons-centre">
-                    <button type="submit" class="submitButton">Create</button>
-                    &nbsp;
-                    <a th:href="@{'/view-garden?gardenID=' + ${gardenID}}" id="cancelButton">
-                        <button type="button">Cancel</button>
-                    </a>
+    <head>
+        <meta charset="UTF-8">
+        <title>Create Plant</title>
+        <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
+        <link th:href="@{/css/navBar.css}" rel="stylesheet">
+        <script th:src="@{javascript/enter-date.js}"></script>
+        <script th:src="@{javascript/prevent-enter-submit.js}"></script>
+        <script th:src="@{/javascript/image-handling.js}"></script>
+    </head>
+    <body>
+        <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+        <br/>
+        <div class="form">
+            <h1>Create Plant</h1>
+            <div class="image-icon-div">
+                <div class="image-upload">
+                    <img class="image" th:if="${plant.image != null}" th:data-plant-id="${plant.id}"
+                         th:src="@{/get-image?temporary=true(imageID=${plant.image.getId()})}" alt="IMAGE UPDATED :)">
+                    <img class="image" th:unless="${plant.image != null}" th:data-plant-id="${-1}" th:src="@{/images/leaves-80x80.png}" alt="">
+                    <input th:value="imagePath" class="file-input" type="file" name="file" id="file">
+                    <button class="image-picker" th:image-button-id="${-1}">+</button>
+                    <br/>
                 </div>
-            </form>
-        </div>
-    </div>
-    <br/>
-</body>
-</html>
+            </div>
+            <div class="formContainer">
+                <form class="hasImage" th:action="@{create-plant}" method="post" th:object="${plant}">
+                    <div id="imageError" class="error-message"></div>
 
+                    <input type="hidden" name="gardenID" th:value="${gardenID}">
+                    <label for="plantName"> Name:
+                        <span class="required-input"> * </span>
+                    </label>
+                    <br/>
+                    <input type="text" class="form-control" id="plantName"
+                           th:name="name" th:value="${name}"
+                           th:classappend="${nameError} ? 'error' : 'form-control'" autofocus>
+                    <br/>
+                    <div th:if="${nameError}" class="error-message" th:text="${nameError}"></div>
+                    <br/>
+                    <label for="plantCount"> Count: </label>
+                    <br/>
+                    <input type="text" class="form-control" id="plantCount"
+                           th:name="count" th:value="${count}"
+                           th:classappend="${countError} ? 'error' : 'form-control'" autofocus>
+                    <br/>
+                    <div th:if="${countError}" class="error-message" th:text="${countError}"></div>
+                    <br/>
+                    <label for="plantDescription"> Description: </label>
+                    <br/>
+                    <textarea id="plantDescription"
+                              th:name="description"
+                              th:text="${description}"
+                              th:classappend="${descriptionError} ? 'error' : ''">
+                    </textarea>
+                    <br/>
+                    <div th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></div>
+                    <br/>
+                    <label for="datePlanted"> Date Planted: </label>
+                    <br/>
+                    <input type="text" class="form-control" name="datePlanted" id="datePlanted"
+                           th:name="datePlanted" th:value="${datePlanted}"
+                           placeholder="DD/MM/YYYY"
+                           data-cy="datePlanted"
+                           oninput="formatDate(this)"
+                           th:classappend="${dateError} ? 'error' : 'form-control'" autofocus>
+                    <br/>
+                    <div th:if="${dateError}" class="error-message" th:text="${dateError}"></div>
+                    <br/>
+                    <div class="buttons-centre">
+                        <button type="submit" class="submitButton">Create</button>
+                        &nbsp;
+                        <a th:href="@{'/view-garden?gardenID=' + ${gardenID}}" id="cancelButton">
+                            <button type="button">Cancel</button>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <br/>
+    </body>
+</html>
