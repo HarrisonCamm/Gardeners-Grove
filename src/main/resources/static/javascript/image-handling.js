@@ -189,7 +189,7 @@ function validateFile(file) {
     if (file == null)
         return false;
 
-    const allowedImageTypes = ['jpeg', 'png', 'svg'];
+    const allowedImageTypes = ['jpeg', 'png', 'svg+xml'];
     const contentType = file.type.split('/').pop();
     const maxSize = 10 * 1024 * 1024; // 10MB
 
@@ -198,7 +198,7 @@ function validateFile(file) {
     if (!allowedImageTypes.includes(contentType)) {
         // alert('Image must be of type png, jpg or svg');
         if (imageError != null)
-            imageError.textContent = 'Image must be of type png, jpg or svg';
+            imageError.textContent = 'Image must be of type jpeg, png, or svg';
         return false;
     } else if (file.size > maxSize) {
         // alert('Image must be less than 10MB');

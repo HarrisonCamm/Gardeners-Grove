@@ -150,15 +150,12 @@ public class UploadImageController {
             model.addAttribute("picture", image.getData());
         }
 
-        if (image.getContentType().equals("gif")) {
-            headers.setContentType(MediaType.IMAGE_GIF);
-        } else if (image.getContentType().equals("jpg") || image.getContentType().equals("jpeg")) {
-            headers.setContentType(MediaType.IMAGE_JPEG);
-        } else if (image.getContentType().equals("png") || image.getContentType().equals("svg")) {
-            // TODO there seems to be no IMAGE_SVG, look into this
-            headers.setContentType(MediaType.IMAGE_PNG);
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid image type");
+        switch (image.getContentType()) {
+            case "gif" -> headers.setContentType(MediaType.IMAGE_GIF);
+            case "jpg", "jpeg" -> headers.setContentType(MediaType.IMAGE_JPEG);
+            case "png" -> headers.setContentType(MediaType.IMAGE_PNG);
+            case "svg+xml" -> headers.setContentType(new MediaType("image", "svg+xml"));
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid image type");
         }
 
         return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);
