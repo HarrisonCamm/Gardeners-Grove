@@ -53,7 +53,7 @@
                     <span class="required-input"> * </span>
                 </label>
                 <br/>
-                <input type="password" class="form-control" id="password"
+                <input autocomplete="new-password" type="password" class="form-control" id="password"
                        th:name="password" th:value="*{password}" data-cy="password"
                        th:classappend="${passwordValidityError != null ? 'error' : 'form-control'}" autofocus>
                 <br/>
