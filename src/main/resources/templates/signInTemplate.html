@@ -3,12 +3,12 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Sign In</title>
-    <link th:href="@{/css/formStyles.css}" rel="stylesheet"/>
+    <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
     <script th:src="@{javascript/prevent-enter-submit.js}"></script>
 </head>
 <body>
 <div class="content">
-    <div>
+    <div class="top-padding">
         <h2>Sign In Form</h2>
         <div>
             <!-- the 'novalidate' disables the default HTML5 validation -->
@@ -19,22 +19,26 @@
                 <div>
                     <p class="error-message" th:if="${expiredTokenError}" id="expiredTokenMessage" th:text="${expiredTokenError}"></p>
                 </div>
-                <label for="email"> Email: </label>
+                <label for="email"> Email:
+                    <span class="required-input"> * </span>
+                </label>
                 <br/>
                 <!-- Email input box -->
                 <input type="text" class="form-control" id="email"
                        th:name="username" th:value="${email}" data-cy="email" required autofocus
-                       th:class="${signInError != null ? 'error' : 'form-control'}">
+                       th:classappend="${signInError != null ? 'error' : 'form-control'}">
                 <br/>
                 <!-- Display error message if there is an error with the email format-->
                 <div id="emailError" class="error-message"></div>
                 <br/>
                 <!-- Password input box -->
-                <label for="password"> Password: </label>
+                <label for="password"> Password:
+                    <span class="required-input"> * </span>
+                </label>
                 <br/>
                 <input type="password" class="form-control" id="password"
                        th:name="password" th:value="${password}" data-cy="password" required
-                       th:class="${signInError != null ? 'error' : 'form-control'}">
+                       th:classappend="${signInError != null ? 'error' : 'form-control'}">
                 <br/>
                 <!-- Display error message if there is an error with the email or password validation -->
                 <div id="signInError" class="error-message"></div>

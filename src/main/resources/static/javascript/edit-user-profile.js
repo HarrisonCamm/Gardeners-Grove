@@ -22,7 +22,7 @@ function toggleChangePasswordForm(showForm) {
         newPassword.classList.remove('error');
         retypePassword.classList.remove('error');
 
-        let errorMessages = document.getElementsByClassName('error-message');
+        let errorMessages = document.getElementsByClassName('password-error-message');
 
         // Loop through each element and clear its content
         for (let i = 0; i < errorMessages.length; i++) {
