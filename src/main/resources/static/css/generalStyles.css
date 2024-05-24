@@ -243,6 +243,17 @@ h2 {
     overflow: auto;
 }
 
+.friend-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.friend-form h3, .friend-form button {
+    flex: 1 0 auto;
+    text-align: center;
+}
+
 /* Disabled styles */
 .disabled {
     opacity: 0;

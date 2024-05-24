@@ -61,8 +61,8 @@
                                 <div style="display: flex; justify-content: space-between; align-items: center">
                                     <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
                                     <h3 th:text="${pendingRequest.sender.firstName}"></h3>
-                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
-                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
+<!--                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>-->
+<!--                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>-->
                                     <input type="hidden" th:name="action" id="friend-request-action" />
                                     <input type="hidden" th:name="email" th:value="${pendingRequest.sender.email}" />
                                     <button type="submit" style="height: 50px" onclick="document.getElementById('friend-request-action').value='delete'">
@@ -85,13 +85,13 @@
                     <ul style="padding: 0; text-align: left">
                         <li th:each="sentRequest : ${sentRequests}">
                             <form th:action="@{/manage-friends}" method="post" novalidate>
-                                <div style="display: flex; justify-content: space-between; align-items: center">
+                                <div class="friend-form">
                                     <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
                                     <h3 th:text="${sentRequest.receiver.firstName + ' - ' + sentRequest.receiver.email}"></h3>
-                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
+<!--                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>-->
                                     <input type="hidden" th:name="email" th:value="${sentRequest.receiver.email}" />
                                     <h3 th:text="${sentRequest.status}"></h3>
-                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>
+<!--                                    <div style="border-left: 1px solid black; height: 50px; margin: 0 10px;"></div>-->
                                     <input type="hidden" th:name="action" th:value="cancel" />
                                     <button type="submit" style="height: 50px">
                                         Cancel
