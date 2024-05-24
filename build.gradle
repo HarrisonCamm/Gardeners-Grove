@@ -51,8 +51,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	// JWT
 	implementation 'com.h2database:h2'
-    testImplementation 'junit:junit:4.13.1'
-	testImplementation 'junit:junit:4.13.1'
+
 	// MariaDB (deployment db)
 	implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
 
