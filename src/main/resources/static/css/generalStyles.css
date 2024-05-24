@@ -220,6 +220,11 @@ h2 {
     padding-top: 10px;
 }
 
+
+.file-input {
+    display: none;
+}
+
 .image-picker, .image-picker-small {
     position: absolute;
     top: 7.5%;
