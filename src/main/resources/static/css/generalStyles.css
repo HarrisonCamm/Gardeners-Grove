@@ -212,8 +212,8 @@ h2 {
 
 .manage-friends-page {
     display: flex;
-    justify-content: center;
-    /*width: 80%*/
+    justify-content: space-around;
+    padding-top: 3%;
 }
 
 .friends-container {
@@ -222,16 +222,21 @@ h2 {
     border: solid black 1px;
     width: 400px;
     height: 700px;
+    padding: 20px;
 }
 
 .requests-container {
     background-color: rgba(245, 245, 245, 0.5); /* #f5f5f5 in RGB is 245, 245, 245 */
     border-radius: 10px;
     border: solid black 1px;
-    width: 400px;
+    width: 700px;
     height: 200px;
     margin: 20px 0 20px 0;
-    padding: 10px;
+    padding: 20px;
+}
+
+.search-container {
+    margin-top: 20px;
 }
 
 .results-container {
@@ -252,9 +257,9 @@ h2 {
 }
 .search-div {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
-    height: 50px;
+    /*height: 50px;*/
 
 }
 .friend-form {

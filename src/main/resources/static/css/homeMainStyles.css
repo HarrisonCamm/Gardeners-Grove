@@ -65,15 +65,11 @@ h1 {
 }
 
 .search-field {
-    margin: 40px 0 0 0;
     font-size: 150%;
     max-width: 292px;
-    /*background-color: #BEE186;*/
     background-color: #E2F1CA;
     padding: 5px;
     border-radius: 4px;
-    /*border: 1px solid #3D7B36;*/
-    /*outline: 1px solid #3D7B36;*/
     border: 1px solid #BEE186;
     outline: 1px solid #BEE186;
 }
@@ -83,6 +79,7 @@ h1 {
 }
 .search-button {
     justify-content: flex-end;
+    font-size: 120%;
 }
 
 .search-field-message {
