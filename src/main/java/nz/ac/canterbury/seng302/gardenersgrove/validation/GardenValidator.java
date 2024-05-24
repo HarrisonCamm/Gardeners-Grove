@@ -17,14 +17,14 @@ public class GardenValidator {
      * @return object error if there is an error otherwise null
      */
     public static FieldError validateGardenName(String name) {
-        if (validateWithRegex("^$", name)) { //The garden name is empty
+        if (name.trim().isEmpty()) { // The garden name is empty or contains only whitespace
             return new FieldError("garden", "name", "Garden name cannot be empty");
-//            name.matches("[\\p{L}\\s'-]+");
         } else if (!validateWithRegex("[0-9\\p{L}\\s'-.]+", name)) {
             return new FieldError("garden", "name", "Garden name must only include letters, numbers, spaces, dots, hyphens, or apostrophes");
         }
         return null;
     }
+
 
     /**
      * Validates a garden's location
