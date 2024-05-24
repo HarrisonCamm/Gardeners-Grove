@@ -1,96 +1,97 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Register</title>
-    <link th:href="@{/css/formStyles.css}" rel="stylesheet"/>
-    <script th:src="@{javascript/enter-date.js}"></script>
-    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
-</head>
-<body>
-<div class="content">
-    <div>
-        <h2>Registration Form</h2>
-        <div>
-            <form th:action="@{/register-form}" method="post" novalidate>
-                <label for="firstName"> First Name: </label>
-                <br/>
-                <input type="text" class="form-control" id="firstName"
-                       th:name="firstName" th:value="${firstName}" data-cy="firstName"
-                       th:class="${firstNameError != null ? 'error' : 'form-control'}" autofocus>
-                <br/>
-                <div th:if="${firstNameError}" class="error-message" th:text="${firstNameError}"></div>
-                <br/>
-                <label for="lastName"> Last Name: </label>
-                <br/>
-                <input type="text" class="form-control" id="lastName"
-                       th:name="lastName" th:value="${lastName}" th:disabled="${noLastName}" data-cy="lastName"
-                       th:class="${lastNameError != null ? 'error' : 'form-control'}" autofocus>
-                <br/>
-                <div th:if="${lastNameError}" class="error-message" th:text="${lastNameError}"></div>
-                <label for="noLastName">I have no surname</label>
-                <input type="checkbox" class="checkbox" id="noLastName" th:name="noLastName" th:value="${noLastName}"
-                       th:checked="${noLastName}" onchange="toggleLastNameField()" />
-                <script>
-                    function toggleLastNameField() {
-                        // Check the checkbox state and enable/disable the last name field accordingly
-                        let checkbox = document.getElementById('noLastName');
-                        let lastNameField = document.getElementById('lastName');
-                        lastNameField.value = "";
-                        lastNameField.disabled = checkbox.checked;
-                        checkbox.value = checkbox.checked;
-                    }
-                </script>
-                <br/>
-                <br/>
-                <label for="email"> Email: </label>
-                <br/>
-                <input type="text" class="form-control" id="email"
-                       th:name="email" th:value="${email}" data-cy="email"
-                       th:class="${registrationEmailError != null ? 'error' : 'form-control'}" autofocus>
-                <br/>
-                <!-- Display error message if there is an error with the email existing-->
-                <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
-                <br/>
-                <label for="password"> Password: </label>
-                <br/>
-                <input type="password" class="form-control" id="password"
-                       th:name="password" th:value="*{password}" data-cy="password"
-                       th:class="${passwordValidityError != null ? 'error' : 'form-control'}" autofocus>
-                <br/>
-                <div th:if="${passwordValidityError}" class="error-message" th:text="${passwordValidityError}"></div>
-                <br/>
-                <label for="password2"> Repeat Password: </label>
-                <br/>
-                <input type="password" class="form-control" id="password2"
-                       th:name="password2" th:value="*{password2}" data-cy="password2"
-                       th:class="${passwordMatchError != null ? 'error' : 'form-control'}" autofocus>
-                <br/>
-                <div th:if="${passwordMatchError}" class="error-message" th:text="${passwordMatchError}"></div>
-                <br/>
-                <label for="dateOfBirth"> Date of birth: </label>
-                <br/>
-                <input type="text" class="form-control" id="dateOfBirth"
-                       th:name="dateOfBirth" th:value="${dateOfBirth}"
-                       placeholder="DD/MM/YYYY"
-                       th:class="${ageError != null ? 'error' : 'form-control'}"
-                       data-cy="dateOfBirth" autofocus
-                       oninput="formatDate(this)">
-                <br/>
-                <div th:if="${ageError}" class="error-message" th:text="${ageError}"></div>
-                <br/>
-                <div class="buttons-centre">
-                    <button type="submit" id="submitButton">Sign up</button>
-                    &nbsp;
-                    <a th:href="@{/home}" id="cancelButton">
-                        <button type="button">Cancel</button>
-                    </a>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Register</title>
+        <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
+        <script th:src="@{javascript/enter-date.js}"></script>
+        <script th:src="@{javascript/prevent-enter-submit.js}"></script>
+        <script th:src="@{javascript/last-name-box.js}"></script>
+    </head>
+    <body>
+        <div class="content">
+            <div class="register-top-padding">
+                <h2>Registration Form</h2>
+                <div>
+                    <form th:action="@{/register-form}" method="post" novalidate>
+                        <label for="firstName"> First Name:
+                            <span class="required-input"> * </span>
+                        </label>
+                        <br/>
+                        <input type="text" class="form-control" id="firstName"
+                               th:name="firstName" th:value="${firstName}" data-cy="firstName"
+                               th:classappend="${firstNameError != null ? 'error' : 'form-control'}" autofocus>
+                        <br/>
+                        <div th:if="${firstNameError}" class="error-message" th:text="${firstNameError}"></div>
+                        <br/>
+                        <label for="lastName"> Last Name:
+                            <span id="lastNameLabel" class="required-input"></span>
+                        </label>
+                        <br/>
+                        <input type="text" class="form-control" id="lastName"
+                               th:name="lastName" th:value="${lastName}" th:disabled="${noLastName}" data-cy="lastName"
+                               th:classappend="${lastNameError != null ? 'error' : 'form-control'}" autofocus>
+                        <br/>
+                        <div th:if="${lastNameError}" class="error-message" th:text="${lastNameError}"></div>
+                        <label for="noLastName">I have no surname</label>
+                        <input type="checkbox" class="checkbox" id="noLastName" th:name="noLastName" th:value="${noLastName}"
+                               th:checked="${noLastName}" onchange="toggleLastNameField()" />
+                        <br/>
+                        <br/>
+                        <label for="email"> Email:
+                            <span class="required-input"> * </span>
+                        </label>
+                        <br/>
+                        <input type="text" class="form-control" id="email"
+                               th:name="email" th:value="${email}" data-cy="email"
+                               th:classappend="${registrationEmailError != null ? 'error' : 'form-control'}" autofocus>
+                        <br/>
+                        <!-- Display error message if there is an error with the email existing-->
+                        <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
+                        <br/>
+                        <label for="password"> Password:
+                            <span class="required-input"> * </span>
+                        </label>
+                        <br/>
+                        <input autocomplete="new-password" type="password" class="form-control" id="password"
+                               th:name="password" th:value="*{password}" data-cy="password"
+                               th:classappend="${passwordValidityError != null ? 'error' : 'form-control'}" autofocus>
+                        <br/>
+                        <div th:if="${passwordValidityError}" class="error-message" th:text="${passwordValidityError}"></div>
+                        <br/>
+                        <label for="password2"> Repeat Password:
+                            <span class="required-input"> * </span>
+                        </label>
+                        <br/>
+                        <input type="password" class="form-control" id="password2"
+                               th:name="password2" th:value="*{password2}" data-cy="password2"
+                               th:classappend="${passwordMatchError != null ? 'error' : 'form-control'}" autofocus>
+                        <br/>
+                        <div th:if="${passwordMatchError}" class="error-message" th:text="${passwordMatchError}"></div>
+                        <br/>
+                        <label for="dateOfBirth"> Date of birth: </label>
+                        <br/>
+                        <input type="text" class="form-control" id="dateOfBirth"
+                               th:name="dateOfBirth" th:value="${dateOfBirth}"
+                               placeholder="DD/MM/YYYY"
+                               th:classappend="${ageError != null ? 'error' : 'form-control'}"
+                               data-cy="dateOfBirth" autofocus
+                               oninput="formatDate(this)">
+                        <br/>
+                        <div th:if="${ageError}" class="error-message" th:text="${ageError}"></div>
+                        <br/>
+                        <div class="buttons-centre">
+                            <button type="submit" id="submitButton">Sign up</button>
+                            &nbsp;
+                            <a th:href="@{/home}" id="cancelButton">
+                                <button type="button">Cancel</button>
+                            </a>
+                        </div>
+                        <br/>
+                        <br/>
+                    </form>
                 </div>
-                <br/>
-                <br/>
-            </form>
+            </div>
         </div>
-    </div>
-</div>
-</body>
+    </body>
 </html>

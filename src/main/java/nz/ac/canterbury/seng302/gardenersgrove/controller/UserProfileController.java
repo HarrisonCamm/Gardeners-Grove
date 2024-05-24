@@ -40,12 +40,14 @@ public class UserProfileController {
     public UserProfileController(UserService newUserService, UserRepository newUserRepository, ImageService imageService) {
         this.userService = newUserService;
         this.userRepository = newUserRepository;
-
         this.imageService = imageService;
     }
 
     /**
      * Gets the thymeleaf page showing the user profile of the logged-in user
+     *
+     * @param session The http session
+     * @param model The model
      */
     @GetMapping("/view-user-profile")
     public String getTemplate(HttpSession session, Model model) {
@@ -69,9 +71,19 @@ public class UserProfileController {
         }
     }
 
+    /**
+     * Handles saving a new user profile image that was uploaded from the View User Profile page
+     *
+     * @param userID The id of the user
+     * @param file The image file which can be reread if necessary
+     * @param session The http session
+     * @param model The model
+     * @return A redirect to this same page to refresh it
+     * @throws IOException If the file cannot be read
+     */
     @PostMapping("/view-user-profile")
-    public String uploadImage(@RequestParam(value = "userID", required = false) Long userID,
-                              @RequestParam(value = "file", required = false) MultipartFile file,
+    public String uploadImage(@RequestParam(value = "userID") Long userID,
+                              @RequestParam(value = "file") MultipartFile file,
                               HttpSession session,
                               Model model) throws IOException {
         Optional<User> user = userRepository.findById(userID);

@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Edit Garden</title>
-    <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
-    <link th:href="@{/css/navBar.css}" rel="stylesheet">
-    <script th:src="@{/javascript/hover-enter.js}"></script>
-    <script th:src="@{/javascript/autocomplete.js}"></script>
-</head>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Edit Garden</title>
+        <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
+        <link th:href="@{/css/navBar.css}" rel="stylesheet">
+        <script th:src="@{/javascript/hover-enter.js}"></script>
+        <script th:src="@{/javascript/autocomplete.js}"></script>
+        <script th:src="@{/javascript/prevent-enter-submit.js}"></script>
+    </head>
 
 <body>
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
@@ -30,90 +31,96 @@
     <br/>
     <div class="form">
 
-        <h1>Edit Garden</h1>
-        <div class="formContainer">
-            <form th:action="@{'/edit-garden?gardenID=' + ${id}}" method="post" th:object="${garden}">
-                <input type="hidden" name="_method" value="PUT">
-                <div>
-                    <label for="name"> Garden Name: </label>
-                    <br/>
-                    <input type="text" id="name"
-                           th:name="name"
-                           th:value="*{name}"
-                           th:classappend="${nameError} ? 'error' : ''">
-                    <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
-                </div>
-                <br/>
-                <div class="locationTable" id="locationContainer">
-                    <div id="autocompleteContainer"></div>
-                    <ul class="suggestions" id="suggestions"></ul>
-                    <br/>
-                    <label for="streetAddress" id="streetAddressLabel">Street Address: </label>
-                    <br/>
-                    <input type="text" id="streetAddress"
-                           th:name="location.streetAddress"
-                           th:value="*{location.streetAddress}">
-                    <br/>
-                    <br/>
-                    <label for="suburb" id="suburbLabel">Suburb: </label>
-                    <br/>
-                    <input type="text" id="suburb"
-                           th:name="location.suburb"
-                           th:value="*{location.suburb}">
-                    <br/>
-                    <br/>
-                    <label for="city" id="cityLabel">City: </label>
-                    <br/>
-                    <input type="text" id="city"
-                           th:name="location.city"
-                           th:value="*{location.city}"
-                           th:class="${location_cityError != null ? 'error' : ''}">
-                    <br/>
-                    <p th:if="${location_cityError != null}" class="error-message" th:text="${location_cityError}"></p>
-                    <br/>
-                    <label for="postcode" id="postcodeLabel">Postcode: </label>
-                    <br/>
-                    <input type="text" id="postcode"
-                           th:name="location.postcode"
-                           th:value="*{location.postcode}">
-                    <br/>
-                    <br/>
-                    <label for="country" id="countryLabel">Country: </label>
-                    <br/>
-                    <input type="text" id="country"
-                           th:name="location.country"
-                           th:value="*{location.country}"
-                           th:classappend="${location_countryError} ? 'error' : ''">
-                    <br/>
-                    <p th:if="${location_countryError}" class="error-message" th:text="${location_countryError}"></p>
-                    <br/>
-                </div>
-                <br/>
-                <div>
-                    <div>
-                        <label for="size"> Garden Size: </label>
+                <h1>Edit Garden</h1>
+                <div class="formContainer">
+                    <form th:action="@{'/edit-garden?gardenID=' + ${id}}" method="post" th:object="${garden}">
+                        <input type="hidden" name="_method" value="PUT">
+                        <div>
+                            <label for="name"> Garden Name:
+                                <span class="required-input"> * </span>
+                            </label>
+                            <br/>
+                            <input type="text" class="form-control" id="name"
+                                   th:name="name"
+                                   th:value="*{name}"
+                                   th:classappend="${nameError} ? 'error' : 'form-control'">
+                            <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
+                        </div>
                         <br/>
-                        <input type="text" id="size"
-                               th:name="size"
-                               th:value="*{size}"
-                               th:classappend="${sizeError} ? 'error' : ''">
-                        <p th:if="${sizeError}" class="error-message" th:text="${sizeError}"></p>
-                    </div>
+                        <div class="locationTable" id="locationContainer">
+                            <div id="autocompleteContainer"></div>
+                            <ul class="suggestions" id="suggestions"></ul>
+                            <br/>
+                            <label for="streetAddress" id="streetAddressLabel">Street Address: </label>
+                            <br/>
+                            <input type="text" class="form-control" id="streetAddress"
+                                   th:name="location.streetAddress"
+                                   th:value="*{location.streetAddress}">
+                            <br/>
+                            <br/>
+                            <label for="suburb" id="suburbLabel">Suburb: </label>
+                            <br/>
+                            <input type="text" class="form-control" id="suburb"
+                                   th:name="location.suburb"
+                                   th:value="*{location.suburb}">
+                            <br/>
+                            <br/>
+                            <label for="city" id="cityLabel">City:
+                                <span class="required-input"> * </span>
+                            </label>
+                            <br/>
+                            <input type="text" class="form-control" id="city"
+                                   th:name="location.city"
+                                   th:value="*{location.city}"
+                                   th:classappend="${location_cityError} ? 'error' : 'form-control'">
+                            <br/>
+                            <p th:if="${location_cityError}" class="error-message" th:text="${location_cityError}"></p>
+                            <br/>
+                            <label for="postcode" id="postcodeLabel">Postcode: </label>
+                            <br/>
+                            <input type="text" class="form-control" id="postcode"
+                                   th:name="location.postcode"
+                                   th:value="*{location.postcode}">
+                            <br/>
+                            <br/>
+                            <label for="country" id="countryLabel">Country:
+                                <span class="required-input"> * </span>
+                            </label>
+                            <br/>
+                            <input type="text" class="form-control" id="country"
+                                   th:name="location.country"
+                                   th:value="*{location.country}"
+                                   th:classappend="${location_countryError} ? 'error' : 'form-control'">
+                            <br/>
+                            <p th:if="${location_countryError}" class="error-message" th:text="${location_countryError}"></p>
+                            <br/>
+                        </div>
+                        <br/>
+                        <div>
+                            <div>
+                                <label for="size"> Garden Size: </label>
+                                <br/>
+                                <input type="text" class="form-control" id="size"
+                                       th:name="size"
+                                       th:value="*{size}"
+                                       th:classappend="${sizeError} ? 'error' : 'form-control'">
+                                <p th:if="${sizeError}" class="error-message" th:text="${sizeError}"></p>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="buttons-centre">
+                            <button type="submit">Save</button>
+                            &nbsp;
+                            <a th:href="@{'/view-garden?gardenID=' + ${gardenID}}" id="cancelButton">
+                                <button type="button">Cancel</button>
+                            </a>
+                        </div>
+                    </form>
                 </div>
-                <br/>
-                <div class="buttons-centre">
-                    <button style="margin-left: 50%" type="submit">Save</button>
-                    &nbsp;
-                    <a th:href="@{'/view-garden?gardenID=' + ${gardenID}}" id="cancelButton">
-                        <button type="button">Cancel</button>
-                    </a>
-                </div>
-            </form>
+            </div>
+            <br/>
+            <div class="empty_space">
+            </div>
         </div>
-    </div>
-    <br/>
-    <div class="empty_space">
-    </div>
-</div>
-</body>
+    </body>
 </html>

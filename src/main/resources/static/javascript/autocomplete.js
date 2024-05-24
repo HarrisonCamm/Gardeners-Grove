@@ -22,6 +22,7 @@ function addressAutocomplete(containerElement, callback, options) {
     const inputElement = document.createElement("input");
     inputElement.setAttribute("type", "text");
     inputElement.setAttribute('id', 'addressInput');
+    inputElement.setAttribute('class', 'form-control');
 
     // Append the input element to the container
     inputContainerElement.appendChild(inputElement);
