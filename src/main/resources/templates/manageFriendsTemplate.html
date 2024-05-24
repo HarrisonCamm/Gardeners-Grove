@@ -6,7 +6,7 @@
     <!-- Navbar styling -->
     <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
     <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
-    <link th:href="@{/css/gardenStyles.css}" rel="stylesheet"/>
+    <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
     <script th:src="@{javascript/prevent-enter-submit.js}"></script>
     <script th:src="@{/javascript/hover-enter.js}"></script>
 </head>
@@ -54,7 +54,7 @@
             </div>
             <div class="requests-container">
                 <h3 style="text-align: left; margin-left: 20px">Friend Requests</h3>
-                <div th:if="${pendingRequests}">
+                <div class="friend-container-scroll" th:if="${pendingRequests}">
                     <ul style="padding: 0; text-align: left">
                         <li th:each="pendingRequest : ${pendingRequests}">
                             <form th:action="@{/manage-friends}" method="post" novalidate>
@@ -81,7 +81,7 @@
             <hr>
             <div class="requests-container">
                 <h3 style="text-align: left; margin-left: 20px">Sent Requests</h3>
-                <div th:if="${sentRequests}">
+                <div class="friend-container-scroll" th:if="${sentRequests}">
                     <ul style="padding: 0; text-align: left">
                         <li th:each="sentRequest : ${sentRequests}">
                             <form th:action="@{/manage-friends}" method="post" novalidate>
@@ -113,9 +113,9 @@
                     <h3>Your Friends</h3>
                     <ul style="padding: 0; text-align: left; margin: 10px">
                         <li th:each="friend : ${friends}">
-                            <div style="display: flex; justify-content: space-between;">
-                                <img class="image" style="margin-right:10%" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">          <!--Style overrides style from gardenStyles style sheet-->
-                                <h3 style="margin-right:auto" th:text="${friend.firstName + ' ' + friend.lastName}"></h3>
+                            <div style="display: flex; justify-content: space-evenly">
+                                <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">          <!--Style overrides style from gardenStyles style sheet-->
+                                <h3 th:text="${friend.firstName + ' ' + friend.lastName}"></h3>
                             </div>
                         </li>
                     </ul>
