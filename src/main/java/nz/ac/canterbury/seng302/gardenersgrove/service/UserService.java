@@ -147,7 +147,7 @@ public class UserService {
         String[] parts = searchQuery.split(" ");
         String firstName = parts[0];
         String lastName = parts.length > 1 ? parts[1] : "";
-        return userRepository.searchForUsers(searchQuery, firstName, lastName, currentUser.getUserId());
+        return userRepository.searchForUsers(searchQuery, firstName, lastName, currentUser.getUserId(), currentUser);
     }
 
     public List<FriendRequest> getSentFriendRequests(User user) {

@@ -97,7 +97,7 @@ public class UserRepositoryTest {
         User savedUser = userRepository.save(user);
         userRepository.save(loggedUser);
 
-        List<User> users = userRepository.searchForUsers(searchQuery, firstName, lastName, loggedUser.getUserId());
+        List<User> users = userRepository.searchForUsers(searchQuery, firstName, lastName, loggedUser.getUserId(), loggedUser);
 
         Assertions.assertNotEquals(0, users.size());
         Assertions.assertEquals(savedUser.getEmail(), users.get(0).getEmail());
@@ -119,7 +119,7 @@ public class UserRepositoryTest {
         userRepository.save(user2);
         userRepository.save(loggedUser);
 
-        List<User> users = userRepository.searchForUsers("Test User", "Test", "User", loggedUser.getUserId());
+        List<User> users = userRepository.searchForUsers("Test User", "Test", "User", loggedUser.getUserId(), loggedUser);
 
         Assertions.assertEquals(2, users.size());
     }

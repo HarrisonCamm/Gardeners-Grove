@@ -122,7 +122,10 @@ button:hover, .button:hover {
 .buttons-right {
     display: flex;
     justify-content: flex-end;
-    align-items: end;
+}
+
+.friend-status {
+    padding-right: 20%;
 }
 
 h1 {
@@ -206,6 +209,12 @@ h2 {
 }
 
 /* Manage Friends styles */
+
+.manage-friends-page {
+    display: flex;
+    justify-content: space-between
+}
+
 .friends-container {
     background-color: rgba(245, 245, 245, 0.5); /* #f5f5f5 in RGB is 245, 245, 245 */
     border-radius: 10px;
@@ -252,6 +261,13 @@ h2 {
 .friend-form h3, .friend-form button {
     flex: 1 0 auto;
     text-align: center;
+}
+
+.align-left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: start;
+    margin-left: 20px;
 }
 
 /* Disabled styles */

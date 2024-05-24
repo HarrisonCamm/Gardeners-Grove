@@ -90,16 +90,7 @@ public class ManageFriendsController {
         }
 
         model.addAttribute("matchedUsers", searchedUsers);
-        model.addAttribute("showSearch", true);
-        model.addAttribute("searchQuery", searchQuery);
-
-        List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
-        List<FriendRequest> pendingFriendRequests = userService.getPendingFriendRequests(currentUser);
-
-        model.addAttribute("pendingRequests", pendingFriendRequests);
-        model.addAttribute("sentRequests", sentFriendRequests);
-
-        return "manageFriendsTemplate";
+        return addAttributes(model, currentUser);
     }
 
     /**
