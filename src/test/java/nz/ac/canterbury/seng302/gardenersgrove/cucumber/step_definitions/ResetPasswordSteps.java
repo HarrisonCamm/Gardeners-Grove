@@ -15,6 +15,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.repository.VerificationTokenRepos
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -124,6 +125,12 @@ public class ResetPasswordSteps {
         mockMvcSignIn = MockMvcBuilders.standaloneSetup(signInController).build();
         mockMvcLostPassword = MockMvcBuilders.standaloneSetup(lostPasswordFormController).build();
 
+    }
+
+    @AfterEach
+    public void reset() {
+        Mockito.reset(verificationTokenService, authenticationManager, userService, userRepository, verificationTokenRepository, mailService);
+        cleanupCounter = 0;
     }
 
     // AC1
