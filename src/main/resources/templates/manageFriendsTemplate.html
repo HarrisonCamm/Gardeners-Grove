@@ -24,7 +24,7 @@
                     <div th:if="${showSearch}" class="search-friend" id="searchFriend">
                         <br/>
                         <p th:if="${searchResultMessage}" class="search-field-message" th:text="${searchResultMessage}"></p>
-                        <div style="display: flex; justify-content: space-between; align-items: flex-end; height: 50px">
+                        <div class="search-div">
                             <label for="search"></label>
                             <input th:name="searchQuery"
                                    th:value="${searchQuery}"
