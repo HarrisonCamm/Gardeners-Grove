@@ -7,18 +7,23 @@
     overflow: hidden;
     line-height: 50px;
     display: flex;
+    width: 100%;
+    position: static;
 }
 
 ul {
-    text-align: center;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
 }
 
-/* List item styles */
+
 li {
     display: inline;
 }
 
-/* Navigation link styles */
+
 .navLink {
     color: floralwhite;
     font-size: 120%;
@@ -32,9 +37,11 @@ li {
     color: #80A444;
 }
 
-/* Navigation bar form styling */
+
 .navBar-logout {
     margin-left: auto;
+    display: flex;
+    align-items: center;
 }
 
 .navBar-centre {
@@ -54,11 +61,9 @@ li {
     display: inline;
     cursor: pointer;
     font-family: inherit;
-    width: 100%;
-    margin-right: 30px;
-    border: 0 none;
-    outline: 0 none;
-
+    border: none;
+    outline: none;
+    margin: 0 30px 0 0;
 }
 
 .navBar-logout-button:hover {
