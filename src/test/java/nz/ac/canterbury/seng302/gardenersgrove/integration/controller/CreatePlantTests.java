@@ -144,7 +144,7 @@ public class CreatePlantTests {
                 .param("name", name)
                 .param("count", count)
                 .param("description", description))
-                .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
+                .andExpect(MockMvcResultMatchers.status().isOk());
         verify(plantService, Mockito.times(0)).addPlant(any(Plant.class));
     }
 }
