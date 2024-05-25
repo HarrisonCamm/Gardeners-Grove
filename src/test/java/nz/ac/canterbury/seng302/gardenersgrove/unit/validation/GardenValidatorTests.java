@@ -70,4 +70,22 @@ public class GardenValidatorTests {
         ObjectError objectError = GardenValidator.validateGardenName(gardenName);
         assertNull(objectError, "Garden name with period should be valid");
     }
+
+    @ParameterizedTest
+    @CsvSource({"sfcrtrbunrjqdpqsqdcfnunpzmatzvqwlhmouukyjzymuydxkmqzflupmqtypiupgupetidvkicweljpzlkufqgerlapwkuhl" +
+            "uvsmbptsdyvdgpoxvkrbaaelpfnmdgtlwkyuigtqnciuzzviobgeisyeqgtdiumxwumgtuhwlnkdtgpfvbpzugncscningysdlauvf" +
+            "vdrbhgwwhbstpabjddabjibvsrjkrgbjeyqvzlrzyxvcinjyglesyucft"})
+    public void ValidatingGardenLocation_CityLength_Invalid(String city) {
+        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", "", "", city), true);
+        assertNotNull(objectError);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"sfcrtrbunrjqdpqsqdcfnunpzmatzvqwlhmouukyjzymuydxkmqzflupmqtypiupgupetidvkicweljpzlkufqgerlapwkuhl" +
+            "uvsmbptsdyvdgpoxvkrbaaelpfnmdgtlwkyuigtqnciuzzviobgeisyeqgtdiumxwumgtuhwlnkdtgpfvbpzugncscningysdlauvf" +
+            "vdrbhgwwhbstpabjddabjibvsrjkrgbjeyqvzlrzyxvcinjyglesyucft"})
+    public void ValidatingGardenLocation_CountryLength_Invalid(String country) {
+        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", country, "", ""), false);
+        assertNotNull(objectError);
+    }
 }
