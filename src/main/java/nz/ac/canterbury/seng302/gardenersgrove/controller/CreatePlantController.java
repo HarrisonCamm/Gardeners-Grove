@@ -62,13 +62,11 @@ public class CreatePlantController {
     }
 
     @GetMapping("/create-plant")
-    public String form(@RequestParam(name = "gardenID") Long gardenID,
-                       @ModelAttribute Plant plant,
-                       Model model,
-                       HttpSession session) {
+    public String form(@ModelAttribute Plant plant,
+                       Model model, HttpSession session) {
         logger.info("GET /create-plant");
-        RedirectService.addEndpoint("/create-plant?gardenID=" + gardenID);
-        session.setAttribute("gardenID", gardenID);
+        Long gardenID = (Long) session.getAttribute("gardenID");
+        RedirectService.addEndpoint("/create-plant");
         User currentUser = userService.getAuthenicatedUser();
         Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
         if (foundGarden.isEmpty()) {
@@ -76,28 +74,8 @@ public class CreatePlantController {
         } else if (!foundGarden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot create a plant for this garden.");
 
-        Plant sessionPlant = (Plant) session.getAttribute("plant");
-        if (sessionPlant != null) {
-            plant = sessionPlant;
-        }
-        model.addAttribute("gardens", gardenService.getGardens());
-        model.addAttribute("plant", plant);
-
-        Garden ownerGarden = foundGarden.get();
-        plant.setGarden(ownerGarden); // Set the garden for the plant
         model.addAttribute("gardenID", session.getAttribute("gardenID"));
-        model.addAttribute("name", session.getAttribute("name"));
-        model.addAttribute("description", session.getAttribute("description"));
-        model.addAttribute("count", session.getAttribute("count"));
-        model.addAttribute("datePlanted", session.getAttribute("datePlanted"));
-        addErrors(session, model);
 
-
-        // Remove attributes from the session
-        session.removeAttribute("name");
-        session.removeAttribute("count");
-        session.removeAttribute("description");
-        session.removeAttribute("datePlanted");
 
         return "createPlantFormTemplate";
     }
@@ -109,13 +87,12 @@ public class CreatePlantController {
      * @param model The model
      */
     private void addErrors(HttpSession session, Model model) {
-        @SuppressWarnings("unchecked")
+//        @SuppressWarnings("unchecked")
         HashMap<String, String> errors = (HashMap<String, String>) session.getAttribute("errors");
         if (errors != null) {
             for (Map.Entry<String, String> entry : errors.entrySet()) {
                 model.addAttribute(entry.getKey(), entry.getValue());
             }
-            session.removeAttribute("errors");
         }
     }
 
@@ -130,10 +107,10 @@ public class CreatePlantController {
             @RequestParam("count") String count,
             @RequestParam("datePlanted") String datePlanted,
             @ModelAttribute("plant") Plant plant,
+            BindingResult bindingResult,
             HttpSession session,
             Model model) throws Exception {
         logger.info("POST /create-plant");
-
         User currentUser = userService.getAuthenicatedUser();
         Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
         if (foundGarden.isEmpty()) {
@@ -142,34 +119,8 @@ public class CreatePlantController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot create a plant for this garden.");
         Garden ownerGarden = foundGarden.get();
 
-        // Validates input fields
-        Plant sessionPlant = (Plant) session.getAttribute("plant");
-
-        if (sessionPlant != null) {
-            session.removeAttribute("plant");
-        }
-
         String formattedDate;
         formattedDate = convertDateFormat(datePlanted);
-
-//        Image image = Image.removeTemporaryImage(session, imageService);
-//        if (image == null) {
-//            try {
-//                MultipartFile imageFile = (MultipartFile) session.getAttribute("imageFile");
-//                if (imageFile != null) {
-//                    image = new Image(imageFile, false);
-//                    session.removeAttribute("imageFile");
-//                } else {
-//                    Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
-//                    image = new Image(Files.readAllBytes(imagePath), "png", false);
-//                }
-//            } catch (Exception e) {
-//                logger.error("Failed to set plant image from file", e);
-//            }
-//        } else {
-//            image.makePermanent();
-//        }
-//        plant.setImage(image);
 
         plant.setCount(plant.getCount().replace(',', '.'));
         plant.setGarden(ownerGarden); // Set the garden for the plant
@@ -179,13 +130,6 @@ public class CreatePlantController {
         model.addAttribute("gardenID", gardenID); // Add gardenID to the model
         model.addAttribute("gardens", gardenService.getGardens());
         model.addAttribute("plant", plant);
-
-        session.setAttribute("name", name);
-        session.setAttribute("count", count);
-        session.setAttribute("description", description);
-        session.setAttribute("datePlanted", plant.getDatePlanted());
-        session.setAttribute("gardenID", plant.getGarden().getId());
-
         Map<String, String> errors = new HashMap<>();
 
         if (validatePlantName(plant.getName()) != null) {
@@ -208,15 +152,18 @@ public class CreatePlantController {
         // If there are validation errors, return to the form page
         if (errors.containsKey("nameError") || errors.containsKey("countError")
                 || errors.containsKey("descriptionError") || errors.containsKey("dateError")) {
-            model.addAttribute("errors", errors);
+            addErrors(session, model);
+            model.addAttribute("gardens", gardenService.getGardens());
+            plant.setGarden(ownerGarden);
             model.addAttribute("gardenID", gardenID); // Add gardenID to the model before forwarding to error display page
+            model.addAttribute("plant", plant);
+            model.addAttribute("name", name);
+            model.addAttribute("description", description);
+            model.addAttribute("count", count);
+            model.addAttribute("datePlanted", datePlanted);
             return "createPlantFormTemplate";
         } else {
             plantService.addPlant(plant);
-            session.removeAttribute("name");
-            session.removeAttribute("count");
-            session.removeAttribute("description");
-            session.removeAttribute("datePlanted");
             return "redirect:/view-garden?gardenID=" + plant.getGarden().getId();
         }
     }
@@ -242,7 +189,9 @@ public class CreatePlantController {
         session.setAttribute("plant", plant);
         session.setAttribute("imageFile", file);
 
-        return "redirect:/create-plant?gardenID=" + plant.getGarden().getId();
+
+
+        return "redirect:/create-plant";
     }
 
 }

@@ -17,7 +17,7 @@
             <div class="image-icon-div">
                 <div class="image-upload">
                     <img class="image" th:if="${plant.image != null}" th:data-plant-id="${plant.id}"
-                         th:src="@{/get-image?temporary=true(imageID=${plant.image.getId()})}" alt="IMAGE UPDATED :)">
+                         th:src="@{/get-image}" alt="IMAGE UPDATED :)">
                     <img class="image" th:unless="${plant.image != null}" th:data-plant-id="${-1}" th:src="@{/images/leaves-80x80.png}" alt="">
                     <input th:value="imagePath" class="file-input" type="file" name="file" id="file">
                     <button class="image-picker" th:image-button-id="${-1}">+</button>
