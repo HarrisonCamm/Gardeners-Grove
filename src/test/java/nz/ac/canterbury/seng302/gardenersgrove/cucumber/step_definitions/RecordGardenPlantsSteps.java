@@ -53,15 +53,24 @@ public class RecordGardenPlantsSteps {
 
     private static Map<Long, Plant> mockPlantDB;
 
+    private static Plant testPlant;
     private static Garden testGarden;
-    private String plantName;
-    private String plantCount;
-    private String plantDescription;
-    private String plantDatePlanted;
+    private static Garden copyGarden;
+    private String plantName = "";
+    private String plantCount = "";
+    private String plantDescription = "";
+    private String plantDatePlanted = "";
+
 
     private static Plant copyPlant(Plant plant) {
         Plant out = new Plant(plant.getGarden(),plant.getName(), plant.getCount(), plant.getDescription(), plant.getDatePlanted());
         out.setId(plant.getId());
+        return out;
+    }
+
+    private static Garden copyGarden(Garden garden) {
+        Garden out = new Garden(garden.getName(), garden.getLocation(), garden.getSize());
+        out.setId(garden.getId());
         return out;
     }
 
@@ -74,6 +83,7 @@ public class RecordGardenPlantsSteps {
 
         if (mockPlantDB != null) {mockPlantDB.clear();} //Clear pseudo plant database in between examples
 
+
         //Logged in user handling code taken from RequestPasswordSteps.java credit OCL28
         User loggedInUser = new User("user@gmail.com", "Test", "User", "p@ssw0rd123");
         when(userService.getAuthenicatedUser()).thenReturn(loggedInUser);
@@ -85,6 +95,7 @@ public class RecordGardenPlantsSteps {
         testGarden = new Garden("testGardenName", new Location(), "1");
         testGarden.setId(1L);
         testGarden.setOwner(loggedInUser);
+        copyGarden = copyGarden(testGarden);
 
         //Mock gardenService methods called by test pages
         when(gardenService.findGarden(any(Long.class))).thenReturn(Optional.of(testGarden));
@@ -149,25 +160,28 @@ public class RecordGardenPlantsSteps {
     //AC 3
     @Given("I enter an empty or invalid plant {string}")
     public void i_enter_an_empty_or_invalid_plant_name(String plantName) {
-
+        this.plantName = plantName;
     }
 
     //AC 4
     @Given("I enter a {string} that is longer than 512 characters")
     public void i_enter_a_description_that_is_longer_than_512_characters(String plantDescription) {
-
+        this.plantName = "plant";
+        this.plantDescription = plantDescription;
     }
 
     //AC 5
     @Given("I enter an invalid {string}")
     public void i_enter_an_invalid_count(String plantCount) {
-
+        this.plantName = "plant";
+        this.plantCount = plantCount;
     }
 
     //AC 6
     @Given("I enter a {string} that is not in the Aotearoa NZ format")
     public void i_enter_a_date_that_is_not_in_the_aotearoa_nz_format(String plantDatePlanted) {
-
+        this.plantName = "plant";
+        this.plantDatePlanted = plantDatePlanted;
     }
 
     //AC 1
@@ -182,29 +196,24 @@ public class RecordGardenPlantsSteps {
     //AC 2, 3, 4, 5, 6
     @When("I click the submit button on the add plant form")
     public void i_click_the_submit_add_plant_button() throws Exception {
-        Plant newPlant = new Plant(testGarden, plantName, plantCount, plantDescription, plantDatePlanted);
-        MvcResult postResult = mockMvcCreatePlant.perform(post("/create-plant")
+        testPlant = new Plant(testGarden, plantName, plantCount, plantDescription, plantDatePlanted);
+        this.mvcResult = mockMvcCreatePlant.perform(post("/create-plant")
                 .param("gardenID", String.valueOf(testGarden.getId()))
                 .param("name", plantName)
                 .param("count", plantCount)
                 .param("description", plantDescription)
                 .param("datePlanted", plantDatePlanted)
-                .flashAttr("plant", newPlant))
+                .flashAttr("plant", testPlant))
                 .andReturn();
-        String redirectUrl = postResult.getResponse().getRedirectedUrl();
-
-
-        this.mvcResult = mockMvcViewGarden.perform(get(redirectUrl))
-                .andExpect(status().isOk())
-                .andExpect(view().name("viewGardenDetailsTemplate"))
-                .andReturn();
-
     }
 
     //AC 7
     @When("I click the cancel button on the add plant form")
-    public void i_click_the_cancel_add_plant_button() {
-
+    public void i_click_the_cancel_add_plant_button() throws Exception {
+        this.mvcResult = mockMvcViewGarden.perform(get("/view-garden?gardenID=" + testGarden.getId()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("viewGardenDetailsTemplate"))
+                .andReturn();
     }
 
     //AC 1
@@ -216,8 +225,19 @@ public class RecordGardenPlantsSteps {
 
     //AC 2
     @Then("A new plant record is added to the garden")
-    public void a_new_plant_record_is_added_to_the_garden() {
+    public void a_new_plant_record_is_added_to_the_garden() throws Exception {
+        List<Plant> gardenPlants = plantService.getGardenPlant(testGarden.getId());
+        Plant storedPlant = gardenPlants.get(0);
+        assertEquals(storedPlant.getId(), testPlant.getId());
+        assertEquals(storedPlant.getName(), testPlant.getName());
+        assertEquals(storedPlant.getCount(), testPlant.getCount());
+        assertEquals(storedPlant.getDescription(), testPlant.getDescription());
+        assertEquals(storedPlant.getDatePlanted(), testPlant.getDatePlanted());
 
+        this.mvcResult = mockMvcViewGarden.perform(get(this.mvcResult.getResponse().getRedirectedUrl()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("viewGardenDetailsTemplate"))
+                .andReturn();
     }
 
     //AC 2, 7
@@ -226,9 +246,22 @@ public class RecordGardenPlantsSteps {
         Assertions.assertEquals("viewGardenDetailsTemplate", this.mvcResult.getModelAndView().getViewName());
         Assertions.assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
     }
+
+    //AC 3, 4, 5, 6
+    @Then("An error message tells me {string} on the add plant form")
+    public void an_error_message_on_the_add_plant_form(String errorMessage) {
+        Assertions.assertEquals("createPlantFormTemplate", this.mvcResult.getModelAndView().getViewName());
+        Assertions.assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
+        Map<String, Object> test = this.mvcResult.getModelAndView().getModel();
+        Map<String, String> errors = (Map<String, String>) test.get("errors");
+        List<Object> errorValues = new ArrayList<>(errors.values());
+        Assertions.assertTrue(errorValues.contains(errorMessage));
+    }
     //AC 7
     @Then("No changes are made to the garden")
     public void no_changes_are_made_to_the_garden() {
-
+        List<Plant> originalPlants = plantService.getGardenPlant(copyGarden.getId());
+        List<Plant> newPlants = plantService.getGardenPlant(testGarden.getId());
+        assertEquals(newPlants, originalPlants);
     }
 }

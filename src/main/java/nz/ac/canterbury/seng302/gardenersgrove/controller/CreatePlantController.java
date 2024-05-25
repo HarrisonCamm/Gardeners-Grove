@@ -64,7 +64,8 @@ public class CreatePlantController {
     @GetMapping("/create-plant")
     public String form(@RequestParam(name = "gardenID") Long gardenID,
                        @ModelAttribute Plant plant,
-                       Model model, HttpSession session) {
+                       Model model,
+                       HttpSession session) {
         logger.info("GET /create-plant");
         RedirectService.addEndpoint("/create-plant?gardenID=" + gardenID);
         session.setAttribute("gardenID", gardenID);
@@ -82,7 +83,6 @@ public class CreatePlantController {
         model.addAttribute("gardens", gardenService.getGardens());
         model.addAttribute("plant", plant);
 
-        addErrors(session, model);
         Garden ownerGarden = foundGarden.get();
         plant.setGarden(ownerGarden); // Set the garden for the plant
         model.addAttribute("gardenID", session.getAttribute("gardenID"));
@@ -90,8 +90,8 @@ public class CreatePlantController {
         model.addAttribute("description", session.getAttribute("description"));
         model.addAttribute("count", session.getAttribute("count"));
         model.addAttribute("datePlanted", session.getAttribute("datePlanted"));
+        addErrors(session, model);
 
-//        model.addAttribute("imageError", "");
 
         // Remove attributes from the session
         session.removeAttribute("name");
@@ -130,7 +130,6 @@ public class CreatePlantController {
             @RequestParam("count") String count,
             @RequestParam("datePlanted") String datePlanted,
             @ModelAttribute("plant") Plant plant,
-            BindingResult bindingResult,
             HttpSession session,
             Model model) throws Exception {
         logger.info("POST /create-plant");
@@ -209,8 +208,9 @@ public class CreatePlantController {
         // If there are validation errors, return to the form page
         if (errors.containsKey("nameError") || errors.containsKey("countError")
                 || errors.containsKey("descriptionError") || errors.containsKey("dateError")) {
+            model.addAttribute("errors", errors);
             model.addAttribute("gardenID", gardenID); // Add gardenID to the model before forwarding to error display page
-            return "redirect:/create-plant?gardenID=" + gardenID;
+            return "createPlantFormTemplate";
         } else {
             plantService.addPlant(plant);
             session.removeAttribute("name");
