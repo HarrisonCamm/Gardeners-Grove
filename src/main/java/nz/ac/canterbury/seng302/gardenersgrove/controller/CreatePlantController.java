@@ -153,24 +153,24 @@ public class CreatePlantController {
         String formattedDate;
         formattedDate = convertDateFormat(datePlanted);
 
-        Image image = Image.removeTemporaryImage(session, imageService);
-        if (image == null) {
-            try {
-                MultipartFile imageFile = (MultipartFile) session.getAttribute("imageFile");
-                if (imageFile != null) {
-                    image = new Image(imageFile, false);
-                    session.removeAttribute("imageFile");
-                } else {
-                    Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
-                    image = new Image(Files.readAllBytes(imagePath), "png", false);
-                }
-            } catch (Exception e) {
-                logger.error("Failed to set plant image from file", e);
-            }
-        } else {
-            image.makePermanent();
-        }
-        plant.setImage(image);
+//        Image image = Image.removeTemporaryImage(session, imageService);
+//        if (image == null) {
+//            try {
+//                MultipartFile imageFile = (MultipartFile) session.getAttribute("imageFile");
+//                if (imageFile != null) {
+//                    image = new Image(imageFile, false);
+//                    session.removeAttribute("imageFile");
+//                } else {
+//                    Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
+//                    image = new Image(Files.readAllBytes(imagePath), "png", false);
+//                }
+//            } catch (Exception e) {
+//                logger.error("Failed to set plant image from file", e);
+//            }
+//        } else {
+//            image.makePermanent();
+//        }
+//        plant.setImage(image);
 
         plant.setCount(plant.getCount().replace(',', '.'));
         plant.setGarden(ownerGarden); // Set the garden for the plant
