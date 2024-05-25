@@ -12,6 +12,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -37,8 +38,9 @@ import static org.mockito.Mockito.when;
 public class RecordGardenPlantsSteps {
     private static MockMvc mockMvcCreatePlant;
     private static MockMvc mockMvcViewGarden;
+    private MockMvc mockMvcTemp;
     private MvcResult mvcResult;
-
+    private MockHttpSession mockSession;
     @MockBean
     private static PlantService plantService;
 
@@ -73,7 +75,10 @@ public class RecordGardenPlantsSteps {
         out.setId(garden.getId());
         return out;
     }
-
+    @Before
+    public void setUp() {
+        mockSession = new MockHttpSession();
+    }
     @Before
     public static void before_or_after_all() {
         plantService = Mockito.mock(PlantService.class);
@@ -155,12 +160,14 @@ public class RecordGardenPlantsSteps {
         this.plantCount = plantCount;
         this.plantDescription = plantDescription;
         this.plantDatePlanted = plantDatePlanted;
+        this.mockMvcTemp = mockMvcViewGarden;
     }
 
     //AC 3
     @Given("I enter an empty or invalid plant {string}")
     public void i_enter_an_empty_or_invalid_plant_name(String plantName) {
         this.plantName = plantName;
+        this.mockMvcTemp = mockMvcCreatePlant;
     }
 
     //AC 4
@@ -168,6 +175,7 @@ public class RecordGardenPlantsSteps {
     public void i_enter_a_description_that_is_longer_than_512_characters(String plantDescription) {
         this.plantName = "plant";
         this.plantDescription = plantDescription;
+        this.mockMvcTemp = mockMvcCreatePlant;
     }
 
     //AC 5
@@ -175,6 +183,7 @@ public class RecordGardenPlantsSteps {
     public void i_enter_an_invalid_count(String plantCount) {
         this.plantName = "plant";
         this.plantCount = plantCount;
+        this.mockMvcTemp = mockMvcCreatePlant;
     }
 
     //AC 6
@@ -182,6 +191,7 @@ public class RecordGardenPlantsSteps {
     public void i_enter_a_date_that_is_not_in_the_aotearoa_nz_format(String plantDatePlanted) {
         this.plantName = "plant";
         this.plantDatePlanted = plantDatePlanted;
+        this.mockMvcTemp = mockMvcCreatePlant;
     }
 
     //AC 1
@@ -197,13 +207,20 @@ public class RecordGardenPlantsSteps {
     @When("I click the submit button on the add plant form")
     public void i_click_the_submit_add_plant_button() throws Exception {
         testPlant = new Plant(testGarden, plantName, plantCount, plantDescription, plantDatePlanted);
+
         this.mvcResult = mockMvcCreatePlant.perform(post("/create-plant")
-                .param("gardenID", String.valueOf(testGarden.getId()))
-                .param("name", plantName)
-                .param("count", plantCount)
-                .param("description", plantDescription)
-                .param("datePlanted", plantDatePlanted)
-                .flashAttr("plant", testPlant))
+                        .param("gardenID", String.valueOf(testGarden.getId()))
+                        .param("name", plantName)
+                        .param("count", plantCount)
+                        .param("description", plantDescription)
+                        .param("datePlanted", plantDatePlanted)
+                        .session(mockSession)
+                        .flashAttr("plant", testPlant))
+                .andReturn();
+
+
+        mockSession = (MockHttpSession) mvcResult.getRequest().getSession();
+        this.mvcResult = mockMvcTemp.perform(get(this.mvcResult.getResponse().getRedirectedUrl()))
                 .andReturn();
     }
 
@@ -225,7 +242,7 @@ public class RecordGardenPlantsSteps {
 
     //AC 2
     @Then("A new plant record is added to the garden")
-    public void a_new_plant_record_is_added_to_the_garden() throws Exception {
+    public void a_new_plant_record_is_added_to_the_garden() {
         List<Plant> gardenPlants = plantService.getGardenPlant(testGarden.getId());
         Plant storedPlant = gardenPlants.get(0);
         assertEquals(storedPlant.getId(), testPlant.getId());
@@ -234,10 +251,6 @@ public class RecordGardenPlantsSteps {
         assertEquals(storedPlant.getDescription(), testPlant.getDescription());
         assertEquals(storedPlant.getDatePlanted(), testPlant.getDatePlanted());
 
-        this.mvcResult = mockMvcViewGarden.perform(get(this.mvcResult.getResponse().getRedirectedUrl()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("viewGardenDetailsTemplate"))
-                .andReturn();
     }
 
     //AC 2, 7
@@ -252,10 +265,12 @@ public class RecordGardenPlantsSteps {
     public void an_error_message_on_the_add_plant_form(String errorMessage) {
         Assertions.assertEquals("createPlantFormTemplate", this.mvcResult.getModelAndView().getViewName());
         Assertions.assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
-        Map<String, Object> test = this.mvcResult.getModelAndView().getModel();
-        Map<String, String> errors = (Map<String, String>) test.get("errors");
-        List<Object> errorValues = new ArrayList<>(errors.values());
-        Assertions.assertTrue(errorValues.contains(errorMessage));
+        List <String> errors = new ArrayList<>();
+        errors.add((String) mockSession.getAttribute("nameError"));
+        errors.add((String) mockSession.getAttribute("countError"));
+        errors.add((String) mockSession.getAttribute("descriptionError"));
+        errors.add((String) mockSession.getAttribute("dateError"));
+        Assertions.assertTrue(errors.contains(errorMessage));
     }
     //AC 7
     @Then("No changes are made to the garden")
