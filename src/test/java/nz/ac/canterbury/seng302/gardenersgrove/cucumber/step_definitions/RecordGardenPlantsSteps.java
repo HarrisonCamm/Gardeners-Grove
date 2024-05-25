@@ -58,7 +58,7 @@ public class RecordGardenPlantsSteps {
     private String plantCount;
     private String plantDescription;
     private String plantDatePlanted;
-    private ResultActions resultActions;
+
     private static Plant copyPlant(Plant plant) {
         Plant out = new Plant(plant.getGarden(),plant.getName(), plant.getCount(), plant.getDescription(), plant.getDatePlanted());
         out.setId(plant.getId());
@@ -172,8 +172,11 @@ public class RecordGardenPlantsSteps {
 
     //AC 1
     @When("I click the add new plant button")
-    public void i_click_on_the_add_new_plant_button() {
-
+    public void i_click_on_the_add_new_plant_button() throws Exception {
+        this.mvcResult = mockMvcCreatePlant.perform(get("/create-plant?gardenID=" + testGarden.getId()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("createPlantFormTemplate"))
+                .andReturn();
     }
 
     //AC 2, 3, 4, 5, 6
@@ -207,7 +210,8 @@ public class RecordGardenPlantsSteps {
     //AC 1
     @Then("I see an add plant form")
     public void i_see_an_add_plant_form() {
-
+        Assertions.assertEquals("createPlantFormTemplate", this.mvcResult.getModelAndView().getViewName());
+        Assertions.assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
     }
 
     //AC 2
@@ -217,8 +221,8 @@ public class RecordGardenPlantsSteps {
     }
 
     //AC 2, 7
-    @Then("I am taken back to the garden details page")
-    public void i_am_taken_back_to_the_garden_details_page() {
+    @Then("I am taken back to the garden details page from add plant page")
+    public void i_am_taken_back_to_the_garden_details_page_from_add_plant_page() {
         Assertions.assertEquals("viewGardenDetailsTemplate", this.mvcResult.getModelAndView().getViewName());
         Assertions.assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
     }

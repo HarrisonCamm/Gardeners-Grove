@@ -222,9 +222,9 @@ public class EditGardenPlantsSteps {
                 .andReturn();
     }
     //AC9
-//    @And("I am taken back to the garden details page")
-//    public void i_am_taken_back_to_the_garden_details_page() {
-//        Assertions.assertEquals("viewGardenDetailsTemplate", this.mvcResult.getModelAndView().getViewName());
-//        Assertions.assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
-//    }
+    @And("I am taken back to the garden details page")
+    public void i_am_taken_back_to_the_garden_details_page() {
+        Assertions.assertEquals("viewGardenDetailsTemplate", this.mvcResult.getModelAndView().getViewName());
+        Assertions.assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
+    }
 }

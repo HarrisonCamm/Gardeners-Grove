@@ -10,7 +10,7 @@ Feature: U11 As Kaia, I want to record the different plants in my garden so I ca
     And I enter valid values for the <name> and optionally a <count>, <description>, and a <date planted>
     When I click the submit button on the add plant form
     Then A new plant record is added to the garden
-    And I am taken back to the garden details page
+    And I am taken back to the garden details page from add plant page
     Examples:
       | name    | count | description      | date planted |
       | "plant1"| "1"   | "This is a plant"| "01/02/2002" |
@@ -87,6 +87,6 @@ Feature: U11 As Kaia, I want to record the different plants in my garden so I ca
   Scenario: AC7 - Cancel recording a plant
     Given I am on the add plant form
     When I click the cancel button on the add plant form
-    Then I am taken back to the garden details page
+    Then I am taken back to the garden details page from add plant page
     And No changes are made to the garden
 
