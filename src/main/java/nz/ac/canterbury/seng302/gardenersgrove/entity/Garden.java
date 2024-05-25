@@ -10,7 +10,7 @@ public class Garden {
     private Long id;
 
 
-    @Lob
+
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL)
