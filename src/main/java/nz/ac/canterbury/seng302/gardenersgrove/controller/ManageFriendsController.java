@@ -24,6 +24,8 @@ public class ManageFriendsController {
 
     private final UserService userService;
     private final FriendRequestService friendRequestService;
+    private boolean showSearch = true;
+
 
     @Autowired
     public ManageFriendsController(UserService userService, FriendRequestService friendRequestService) {
@@ -100,6 +102,8 @@ public class ManageFriendsController {
         }
 
         model.addAttribute("searchQuery", searchQuery);
+
+        showSearch = false; // We want the results to be shown to the user
 
         return addAttributes(model, currentUser);
     }
@@ -194,7 +198,7 @@ public class ManageFriendsController {
         model.addAttribute("pendingRequests", pendingFriendRequests);
         model.addAttribute("sentRequests", sentFriendRequests);
         model.addAttribute("friends", friends);
-        model.addAttribute("showSearch", true);
+        model.addAttribute("showSearch", showSearch);
 
         return "manageFriendsTemplate";
     }

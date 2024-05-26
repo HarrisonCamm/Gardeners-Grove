@@ -35,12 +35,11 @@
         <div>
             <div>
                 <div class="buttons-centre">
-                    <button onclick="toggleSearchFriend()">Add Friend</button>
+                    <button onclick="toggleForm()">Add Friend</button>
                 </div>
-
             </div>
             <div class="search-container">
-                <form th:action="@{/manage-friends}" method="post" novalidate>
+                <form th:action="@{/manage-friends}" method="post" novalidate th:hidden="${showSearch}">
                     <div class="search-div">
                         <label for="search"></label>
                         <input th:name="searchQuery"
@@ -51,16 +50,15 @@
                                placeholder="Search for a friend">
                         &nbsp;&nbsp;&nbsp;
                         <div class="search-button">
-                            <button type="submit"  onclick="document.getElementById('action').value='search'">Search</button>
+                            <button type="submit" onclick="searchAndShowResults()">Search</button>
                         </div>
                     </div>
                     <input type="hidden" name="action" id="action" />
-                    <div th:if="${showSearch}" class="search-friend" id="searchFriend">
+                    <div class="search-friend" id="searchFriend">
                         <br/>
                         <p th:if="${searchResultMessage}" class="search-field-message" th:text="${searchResultMessage}"></p>
-
                         <div>
-                            <div th:if="${matchedUsers}" class="results-container">
+                            <div th:if="${matchedUsers}" class="results-container" id="results-container">
                                 <ul>
                                     <li th:each="matchedUser : ${matchedUsers}">
                                         <div>
@@ -74,7 +72,6 @@
                         </div>
                     </div>
                 </form>
-
             </div>
             <div class="requests-container">
 
@@ -135,9 +132,17 @@
     </div>
 </div>
 <script>
-    function toggleSearchFriend() {
+    function toggleForm() {
+        const form = document.querySelector('.search-container form');
+        form.hidden = !form.hidden;
+    }
+
+    function searchAndShowResults() {
+        document.getElementById('action').value='search';
+        const form = document.querySelector('.search-container form');
+        form.submit();
         const searchFriend = document.getElementById("searchFriend");
-        searchFriend.hidden = !searchFriend.hidden;
+        searchFriend.hidden = false;
     }
 </script>
 </body>
