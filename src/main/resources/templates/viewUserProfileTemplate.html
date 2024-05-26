@@ -1,50 +1,52 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>User Profile</title>
-    <!-- Navbar styling -->
-    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
-    <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
-    <script th:src="@{/javascript/redirect-image-handler.js}"></script>
-</head>
-<body>
-<!-- Navigation Bar Fragment -->
-<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-<div class="content">
-    <div th:object="${user}">
-        <h2>User Profile</h2>
-        <div class="image-icon-div">
-            <div class="image-upload">
-                <img class="image"
-                     th:data-user-id="${user.userId}"
-                     th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="">
-                <button class="image-picker" th:id="${'button_' + user.userId}">+</button>
-            </div>
-        </div>
-        <div>
-            <br/>
-            <div class="background">
-                <label th:text="'Name: ' + ${displayName}"></label>
-                <br/>
-                <br/>
-                <label th:text="'Email: ' + ${email}"></label>
-                <br/>
-                <div th:if="${dateOfBirth != ''}" >
-                    <br/>
-                    <label th:text="'Date of birth: ' + ${dateOfBirth}"></label>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>User Profile</title>
+        <!-- Navbar styling -->
+        <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+        <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
+        <script th:src="@{/javascript/image-handling.js}"></script>
+    </head>
+    <body>
+        <!-- Navigation Bar Fragment -->
+        <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+        <div class="content">
+            <div th:object="${user}">
+                <h2>User Profile</h2>
+                <div class="image-icon-div">
+                    <div class="image-upload">
+                        <img class="image"
+                             th:data-user-id="${user.userId}"
+                             th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="">
+                        <input class="file-input" type="file" name="file" id="file">
+                        <button class="image-picker" th:image-button-id="${user.userId}">+</button>
+                    </div>
                 </div>
-            </div>
-            <br/>
-            <div class="buttons-centre">
                 <div>
-                    <a th:href="@{/edit-user-profile}">
-                        <button type="button">Edit Profile</button>
-                    </a>
+                    <div id="imageError" class="error-message"></div>
+                    <br/>
+                    <div class="background">
+                        <label th:text="'Name: ' + ${displayName}"></label>
+                        <br/>
+                        <br/>
+                        <label th:text="'Email: ' + ${email}"></label>
+                        <br/>
+                        <div th:if="${dateOfBirth != ''}" >
+                            <br/>
+                            <label th:text="'Date of birth: ' + ${dateOfBirth}"></label>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="buttons-centre">
+                        <div>
+                            <a th:href="@{/edit-user-profile}">
+                                <button type="button">Edit Profile</button>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-</body>
+    </body>
 </html>

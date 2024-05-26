@@ -46,6 +46,10 @@ body {
     outline: 1px solid #C4C3C1;
 }
 
+.form-control:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #E2F1CA inset;
+}
+
 .required-input {
     color: #DE2929;
 }
@@ -289,6 +293,11 @@ h2 {
     font-size: 120%;
     color: #72543C;
     padding-top: 10px;
+}
+
+
+.file-input {
+    display: none;
 }
 
 .image-picker, .image-picker-small {

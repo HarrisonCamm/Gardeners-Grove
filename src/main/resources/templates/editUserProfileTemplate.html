@@ -1,157 +1,160 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Edit profile</title>
-    <!-- Navbar styling -->
-    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
-    <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
-    <script th:src="@{javascript/edit-user-profile.js}"></script>
-    <script th:src="@{javascript/redirect-image-handler.js}"></script>
-    <script th:src="@{javascript/enter-date.js}"></script>
-    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
-    <script th:src="@{javascript/last-name-box.js}"></script>
-</head>
-<body>
-<!-- Navigation Bar Fragment -->
-<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-<div class="content">
-    <div>
-        <h2>Edit Profile</h2>
-        <div class="image-icon-div">
-            <div class="image-upload">
-                <img class="image"
-                     th:data-user-id="${user.userId}"
-                     th:src="@{/get-image?edit-user-profile-image=true(userID=${user.userId})}" alt="">
-                <button class="image-picker" th:id="${'button_' + user.userId}">+</button>
-            </div>
-        </div>
-        <div>
-            <form th:action="@{/edit-user-profile}" method="post" novalidate>
-                <label for="firstName"> First Name:
-                    <span class="required-input"> * </span>
-                </label>
-                <br/>
-                <input type="text" class="form-control" id="firstName"
-                       th:name="firstName" th:value="${firstName}" data-cy="firstName"
-                       th:classappend="${firstNameError != null ? 'error' : 'form-control'}" autofocus>
-                <br/>
-                <div th:if="${firstNameError}" class="error-message" th:text="${firstNameError}"></div>
-                <br/>
-                <label for="lastName"> Last Name:
-                    <span id="lastNameLabel" class="required-input"> </span>
-                </label>
-                <br/>
-                <input type="text" class="form-control" id="lastName"
-                       th:name="lastName" th:value="${lastName}" th:disabled="${noLastName}" data-cy="lastName"
-                       th:classappend="${lastNameError != null ? 'error' : 'form-control'}" autofocus>
-                <br/>
-                <div th:if="${lastNameError}" class="error-message" th:text="${lastNameError}"></div>
-                <label for="noLastName">I have no surname</label>
-                <input type="checkbox" class="checkbox" id="noLastName" th:name="noLastName" th:value="${noLastName}"
-                       th:checked="${noLastName}" onchange="toggleLastNameField()" />
-                <br/>
-                <br/>
-                <label for="email"> Email:
-                    <span class="required-input"> * </span>
-                </label>
-                <br/>
-                <input type="text" class="form-control" id="email"
-                       th:name="email" th:value="${email}" data-cy="email"
-                       th:classappend="${registrationEmailError != null ? 'error' : 'form-control'}" autofocus>
-                <br/>
-                <!-- Display an error message if there is an error with the email existing-->
-                <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
-                <br/>
-
-                <!-- Change Password Section -->
-                <div id="passwordContainer" th:hidden="${changePasswordFormInput}">
-                    <label id="passwordLabel">Password:</label>
-                    <br/>
-                    <!-- Display Change Password Form Button -->
-                    <button type="button" id="changePasswordButton" onclick="toggleChangePasswordForm(true)">Change Password</button>
-                    <br/>
-                </div>
-
-                <input type="hidden" id="changePasswordFormInput"
-                       th:name="changePasswordFormInput"
-                       th:value="${changePasswordFormInput}" >
-                <!-- Hidden Change Password Form -->
-                <div id="changePasswordForm" th:hidden="${!changePasswordFormInput}">
-
-                    <!-- Old Password Field -->
-                    <label for="oldPassword">Old Password:
-                        <span class="required-input"> * </span>
-                    </label>
-                    <br/>
-                    <input type="password" id="oldPassword" name="oldPassword" class="form-control"
-                           th:value="${oldPassword}"
-                           th:classappend="${oldPasswordError != null ? 'error' : ''}">
-                    <!-- Placeholder for Incorrect Old Password Error -->
-                    <div class="password-error-message" th:if="${oldPasswordError}" th:text="${oldPasswordError}"></div>
-                    <br/>
-                    <br/>
-
-                    <!-- New Password Field -->
-                    <label for="newPassword">New Password:
-                        <span class="required-input"> * </span>
-                    </label>
-                    <br/>
-                    <input type="password" id="newPassword" name="newPassword" class="form-control"
-                           th:value="${newPassword}"
-                           th:classappend="${newPasswordError != null ? 'error' : ''}">
-                    <!-- Placeholder for New Password Validation Error -->
-                    <div class="password-error-message" th:if="${newPasswordError}" th:text="${newPasswordError}"></div>
-                    <br/>
-                    <br/>
-
-                    <!-- Retype New Password Field -->
-                    <label for="retypePassword">Retype New Password:
-                        <span class="required-input"> * </span>
-                    </label>
-                    <br/>
-                    <input type="password" id="retypePassword" name="retypePassword" class="form-control"
-                           th:value="${retypePassword}"
-                           th:classappend="${passwordMatchError != null ? 'error' : ''}">
-                    <!-- Placeholder for Password Match Error -->
-                    <div class="password-error-message" th:if="${passwordMatchError}" th:text="${passwordMatchError}"></div>
-                    <br/>
-                    <br/>
-
-                    <!-- Submit Changed Password and Cancel Change Password Buttons -->
-                    <div class="buttons-centre">
-                        <button type="submit" id="submitNewPasswordButton">Change Password</button>
-                        &nbsp;
-                        <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Edit profile</title>
+        <!-- Navbar styling -->
+        <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+        <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
+        <script th:src="@{javascript/edit-user-profile.js}"></script>
+        <script th:src="@{javascript/enter-date.js}"></script>
+        <script th:src="@{javascript/prevent-enter-submit.js}"></script>
+        <script th:src="@{javascript/last-name-box.js}"></script>
+        <script th:src="@{/javascript/image-handling.js}"></script>
+    </head>
+    <body>
+        <!-- Navigation Bar Fragment -->
+        <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+        <div class="content">
+            <div>
+                <h2>Edit Profile</h2>
+                <div class="image-icon-div">
+                    <div class="image-upload">
+                        <img class="image"
+                             th:data-user-id="${user.userId}"
+                             th:src="@{/get-image?edit-user-profile-image=true(userID=${user.userId})}" alt="">
+                        <input th:value="imagePath" class="file-input" type="file" name="file" id="file">
+                        <button class="image-picker" th:image-button-id="${user.userId}">+</button>
                     </div>
                 </div>
-                <!-- End Change Password Section -->
-                <br/>
+                <div>
+                    <div id="imageError" class="error-message"></div>
 
-                <!-- Date of Birth Section -->
-                <label for="dateOfBirth"> Date of birth: </label>
-                <br/>
-                <input type="text" class="form-control" id="dateOfBirth"
-                       th:name="dateOfBirth" th:value="${dateOfBirth}"
-                       placeholder="DD/MM/YYYY"
-                       th:classappend="${ageError != null ? 'error' : 'form-control'}"
-                       data-cy="dateOfBirth" autofocus
-                       oninput="formatDate(this)">
-                <br/>
-                <div th:if="${ageError}" class="error-message" th:text="${ageError}"></div>
-                <br/>
-                <div class="buttons-centre">
-                    <button type="submit" id="submitButton">Submit</button>
-                    &nbsp;
-                    <a th:href="@{/view-user-profile}" id="cancelButton">
-                        <button type="button">Cancel</button>
-                    </a>
+                    <form class="hasImage" th:action="@{/edit-user-profile}" method="post" novalidate>
+                        <label for="firstName"> First Name:
+                            <span class="required-input"> * </span>
+                        </label>
+                        <br/>
+                        <input type="text" class="form-control" id="firstName"
+                               th:name="firstName" th:value="${firstName}" data-cy="firstName"
+                               th:classappend="${firstNameError != null ? 'error' : 'form-control'}" autofocus>
+                        <br/>
+                        <div th:if="${firstNameError}" class="error-message" th:text="${firstNameError}"></div>
+                        <br/>
+                        <label for="lastName"> Last Name:
+                            <span id="lastNameLabel" class="required-input"> </span>
+                        </label>
+                        <br/>
+                        <input type="text" class="form-control" id="lastName"
+                               th:name="lastName" th:value="${lastName}" th:disabled="${noLastName}" data-cy="lastName"
+                               th:classappend="${lastNameError != null ? 'error' : 'form-control'}" autofocus>
+                        <br/>
+                        <div th:if="${lastNameError}" class="error-message" th:text="${lastNameError}"></div>
+                        <label for="noLastName">I have no surname</label>
+                        <input type="checkbox" class="checkbox" id="noLastName" th:name="noLastName" th:value="${noLastName}"
+                               th:checked="${noLastName}" onchange="toggleLastNameField()" />
+                        <br/>
+                        <br/>
+                        <label for="email"> Email:
+                            <span class="required-input"> * </span>
+                        </label>
+                        <br/>
+                        <input type="text" class="form-control" id="email"
+                               th:name="email" th:value="${email}" data-cy="email"
+                               th:classappend="${registrationEmailError != null ? 'error' : 'form-control'}" autofocus>
+                        <br/>
+                        <!-- Display an error message if there is an error with the email existing-->
+                        <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
+                        <br/>
+
+                        <!-- Change Password Section -->
+                        <div id="passwordContainer" th:hidden="${changePasswordFormInput}">
+                            <label id="passwordLabel">Password:</label>
+                            <br/>
+                            <!-- Display Change Password Form Button -->
+                            <button type="button" id="changePasswordButton" onclick="toggleChangePasswordForm(true)">Change Password</button>
+                            <br/>
+                        </div>
+
+                        <input type="hidden" id="changePasswordFormInput"
+                               th:name="changePasswordFormInput"
+                               th:value="${changePasswordFormInput}" >
+                        <!-- Hidden Change Password Form -->
+                        <div id="changePasswordForm" th:hidden="${!changePasswordFormInput}">
+
+                            <!-- Old Password Field -->
+                            <label for="oldPassword">Old Password:
+                                <span class="required-input"> * </span>
+                            </label>
+                            <br/>
+                            <input type="password" id="oldPassword" name="oldPassword" class="form-control"
+                                   th:value="${oldPassword}"
+                                   th:classappend="${oldPasswordError != null ? 'error' : ''}">
+                            <!-- Placeholder for Incorrect Old Password Error -->
+                            <div class="password-error-message" th:if="${oldPasswordError}" th:text="${oldPasswordError}"></div>
+                            <br/>
+                            <br/>
+
+                            <!-- New Password Field -->
+                            <label for="newPassword">New Password:
+                                <span class="required-input"> * </span>
+                            </label>
+                            <br/>
+                            <input type="password" id="newPassword" name="newPassword" class="form-control"
+                                   th:value="${newPassword}"
+                                   th:classappend="${newPasswordError != null ? 'error' : ''}">
+                            <!-- Placeholder for New Password Validation Error -->
+                            <div class="password-error-message" th:if="${newPasswordError}" th:text="${newPasswordError}"></div>
+                            <br/>
+                            <br/>
+
+                            <!-- Retype New Password Field -->
+                            <label for="retypePassword">Retype New Password:
+                                <span class="required-input"> * </span>
+                            </label>
+                            <br/>
+                            <input type="password" id="retypePassword" name="retypePassword" class="form-control"
+                                   th:value="${retypePassword}"
+                                   th:classappend="${passwordMatchError != null ? 'error' : ''}">
+                            <!-- Placeholder for Password Match Error -->
+                            <div class="password-error-message" th:if="${passwordMatchError}" th:text="${passwordMatchError}"></div>
+                            <br/>
+                            <br/>
+
+                            <!-- Submit Changed Password and Cancel Change Password Buttons -->
+                            <div class="buttons-centre">
+                                <button type="submit" id="submitNewPasswordButton">Change Password</button>
+                                &nbsp;
+                                <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
+                            </div>
+                        </div>
+                        <!-- End Change Password Section -->
+                        <br/>
+
+                        <!-- Date of Birth Section -->
+                        <label for="dateOfBirth"> Date of birth: </label>
+                        <br/>
+                        <input type="text" class="form-control" id="dateOfBirth"
+                               th:name="dateOfBirth" th:value="${dateOfBirth}"
+                               placeholder="DD/MM/YYYY"
+                               th:classappend="${ageError != null ? 'error' : 'form-control'}"
+                               data-cy="dateOfBirth" autofocus
+                               oninput="formatDate(this)">
+                        <br/>
+                        <div th:if="${ageError}" class="error-message" th:text="${ageError}"></div>
+                        <br/>
+                        <div class="buttons-centre">
+                            <button type="submit" class="submitButton" id="submitButton">Submit</button>
+                            &nbsp;
+                            <a th:href="@{/view-user-profile}" id="cancelButton">
+                                <button type="button">Cancel</button>
+                            </a>
+                        </div>
+                        <br/>
+                        <br/>
+                    </form>
                 </div>
-                <br/>
-                <br/>
-            </form>
+            </div>
         </div>
-    </div>
-</div>
-</body>
+    </body>
 </html>
