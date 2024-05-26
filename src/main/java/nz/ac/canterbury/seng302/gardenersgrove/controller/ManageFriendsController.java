@@ -84,12 +84,23 @@ public class ManageFriendsController {
 
         List<User> searchedUsers = userService.searchForUsers(searchQuery.toLowerCase(), currentUser);
 
+        List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
+
+        for (FriendRequest request : sentFriendRequests) {
+            if (request.getStatus() == "Declined" && searchedUsers.contains(request.getReceiver())) {
+                searchedUsers.remove(request.getReceiver());
+            }
+        }
+
         if (searchedUsers.isEmpty()) {
             model.addAttribute("searchResultMessage",
                     "There is nobody with that name or email in Gardener’s Grove");
+        } else {
+            model.addAttribute("matchedUsers", searchedUsers);
         }
 
-        model.addAttribute("matchedUsers", searchedUsers);
+        model.addAttribute("searchQuery", searchQuery);
+
         return addAttributes(model, currentUser);
     }
 
