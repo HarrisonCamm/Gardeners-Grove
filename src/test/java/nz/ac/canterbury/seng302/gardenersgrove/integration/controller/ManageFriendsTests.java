@@ -77,7 +77,7 @@ public class ManageFriendsTests {
                     .param("searchQuery", "test"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("manageFriendsTemplate"))
-                .andExpect(model().attribute("showSearch", true))
+                .andExpect(model().attribute("showSearch", false))
                 .andExpect(model().attribute("matchedUsers", List.of(testUser)));
     }
 
