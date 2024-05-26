@@ -36,13 +36,13 @@ public class GardenValidator {
      */
     public static FieldError validateGardenLocation(Location location, boolean isCity) {
         if (isCity) {
-            if (validateWithRegex("^$", location.getCity()) || location.getCity().length() > 255) {
+            if (validateWithRegex("^$", location.getCity()) || location.getCity().length() > 255 || location.getCity().trim().isEmpty()) {
                 return new FieldError("garden", "location.city", "City name must be under 255 characters and not empty");
             } else if (!validateWithRegex("[\\p{L}\\s'-]+", location.getCity())) {
                 return new FieldError("garden", "location.city", "City must only include letters and spaces");
             }
         } else {
-            if (validateWithRegex("^$", location.getCountry()) || location.getCountry().length() > 255) {
+            if (validateWithRegex("^$", location.getCountry()) || location.getCountry().length() > 255 || location.getCountry().trim().isEmpty()) {
                 return new FieldError("garden", "location.country", "Country name must be under 255 characters and not empty");
             } else if (!validateWithRegex("[\\p{L}\\s'-]+", location.getCountry())) {
                 return new FieldError("garden", "location.country", "Country must only include letters and spaces");
