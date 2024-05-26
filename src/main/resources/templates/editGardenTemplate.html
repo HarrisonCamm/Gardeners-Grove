@@ -10,25 +10,26 @@
         <script th:src="@{/javascript/prevent-enter-submit.js}"></script>
     </head>
 
-    <body>
-        <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-        <div class="wrapper">
-            <div class="container">
-                <table class="sideBar">
-                    <thead>
-                    <tr>
-                        <th class="garden-header">Gardens</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="garden : ${gardens}">
-                        <td><a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}"><span th:text="${garden.name}"> Name </span></a></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <br/>
-            <div class="form">
+<body>
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<div class="wrapper">
+    <div class="container">
+        <table class="sideBar">
+            <thead>
+            <tr>
+                <th class="garden-header">Gardens</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="garden : ${gardens}">
+                <td><a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
+                    <span th:text="${#strings.abbreviate(garden.name,10)}"> Name </span></a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <br/>
+    <div class="form">
 
                 <h1>Edit Garden</h1>
                 <div class="formContainer">
@@ -79,7 +80,9 @@
                             <br/>
                             <input type="text" class="form-control" id="postcode"
                                    th:name="location.postcode"
-                                   th:value="*{location.postcode}">
+                                   th:value="*{location.postcode}"
+                            >
+
                             <br/>
                             <br/>
                             <label for="country" id="countryLabel">Country:
