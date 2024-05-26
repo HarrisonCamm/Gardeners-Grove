@@ -16,10 +16,10 @@ public class GardenValidator {
      * @param name garden name
      * @return object error if there is an error otherwise null
      */
-    public static FieldError validateGardenName(String name) { // The garden name is empty
+    public static FieldError validateGardenName(String name) {
         if (name.trim().isEmpty()) {
             return new FieldError("garden", "name", "Garden name cannot be empty");
-        } else if (name.length() > 255) { // The garden name is 255 characters above
+        } else if (name.length() > 255) {
             return new FieldError("garden", "name", "Garden name must be under 255 characters");
         } else if (!validateWithRegex("[0-9\\p{L}\\s'-.]+", name)) {
             return new FieldError("garden", "name", "Garden name must only include letters, numbers, spaces, dots, hyphens, or apostrophes");
@@ -51,6 +51,10 @@ public class GardenValidator {
 
         if (location.getSuburb() != null && location.getSuburb().length() > 255) {
             return new FieldError("garden", "location.suburb", "Suburb name must be under 255 characters");
+        }
+
+        if (!location.getPostcode().matches("\\d+")) {
+            return new FieldError("garden", "location.postcode", "Postcode must only include numbers.");
         }
 
         if (location.getStreetAddress() != null && location.getStreetAddress().length() > 255) {
