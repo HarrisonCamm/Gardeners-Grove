@@ -191,18 +191,22 @@ public class CreatePlantController {
 
         if (validatePlantName(plant.getName()) != null) {
             errors.put("nameError", Objects.requireNonNull(validatePlantName(plant.getName())).getDefaultMessage());
+            session.setAttribute("nameError", Objects.requireNonNull(validatePlantName(plant.getName())).getDefaultMessage());
         }
 
         if (validatePlantCount(plant.getCount()) != null) {
             errors.put("countError", Objects.requireNonNull(validatePlantCount(plant.getCount())).getDefaultMessage());
+            session.setAttribute("countError", Objects.requireNonNull(validatePlantCount(plant.getCount())).getDefaultMessage());
         }
 
         if (validatePlantDescription(plant.getDescription()) != null) {
             errors.put("descriptionError", Objects.requireNonNull(validatePlantDescription(plant.getDescription())).getDefaultMessage());
+            session.setAttribute("descriptionError", Objects.requireNonNull(validatePlantDescription(plant.getDescription())).getDefaultMessage());
         }
 
         if (!datePlanted.isEmpty() && validatePlantDate(formattedDate) != null) {
             errors.put("dateError", Objects.requireNonNull(validatePlantDate(formattedDate)).getDefaultMessage());
+            session.setAttribute("dateError", Objects.requireNonNull(validatePlantDate(formattedDate)).getDefaultMessage());
         }
 
         session.setAttribute("errors", errors);
