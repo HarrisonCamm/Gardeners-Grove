@@ -77,7 +77,7 @@ public class CreateGardenTests {
                         .param("location.streetAddress", "test")
                         .param("location.suburb", "test")
                         .param("location.city", "test")
-                        .param("location.postcode", "test")
+                        .param("location.postcode", "0000")
                         .param("location.country", "test")
                         .param("size", gardenSize))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
@@ -99,7 +99,7 @@ public class CreateGardenTests {
                         .param("location.streetAddress", "test")
                         .param("location.suburb", "test")
                         .param("location.city", "test")
-                        .param("location.postcode", "test")
+                        .param("location.postcode", "0000")
                         .param("location.country", "test")
                         .param("size", gardenSize))
                 .andExpect(MockMvcResultMatchers.status().isOk());

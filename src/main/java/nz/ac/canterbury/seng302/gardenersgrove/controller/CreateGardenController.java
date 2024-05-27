@@ -21,8 +21,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.GardenValidator.*;
+import static nz.ac.canterbury.seng302.gardenersgrove.validation.LocationValidator.*;
+import java.util.logging.Level;
+
+
 
 /**
  * This sprint boot controller sets up a form to create a new garden
@@ -133,15 +138,10 @@ public class CreateGardenController {
             errors.add(nameError);
         }
 
-        FieldError locationCityError = validateGardenLocation(gardenLocation, true);
-        if (locationCityError != null) {
-            errors.add(locationCityError);
-        }
 
-        FieldError locationCountryError = validateGardenLocation(gardenLocation, false);
-        if (locationCountryError != null) {
-            errors.add(locationCountryError);
-        }
+        List<FieldError> locationErrors = validateGardenLocation(gardenLocation);
+        errors.addAll(locationErrors);
+
 
         FieldError sizeError = validateSize(gardenSize);
         if (sizeError != null) {
@@ -149,6 +149,39 @@ public class CreateGardenController {
         }
         return errors;
     }
+
+    private List<FieldError> validateGardenLocation(Location gardenLocation) {
+        List<FieldError> errors = new ArrayList<>();
+
+        FieldError cityError = validateCity(gardenLocation.getCity());
+        if (cityError != null) {
+            errors.add(cityError);
+        }
+
+        FieldError countryError = validateCountry(gardenLocation.getCountry());
+        if (countryError != null) {
+            errors.add(countryError);
+        }
+
+        FieldError streetAddressError = validateStreetAddress(gardenLocation.getStreetAddress());
+        if (streetAddressError != null) {
+            errors.add(streetAddressError);
+        }
+
+        FieldError suburbError = validateSuburb(gardenLocation.getSuburb());
+        if (suburbError != null) {
+            errors.add(suburbError);
+        }
+
+        FieldError postCodeError = validatePostcode(gardenLocation.getPostcode());
+        if (postCodeError != null) {
+            errors.add(postCodeError);
+        }
+
+        return errors;
+    }
+
+
 
     /**
      * Adds strings to the model
