@@ -165,8 +165,13 @@ h2 {
 .gardenTable {
     flex: 1;
     align-items: center;
+    font-size: 130%;
+    padding-top: 10%;
 }
 
+.gardens-table {
+    padding-right: 20px;
+}
 /* Form container styles */
 .formContainer {
     display: flex;

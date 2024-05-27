@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.GardenValidator.*;
+import static nz.ac.canterbury.seng302.gardenersgrove.validation.LocationValidator.*;
 
 /**
  * This sprint boot controller sets up a form to edit an existing garden
@@ -130,15 +132,10 @@ public class EditGardenController {
             errors.add(nameError);
         }
 
-        FieldError locationCityError = validateGardenLocation(gardenLocation, true);
-        if (locationCityError != null) {
-            errors.add(locationCityError);
-        }
 
-        FieldError locationCountryError = validateGardenLocation(gardenLocation, false);
-        if (locationCountryError != null) {
-            errors.add(locationCountryError);
-        }
+        List<FieldError> locationErrors = validateGardenLocation(gardenLocation);
+        errors.addAll(locationErrors);
+
 
         FieldError sizeError = validateSize(gardenSize);
         if (sizeError != null) {
@@ -147,7 +144,39 @@ public class EditGardenController {
         return errors;
     }
 
-    public void addAttributes(Model model, HttpSession session, Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize) {
+    private List<FieldError> validateGardenLocation(Location gardenLocation) {
+        List<FieldError> errors = new ArrayList<>();
+
+        FieldError cityError = validateCity(gardenLocation.getCity());
+        if (cityError != null) {
+            errors.add(cityError);
+        }
+
+        FieldError countryError = validateCountry(gardenLocation.getCountry());
+        if (countryError != null) {
+            errors.add(countryError);
+        }
+
+        FieldError streetAddressError = validateStreetAddress(gardenLocation.getStreetAddress());
+        if (streetAddressError != null) {
+            errors.add(streetAddressError);
+        }
+
+        FieldError suburbError = validateSuburb(gardenLocation.getSuburb());
+        if (suburbError != null) {
+            errors.add(suburbError);
+        }
+
+        FieldError postCodeError = validatePostcode(gardenLocation.getPostcode());
+        if (postCodeError != null) {
+            errors.add(postCodeError);
+        }
+
+        return errors;
+    }
+
+
+    public void addAttributes(Model model,HttpSession session,  Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize) {
         model.addAttribute("id", gardenID);
 
         model.addAttribute("name", gardenName);

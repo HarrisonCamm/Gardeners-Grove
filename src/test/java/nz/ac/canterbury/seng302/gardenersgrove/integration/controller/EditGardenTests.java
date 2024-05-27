@@ -109,7 +109,7 @@ public class EditGardenTests {
             "1955, Bob, ''",
     })
     public void PutForm_WithValidFields_Success(Long gardenID, String gardenName, String gardenSize) throws Exception {
-        Location testLocation = new Location("123 test street", "test", "test", "test", "test");
+        Location testLocation = new Location("123 test street", "test", "test", "0000", "test");
         when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(new Garden(gardenName, testLocation, gardenSize, mockUser)));
         mockMvc.perform(MockMvcRequestBuilders.put("/edit-garden")
                         .with(csrf())
@@ -138,7 +138,7 @@ public class EditGardenTests {
             Long gardenID, String newName, String newSize,
                            String oldName, String oldSize) throws Exception {
 
-        Location newLocation = new Location("123 test street", "test", "test", "test", "test");
+        Location newLocation = new Location("123 test street", "test", "test", "0000", "test");
         Location oldLocation = newLocation;
         Garden garden = new Garden(oldName, oldLocation, oldSize, mockUser);
         when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(garden));
@@ -167,7 +167,7 @@ public class EditGardenTests {
     })
     public void OnForm_CancelEdit_RedirectToViewGarden(
             Long gardenID, String name, String size) throws Exception {
-        Location location = new Location("123 test street", "test", "test", "test", "test");
+        Location location = new Location("123 test street", "test", "test", "0000", "test");
         Garden garden = new Garden(name, location, size, mockUser);
         when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(garden));
         RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
