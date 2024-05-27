@@ -27,8 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -57,7 +56,6 @@ public class RecordGardenPlantsSteps {
 
     private static Plant testPlant;
     private static Garden testGarden;
-    private static Garden copyGarden;
     private String plantName = "";
     private String plantCount = "";
     private String plantDescription = "";
@@ -70,11 +68,6 @@ public class RecordGardenPlantsSteps {
         return out;
     }
 
-    private static Garden copyGarden(Garden garden) {
-        Garden out = new Garden(garden.getName(), garden.getLocation(), garden.getSize());
-        out.setId(garden.getId()+ 1L);
-        return out;
-    }
     @Before
     public void setUp() {
         mockSession = new MockHttpSession();
@@ -100,7 +93,6 @@ public class RecordGardenPlantsSteps {
         testGarden = new Garden("testGardenName", new Location(), "1");
         testGarden.setId(1L);
         testGarden.setOwner(loggedInUser);
-        copyGarden = copyGarden(testGarden);
 
         //Mock gardenService methods called by test pages
         when(gardenService.findGarden(any(Long.class))).thenReturn(Optional.of(testGarden));
@@ -235,8 +227,8 @@ public class RecordGardenPlantsSteps {
     //AC 1
     @Then("I see an add plant form")
     public void i_see_an_add_plant_form() {
-        Assertions.assertEquals("createPlantFormTemplate", this.mvcResult.getModelAndView().getViewName());
-        Assertions.assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
+        assertEquals("createPlantFormTemplate", this.mvcResult.getModelAndView().getViewName());
+        assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
     }
 
     //AC 2
@@ -255,27 +247,26 @@ public class RecordGardenPlantsSteps {
     //AC 2, 7
     @Then("I am taken back to the garden details page from add plant page")
     public void i_am_taken_back_to_the_garden_details_page_from_add_plant_page() {
-        Assertions.assertEquals("viewGardenDetailsTemplate", this.mvcResult.getModelAndView().getViewName());
-        Assertions.assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
+        assertEquals("viewGardenDetailsTemplate", this.mvcResult.getModelAndView().getViewName());
+        assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
     }
 
     //AC 3, 4, 5, 6
     @Then("An error message tells me {string} on the add plant form")
     public void an_error_message_on_the_add_plant_form(String errorMessage) {
-        Assertions.assertEquals("createPlantFormTemplate", this.mvcResult.getModelAndView().getViewName());
-        Assertions.assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
+        assertEquals("createPlantFormTemplate", this.mvcResult.getModelAndView().getViewName());
+        assertEquals(testGarden.getId(), this.mvcResult.getModelAndView().getModel().get("gardenID"));
         List <String> errors = new ArrayList<>();
         errors.add((String) mockSession.getAttribute("nameError"));
         errors.add((String) mockSession.getAttribute("countError"));
         errors.add((String) mockSession.getAttribute("descriptionError"));
         errors.add((String) mockSession.getAttribute("dateError"));
-        Assertions.assertTrue(errors.contains(errorMessage));
+        assertTrue(errors.contains(errorMessage));
     }
     //AC 7
     @Then("No changes are made to the garden")
     public void no_changes_are_made_to_the_garden() {
-        List<Plant> originalPlants = plantService.getGardenPlant(copyGarden.getId());
-        List<Plant> newPlants = plantService.getGardenPlant(testGarden.getId());
-        assertEquals(newPlants, originalPlants);
+        List<Plant> gardenPlants = plantService.getGardenPlant(testGarden.getId());
+        assertTrue(gardenPlants.isEmpty());
     }
 }
