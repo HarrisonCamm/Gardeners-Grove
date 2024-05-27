@@ -64,8 +64,9 @@ public class UserValidator {
         if (dateInput == null || dateInput.isEmpty()) {
             return "";
         }
-        if (dateInput.matches("\\d{4}-\\d{2}-\\d{2}")) {
-            return dateInput; // Return the input date as it is
+
+        if (!dateInput.matches("\\d{2}/\\d{2}/\\d{4}")) {
+            return "0000-00-00";
         }
         // Convert the date to the correct format
         String[] parts = dateInput.split("/");
@@ -86,15 +87,14 @@ public class UserValidator {
     }
 
     /**
-     * Checks if a date of birth is valid.
-     * Checks if the date of birth is after the current date.
+     * Checks if a date is valid.
      *
-     * @param dateOfBirth The date of birth to check.
+     * @param date The date of birth to check.
      * @return true if the date of birth is valid, false otherwise.
      */
-    public static boolean checkDateValidity(String dateOfBirth) {
+    public static boolean checkDateValidity(String date) {
         try {
-            LocalDate dob = LocalDate.parse(dateOfBirth);
+            LocalDate dob = LocalDate.parse(date);
             return true;
         } catch (DateTimeParseException e) {
             return false;

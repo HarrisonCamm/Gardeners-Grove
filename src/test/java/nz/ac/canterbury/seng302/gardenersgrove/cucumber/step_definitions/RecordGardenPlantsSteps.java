@@ -72,7 +72,7 @@ public class RecordGardenPlantsSteps {
 
     private static Garden copyGarden(Garden garden) {
         Garden out = new Garden(garden.getName(), garden.getLocation(), garden.getSize());
-        out.setId(garden.getId());
+        out.setId(garden.getId()+ 1L);
         return out;
     }
     @Before
@@ -113,7 +113,6 @@ public class RecordGardenPlantsSteps {
             return plant;
         });
         when(plantService.findPlant(any(Long.class))).thenAnswer(invocation -> Optional.of( copyPlant(mockPlantDB.get((Long) invocation.getArgument(0)))));     //Suspicious stew
-        when(plantService.getGardenPlant(any(Long.class))).thenAnswer(invocation -> new ArrayList<>(mockPlantDB.values()));
         when(plantService.getGardenPlant(any(Long.class))).thenAnswer(invocation ->
                 mockPlantDB.values().stream()
                         .map(RecordGardenPlantsSteps::copyPlant)
@@ -171,10 +170,10 @@ public class RecordGardenPlantsSteps {
     }
 
     //AC 4
-    @Given("I enter a {string} that is longer than 512 characters")
-    public void i_enter_a_description_that_is_longer_than_512_characters(String plantDescription) {
+    @Given("I enter a description with {int}")
+    public void i_enter_a_description_that_is_longer_than_512_characters(int descriptionLength) {
         this.plantName = "plant";
-        this.plantDescription = plantDescription;
+        this.plantDescription = "a".repeat(descriptionLength);
         this.mockMvcTemp = mockMvcCreatePlant;
     }
 
