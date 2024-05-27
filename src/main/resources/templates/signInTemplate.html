@@ -1,118 +1,122 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Sign In</title>
-    <link th:href="@{/css/formStyles.css}" rel="stylesheet"/>
-    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
-</head>
-<body>
-<div class="content">
-    <div>
-        <h2>Sign In Form</h2>
-        <div>
-            <!-- the 'novalidate' disables the default HTML5 validation -->
-            <form id="signInForm" th:action="@{/sign-in-form}" method="post" novalidate>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Sign In</title>
+        <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
+        <script th:src="@{javascript/prevent-enter-submit.js}"></script>
+    </head>
+    <body>
+        <div class="content">
+            <div class="top-padding">
+                <h2>Sign In Form</h2>
                 <div>
-                    <p class="message" id="message" th:text="${message}"></p>
-                </div>
-                <div>
-                    <p class="error-message" th:if="${expiredTokenError}" id="expiredTokenMessage" th:text="${expiredTokenError}"></p>
-                </div>
-                <label for="email"> Email: </label>
-                <br/>
-                <!-- Email input box -->
-                <input type="text" class="form-control" id="email"
-                       th:name="username" th:value="${email}" data-cy="email" required autofocus
-                       th:class="${signInError != null ? 'error' : 'form-control'}">
-                <br/>
-                <!-- Display error message if there is an error with the email format-->
-                <div id="emailError" class="error-message"></div>
-                <br/>
-                <!-- Password input box -->
-                <label for="password"> Password: </label>
-                <br/>
-                <input type="password" class="form-control" id="password"
-                       th:name="password" th:value="${password}" data-cy="password" required
-                       th:class="${signInError != null ? 'error' : 'form-control'}">
-                <br/>
-                <!-- Display error message if there is an error with the email or password validation -->
-                <div id="signInError" class="error-message"></div>
-                <div id="validityError" th:if="${signInError}" class="error-message" th:text="${signInError}"></div>
-                <br/>
+                    <!-- the 'novalidate' disables the default HTML5 validation -->
+                    <form id="signInForm" th:action="@{/sign-in-form}" method="post" novalidate>
+                        <div>
+                            <p class="message" id="message" th:text="${message}"></p>
+                        </div>
+                        <div>
+                            <p class="error-message" th:if="${expiredTokenError}" id="expiredTokenMessage" th:text="${expiredTokenError}"></p>
+                        </div>
+                        <label for="email"> Email:
+                            <span class="required-input"> * </span>
+                        </label>
+                        <br/>
+                        <!-- Email input box -->
+                        <input type="text" class="form-control" id="email"
+                               th:name="username" th:value="${email}" data-cy="email" required autofocus
+                               th:classappend="${signInError != null ? 'error' : 'form-control'}">
+                        <br/>
+                        <!-- Display error message if there is an error with the email format-->
+                        <div id="emailError" class="error-message"></div>
+                        <br/>
+                        <!-- Password input box -->
+                        <label for="password"> Password:
+                            <span class="required-input"> * </span>
+                        </label>
+                        <br/>
+                        <input type="password" class="form-control" id="password"
+                               th:name="password" th:value="${password}" data-cy="password" required
+                               th:classappend="${signInError != null ? 'error' : 'form-control'}">
+                        <br/>
+                        <!-- Display error message if there is an error with the email or password validation -->
+                        <div id="signInError" class="error-message"></div>
+                        <div id="validityError" th:if="${signInError}" class="error-message" th:text="${signInError}"></div>
+                        <br/>
 
-                <div class="buttons-centre">
-                    <button type="submit" onclick="validateForm()" id="submitButton">Sign In</button>
-                    &nbsp;
-                    <a th:href="@{/home}" id="cancelButton">
-                        <button type="button">Cancel</button>
-                    </a>
+                        <div class="buttons-centre">
+                            <button type="submit" onclick="validateForm()" id="submitButton">Sign In</button>
+                            &nbsp;
+                            <a th:href="@{/home}" id="cancelButton">
+                                <button type="button">Cancel</button>
+                            </a>
+                        </div>
+                    </form>
+                    <p class="buttons-centre"><a th:href="@{/register-form}" class="link">Not registered? Create an account</a></p>
+                    <p class="buttons-centre"><a th:href="@{/lost-password-form}" class="link">Forgot your password?</a></p>
                 </div>
-            </form>
-            <p class="buttons-centre"><a th:href="@{/register-form}" class="link">Not registered? Create an account</a></p>
-            <p class="buttons-centre"><a th:href="@{/lost-password-form}" class="link">Forgot your password?</a></p>
+            </div>
         </div>
-    </div>
-</div>
-<script>
-    // When the page is loaded
-    window.addEventListener('load', function() {
-        let emailInput = document.getElementById("email");
-        // If there is an email in the local storage
-        if (localStorage.getItem('email')) {
-            // Populate the email field with the email from the local storage
-            emailInput.value = localStorage.getItem('email');
-            // Clear the email from the local storage
-            localStorage.removeItem('email');
-        }
+        <script>
+            // When the page is loaded
+            window.addEventListener('load', function() {
+                let emailInput = document.getElementById("email");
+                // If there is an email in the local storage
+                if (localStorage.getItem('email')) {
+                    // Populate the email field with the email from the local storage
+                    emailInput.value = localStorage.getItem('email');
+                    // Clear the email from the local storage
+                    localStorage.removeItem('email');
+                }
 
-        let message = localStorage.getItem('message');
-        let messageElement = document.getElementById("message");
-        if (message) {
-            // Set the message to the h4 element
-            messageElement.innerText = message;
-            // Clear the message from the local storage
-            localStorage.removeItem('message');
-        } else {
-            // If there's no message, hide the h4 element
-            messageElement.style.display = 'none';
-        }
-    });
-    function validateForm() {
-        let emailInput = document.getElementById("email");
-        let passwordInput = document.getElementById("password");
-        let emailValue = emailInput.value;
-        let passwordValue = passwordInput.value;
-        let emailError = document.getElementById("emailError");
-        let signInError = document.getElementById("signInError");
-        let validityError = document.getElementById("validityError");
+                let message = localStorage.getItem('message');
+                let messageElement = document.getElementById("message");
+                if (message) {
+                    // Set the message to the h4 element
+                    messageElement.innerText = message;
+                    // Clear the message from the local storage
+                    localStorage.removeItem('message');
+                } else {
+                    // If there's no message, hide the h4 element
+                    messageElement.style.display = 'none';
+                }
+            });
+            function validateForm() {
+                let emailInput = document.getElementById("email");
+                let passwordInput = document.getElementById("password");
+                let emailValue = emailInput.value;
+                let passwordValue = passwordInput.value;
+                let emailError = document.getElementById("emailError");
+                let signInError = document.getElementById("signInError");
+                let validityError = document.getElementById("validityError");
 
-        // Store the email in the local storage
-        localStorage.setItem('email', emailValue);
+                // Store the email in the local storage
+                localStorage.setItem('email', emailValue);
 
-        // Regex to check for a basic email pattern
-        let emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$/;
+                // Regex to check for a basic email pattern
+                let emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$/;
 
-        if ((!emailRegex.test(emailValue) && emailValue) || !emailValue) {
-            emailError.innerText = "Email address must be in the form 'jane@doe.nz'";
-            emailInput.classList.add("error");
-            event.preventDefault();
-        } else {
-            emailError.innerText = "";
-            emailInput.classList.remove("error");
-        }
+                if ((!emailRegex.test(emailValue) && emailValue) || !emailValue) {
+                    emailError.innerText = "Email address must be in the form 'jane@doe.nz'";
+                    emailInput.classList.add("error");
+                    event.preventDefault();
+                } else {
+                    emailError.innerText = "";
+                    emailInput.classList.remove("error");
+                }
 
-        if (!passwordValue && !validityError) {
-            signInError.innerText = "The email address is unknown, or the password is invalid";
-            emailInput.classList.add("error");
-            passwordInput.classList.add("error");
-            event.preventDefault();
-        } else {
-            signInError.innerText = "";
-            passwordInput.classList.remove("error");
-        }
+                if (!passwordValue && !validityError) {
+                    signInError.innerText = "The email address is unknown, or the password is invalid";
+                    emailInput.classList.add("error");
+                    passwordInput.classList.add("error");
+                    event.preventDefault();
+                } else {
+                    signInError.innerText = "";
+                    passwordInput.classList.remove("error");
+                }
 
-    }
-</script>
-</body>
+            }
+        </script>
+    </body>
 </html>

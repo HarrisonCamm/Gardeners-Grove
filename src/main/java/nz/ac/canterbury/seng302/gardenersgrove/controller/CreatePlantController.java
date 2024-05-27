@@ -91,6 +91,7 @@ public class CreatePlantController {
         model.addAttribute("count", session.getAttribute("count"));
         model.addAttribute("datePlanted", session.getAttribute("datePlanted"));
 
+//        model.addAttribute("imageError", "");
 
         // Remove attributes from the session
         session.removeAttribute("name");
@@ -101,6 +102,12 @@ public class CreatePlantController {
         return "createPlantFormTemplate";
     }
 
+    /**
+     * Moves all errors, if any, from the session to the model
+     *
+     * @param session The http session
+     * @param model The model
+     */
     private void addErrors(HttpSession session, Model model) {
         @SuppressWarnings("unchecked")
         HashMap<String, String> errors = (HashMap<String, String>) session.getAttribute("errors");
@@ -111,7 +118,6 @@ public class CreatePlantController {
             session.removeAttribute("errors");
         }
     }
-
 
     /**
      * Submits the form when the user clicks "Create Plant" on the form.
@@ -158,14 +164,13 @@ public class CreatePlantController {
                     Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
                     image = new Image(Files.readAllBytes(imagePath), "png", false);
                 }
-                plant.setImage(image);
             } catch (Exception e) {
-                logger.error("Failed to set plant image", e);
+                logger.error("Failed to set plant image from file", e);
             }
         } else {
             image.makePermanent();
-            plant.setImage(image);
         }
+        plant.setImage(image);
 
         plant.setCount(plant.getCount().replace(',', '.'));
         plant.setGarden(ownerGarden); // Set the garden for the plant
@@ -181,8 +186,6 @@ public class CreatePlantController {
         session.setAttribute("description", description);
         session.setAttribute("datePlanted", plant.getDatePlanted());
         session.setAttribute("gardenID", plant.getGarden().getId());
-
-
 
         Map<String, String> errors = new HashMap<>();
 
@@ -218,10 +221,18 @@ public class CreatePlantController {
         }
     }
 
+    /**
+     * Saves the image file into the session if the temporary image cannot be read later (if expired)
+     *
+     * @param gardenID The ID of the garden
+     * @param file The image file
+     * @param session The http session
+     * @return A redirect to this same page to refresh it
+     */
     @PostMapping("/create-plant-picture")
     public String uploadImage(@RequestParam("gardenID") Long gardenID,
                               @RequestParam("file") MultipartFile file,
-                              HttpSession session) throws IOException, ParseException {
+                              HttpSession session) {
         logger.info("POST /create-plant-picture");
         Garden garden = gardenService.findGarden(gardenID).get();
 

@@ -1,7 +1,5 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
 import io.cucumber.java.BeforeAll;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -17,29 +15,24 @@ import nz.ac.canterbury.seng302.gardenersgrove.repository.VerificationTokenRepos
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mock;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.stringContainsInOrder;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -134,6 +127,12 @@ public class ResetPasswordSteps {
 
     }
 
+    @AfterEach
+    public void reset() {
+        Mockito.reset(verificationTokenService, authenticationManager, userService, userRepository, verificationTokenRepository, mailService);
+        cleanupCounter = 0;
+    }
+
     // AC1
     @WithMockUser
     @Given("I am on the login page")
@@ -198,7 +197,7 @@ public class ResetPasswordSteps {
     @Given("a reset password link was created")
     public void a_reset_password_link_was_created() {
         // We created a token in the beforeAll method
-        assertFalse(verificationTokenService.findAllTokens().isEmpty());
+        Assertions.assertFalse(verificationTokenService.findAllTokens().isEmpty());
     }
 
     //AC10
@@ -384,7 +383,7 @@ public class ResetPasswordSteps {
     @Then("it can’t be used to reset a password anymore")
     public void it_can_t_be_used_to_reset_a_password_anymore() {
 
-        assertFalse(verificationToken.getExpiryDate().isAfter(LocalDateTime.now()));
+        Assertions.assertFalse(verificationToken.getExpiryDate().isAfter(LocalDateTime.now()));
     }
 
     @Then("I see a message telling me {string}")

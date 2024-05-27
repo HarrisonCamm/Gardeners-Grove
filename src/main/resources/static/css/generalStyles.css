@@ -1,0 +1,428 @@
+body {
+    background-color: floralwhite;
+    font-family: Verdana, sans-serif;
+}
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.register-top-padding {
+    padding-top: 5%;
+}
+.top-padding {
+    padding-top: 10%;
+}
+
+.background {
+    background-color: #BEE186;
+    border-radius: 15px;
+    padding: 20px;
+}
+/*Form styles*/
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-control {
+    width: 350px;
+    font-size: 100%;
+    background-color: #E2F1CA;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #BEE186;
+    outline: 1px solid #BEE186;
+}
+.form-control:focus {
+    outline: 2px solid #3D7B36;
+}
+
+.form-control:disabled {
+    background-color: #DFDEDC;
+    border: 1px solid #C4C3C1;
+    outline: 1px solid #C4C3C1;
+}
+
+.form-control:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #E2F1CA inset;
+}
+
+.required-input {
+    color: #DE2929;
+}
+textarea {
+    min-width: 350px;
+    max-width: 350px;
+    font-size: 100%;
+    background-color: #E2F1CA;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #BEE186;
+    outline: 1px solid #BEE186;
+    height: auto;
+    font-family: Verdana, sans-serif;
+}
+
+textarea:focus {
+    outline: 2px solid #3D7B36;
+}
+.message {
+    width: 350px;
+    font-size: 101%;
+}
+
+.error {
+    border: 1px solid #DE2929;
+    outline: 1px solid #DE2929;
+}
+.error:focus {
+    outline: 2px solid #DE2929;
+}
+.error-message, .password-error-message {
+    color: #DE2929;
+    display: block;
+    width: 350px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.confirmation-message {
+    display: block;
+    width: 350px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+button, label {
+    font-size: 130%;
+}
+.checkbox {
+    accent-color: #80A444;
+    transform: scale(1.2);
+}
+
+.checkbox:hover {
+    cursor: pointer;
+}
+
+button, .button {
+    background-color: #3D7B36;
+    color: floralwhite;
+    border-radius: 10px;
+    border-width: 0;
+    padding: 5px 10px 5px 10px;
+    margin: 2px;
+}
+button:hover, .button:hover {
+    background-color: #72543C;
+    cursor: pointer;
+}
+
+.buttons-centre {
+    display: flex;
+    justify-content: flex-end;
+}
+.buttons-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: end;
+}
+
+h1 {
+    text-align: left;
+    margin-left: 25px;
+    color: #0A3407;
+}
+
+h2 {
+    text-align: center;
+    color: #0A3407;
+}
+/* Flexbox styles */
+.wrapper {
+    display: flex;
+    justify-content: space-between; /* Horizontally center the items */
+}
+
+/* Container styles */
+.container {
+    background: #0A3407;
+    height: 100vh;
+    text-align: left;
+}
+
+/* Sidebar styles */
+.sideBar {
+    width: 20px;
+    color: floralwhite;
+}
+
+/* Table styles */
+.gardenTable {
+    flex: 1;
+    align-items: center;
+    font-size: 130%;
+    padding-top: 10%;
+}
+
+.gardens-table {
+    padding-right: 20px;
+}
+/* Form container styles */
+.formContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.formRow > div {
+    position: relative;
+    display: inline-block;
+}
+
+/* Garden link styles */
+.gardenLink {
+    color: floralwhite;
+    text-align: center;
+    padding: 3px;
+    text-decoration: none;
+    display: inline;
+}
+
+.gardenLink:hover {
+    color: #80A444;
+}
+
+
+/* Container row styles */
+.containerRow {
+    display: flex;
+    align-items: center;
+}
+
+/* Garden container styles */
+.gardenContainer {
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: auto;
+}
+
+.gardenDetails {
+    width: 500px;
+}
+
+/* Disabled styles */
+.disabled {
+    opacity: 0;
+}
+
+.link {
+    font-size: 120%;
+    color: #72543C;
+    padding-top: 10px;
+}
+
+
+.file-input {
+    display: none;
+}
+
+.image-picker, .image-picker-small {
+    position: absolute;
+    top: 7.5%;
+    right: 7.5%;
+    cursor: pointer;
+    background-color: #dedede;
+    border-radius: 25px;
+    border: solid black 1px;
+    padding: 0;
+    margin: 0;
+    color: black;
+}
+.image-picker {
+    width: 20px;
+    height: 20px;
+}
+
+.image-picker-small {
+    width: 15px;
+    height: 15px;
+    font-size: small;
+}
+
+
+.image-icon-div, .image-icon-div-small {
+    position: relative;
+    margin: auto;
+}
+
+.image-icon-div {
+    width: 200px;
+}
+.image-icon-div-small {
+    width: 80px;
+}
+
+.image {
+    width: 200px;
+    height: 200px;
+    border-radius: 100px;
+    border: #3D7B36 solid 1px;
+}
+
+.image-small {
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+    border: #3D7B36 solid 1px;
+}
+
+.image-upload, .image-picker {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.autocomplete-items {
+    position: relative;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px 2px rgba(0, 0, 0, 0.1);
+    border-top: none;
+    background-color: #fff;
+    z-index: 99;
+    left: 0;
+    right: 0;
+    width: 350px;
+    text-align: left;
+}
+
+.suggestions {
+    padding: 0;
+}
+
+.autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.autocomplete-items div:hover {
+    /*when hovering an item:*/
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.plantContainer {
+    height: 900px;
+    min-width: 500px;
+    width: fit-content;
+    overflow-y: auto;
+    border: 1px solid #0A3407; /* Adding border style */
+    border-radius: 2px;
+    margin-top: 5px;
+}
+.locationTable {
+    margin: auto;
+}
+
+p {
+    margin: 0
+}
+
+
+@media only screen and (orientation: portrait) {
+    h2 {
+        font-size: 300%;
+    }
+    button {
+        font-size: 200%;
+    }
+    label {
+        font-size: 200%;
+    }
+    .form-control {
+        font-size: 180%;
+        width: 540px;
+        border: 2px solid #BEE186;
+    }
+    .form-control:focus {
+        outline: 4px solid #3D7B36;
+    }
+    .message {
+        font-size: 182%;
+        width: 540px;
+    }
+    .form-control:disabled {
+        border: 2px solid #C4C3C1;
+    }
+
+    textarea {
+        min-width: 540px;
+        max-width: 540px;
+        font-size: 180%;
+        border: 2px solid #3D7B36;
+    }
+    textarea:focus {
+        outline: 4px solid #3D7B36;
+    }
+    .error {
+        font-size: 180%;
+        width: 540px;
+        border: 2px solid #DE2929;
+        outline: 2px solid #DE2929;
+    }
+
+    .error:focus {
+        outline: 4px solid #DE2929;
+    }
+    .error-message, .password-error-message {
+        width: 540px;
+        font-size: 150%;
+    }
+    .checkbox {
+        transform: scale(1.5);
+    }
+    .link {
+        font-size: 200%;
+    }
+    .garden-header, .gardenLink, h3{
+        font-size: 200%;
+    }
+
+    .garden-table, .plant-row{
+        font-size: 150%;
+    }
+
+    .image-picker {
+        width: 30px;
+        height: 30px;
+    }
+    .image-icon-div {
+        width: 300px;
+    }
+
+    .image {
+        width: 300px;
+        height: 300px;
+        border-radius: 150px;
+    }
+
+    .image-icon-div-small {
+        width: 120px;
+    }
+
+    .image-picker-small {
+        width: 20px;
+        height: 20px;
+        font-size: medium;
+    }
+
+    .image-small {
+        width: 120px;
+        height: 120px;
+        border-radius: 60px;
+    }
+
+}
+

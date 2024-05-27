@@ -189,99 +189,108 @@ public class EditProfileController {
             }
         }
 
-    // Begin User Details Validations
+        // Begin User Details Validations
+        // Check if email already exists
+        if (userService.emailExists(email) && !Objects.equals(email, currentUser.getEmail())) {
+            model.addAttribute("registrationEmailError", "This email address is already in use");
+        }
+        if (email.isEmpty() ||!isEmailValid(email)){
+            model.addAttribute("registrationEmailError", "Email address must be in the form ‘jane@doe.nz’");
+        }
+        if (firstName.length() > 64) {
+            model.addAttribute("firstNameError", "First name must be 64 characters long or less");
+        }
+        if (!isNameValid(firstName)) {
+            model.addAttribute("firstNameError", "First name must only include letters, spaces, hyphens or apostrophes");
+        }
+        if (firstName.isEmpty()) {
+            model.addAttribute("firstNameError", "First name cannot be empty");
+        }
+        if (lastName.length() > 64) {
+            model.addAttribute("lastNameError", "Last name must be 64 characters long or less");
+        }
+        if (!isNameValid(lastName) && !lastName.isEmpty()) {
+            model.addAttribute("lastNameError", "Last name must only include letters, spaces, hyphens or apostrophes");
+        }
+        if (!noLastName && lastName.isEmpty()) {
+            model.addAttribute("lastNameError", "Last name cannot be empty");
+        }
+        if (!dateOfBirth.isEmpty() && !checkDateValidity(formattedDateOfBirth)) {
+            model.addAttribute("ageError", "Date in not in valid format, DD/MM/YYYY");
+        }
+        if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) < 13) {
+            model.addAttribute("ageError", "You must be 13 years old or older to create an account");
+        }
+        if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) > 120) {
+            model.addAttribute("ageError", "The maximum age allowed is 120 years");
+        }
 
-    // Check if email already exists
-    if (userService.emailExists(email) && !Objects.equals(email, currentUser.getEmail())) {
-        model.addAttribute("registrationEmailError", "This email address is already in use");
-    }
-    if (email.isEmpty() ||!isEmailValid(email)){
-        model.addAttribute("registrationEmailError", "Email address must be in the form ‘jane@doe.nz’");
-    }
-    if (firstName.length() > 64) {
-        model.addAttribute("firstNameError", "First name must be 64 characters long or less");
-    }
-    if (!isNameValid(firstName)) {
-        model.addAttribute("firstNameError", "First name must only include letters, spaces, hyphens or apostrophes");
-    }
-    if (firstName.isEmpty()) {
-        model.addAttribute("firstNameError", "First name cannot be empty");
-    }
-    if (lastName.length() > 64) {
-        model.addAttribute("lastNameError", "Last name must be 64 characters long or less");
-    }
-    if (!isNameValid(lastName) && !lastName.isEmpty()) {
-        model.addAttribute("lastNameError", "Last name must only include letters, spaces, hyphens or apostrophes");
-    }
-    if (!noLastName && lastName.isEmpty()) {
-        model.addAttribute("lastNameError", "Last name cannot be empty");
-    }
-    if (!dateOfBirth.isEmpty() && !checkDateValidity(formattedDateOfBirth)) {
-        model.addAttribute("ageError", "Date in not in valid format, DD/MM/YYYY");
-    }
-    if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) < 13) {
-        model.addAttribute("ageError", "You must be 13 years old or older to create an account");
-    }
-    if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) > 120) {
-        model.addAttribute("ageError", "The maximum age allowed is 120 years");
-    }
+        // Check for errors, if error thrown display error message
+        if (model.containsAttribute("registrationEmailError") || model.containsAttribute("firstNameError")
+                || model.containsAttribute("lastNameError") || model.containsAttribute("ageError")
+                || model.containsAttribute("oldPasswordError") || model.containsAttribute("newPasswordError")
+                || model.containsAttribute("passwordMatchError")) {
+            return "editUserProfileTemplate";
+        } else {
+            // No errors, continue with updating user details
+            currentUser = userService.updateUser(currentUser, firstName, lastName, noLastName, email, dateOfBirth);
 
-    // Check for errors, if error thrown display error message
-    if (model.containsAttribute("registrationEmailError") || model.containsAttribute("firstNameError")
-            || model.containsAttribute("lastNameError") || model.containsAttribute("ageError")
-            || model.containsAttribute("oldPasswordError") || model.containsAttribute("newPasswordError")
-            || model.containsAttribute("passwordMatchError")) {
-        return "editUserProfileTemplate";
-    } else {
-        // No errors, continue with updating user details
-        currentUser = userService.updateUser(currentUser, firstName, lastName, noLastName, email, dateOfBirth);
+            // If the change password form is open, and the password fields are valid (which they are if reaching this stage), update the password
+            if (changePasswordFormInput) {
+                userService.updateUserPassword(currentUser, newPassword);
+                // send user confirmation email of password change
+                String emailAddress = currentUser.getEmail();
+                String emailSubject = "Password Change Confirmation";
+                String emailText = "Dear " + currentUser.getFirstName() + ",\n\n" +
+                        "Your password has been successfully updated. If you did not make this change, please contact support immediately.\n\n" +
+                        "Best,\n" +
+                        "The Gardener's Grove Team";
 
-        // If the change password form is open, and the password fields are valid (which they are if reaching this stage), update the password
-        if (changePasswordFormInput) {
-            userService.updateUserPassword(currentUser, newPassword);
-            // send user confirmation email of password change
-            String emailAddress = currentUser.getEmail();
-            String emailSubject = "Password Change Confirmation";
-            String emailText = "Dear " + currentUser.getFirstName() + ",\n\n" +
-                    "Your password has been successfully updated. If you did not make this change, please contact support immediately.\n\n" +
-                    "Best,\n" +
-                    "The Gardener's Grove Team";
-
-            // Try to send the email
-            try {
-                mailService.sendSimpleMessage(emailAddress, emailSubject, emailText);
-                // Close password form
-                model.addAttribute("changePasswordFormInput", false);
-                // Password updated, allow user to continue to edit other details
-                return "editUserProfileTemplate";
-            } catch (Exception e) {
-                // Log the error
-                logger.error("Failed to send password change confirmation email to " + emailAddress, e);
-                // TODO display an error message
+                // Try to send the email
+                try {
+                    mailService.sendSimpleMessage(emailAddress, emailSubject, emailText);
+                    // Close password form
+                    model.addAttribute("changePasswordFormInput", false);
+                    // Password updated, allow user to continue to edit other details
+                    return "editUserProfileTemplate";
+                } catch (Exception e) {
+                    // Log the error
+                    logger.error("Failed to send password change confirmation email to " + emailAddress, e);
+                    // TODO display an error message
+                }
             }
+
+            // Display the user's full name
+            model.addAttribute("displayName", firstName + " " + lastName);
+
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(currentUser.getEmail(), currentUser.getPassword(), currentUser.getAuthorities());
+            // Authenticate the token properly with the CustomAuthenticationProvider
+            Authentication authenticationToken = authenticationManager.authenticate(token);
+            // Check if the authentication is actually authenticated (any username/password is accepted, so this should never be false)
+            if(authenticationToken.isAuthenticated()) {
+                // Add the authentication to the current security context (Stateful)
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                // Add the token to the request session (needed so the authentication can be properly used)
+                request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+            }
+            // Redirect to the user profile page after successful update of user details
+            return "redirect:/view-user-profile";
         }
-
-        // Display the user's full name
-        model.addAttribute("displayName", firstName + " " + lastName);
-
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(currentUser.getEmail(), currentUser.getPassword(), currentUser.getAuthorities());
-        // Authenticate the token properly with the CustomAuthenticationProvider
-        Authentication authenticationToken = authenticationManager.authenticate(token);
-        // Check if the authentication is actually authenticated (any username/password is accepted, so this should never be false)
-        if(authenticationToken.isAuthenticated()) {
-            // Add the authentication to the current security context (Stateful)
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            // Add the token to the request session (needed so the authentication can be properly used)
-            request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-        }
-        // Redirect to the user profile page after successful update of user details
-        return "redirect:/view-user-profile";
-    }
     }
 
+    /**
+     * Handles saving a new user profile image that was uploaded from the View User Profile page
+     *
+     * @param userID The id of the user
+     * @param file The image file which can be reread if necessary
+     * @param session The http session
+     * @param model The model
+     * @return A redirect to this same page to refresh it
+     * @throws IOException If the file cannot be read
+     */
     @PostMapping("/edit-user-profile-image")
-    public String uploadImage(@RequestParam(value = "userID", required = false) Long userID,
-                              @RequestParam(value = "file", required = false) MultipartFile file,
+    public String uploadImage(@RequestParam(value = "userID") Long userID,
+                              @RequestParam(value = "file") MultipartFile file,
                               HttpSession session,
                               Model model) throws IOException {
         logger.info("PUT /edit-user-profile");

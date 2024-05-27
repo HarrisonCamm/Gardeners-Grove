@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Edit Garden</title>
-    <link th:href="@{/css/gardenStyles.css}" rel="stylesheet">
-    <link th:href="@{/css/navBar.css}" rel="stylesheet">
-    <script th:src="@{/javascript/hover-enter.js}"></script>
-    <script th:src="@{/javascript/autocomplete.js}"></script>
-    <script th:src="@{/javascript/prevent-enter-submit.js}"></script>
-</head>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Edit Garden</title>
+        <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
+        <link th:href="@{/css/navBar.css}" rel="stylesheet">
+        <script th:src="@{/javascript/hover-enter.js}"></script>
+        <script th:src="@{/javascript/autocomplete.js}"></script>
+        <script th:src="@{/javascript/prevent-enter-submit.js}"></script>
+    </head>
 
 <body>
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
@@ -22,7 +22,8 @@
             </thead>
             <tbody>
             <tr th:each="garden : ${gardens}">
-                <td><a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}"><span th:text="${garden.name}"> Name </span></a></td>
+                <td><a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
+                    <span th:text="${#strings.abbreviate(garden.name,10)}"> Name </span></a></td>
             </tr>
             </tbody>
         </table>
