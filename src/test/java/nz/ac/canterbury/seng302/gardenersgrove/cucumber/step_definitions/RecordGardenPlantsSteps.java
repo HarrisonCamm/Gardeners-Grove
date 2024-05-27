@@ -267,6 +267,6 @@ public class RecordGardenPlantsSteps {
     @Then("No changes are made to the garden")
     public void no_changes_are_made_to_the_garden() {
         List<Plant> gardenPlants = plantService.getGardenPlant(testGarden.getId());
-        assertTrue(gardenPlants.isEmpty());
+        assertTrue(gardenPlants.isEmpty()); //test garden started with no plants so this checks it still has no plants
     }
 }
