@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,7 +119,6 @@ public class UserService {
     public User getAuthenicatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication == null ? null : this.getUserByEmail(authentication.getName());
-
     }
 
     /**
@@ -143,10 +143,18 @@ public class UserService {
      * @param searchQuery The search query
      * @return A list of users that exactly match the search query
      */
-    public List<User> searchForUsers(String searchQuery) {
+    public List<User> searchForUsers(String searchQuery, User currentUser) {
         String[] parts = searchQuery.split(" ");
         String firstName = parts[0];
         String lastName = parts.length > 1 ? parts[1] : "";
-        return userRepository.searchForUsers(searchQuery, firstName, lastName);
+        return userRepository.searchForUsers(searchQuery, firstName, lastName, currentUser.getUserId(), currentUser);
+    }
+
+    public List<FriendRequest> getSentFriendRequests(User user) {
+        return userRepository.getSentFriendRequests(user.getUserId());
+    }
+
+    public List<FriendRequest> getPendingFriendRequests(User currentUser) {
+        return userRepository.getPendingFriendRequests(currentUser.getUserId());
     }
 }

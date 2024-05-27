@@ -1,82 +1,149 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Manage Friends</title>
-        <!-- Navbar styling -->
-        <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
-        <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
-        <script th:src="@{javascript/prevent-enter-submit.js}"></script>
-        <script th:src="@{/javascript/hover-enter.js}"></script>
-    </head>
-    <body>
-        <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-        <div style="width: 50%; margin: 50px auto; text-align: center">
-            <div style="display: flex; justify-content: space-between">
-                <div style="width: 500px; min-width: 500px; display: flex; flex-direction: column">
-                    <div>
-                        <div class="buttons-centre">
-                            <button onclick="toggleSearchFriend()">Add Friend</button>
-                        </div>
-                        <form th:action="@{/manage-friends}" method="post" novalidate>
-                            <input type="hidden" name="action" id="action" />
-                            <div th:if="${showSearch}" class="search-friend" id="searchFriend">
-                                <br/>
-                                <p th:if="${searchResultMessage}" class="search-field-message" th:text="${searchResultMessage}"></p>
-                                <div style="display: flex; justify-content: space-between; align-items: flex-end; height: 50px">
-                                    <label for="search"></label>
-                                    <input th:name="searchQuery"
-                                           th:value="${searchQuery}"
-                                           class="search-field"
-                                           id="search"
-                                           type="text"
-                                           placeholder="Search for a friend">
-                                    <div class="search-button">
-                                        <button type="submit" style="height: 50px" onclick="document.getElementById('action').value='search'">Search</button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div th:if="${matchedUsers}" class="results-container">
-                                        <ul style="padding: 0; text-align: left">
-                                            <li th:each="matchedUser : ${matchedUsers}">
-                                                <div style="display: flex; justify-content: space-between">
-                                                    <h3 th:text="${matchedUser.firstName + ' - ' + matchedUser.email}"></h3>
-                                                    <input type="hidden" name="email" th:value="${matchedUser.email}" />
-                                                    <button type="submit" style="height: 50px" onclick="document.getElementById('action').value='invite'">Invite as Friend</button>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Manage Friends</title>
+    <!-- Navbar styling -->
+    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+    <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+    <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
+    <script th:src="@{javascript/prevent-enter-submit.js}"></script>
+    <script th:src="@{/javascript/hover-enter.js}"></script>
+</head>
+<body>
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<div>
+    <div class="manage-friends-page">
+        <div>
+            <div class="friends-container">
+                <div th:if="${#lists.isEmpty(friends)}">
+                    <h3>Your friends will be shown here</h3>
+                </div>
+                <div th:if="${!#lists.isEmpty(friends)}">
+                    <h3>Your Friends</h3>
+                    <ul>
+                        <li th:each="friend : ${friends}">
+                            <div>
+                                <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
+                                <h3 th:text="${friend.firstName + ' ' + friend.lastName}"></h3>
                             </div>
-                        </form>
-                    </div>
-                    <div class="requests-container">
-                        <h3 style="text-align: left; margin-left: 20px">Friend Requests</h3>
-                    </div>
-                    <hr>
-                    <div class="requests-container">
-                        <h3 style="text-align: left; margin-left: 20px">Sent Requests</h3>
-                    </div>
-                </div>
-                <div style="justify-content: flex-end; margin: 0; padding: 0">
-                    <div class="friends-container">
-                        <h3>Your friends will be shown here</h3>
-                    </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <!-- <div class="rows">
-                <h1>Sent Requests</h1>
-            </div>
-            <div class="rows">
-                <h1>Pending Requests</h1>
-            </div> -->
         </div>
-        <script>
-            function toggleSearchFriend() {
-                const searchFriend = document.getElementById("searchFriend");
-                searchFriend.hidden = !searchFriend.hidden;
-            }
-        </script>
-    </body>
+        <div>
+            <div>
+                <div class="buttons-centre">
+                    <button onclick="toggleForm()">Add Friend</button>
+                </div>
+            </div>
+            <div class="search-container">
+                <form th:action="@{/manage-friends}" method="post" novalidate th:hidden="${showSearch}">
+                    <div class="search-div">
+                        <label for="search"></label>
+                        <input th:name="searchQuery"
+                               th:value="${searchQuery}"
+                               class="search-field"
+                               id="search"
+                               type="text"
+                               placeholder="Search for a friend">
+                        &nbsp;&nbsp;&nbsp;
+                        <div class="search-button">
+                            <button type="submit" onclick="searchAndShowResults()">Search</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="action" id="action" />
+                    <div class="search-friend" id="searchFriend">
+                        <br/>
+                        <p th:if="${searchResultMessage}" class="search-field-message" th:text="${searchResultMessage}"></p>
+                        <div>
+                            <div th:if="${matchedUsers}" class="results-container" id="results-container">
+                                <ul>
+                                    <li th:each="matchedUser : ${matchedUsers}">
+                                        <div>
+                                            <h3 th:text="${matchedUser.firstName + ' - ' + matchedUser.email}"></h3>
+                                            <input type="hidden" name="email" th:value="${matchedUser.email}" />
+                                            <button type="submit" onclick="document.getElementById('action').value='invite'">Invite as Friend</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="requests-container">
+
+                <h3>Friend Requests</h3>
+                <div class="friend-container-scroll" th:if="${pendingRequests}">
+                    <ul>
+                        <li th:each="pendingRequest : ${pendingRequests}">
+                            <form th:action="@{/manage-friends}" method="post" novalidate>
+                                <div>
+                                    <div class="friend-form">
+                                        <div class="align-left">
+                                            <h3 th:text="${pendingRequest.sender.firstName}"></h3>
+                                            <input type="hidden" th:name="action" id="friend-request-action" />
+                                            <input type="hidden" th:name="email" th:value="${pendingRequest.sender.email}" />
+                                        </div>
+                                        <div class="buttons-right">
+                                            <button type="submit" onclick="document.getElementById('friend-request-action').value='delete'">
+                                                Delete
+                                            </button>
+                                            <button type="submit" onclick="document.getElementById('friend-request-action').value='accept'">
+                                                Accept
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="requests-container">
+                <h3>Sent Requests</h3>
+                <div class="friend-container-scroll" th:if="${sentRequests}">
+                    <ul>
+                        <li th:each="sentRequest : ${sentRequests}">
+                            <form th:action="@{/manage-friends}" method="post" novalidate>
+                                <div class="friend-form">
+                                    <div class="align-left">
+                                        <h3 th:text="${sentRequest.receiver.firstName + ' - ' + sentRequest.receiver.email}"></h3>
+                                        <input type="hidden" th:name="email" th:value="${sentRequest.receiver.email}" />
+                                    </div>
+                                    <div class="buttons-right">
+                                        <h3 class="friend-status" th:text="${sentRequest.status}"></h3>
+                                        <input type="hidden" th:name="action" th:value="cancel" />
+                                        <button type="submit">
+                                            Cancel
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    function toggleForm() {
+        const form = document.querySelector('.search-container form');
+        form.hidden = !form.hidden;
+    }
+
+    function searchAndShowResults() {
+        document.getElementById('action').value='search';
+        const form = document.querySelector('.search-container form');
+        form.submit();
+        const searchFriend = document.getElementById("searchFriend");
+        searchFriend.hidden = false;
+    }
+</script>
+</body>
 </html>

@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.repository;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,11 +25,18 @@ public interface UserRepository extends CrudRepository<User, Long>{
     @Query("DELETE FROM User u WHERE u = :user")
     void deleteUser(User user);
 
-    @Query("SELECT u FROM User u WHERE LOWER(u.email) = LOWER(:searchQuery) OR " +
+    @Query("SELECT u FROM User u WHERE u.userId != :userId AND NOT (:currentUser MEMBER OF u.friends) AND (LOWER(u.email) = LOWER(:searchQuery) OR " +
             "(LOWER(u.firstName) = LOWER(:firstName) AND LOWER(u.lastName) = LOWER(:lastName) AND u.noLastName = false) OR " +
-            "(LOWER(u.firstName) = LOWER(:searchQuery) AND u.noLastName = true)")
+            "(LOWER(u.firstName) = LOWER(:searchQuery) AND u.noLastName = true))")
     List<User> searchForUsers(@Param("searchQuery") String searchQuery,
                               @Param("firstName") String firstName,
-                              @Param("lastName") String lastName);
+                              @Param("lastName") String lastName,
+                              @Param("userId") Long userId,
+                              @Param("currentUser") User currentUser);
 
+    @Query("SELECT r from FriendRequest r WHERE r.sender.userId = :userId")
+    List<FriendRequest> getSentFriendRequests(Long userId);
+
+    @Query("SELECT r from FriendRequest r WHERE r.receiver.userId = :userId and r.status = 'Pending'")
+    List<FriendRequest> getPendingFriendRequests(Long userId);
 }

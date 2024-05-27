@@ -1,16 +1,14 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.controller.ManageFriendsController;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -44,16 +42,21 @@ public class ManageFriendsTests {
     private static User loggedUser;
     private static User testUser;
 
+    private static FriendRequest friendRequest;
+
     @BeforeEach
     public void setUp() {
         loggedUser = new User("logged@email.com", "foo", "bar", "password");
         testUser = new User("test@email.com", "test", "user", "password");
 
-        when(userService.getAuthenicatedUser()).thenReturn(loggedUser);
-        when(userService.searchForUsers(any(String.class))).thenReturn(List.of(testUser));
-        when(userService.getUserByEmail(any(String.class))).thenReturn(testUser);
+        friendRequest = new FriendRequest(loggedUser, testUser);
 
-        doNothing().when(friendRequestService).sendRequest(loggedUser, testUser);
+        when(userService.getAuthenicatedUser()).thenReturn(loggedUser);
+        when(userService.searchForUsers(any(String.class), any(User.class))).thenReturn(List.of(testUser));
+        when(userService.getUserByEmail(any(String.class))).thenReturn(testUser);
+        when(userService.getSentFriendRequests(any(User.class))).thenReturn(List.of(friendRequest));
+
+        doNothing().when(friendRequestService).save(friendRequest);
     }
 
     @WithMockUser
@@ -74,7 +77,7 @@ public class ManageFriendsTests {
                     .param("searchQuery", "test"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("manageFriendsTemplate"))
-                .andExpect(model().attribute("showSearch", true))
+                .andExpect(model().attribute("showSearch", false))
                 .andExpect(model().attribute("matchedUsers", List.of(testUser)));
     }
 
@@ -82,12 +85,56 @@ public class ManageFriendsTests {
     @Test
     public void OnManageFriends_InviteUser_IsOkay() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
+                .with(csrf())
+                    .param("action", "invite")
+                    .param("email", testUser.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("manageFriendsTemplate"))
+                .andExpect(model().attribute("sentRequests", List.of(friendRequest)));
+
+    }
+
+    @WithMockUser
+    @Test
+    public void OnManageFriends_CancelInvite_IsOkay() throws Exception {
+
+        List <FriendRequest> emptyList = List.of();
+        when(userService.getSentFriendRequests(any(User.class))).thenReturn(emptyList);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
                         .with(csrf())
-                        .param("action", "invite")
+                        .param("action", "cancel")
                         .param("email", testUser.getEmail()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("manageFriendsTemplate"));
+                .andExpect(view().name("manageFriendsTemplate"))
+                .andExpect(model().attribute("sentRequests", emptyList));
+    }
 
-        verify(friendRequestService, times(1)).sendRequest(loggedUser, testUser);
+    @WithMockUser
+    @Test
+    public void OnManageFriends_AcceptFriendRequest_IsOkay() throws Exception {
+        List<User> friends = List.of(testUser);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
+                        .with(csrf())
+                        .param("action", "accept")
+                        .param("email", testUser.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("manageFriendsTemplate"))
+                .andExpect(model().attribute("friends", friends));
+    }
+
+    @WithMockUser
+    @Test
+    public void OnManageFriends_DenyFriendRequest_IsOkay() throws Exception {
+        List<User> friends = List.of();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
+                        .with(csrf())
+                        .param("action", "delete")
+                        .param("email", testUser.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("manageFriendsTemplate"))
+                .andExpect(model().attribute("friends", friends));
     }
 }

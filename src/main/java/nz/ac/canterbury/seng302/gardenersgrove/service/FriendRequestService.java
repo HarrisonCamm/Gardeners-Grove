@@ -18,13 +18,25 @@ public class FriendRequestService {
 
     /**
      * Sends a friend request from the sender to the receiver by persisting a new FriendRequest object
-     * @param sender the user sending the request
-     * @param receiver the user receiving the request
      */
-    public void sendRequest(User sender, User receiver) {
-        FriendRequest friendRequest = new FriendRequest();
-        friendRequest.setSender(sender);
-        friendRequest.setReceiver(receiver);
-        friendRequestRepository.save(friendRequest);
+    public void save(FriendRequest friendRequest) {
+
+        // Only send the request if the sender has not already sent a request to the receiver
+        if (!friendRequestRepository.hasRequestSent(friendRequest.getSender(), friendRequest.getReceiver())) {
+            friendRequestRepository.save(friendRequest);
+        }
+    }
+
+    /**
+     * Cancels a friend request by deleting the FriendRequest object from the database
+     * @param sender the user who sent the request
+     * @param userToCancel the user who received the request
+     */
+    public void cancelRequest(User sender, User userToCancel) {
+        friendRequestRepository.deleteBySender(sender, userToCancel);
+    }
+
+    public void rejectRequest(User currentUser, User rejectedUser) {
+        friendRequestRepository.alterStatus(currentUser, rejectedUser, "Declined");
     }
 }
