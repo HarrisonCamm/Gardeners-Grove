@@ -185,6 +185,7 @@ public class User {
                 userId, firstName, lastName, email, password, dateOfBirth);
     }
 
+    //TODO: Refactor so it only does so if the person isn't already friend
     /**
      * Adds a friend to the user's friend list
      * @param acceptedFriend the user to add as a friend
@@ -193,7 +194,43 @@ public class User {
         friends.add(acceptedFriend);
     }
 
+    /**
+     * Removes a friend from the user's friend list.
+     * @param friendToRemove The user to be removed from the friends list.
+     */
+    public void removeFriend(User friendToRemove) {
+        if (friendToRemove == null) {
+            throw new IllegalArgumentException("Friend to remove cannot be null");
+        }
+        boolean removed = friends.removeIf(friend -> friend.equals(friendToRemove));
+        if (!removed) {
+            throw new IllegalStateException("User to remove is not in the friends list");
+        }
+    }
+
+
     public List<User> getFriends() {
         return friends;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

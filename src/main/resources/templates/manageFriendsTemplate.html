@@ -26,6 +26,17 @@
                             <div>
                                 <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
                                 <h3 th:text="${friend.firstName + ' ' + friend.lastName}"></h3>
+                                <form action="/manage-friends" method="post">
+                                    <input type="hidden" name="action" id="action" value="">
+                                    <input type="hidden" name="email" id="email" value="">
+
+                                    <!-- Other form elements here, such as searchQuery input -->
+
+                                    <!-- Remove Friend Button -->
+                                    <button type="submit" onclick="setFormValues('remove', 'user@example.com')">Remove Friend</button>
+
+                                    <!-- Additional buttons for other actions like search or invite -->
+                                </form>
                             </div>
                         </li>
                     </ul>

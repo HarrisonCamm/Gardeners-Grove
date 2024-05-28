@@ -68,6 +68,7 @@ public class ManageFriendsController {
             case "cancel" -> handleCancelRequest(email, model);
             case "accept" -> handleAcceptRequest(email, model);
             case "delete" -> handleRejectRequest(email, model);
+            case "remove" -> handleRemoveRequest(email, model);
             default -> "manageFriendsTemplate"; // Should never reach this
 
         };
@@ -161,6 +162,8 @@ public class ManageFriendsController {
         return addAttributes(model, currentUser);
     }
 
+    //TODO: Change to updateUser at some stage + test.
+
     /**
      * Handles the accept request
      * @param email the email of the user to be accepted
@@ -189,6 +192,38 @@ public class ManageFriendsController {
 
         return addAttributes(model, currentUser);
     }
+
+
+    /**
+     * Handles the request to remove a friend.
+     * @param email the email of the user to be removed as a friend
+     * @param model the model to add attributes to
+     * @return the template to be rendered
+     */
+    private String handleRemoveRequest(String email, Model model) {
+        logger.info("POST /manage-friends (remove)");
+
+        User currentUser = userService.getAuthenicatedUser();
+        User friendToRemove = userService.getUserByEmail(email);
+
+        // Check if the user to remove is indeed a friend
+        if (currentUser.getFriends().contains(friendToRemove)) {
+            // Remove the user from the current user's friend list
+            currentUser.removeFriend(friendToRemove);
+            userService.addUser(currentUser);
+
+            // Optionally, remove the current user from the friendToRemove's friend list
+            friendToRemove.removeFriend(currentUser);
+            userService.addUser(friendToRemove);
+
+            model.addAttribute("removeMessage", "Successfully removed " + friendToRemove.getFirstName() + " from your friends list.");
+        } else {
+            model.addAttribute("removeMessage", "No such friend found in your friends list.");
+        }
+
+        return addAttributes(model, currentUser);
+    }
+
 
     private String addAttributes(Model model, User currentUser) {
         List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
