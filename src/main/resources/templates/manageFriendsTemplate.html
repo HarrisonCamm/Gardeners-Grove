@@ -35,12 +35,16 @@
                                         <button onclick="toggleRemoveFriend()">Remove Friend</button>
                                     </div>
                                 </div>
-                                <div id="confirmRemoveFriend" th:hidden="true">
-                                    <div class="buttons-right">
-                                        <button>Confirm</button>
-                                        <button onclick="toggleRemoveFriend()">Cancel</button>
+                                <form th:action="@{/manage-friends}" method="post" novalidate>
+                                    <div id="confirmRemoveFriend" th:hidden="true">
+                                        <div class="buttons-right">
+                                            <button type="submit" onclick="document.getElementById('friend-remove-action').value='remove'">Confirm</button>
+                                            <input type="hidden" th:name="email" th:value="${friend.email}" />
+                                            <input type="hidden" th:name="action" id="friend-remove-action" />
+                                            <button onclick="toggleRemoveFriend()">Cancel</button>
+                                        </div>
                                     </div>
-                                </div>
+                                </form>
                             </div>
                         </li>
                     </ul>

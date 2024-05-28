@@ -207,7 +207,6 @@ public class ManageFriendsController {
 
         User currentUser = userService.getAuthenicatedUser();
         User friendToRemove = userService.getUserByEmail(email);
-
         // Check if the user to remove is indeed a friend
         if (currentUser.getFriends().contains(friendToRemove)) {
             // Remove the user from the current user's friend list
