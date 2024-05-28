@@ -8,6 +8,7 @@
     <script th:src="@{javascript/enter-date.js}"></script>
     <script th:src="@{javascript/prevent-enter-submit.js}"></script>
     <script th:src="@{/javascript/image-handling.js}"></script>
+    <script th:src="@{/javascript/description-length.js}"></script>
 </head>
 <body>
 <!-- Navigation Bar Fragment -->
@@ -41,8 +42,8 @@
                        maxlength="254" th:value="*{name}" th:field="*{name}"
                        th:classappend="${nameError} ? 'error' : 'form-control'">
             </div>
-            <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
-
+            <div th:if="${nameError}" class="error-message" th:text="${nameError}"></div>
+            <br/>
             <div>
                 <label for="plantCount"> Count: </label>
                 <br/>
@@ -50,8 +51,8 @@
                        th:value="*{count}" th:field="*{count}"
                        th:classappend="${countError} ? 'error' : 'form-control'">
             </div>
-            <p th:if="${countError}" class="error-message" th:text="${countError}"></p>
-
+            <div th:if="${countError}" class="error-message" th:text="${countError}"></div>
+            <br/>
             <div>
                 <label for="plantDescription"> Description: </label>
 
@@ -59,11 +60,13 @@
                 <textarea maxlength="1028" id="plantDescription"
                           th:value="*{description}"
                           th:field="*{description}"
-                          th:classappend="${descriptionError} ? 'error' : ''">
+                          th:classappend="${descriptionError} ? 'error' : ''"
+                          oninput="descriptionLength(this)">
                         </textarea>
             </div>
-            <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
-
+            <div id="descriptionLengthValidation" class="error-message"></div>
+            <div th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></div>
+            <br/>
             <label for="datePlanted"> Date Planted: </label>
             <br/>
             <input type="text" class="form-control" id="datePlanted"
@@ -73,7 +76,7 @@
                    oninput="formatDate(this)" th:field="*{datePlanted}"
                    th:classappend="${datePlantedError} ? 'error' : 'form-control'">
 
-            <p th:if="${datePlantedError}" class="error-message" th:text="${datePlantedError}"></p>
+            <div th:if="${datePlantedError}" class="error-message" th:text="${datePlantedError}"></div>
             <br/>
             <br/>
             <div class="buttons-centre">

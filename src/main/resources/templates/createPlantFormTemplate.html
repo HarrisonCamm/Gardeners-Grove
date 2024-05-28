@@ -8,12 +8,13 @@
     <script th:src="@{javascript/enter-date.js}"></script>
     <script th:src="@{javascript/prevent-enter-submit.js}"></script>
     <script th:src="@{/javascript/image-handling.js}"></script>
+    <script th:src="@{/javascript/description-length.js}"></script>
 </head>
 <body>
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 <br/>
 <div class="form">
-    <h1>Create Plant</h1>
+    <h2>Create Plant</h2>
     <div class="image-icon-div">
         <div class="image-upload">
             <img class="image" th:if="${plant.image != null}" th:data-plant-id="${plant.id}"
@@ -56,7 +57,7 @@
                       oninput="descriptionLength(this)">
                     </textarea>
             <br/>
-            <div id="descriptionLengthValidation" class="error-message" th:text="${descriptionLengthError}"></div>
+            <div id="descriptionLengthValidation" class="error-message"></div>
             <div th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></div>
             <br/>
             <label for="datePlanted"> Date Planted: </label>
@@ -81,15 +82,5 @@
     </div>
 </div>
 <br/>
-<script>
-    function descriptionLength(input) {
-        let description = input.value;
-        let descriptionLength = input.length;
-        let descriptionLengthWarning = document.getElementById('descriptionLengthValidation');
-        if (descriptionLength > 512) {
-            descriptionLengthWarning.text = "Plant description must be less than 512 characters"
-        }
-    }
-</script>
 </body>
 </html>
