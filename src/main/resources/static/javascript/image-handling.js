@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form != null && form.addEventListener('submit', function(event) {
         event.preventDefault();
-        submitAction(file, id, form, image);
+        submitAction(file, id, form, image, true);
     });
 
 });
@@ -100,7 +100,8 @@ function filePicked(event, image, id, form) {
     const url = new URL(window.location.href);
     const deployPath = getDeployPath(url);
     const pathname = url.pathname.replace(deployPath, '');
-    const isTemporary = pathname !== '/view-garden' && pathname !== '/view-user-profile';
+    // const isTemporary = pathname !== '/view-garden' && pathname !== '/view-user-profile';
+    const isTemporary = pathname === '/create-plant';
 
     if (!validateFile(file)) {
         return;
@@ -128,23 +129,28 @@ function filePicked(event, image, id, form) {
             })
             .catch(error => console.error(error));
     } else {
-        submitAction(file, id, form, image);
+        submitAction(file, id, form, image, false);
     }
 
     return file;
 }
 
-function submitAction(file, id, form, image) {
+function submitAction(file, id, form, image, submitClicked) {
     const url = new URL(window.location.href);
+    const deployPath = getDeployPath(url);
+    const pathname = url.pathname.replace(deployPath, '');
 
-    if (url.pathname === '/upload-image' && file == null) {
+    if (pathname === '/upload-image' && file == null) {
         alert('Please select a file')
         return;
     }
 
+    if (submitClicked && pathname !== '/create-plant') {
+        form.submit();
+        return;
+    }
+
     let formData = new FormData();
-    const deployPath = getDeployPath(url);
-    // const params = new URLSearchParams(url.search);
     const params = window.setParamsFromUrl();
     let fetchURL = null
     let isFirstKey = true;
@@ -178,7 +184,7 @@ function submitAction(file, id, form, image) {
         body: formData
     })
         .then(response => {
-            if (form != null)
+            if (submitClicked && form != null)
                 form.submit();
             else {
                 image.src += '&t=' + new Date().getTime();
