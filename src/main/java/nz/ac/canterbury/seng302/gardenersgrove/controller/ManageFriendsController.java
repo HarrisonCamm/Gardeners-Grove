@@ -126,7 +126,7 @@ public class ManageFriendsController {
         FriendRequest friendRequest = new FriendRequest(currentUser, invitedUser);
         friendRequestService.save(friendRequest);
 
-        return addAttributes(model, currentUser);
+        return "redirect:/manage-friends";
     }
 
     /**
@@ -143,7 +143,7 @@ public class ManageFriendsController {
 
         friendRequestService.cancelRequest(currentUser, canceledUser);
 
-        return addAttributes(model, currentUser);
+        return "redirect:/manage-friends";
 
     }
 
@@ -161,7 +161,7 @@ public class ManageFriendsController {
 
         friendRequestService.rejectRequest(currentUser, rejectedUser);
 
-        return addAttributes(model, currentUser);
+        return "redirect:/manage-friends";
     }
 
     //TODO: Change to updateUser at some stage + test.
@@ -192,7 +192,7 @@ public class ManageFriendsController {
         }
 
 
-        return addAttributes(model, currentUser);
+        return "redirect:/manage-friends";
     }
 
 
@@ -211,10 +211,11 @@ public class ManageFriendsController {
         if (currentUser.getFriends().contains(friendToRemove)) {
             // Remove the user from the current user's friend list
             currentUser.removeFriend(friendToRemove);
+            friendToRemove.removeFriend(currentUser);
             userService.addUser(currentUser);
 
             // Optionally, remove the current user from the friendToRemove's friend list
-            friendToRemove.removeFriend(currentUser);
+
             userService.addUser(friendToRemove);
 
             model.addAttribute("removeMessage", "Successfully removed " + friendToRemove.getFirstName() + " from your friends list.");
@@ -222,7 +223,7 @@ public class ManageFriendsController {
             model.addAttribute("removeMessage", "No such friend found in your friends list.");
         }
 
-        return addAttributes(model, currentUser);
+        return "redirect:/manage-friends";
     }
 
 
