@@ -21,7 +21,7 @@ public class GardenValidator {
             return new FieldError("garden", "name", "Garden name cannot be empty");
         } else if (name.length() > 255) {
             return new FieldError("garden", "name", "Garden name must be under 255 characters");
-        } else if (!validateWithRegex("[0-9\\p{L}\\s'-.]+", name)) {
+        } else if (!validateWithRegex("[0-9\\p{L}\\s'-,.]+", name)) {
             return new FieldError("garden", "name", "Garden name must only include letters, numbers, spaces, dots, hyphens, or apostrophes");
         }
         return null;
