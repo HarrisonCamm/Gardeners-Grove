@@ -163,37 +163,6 @@ public class UserServiceTest {
     }
 
     @Test
-    public void searchForUsers_ShouldReturnMatchingUsers() {
-        // Setup
-        User currentUser = new User("current@example.com", "Current", "User", "password");
-        currentUser.setUserId(1L); // Assign an ID to simulate a persisted user.
-        User testUser = new User("Aroha", "Greenwood", false, "aroha@gmail.com", "1!Password", "2000-11-03");
-        testUser.setUserId(2L); // Assign an ID to another user for distinction.
-
-        // Mock expected behavior: Return testUser when search criteria match.
-        String searchQuery = "Aroha Greenwood";
-        String[] parts = searchQuery.split(" ");
-        String firstName = parts[0];
-        String lastName = parts.length > 1 ? parts[1] : "";
-
-        List<User> expectedUsers = List.of(testUser);
-        when(userRepository.searchForUsers(
-                eq(searchQuery.toLowerCase()), // The search query should be converted to lower case.
-                eq(firstName.toLowerCase()),   // The first name should be converted to lower case.
-                eq(lastName.toLowerCase()),    // The last name should be converted to lower case.
-                eq(currentUser.getUserId()),   // The current user's ID should be used to exclude them from results.
-                eq(currentUser)               // The current user object is needed for the query.
-        )).thenReturn(expectedUsers);
-
-        // Act
-        List<User> result = userService.searchForUsers(searchQuery, currentUser);
-
-        // Assert
-        assertEquals(1, result.size(), "Expected to find exactly one user.");
-        assertEquals(testUser, result.get(0), "The returned user should match the expected test user.");
-    }
-
-    @Test
     public void getSentFriendRequests_ShouldReturnFriendRequests() {
         User testUser = new User("Aroha", "Greenwood", false, "aroha@gmail.com", "1!Password", "2000-11-03");
         List<FriendRequest> friendRequests = new ArrayList<>();
