@@ -21,17 +21,42 @@
                 </div>
                 <div th:if="${!#lists.isEmpty(friends)}">
                     <h3>Your Friends</h3>
+                    <div>
                     <ul>
                         <li th:each="friend : ${friends}">
-                            <div>
-                                <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
-                                <h3 th:text="${friend.firstName + ' ' + friend.lastName}"></h3>
+                            <div class="background">
+                                <div class="buttons-centre">
+                                    <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
+                                    &nbsp;
+                                    <h3 th:text="${friend.firstName + ' ' + friend.lastName}"></h3>
+                                </div>
+                                <div id="removeFriend" th:hidden="false">
+                                    <div class="buttons-right">
+                                        <button onclick="toggleRemoveFriend()">Remove Friend</button>
+                                    </div>
+                                </div>
+                                <div id="confirmRemoveFriend" th:hidden="true">
+                                    <div class="buttons-right">
+                                        <button>Confirm</button>
+                                        <button onclick="toggleRemoveFriend()">Cancel</button>
+                                    </div>
+                                </div>
                             </div>
                         </li>
                     </ul>
                 </div>
+                </div>
             </div>
         </div>
+        <script>
+            function toggleRemoveFriend(){
+                let removeFriendButton = document.getElementById("removeFriend");
+                let confirmRemoveFriendButton = document.getElementById("confirmRemoveFriend");
+
+                removeFriendButton.hidden = !(removeFriendButton.hidden)
+                confirmRemoveFriendButton.hidden = !(confirmRemoveFriendButton.hidden)
+            }
+        </script>
         <div>
             <div>
                 <div class="buttons-centre">
