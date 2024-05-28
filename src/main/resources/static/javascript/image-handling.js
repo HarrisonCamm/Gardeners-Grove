@@ -17,8 +17,8 @@ function getDeployPath(url) {
 function setParamsFromUrl() {
     let params = new URLSearchParams();
     const url = new URL(window.location.href);
-    let deployPath = getDeployPath(url);
-    let pathname = url.pathname.replace(deployPath, '');
+    const deployPath = getDeployPath(url);
+    const pathname = url.pathname.replace(deployPath, '');
 
     let gardenID = null;
 
@@ -98,13 +98,14 @@ function filePicked(event, image, id, form) {
     // console.log("User or Plant ID: " + plantID)
     const file = event.target.files[0];
     const url = new URL(window.location.href);
-    let isTemporary = url.pathname !== '/view-garden' && url.pathname !== '/view-user-profile';
+    const deployPath = getDeployPath(url);
+    const pathname = url.pathname.replace(deployPath, '');
+    const isTemporary = pathname !== '/view-garden' && pathname !== '/view-user-profile';
 
     if (!validateFile(file)) {
         return;
     }
 
-    const deployPath = getDeployPath();
     let tempImageId = null;
     let fileRequestBody = new FormData();
     fileRequestBody.append('_csrf', getCsrfToken());
