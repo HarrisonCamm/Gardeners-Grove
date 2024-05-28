@@ -52,9 +52,11 @@
             <textarea id="plantDescription"
                       th:name="description"
                       th:text="${description}"
-                      th:classappend="${descriptionError} ? 'error' : ''">
+                      th:classappend="${descriptionError} ? 'error' : ''"
+                      oninput="descriptionLength(this)">
                     </textarea>
             <br/>
+            <div id="descriptionLengthValidation" class="error-message" th:text="${descriptionLengthError}"></div>
             <div th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></div>
             <br/>
             <label for="datePlanted"> Date Planted: </label>
@@ -79,5 +81,15 @@
     </div>
 </div>
 <br/>
+<script>
+    function descriptionLength(input) {
+        let description = input.value;
+        let descriptionLength = input.length;
+        let descriptionLengthWarning = document.getElementById('descriptionLengthValidation');
+        if (descriptionLength > 512) {
+            descriptionLengthWarning.text = "Plant description must be less than 512 characters"
+        }
+    }
+</script>
 </body>
 </html>
