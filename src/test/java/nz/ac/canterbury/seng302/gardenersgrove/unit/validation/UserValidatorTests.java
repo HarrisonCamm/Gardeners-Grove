@@ -276,6 +276,13 @@ public class UserValidatorTests {
     }
 
 
+    /**
+     * Test to verify the password does not contain user details
+     * The test uses various passwords to check if the passwordContainsDetails method correctly identifies passwords
+     *
+     * @param password The password to validate.
+     * @param expected The expected outcome of the validation (true if the password contains user details, false otherwise).
+     */
     @ParameterizedTest
     @CsvSource({
             // Valid Password
