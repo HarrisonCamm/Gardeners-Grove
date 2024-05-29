@@ -79,6 +79,9 @@ public class CreatePlantController {
         if (sessionPlant != null) {
             plant = sessionPlant;
         }
+        if (plant.getImage() == null) {
+            plant.setImage(Image.getTemporaryImage(session));
+        }
         model.addAttribute("gardens", gardenService.getGardens());
         model.addAttribute("plant", plant);
 
@@ -90,8 +93,6 @@ public class CreatePlantController {
         model.addAttribute("description", session.getAttribute("description"));
         model.addAttribute("count", session.getAttribute("count"));
         model.addAttribute("datePlanted", session.getAttribute("datePlanted"));
-
-//        model.addAttribute("imageError", "");
 
         // Remove attributes from the session
         session.removeAttribute("name");
@@ -153,25 +154,6 @@ public class CreatePlantController {
         String formattedDate;
         formattedDate = convertDateFormat(datePlanted);
 
-        Image image = Image.removeTemporaryImage(session, imageService);
-        if (image == null) {
-            try {
-                MultipartFile imageFile = (MultipartFile) session.getAttribute("imageFile");
-                if (imageFile != null) {
-                    image = new Image(imageFile, false);
-                    session.removeAttribute("imageFile");
-                } else {
-                    Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
-                    image = new Image(Files.readAllBytes(imagePath), "png", false);
-                }
-            } catch (Exception e) {
-                logger.error("Failed to set plant image from file", e);
-            }
-        } else {
-            image.makePermanent();
-        }
-        plant.setImage(image);
-
         plant.setCount(plant.getCount().replace(',', '.'));
         plant.setGarden(ownerGarden); // Set the garden for the plant
 
@@ -216,6 +198,25 @@ public class CreatePlantController {
             model.addAttribute("gardenID", gardenID); // Add gardenID to the model before forwarding to error display page
             return "redirect:/create-plant?gardenID=" + gardenID;
         } else {
+            Image image = Image.removeTemporaryImage(session, imageService);
+            if (image == null) {
+                try {
+                    MultipartFile imageFile = (MultipartFile) session.getAttribute("imageFile");
+                    if (imageFile != null) {
+                        image = new Image(imageFile, false);
+                        session.removeAttribute("imageFile");
+                    } else {
+                        Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/leaves-80x80.png").getURI());
+                        image = new Image(Files.readAllBytes(imagePath), "png", false);
+                    }
+                } catch (Exception e) {
+                    logger.error("Failed to set plant image from file", e);
+                }
+            } else {
+                image.makePermanent();
+            }
+            plant.setImage(image);
+
             plantService.addPlant(plant);
             session.removeAttribute("name");
             session.removeAttribute("count");
