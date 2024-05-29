@@ -217,7 +217,7 @@ function validateFile(file, image) {
             errorImage = image;
             defaultImageBorder = errorImage.style.border;
             imageError.textContent = 'Image must be of type jpeg, png, or svg';
-            errorImage.style.border = "2px solid red";
+            errorImage.style.border = "2px solid #DE2929";
         }
         return false;
     } else if (file.size > maxSize) {
@@ -226,7 +226,7 @@ function validateFile(file, image) {
             errorImage = image;
             defaultImageBorder = errorImage.style.border;
             imageError.textContent = 'Image must be less than 10MB';
-            errorImage.style.border = "2px solid red";
+            errorImage.style.border = "2px solid #DE2929";
         }
         return false;
     }

@@ -65,30 +65,32 @@ The application comes with several default users created at startup for testing 
 
 1. Startup User:
     - Username: startup@user.com
-    - Password: password
+    - Password: Password1!
 
 2. Sarah:
     - Username: sarah@email.com
-    - Password: password123
+    - Password: Password1!
 
 3. Inaya Singh:
     - Username: inaya@email.com
-    - Password: password123
+    - Password: Password1!
 
 4. Kaia Pene:
     - Username: kaia@email.com
-    - Password: password123
+    - Password: Password1!
 
 5. Lei Yuan:
     - Username: lei@email.com
-    - Password: password123
+    - Password: Password1!
 
 6. Liam Müller:
     - Username: liam@email.com
-    - Password: password123
+    - Password: Password1!
 
 #### Home Page
-You can access the application by navigating to [http://localhost:8080/home](http://localhost:8080/home)
+You can access the application by navigating to [http://localhost:8080/home](http://localhost:8080/home) if you are running locally.
+
+You can access the application by navigating to [https://csse-seng302-team600.canterbury.ac.nz/prod/](https://csse-seng302-team600.canterbury.ac.nz/prod/) if you are running on the PROD instance.
 
 #### Known Issues and Workarounds
 > You may want to include information here about any known issues and possible workarounds.
@@ -108,15 +110,6 @@ On Windows:
 ```
 gradlew test
 ```
-
-
-## Todo (Sprint 2)
-
-- Update team name into `build.gradle`
-- Update this README title
-- Update this README contributors
-- Set up Gitlab CI server (refer to the student guide on Scrumboard)
-- Decide on a LICENSE
 
 ## Contributors
 
