@@ -60,7 +60,7 @@ public class LocationValidator {
 
     public static FieldError validateCity(String city) {
         if (city == null || city.trim().isEmpty()) {
-            return new FieldError("garden", "location.city", "City cannot be empty");
+            return new FieldError("garden", "location.city", "City is required");
         }
         if (validateWithRegex("^$", city)) {
             return new FieldError("garden", "location.city", "City is required");
@@ -72,7 +72,7 @@ public class LocationValidator {
 
     public static FieldError validateCountry(String country) {
         if (country == null || country.trim().isEmpty()) {
-            return new FieldError("garden", "location.country", "Country cannot be empty");
+            return new FieldError("garden", "location.country", "Country is required");
         }
         if (validateWithRegex("^$", country)) {
             return new FieldError("garden", "location.country", "Country is required");
