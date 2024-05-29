@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.validation;
 import org.springframework.validation.FieldError;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeParseException;
 import java.util.regex.Pattern;
 
@@ -48,8 +49,17 @@ public class PlantValidator {
 
     public static FieldError validatePlantDate(String date) {
         try {
-            LocalDate dob = LocalDate.parse(date);
-            return null;
+            LocalDate datePlanted = LocalDate.parse(date);
+            LocalDate today = LocalDate.now();
+            Period period = Period.between(datePlanted, today);
+            int plantAge = period.getYears();
+            if (plantAge >= 400) {
+                return new FieldError("plant", "datePlanted", "Date planted must be within the past 400 years.");
+            } else if (plantAge < -200) {
+                return new FieldError("plant", "datePlanted", "Date planted must be within the next 200 years.");
+            } else {
+                return null;
+            }
             // Continue with further processing
         } catch (DateTimeParseException e) {
             return new FieldError("plant", "datePlanted", "Date is not in valid format, DD/MM/YYYY");
