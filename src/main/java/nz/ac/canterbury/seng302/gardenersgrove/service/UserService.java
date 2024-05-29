@@ -38,6 +38,16 @@ public class UserService {
     }
 
     /**
+     * Updates User entity in the database.
+     *
+     * @param user the User entity to be updated
+     * @return the User entity
+     */
+    public User updateUser(User user) {
+        return userRepository.save(user);
+    }
+
+    /**
      * Validates the user's email and password.
      *
      * Find a user by their email address.
