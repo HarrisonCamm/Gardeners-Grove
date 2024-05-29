@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -143,15 +144,37 @@ public class UserValidator {
      * @param password users new password that is being validated
      * @return true if the password contains the user's details, false otherwise
      */
+
     public static boolean passwordContainsDetails(User user, String password) {
 
+        // Check for first name
         boolean containsFirstName = password.toLowerCase().contains(user.getFirstName().toLowerCase());
+        // Check for last name, handles no last name case too
         boolean containsLastName = !user.getLastName().isEmpty() && password.toLowerCase().contains(user.getLastName().toLowerCase());
-
+        // Check for email
         boolean containsEmail = password.toLowerCase().contains(user.getEmail().toLowerCase());
 
-        return containsFirstName || containsLastName || containsEmail;
+        // Check for date of birth
+        String dob = user.getDateOfBirth();
+        String formattedDob = convertDateFormat(dob);
+        boolean containsDOB = false;
+        // Handel empty DOB
+        if (!formattedDob.equals("0000-00-00") && !formattedDob.isEmpty()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            try {
+                LocalDate dateOfBirth = LocalDate.parse(dob, formatter);
+                String formattedDobString = dateOfBirth.format(formatter);
+                // Check if the password contains the date of birth
+                containsDOB = password.contains(formattedDobString);
+            } catch (DateTimeParseException e) {
+                // Handle parsing error
+                containsDOB = false;
+            }
+        }
+
+        return containsFirstName || containsLastName || containsEmail || containsDOB;
     }
+
 
     /**
      * Checks if the provided passwords match.

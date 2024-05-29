@@ -61,6 +61,10 @@ public class User {
         this(firstName, lastName, false, email, password, "");
     }
 
+    public User(String email, String firstName, String lastName, String password, String dateOfBirth) {
+        this(firstName, lastName, false, email, password, dateOfBirth);
+    }
+
     public User(String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth) {
         this(null, firstName, lastName, noLastName, email, password, dateOfBirth);
     }
