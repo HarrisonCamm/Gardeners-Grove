@@ -144,7 +144,6 @@ public class UserValidator {
      * @param password users new password that is being validated
      * @return true if the password contains the user's details, false otherwise
      */
-
     public static boolean passwordContainsDetails(User user, String password) {
 
         // Check for first name
