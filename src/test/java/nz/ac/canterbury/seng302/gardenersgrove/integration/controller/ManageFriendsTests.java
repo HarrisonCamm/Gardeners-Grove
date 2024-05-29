@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -88,9 +90,8 @@ public class ManageFriendsTests {
                 .with(csrf())
                     .param("action", "invite")
                     .param("email", testUser.getEmail()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("manageFriendsTemplate"))
-                .andExpect(model().attribute("sentRequests", List.of(friendRequest)));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/manage-friends"));
 
     }
 
@@ -105,9 +106,8 @@ public class ManageFriendsTests {
                         .with(csrf())
                         .param("action", "cancel")
                         .param("email", testUser.getEmail()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("manageFriendsTemplate"))
-                .andExpect(model().attribute("sentRequests", emptyList));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/manage-friends"));
     }
 
     @WithMockUser
@@ -119,9 +119,8 @@ public class ManageFriendsTests {
                         .with(csrf())
                         .param("action", "accept")
                         .param("email", testUser.getEmail()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("manageFriendsTemplate"))
-                .andExpect(model().attribute("friends", friends));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/manage-friends"));
     }
 
     @WithMockUser
@@ -133,8 +132,7 @@ public class ManageFriendsTests {
                         .with(csrf())
                         .param("action", "delete")
                         .param("email", testUser.getEmail()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("manageFriendsTemplate"))
-                .andExpect(model().attribute("friends", friends));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/manage-friends"));
     }
 }
