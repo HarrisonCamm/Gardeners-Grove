@@ -126,7 +126,7 @@ button:hover, .button:hover {
 }
 .buttons-right {
     display: flex;
-    justify-content: flex-end !important;
+    justify-content: flex-end;
 }
 
 .friend-status {
@@ -254,11 +254,11 @@ h2 {
     border-radius: 10px;
     border: solid black 1px;
     width: 700px;
-    height: 95px;
+    height: 60px;
     max-height: 95px;
     overflow: auto;
-    margin: 20px 0 0 0;
-    padding: 10px;
+    margin: 20px 0 20px 0;
+    padding: 20px;
 }
 
 .friend-container-scroll {

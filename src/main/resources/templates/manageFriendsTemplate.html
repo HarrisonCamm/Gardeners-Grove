@@ -9,6 +9,7 @@
     <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
     <script th:src="@{javascript/prevent-enter-submit.js}"></script>
     <script th:src="@{/javascript/hover-enter.js}"></script>
+    <script th:src="@{/javascript/manage-friends.js}"></script>
 </head>
 <body>
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
@@ -52,15 +53,6 @@
                 </div>
             </div>
         </div>
-        <script>
-            function toggleRemoveFriend(){
-                let removeFriendButton = document.getElementById("removeFriend");
-                let confirmRemoveFriendButton = document.getElementById("confirmRemoveFriend");
-
-                removeFriendButton.hidden = !(removeFriendButton.hidden)
-                confirmRemoveFriendButton.hidden = !(confirmRemoveFriendButton.hidden)
-            }
-        </script>
         <div>
             <div>
                 <div class="buttons-centre">
@@ -90,10 +82,15 @@
                             <div th:if="${matchedUsers}" class="results-container" id="results-container">
                                 <ul>
                                     <li th:each="matchedUser : ${matchedUsers}">
-                                        <div>
-                                            <h3 th:text="${matchedUser.firstName + ' - ' + matchedUser.email}"></h3>
-                                            <input type="hidden" name="email" th:value="${matchedUser.email}" />
-                                            <button type="submit" onclick="document.getElementById('action').value='invite'">Invite as Friend</button>
+                                        <div class="friend-form">
+                                            <div class="align-left">
+                                                <h3 th:text="${matchedUser.firstName + ' - ' + matchedUser.email}"></h3>
+                                            </div>
+                                            <div class="empty-space"></div>
+                                            <div class="buttons-right">
+                                                <input type="hidden" name="email" th:value="${matchedUser.email}" />
+                                                <button type="submit" onclick="document.getElementById('action').value='invite'">Invite as Friend</button>
+                                            </div>
                                         </div>
                                     </li>
                                 </ul>
@@ -164,19 +161,5 @@
 
     </div>
 </div>
-<script>
-    function toggleForm() {
-        const form = document.querySelector('.search-container form');
-        form.hidden = !form.hidden;
-    }
-
-    function searchAndShowResults() {
-        document.getElementById('action').value='search';
-        const form = document.querySelector('.search-container form');
-        form.submit();
-        const searchFriend = document.getElementById("searchFriend");
-        searchFriend.hidden = false;
-    }
-</script>
 </body>
 </html>

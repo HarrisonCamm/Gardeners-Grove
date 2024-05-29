@@ -164,7 +164,6 @@ public class ManageFriendsController {
         return "redirect:/manage-friends";
     }
 
-    //TODO: Change to updateUser at some stage + test.
 
     /**
      * Handles the accept request
@@ -211,11 +210,10 @@ public class ManageFriendsController {
         if (currentUser.getFriends().contains(friendToRemove)) {
             // Remove the user from the current user's friend list
             currentUser.removeFriend(friendToRemove);
-            friendToRemove.removeFriend(currentUser);
             userService.addUser(currentUser);
 
             // Optionally, remove the current user from the friendToRemove's friend list
-
+            friendToRemove.removeFriend(currentUser);
             userService.addUser(friendToRemove);
 
             model.addAttribute("removeMessage", "Successfully removed " + friendToRemove.getFirstName() + " from your friends list.");
