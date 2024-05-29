@@ -95,7 +95,10 @@ public class ViewGardenController {
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
-        Plant plant = plantService.findPlant(plantID).get();
+        Optional<Plant> foundPlant = plantService.findPlant(plantID);
+        if (foundPlant.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant with ID " + plantID + " not present");
+        Plant plant = foundPlant.get();
 
         try {
 //            Image image = new Image(file, false);

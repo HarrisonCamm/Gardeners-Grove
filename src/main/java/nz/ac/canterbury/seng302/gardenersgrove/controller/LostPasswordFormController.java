@@ -81,7 +81,6 @@ public class LostPasswordFormController {
             model.addAttribute("confirmationMessage", "An email was sent to the address if it was recognised. \n\nYou can close this tab now.");
 
             if (userService.emailExists(email)) {
-                logger.info("Email is registered in system: " + email);
                 // Create Verification Token
                 User newUser = userService.getUserByEmail(email);
                 newUser.grantAuthority("ROLE_UNVERIFIED");
