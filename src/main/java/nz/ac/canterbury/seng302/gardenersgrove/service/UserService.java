@@ -38,16 +38,6 @@ public class UserService {
     }
 
     /**
-     * Updates User entity in the database.
-     *
-     * @param user the User entity to be updated
-     * @return the User entity
-     */
-    public User updateUser(User user) {
-        return userRepository.save(user);
-    }
-
-    /**
      * Validates the user's email and password.
      *
      * Find a user by their email address.
@@ -91,6 +81,17 @@ public class UserService {
      */
     public User updateUser(User user, String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
         user.setValues(firstName, lastName, noLastName, email, dateOfBirth);
+        return userRepository.save(user);
+    }
+
+    /**
+     * Updates User entity in the database.
+     *
+     * @param user the User entity to be updated
+     * @return the User entity
+     */
+    // TODO refactor code to have singular updateUser
+    public User updateUserFriends(User user) {
         return userRepository.save(user);
     }
 
