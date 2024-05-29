@@ -1,18 +1,24 @@
 package nz.ac.canterbury.seng302.gardenersgrove.unit.service;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
 
@@ -90,6 +96,17 @@ public class UserServiceTest {
     }
 
     @Test
+    public void updateUserPassword_ShouldCorrectlyUpdatePassword() {
+        User testUser = new User("Aroha", "Greenwood", false, "aroha@gmail.com", "1!Password", "2000-11-03");
+        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        User updatedUser = userService.updateUserPassword(testUser, "NewPassword");
+
+        Mockito.verify(userRepository).save(testUser);
+        assertTrue(passwordEncoder.matches("NewPassword", updatedUser.getPassword()));
+    }
+
+    @Test
     public void getUserByEmail_ShouldReturnUserForExistingEmail() {
         User testUser = new User("Aroha", "Greenwood", false, "aroha@gmail.com", "1!Password", "2000-11-03");
         when(userRepository.findByEmail("aroha@gmail.com")).thenReturn(Optional.of(testUser));
@@ -107,5 +124,61 @@ public class UserServiceTest {
 
         User result = userService.getUserByEmail("nonexistent@gmail.com");
         assertNull(result);
+    }
+
+    @Test
+    public void getAuthenicatedUser_ShouldReturnAuthenticatedUser() {
+        User testUser = new User("Aroha", "Greenwood", false, "aroha@gmail.com", "1!Password", "2000-11-03");
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("aroha@gmail.com");
+        when(userRepository.findByEmail("aroha@gmail.com")).thenReturn(Optional.of(testUser));
+        SecurityContextHolder.setContext(securityContext);
+
+        User result = userService.getAuthenicatedUser();
+        assertEquals(testUser, result);
+    }
+
+    @Test
+    public void getUserByID_ShouldReturnUserForExistingID() {
+        User testUser = new User("Aroha", "Greenwood", false, "aroha@gmail.com", "1!Password", "2000-11-03");
+        testUser.setUserId(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        User result = userService.getUserByID(1L);
+        assertEquals(testUser, result);
+
+        result = userService.getUserByID(2L);
+        assertNull(result);
+    }
+
+    @Test
+    public void deleteUser_ShouldCallRepositoryDelete() {
+        User testUser = new User("Aroha", "Greenwood", false, "aroha@gmail.com", "1!Password", "2000-11-03");
+        doNothing().when(userRepository).deleteUser(testUser);
+
+        userService.deleteUser(testUser);
+        verify(userRepository, times(1)).deleteUser(testUser);
+    }
+
+    @Test
+    public void getSentFriendRequests_ShouldReturnFriendRequests() {
+        User testUser = new User("Aroha", "Greenwood", false, "aroha@gmail.com", "1!Password", "2000-11-03");
+        List<FriendRequest> friendRequests = new ArrayList<>();
+        when(userRepository.getSentFriendRequests(testUser.getUserId())).thenReturn(friendRequests);
+
+        List<FriendRequest> result = userService.getSentFriendRequests(testUser);
+        assertEquals(friendRequests, result);
+    }
+
+    @Test
+    public void getPendingFriendRequests_ShouldReturnPendingFriendRequests() {
+        User testUser = new User("Aroha", "Greenwood", false, "aroha@gmail.com", "1!Password", "2000-11-03");
+        List<FriendRequest> friendRequests = new ArrayList<>();
+        when(userRepository.getPendingFriendRequests(testUser.getUserId())).thenReturn(friendRequests);
+
+        List<FriendRequest> result = userService.getPendingFriendRequests(testUser);
+        assertEquals(friendRequests, result);
     }
 }

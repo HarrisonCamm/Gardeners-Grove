@@ -91,8 +91,8 @@
                                    th:value="${oldPassword}"
                                    th:classappend="${oldPasswordError != null ? 'error' : ''}">
                             <!-- Placeholder for Incorrect Old Password Error -->
-                            <div class="password-error-message" th:if="${oldPasswordError}" th:text="${oldPasswordError}"></div>
                             <br/>
+                            <div class="password-error-message" th:if="${oldPasswordError}" th:text="${oldPasswordError}"></div>
                             <br/>
 
                             <!-- New Password Field -->
@@ -104,8 +104,8 @@
                                    th:value="${newPassword}"
                                    th:classappend="${newPasswordError != null ? 'error' : ''}">
                             <!-- Placeholder for New Password Validation Error -->
-                            <div class="password-error-message" th:if="${newPasswordError}" th:text="${newPasswordError}"></div>
                             <br/>
+                            <div class="password-error-message" th:if="${newPasswordError}" th:text="${newPasswordError}"></div>
                             <br/>
 
                             <!-- Retype New Password Field -->
@@ -117,8 +117,8 @@
                                    th:value="${retypePassword}"
                                    th:classappend="${passwordMatchError != null ? 'error' : ''}">
                             <!-- Placeholder for Password Match Error -->
-                            <div class="password-error-message" th:if="${passwordMatchError}" th:text="${passwordMatchError}"></div>
                             <br/>
+                            <div class="password-error-message" th:if="${passwordMatchError}" th:text="${passwordMatchError}"></div>
                             <br/>
 
                             <!-- Submit Changed Password and Cancel Change Password Buttons -->
