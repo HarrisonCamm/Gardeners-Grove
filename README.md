@@ -65,27 +65,27 @@ The application comes with several default users created at startup for testing 
 
 1. Startup User:
     - Username: startup@user.com
-    - Password: password
+    - Password: Password1!
 
 2. Sarah:
     - Username: sarah@email.com
-    - Password: password123
+    - Password: Password1!
 
 3. Inaya Singh:
     - Username: inaya@email.com
-    - Password: password123
+    - Password: Password1!
 
 4. Kaia Pene:
     - Username: kaia@email.com
-    - Password: password123
+    - Password: Password1!
 
 5. Lei Yuan:
     - Username: lei@email.com
-    - Password: password123
+    - Password: Password1!
 
 6. Liam Müller:
     - Username: liam@email.com
-    - Password: password123
+    - Password: Password1!
 
 #### Home Page
 You can access the application by navigating to [http://localhost:8080/home](http://localhost:8080/home)
