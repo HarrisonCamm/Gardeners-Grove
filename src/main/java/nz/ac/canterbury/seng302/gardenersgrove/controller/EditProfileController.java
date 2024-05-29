@@ -172,7 +172,7 @@ public class EditProfileController {
             if (newPassword == null || newPassword.isEmpty()) {
                 model.addAttribute("newPasswordError", PASSWORD_ERROR);
             } else {
-                // Validate the new password strength
+                // Validate the new password strength and check if it contains user details
                 if (!isPasswordValid(newPassword) || passwordContainsDetails(currentUser, newPassword)) {
                     model.addAttribute("newPasswordError", PASSWORD_ERROR);
                 }

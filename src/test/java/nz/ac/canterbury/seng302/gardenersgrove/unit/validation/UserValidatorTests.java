@@ -275,15 +275,39 @@ public class UserValidatorTests {
         assertEquals(expected, isPasswordValid(password));
     }
 
+
+    /**
+     * Test to verify the password does not contain user details
+     * The test uses various passwords to check if the passwordContainsDetails method correctly identifies passwords
+     *
+     * @param password The password to validate.
+     * @param expected The expected outcome of the validation (true if the password contains user details, false otherwise).
+     */
     @ParameterizedTest
-    @ValueSource(strings = {
-            "test@email.com1234!!!", // Email in password
-            "john1234!!!@#@$#% ", // First name in password
-            " Doe12345SDFGS342562*__)) " }) // Last name in password
-    public void testUserDetailsInPassword(String password) {
+    @CsvSource({
+            // Valid Password
+            "Passw0rd@, false",
 
-        User user = new User("test@email.com", "John", "Doe", password);
+            // Invalid with form information at start
+            "JohnPassw0rd@, true", // Contains first name
+            "DoePassw0rd@, true", // Contains last name
+            "john.doe@email.comPassw0rd@, true", // Contains email
+            "17/10/2003Passw0rd@, true", // Contains DOB
 
-        assertTrue(passwordContainsDetails(user, password));
+            // Invalid with form information in the middle
+            "PassJohnw0rd@, true", // Contains first name
+            "PassDoew0rd@, true", // Contains last name
+            "Passjohn.doe@email.comw0rd@, true", // Contains email
+            "Pass17/10/2003w0rd@, true", // Contains DOB
+
+            // Invalid with form information at the end
+            "Passw0rd@John, true", // Contains first name
+            "Passw0rd@Doe, true", // Contains last name
+            "Passw0rd@john.doe@email.com, true", // Contains email
+            "Passw0rd@17/10/2003, true", // Contains DOB
+    })
+    public void testPasswordContainsDetails(String password, boolean expected) {
+        User user = new User("john.doe@email.com", "John", "Doe", "Passw0rd@", "17/10/2003");
+        assertEquals(expected, passwordContainsDetails(user, password));
     }
 }
