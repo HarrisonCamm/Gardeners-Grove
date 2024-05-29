@@ -1,93 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <title>View Garden</title>
-    <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
-    <link th:href="@{/css/navBar.css}" rel="stylesheet">
-    <script th:src="@{/javascript/image-handling.js}"></script>
-</head>
-<body>
-<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-<div class="wrapper">
-    <div class="container">
-        <table class="sideBar">
-            <thead>
-            <tr>
-                <th class="garden-header">Gardens</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="garden : ${gardens}">
-                <td><a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
-                    <span th:text="${#strings.abbreviate(garden.name,10)}"> Name </span></a></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="gardenContainer">
-        <div class="gardenDetails">
-            <div class="containerRow">
-                <label></label>
-                <h3 th:text="${gardenName}">  </h3>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <title>View Garden</title>
+        <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
+        <link th:href="@{/css/navBar.css}" rel="stylesheet">
+        <script th:src="@{/javascript/image-handling.js}"></script>
+    </head>
+    <body>
+        <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+        <div class="wrapper">
+            <div class="container">
+                <table class="sideBar">
+                    <thead>
+                        <tr>
+                            <th class="garden-header">Gardens</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="garden : ${gardens}">
+                            <td>
+                                <a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
+                                    <span th:text="${#strings.abbreviate(garden.name,10)}"> Name </span>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="containerRow">
-                <label></label>
-                <h3 th:text="${gardenLocation}">  </h3>
-            </div>
-            <div class="containerRow" th:classappend="${gardenSize == '' ? 'disabled' : ''}">
-                <label></label>
-                <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
-            </div>
-            <div class="buttons-right">
-                <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}">
-                    <button type="button">Edit</button>
-                </a>
-                &nbsp;
-                <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}">
-                    <button type="button">Add new plant</button>
-                </a>
+            <div class="gardenContainer">
+                <div class="gardenDetails">
+                    <div class="containerRow">
+                        <label></label>
+                        <h3 th:text="${gardenName}">  </h3>
+                    </div>
+                    <div class="containerRow">
+                        <label></label>
+                        <h3 th:text="${gardenLocation}">  </h3>
+                    </div>
+                    <div class="containerRow" th:classappend="${gardenSize == '' ? 'disabled' : ''}">
+                        <label></label>
+                        <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
+                    </div>
+                    <div class="buttons-right">
+                        <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}">
+                            <button type="button">Edit</button>
+                        </a>
+                        &nbsp;
+                        <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}">
+                            <button type="button">Add new plant</button>
+                        </a>
+                    </div>
+                    <div>
+                        <div id="imageError" class="error-message"></div>
+                    </div>
+                </div>
+                <div class="plantContainer">
+                    <table>
+                        <thead>
+                            <tr class="garden-table">
+                                <th>Picture &nbsp;</th>
+                                <th>Plant Name &nbsp;</th>
+                                <th>Count &nbsp;</th>
+                                <th>Description &nbsp;</th>
+                                <th>Date Planted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="plant : ${plants}" class="plant-row">
+                                <td>
+                                    <div class="image-icon-div-small">
+                                        <div class="image-upload">
+                                            <img class="image-small"
+                                                 th:id="${plant.id}" th:data-plant-id="${plant.id}"
+                                                 th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
+                                            <input th:value="imagePath" class="file-input" type="file" name="file" id="file">
+                                            <button class="image-picker-small" th:image-button-id="${plant.id}">+</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${plant.name}"></td>
+                                <td th:text="${plant.count}"></td>
+                                <td th:text="${plant.description}"></td>
+                                <td th:text="${plant.datePlanted}"></td>
+                                <td>
+                                    <a th:href="@{'/edit-plant?plantID=' + ${plant.id}}">
+                                        <button type="button">Edit</button>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        <div class="plantContainer">
-            <table>
-                <thead>
-                <tr class="garden-table">
-                    <th>Picture &nbsp;</th>
-                    <th>Plant Name &nbsp;</th>
-                    <th>Count &nbsp;</th>
-                    <th>Description &nbsp;</th>
-                    <th>Date Planted</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="plant : ${plants}" class="plant-row">
-                    <td>
-                        <div class="image-icon-div-small">
-                            <div class="image-upload">
-                                <img class="image-small"
-                                     th:id="${plant.id}" th:data-plant-id="${plant.id}"
-                                     th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
-                                <input th:value="imagePath" class="file-input" type="file" name="file" id="file">
-                                <button class="image-picker-small" th:image-button-id="${plant.id}">+</button>
-                            </div>
-                        </div>
-                    </td>
-                    <td th:text="${plant.name}"></td>
-                    <td th:text="${plant.count}"></td>
-                    <td th:text="${plant.description}"></td>
-                    <td th:text="${plant.datePlanted}"></td>
-                    <td><a th:href="@{'/edit-plant?plantID=' + ${plant.id}}">
-                        <button type="button">Edit</button>
-                    </a></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-</body>
+    </body>
 </html>
 
 <script>
