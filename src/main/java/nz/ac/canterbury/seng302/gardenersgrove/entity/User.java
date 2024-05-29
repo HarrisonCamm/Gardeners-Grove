@@ -197,7 +197,38 @@ public class User {
         friends.add(acceptedFriend);
     }
 
+    /**
+     * Removes a friend from the user's friend list.
+     * @param friendToRemove The user to be removed from the friends list.
+     */
+    public void removeFriend(User friendToRemove) {
+
+        friends.removeIf(friend -> friend.equals(friendToRemove));
+
+    }
+
     public List<User> getFriends() {
         return friends;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

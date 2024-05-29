@@ -45,6 +45,8 @@ public class ManageFriendsController {
 
         User currentUser = userService.getAuthenicatedUser();
 
+        model.addAttribute("removeFriendButton", true);
+        
         return addAttributes(model, currentUser);
     }
 
@@ -68,6 +70,7 @@ public class ManageFriendsController {
             case "cancel" -> handleCancelRequest(email, model);
             case "accept" -> handleAcceptRequest(email, model);
             case "delete" -> handleRejectRequest(email, model);
+            case "remove" -> handleRemoveRequest(email, model);
             default -> "manageFriendsTemplate"; // Should never reach this
 
         };
@@ -123,7 +126,7 @@ public class ManageFriendsController {
         FriendRequest friendRequest = new FriendRequest(currentUser, invitedUser);
         friendRequestService.save(friendRequest);
 
-        return addAttributes(model, currentUser);
+        return "redirect:/manage-friends";
     }
 
     /**
@@ -140,7 +143,7 @@ public class ManageFriendsController {
 
         friendRequestService.cancelRequest(currentUser, canceledUser);
 
-        return addAttributes(model, currentUser);
+        return "redirect:/manage-friends";
 
     }
 
@@ -158,8 +161,9 @@ public class ManageFriendsController {
 
         friendRequestService.rejectRequest(currentUser, rejectedUser);
 
-        return addAttributes(model, currentUser);
+        return "redirect:/manage-friends";
     }
+
 
     /**
      * Handles the accept request
@@ -187,8 +191,39 @@ public class ManageFriendsController {
         }
 
 
-        return addAttributes(model, currentUser);
+        return "redirect:/manage-friends";
     }
+
+
+    /**
+     * Handles the request to remove a friend.
+     * @param email the email of the user to be removed as a friend
+     * @param model the model to add attributes to
+     * @return the template to be rendered
+     */
+    private String handleRemoveRequest(String email, Model model) {
+        logger.info("POST /manage-friends (remove)");
+
+        User currentUser = userService.getAuthenicatedUser();
+        User friendToRemove = userService.getUserByEmail(email);
+        // Check if the user to remove is indeed a friend
+        if (currentUser.getFriends().contains(friendToRemove)) {
+            // Remove the user from the current user's friend list
+            currentUser.removeFriend(friendToRemove);
+            userService.addUser(currentUser);
+
+            // Optionally, remove the current user from the friendToRemove's friend list
+            friendToRemove.removeFriend(currentUser);
+            userService.addUser(friendToRemove);
+
+            model.addAttribute("removeMessage", "Successfully removed " + friendToRemove.getFirstName() + " from your friends list.");
+        } else {
+            model.addAttribute("removeMessage", "No such friend found in your friends list.");
+        }
+
+        return "redirect:/manage-friends";
+    }
+
 
     private String addAttributes(Model model, User currentUser) {
         List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
