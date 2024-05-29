@@ -9,9 +9,9 @@ public class UserEntityTest {
 
     @Test
     public void toString_ReturnsCorrectFormat() {
-        User user = new User("John", "Doe", false, "john.doe@example.com", "password123", "1990-01-01");
+        User user = new User("John", "Doe", false, "john.doe@example.com", "Password1!", "01/01/1990");
         user.setUserId(1L);
-        String expected = "User[id=1, firstName='John', lastName='Doe', email='john.doe@example.com', password='password123', dateOfBirth='1990-01-01']";
+        String expected = "User[id=1, firstName='John', lastName='Doe', email='john.doe@example.com', password='Password1!', dateOfBirth='01/01/1990']";
         assertEquals(expected, user.toString());
     }
 

@@ -85,6 +85,17 @@ public class UserService {
     }
 
     /**
+     * Updates User entity in the database.
+     *
+     * @param user the User entity to be updated
+     * @return the User entity
+     */
+    // TODO refactor code to have singular updateUser
+    public User updateUserFriends(User user) {
+        return userRepository.save(user);
+    }
+
+    /**
      * Updates the password of a given user.
      *
      * @param user        The user whose password is to be updated.

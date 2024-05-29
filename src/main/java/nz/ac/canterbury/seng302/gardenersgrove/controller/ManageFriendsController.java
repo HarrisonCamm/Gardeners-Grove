@@ -185,14 +185,12 @@ public class ManageFriendsController {
         // Add each user to the other's friends list
         if (!currentUser.getFriends().contains(acceptedFriend)) {
             currentUser.addFriend(acceptedFriend);
-            userService.addUser(currentUser);
+            userService.updateUserFriends(currentUser);
         }
         if (!acceptedFriend.getFriends().contains(currentUser)) {
             acceptedFriend.addFriend(currentUser);
-            userService.addUser(acceptedFriend);
+            userService.updateUserFriends(acceptedFriend);
         }
-
-
         return "redirect:/manage-friends";
     }
 
@@ -212,11 +210,11 @@ public class ManageFriendsController {
         if (currentUser.getFriends().contains(friendToRemove)) {
             // Remove the user from the current user's friend list
             currentUser.removeFriend(friendToRemove);
-            userService.addUser(currentUser);
+            userService.updateUserFriends(currentUser);
 
             // Optionally, remove the current user from the friendToRemove's friend list
             friendToRemove.removeFriend(currentUser);
-            userService.addUser(friendToRemove);
+            userService.updateUserFriends(friendToRemove);
 
             model.addAttribute("removeMessage", "Successfully removed " + friendToRemove.getFirstName() + " from your friends list.");
         } else {
