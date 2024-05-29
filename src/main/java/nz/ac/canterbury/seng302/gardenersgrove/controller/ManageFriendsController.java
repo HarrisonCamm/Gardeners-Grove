@@ -46,6 +46,8 @@ public class ManageFriendsController {
         User currentUser = userService.getAuthenicatedUser();
 
         model.addAttribute("removeFriendButton", true);
+
+        showSearch = true;
         
         return addAttributes(model, currentUser);
     }
