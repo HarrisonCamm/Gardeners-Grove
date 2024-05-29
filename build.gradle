@@ -11,12 +11,12 @@ plugins {
 // Select what reports Jacoco generates and where to put them
 jacocoTestReport {
 	reports {
-		xml.required=true
+		xml.required = true
 		xml.outputLocation = file("${buildDir}/jacoco/test-report.xml")
 
-		csv.required=false
+		csv.required = false
 
-		html.outputLocation=file("${buildDir}/jacoco/html")
+		html.outputLocation = file("${buildDir}/jacoco/html")
 	}
 }
 
@@ -28,6 +28,9 @@ sonarqube {
 		property "sonar.host.url", "https://sonarqube.csse.canterbury.ac.nz"
 		property "sonar.login", "$System.env.SONARQUBE_TOKEN"
 		property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/jacoco/test-report.xml"
+		// TODO TEST THIS SPRINT 4
+		//property "sonar.java.source", "17"
+		//property "sonar.java.target", "17"
 	}
 }
 
@@ -60,11 +63,10 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 
-	//Cucumber dependencies
+	// Cucumber dependencies
 	testImplementation 'io.cucumber:cucumber-java:7.15.0'
 	testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.15.0'
 	testImplementation 'org.junit.platform:junit-platform-suite:1.10.2'
-
 }
 
 tasks.named('test') {
