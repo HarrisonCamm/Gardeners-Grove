@@ -37,6 +37,13 @@ public class GardenValidatorTests {
     }
 
     @ParameterizedTest
+    @CsvSource({"Cool, Garden", "Garden,123", "John,Doe", "   Garden,Cool,Name,Aakrista   ",})
+    public void ValidatingGardenLocation_IncludesComma_Valid( String gardenName) {
+        ObjectError objectError = GardenValidator.validateGardenName(gardenName);
+        assertNull(objectError);
+    }
+
+    @ParameterizedTest
     @CsvSource({"Cool Garden", "Garden123", "John Doe", "   Garden   ",})
     public void ValidatingGardenName_NonEmptyStrings_Valid(String gardenName) {
         ObjectError objectError = GardenValidator.validateGardenName(gardenName);

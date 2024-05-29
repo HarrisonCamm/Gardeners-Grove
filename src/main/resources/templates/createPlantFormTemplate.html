@@ -8,12 +8,13 @@
     <script th:src="@{javascript/enter-date.js}"></script>
     <script th:src="@{javascript/prevent-enter-submit.js}"></script>
     <script th:src="@{/javascript/image-handling.js}"></script>
+    <script th:src="@{/javascript/description-length.js}"></script>
 </head>
 <body>
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 <br/>
 <div class="form">
-    <h1>Create Plant</h1>
+    <h2>Create Plant</h2>
     <div class="image-icon-div">
         <div class="image-upload">
             <img class="image" th:if="${plant.image != null}" th:data-plant-id="${plant.id}"
@@ -52,10 +53,11 @@
             <textarea id="plantDescription"
                       th:name="description"
                       th:text="${description}"
-                      th:classappend="${descriptionError} ? 'error' : ''">
+                      th:classappend="${descriptionError} ? 'error' : ''"
+                      oninput="descriptionLength(this)">
                     </textarea>
             <br/>
-            <div th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></div>
+            <div id="descriptionLengthValidation" class="error-message" th:text="${descriptionError}"></div>
             <br/>
             <label for="datePlanted"> Date Planted: </label>
             <br/>

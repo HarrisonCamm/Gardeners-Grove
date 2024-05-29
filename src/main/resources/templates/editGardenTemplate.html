@@ -31,7 +31,7 @@
     <br/>
     <div class="form">
 
-        <h1>Edit Garden</h1>
+        <h2>Edit Garden</h2>
         <div class="formContainer">
             <form th:action="@{'/edit-garden?gardenID=' + ${id}}" method="post" th:object="${garden}">
                 <input type="hidden" name="_method" value="PUT">
