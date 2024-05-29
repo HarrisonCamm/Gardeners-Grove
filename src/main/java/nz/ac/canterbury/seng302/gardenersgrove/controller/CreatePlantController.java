@@ -239,7 +239,11 @@ public class CreatePlantController {
                               @RequestParam("file") MultipartFile file,
                               HttpSession session) {
         logger.info("POST /create-plant-picture");
-        Garden garden = gardenService.findGarden(gardenID).get();
+        Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
+        if (foundGarden.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
+        }
+        Garden garden = foundGarden.get();
 
         Plant plant = new Plant(garden, "", "", "", "", Image.getTemporaryImage(session));
 

@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * This controller handles the MVC part of the upload image page and also gets an image for a plant
@@ -132,14 +133,22 @@ public class UploadImageController {
 
         //Add cases for required image (plant or user)
         if (temporary) {
-            image = imageService.findImage(imageID).get();
+            Optional<Image> foundImage = imageService.findImage(imageID);
+            if (foundImage.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found");
+            }
+            image = foundImage.get();
             if (image.getExpiryDate() == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image is not temporary");
             }
             model.addAttribute("id", imageID);
             model.addAttribute("picture", image.getData());
         } else if (!viewUser && !editUserProfile) {
-            Plant plant = plantService.findPlant(plantID).get();
+            Optional<Plant> foundPlant = plantService.findPlant(plantID);
+            if (foundPlant.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant not found");
+            }
+            Plant plant = foundPlant.get();
             image = plant.getImage();
             model.addAttribute("id", plantID);
             model.addAttribute("picture", image.getData());

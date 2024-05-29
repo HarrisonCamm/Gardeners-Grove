@@ -92,7 +92,7 @@ public class ManageFriendsController {
         List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
 
         for (FriendRequest request : sentFriendRequests) {
-            if (request.getStatus() == "Declined" && searchedUsers.contains(request.getReceiver())) {
+            if (request.getStatus().equals("Declined") && searchedUsers.contains(request.getReceiver())) {
                 searchedUsers.remove(request.getReceiver());
             }
         }
