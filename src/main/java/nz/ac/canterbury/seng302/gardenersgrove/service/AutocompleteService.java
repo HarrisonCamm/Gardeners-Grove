@@ -25,21 +25,21 @@ public class AutocompleteService {
 
     public HttpResponse<String> getApiResults(String inputText) throws IOException, InterruptedException {
         HttpResponse<String> response;
-        try (HttpClient httpClient = HttpClient.newHttpClient()) {
-            String url = "https://api.geoapify.com/v1/geocode/autocomplete";
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                    .queryParam("text", inputText)
-                    .queryParam("format", "json")
-                    .queryParam("limit", LIMIT)
-                    .queryParam("apiKey", apiKey);
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String url = "https://api.geoapify.com/v1/geocode/autocomplete";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("text", inputText)
+                .queryParam("format", "json")
+                .queryParam("limit", LIMIT)
+                .queryParam("apiKey", apiKey);
 
-            logger.info("API URL: " + builder.toUriString());
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(builder.toUriString()))
-                    .header("Content-Type", "application/json")
-                    .build();
-            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        }
+        logger.info("API URL: " + builder.toUriString());
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(builder.toUriString()))
+                .header("Content-Type", "application/json")
+                .build();
+        response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
         return response;
     }
 
