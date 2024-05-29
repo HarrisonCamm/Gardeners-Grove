@@ -189,8 +189,6 @@ public class ManageFriendsController {
             acceptedFriend.addFriend(currentUser);
             userService.updateUser(acceptedFriend);
         }
-
-
         return "redirect:/manage-friends";
     }
 
