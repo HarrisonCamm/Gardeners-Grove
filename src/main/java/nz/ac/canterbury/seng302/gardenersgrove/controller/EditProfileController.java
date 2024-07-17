@@ -242,7 +242,7 @@ public class EditProfileController {
                 String emailAddress = currentUser.getEmail();
                 String emailSubject = "Password Change Confirmation";
                 String emailText = "Dear " + currentUser.getFirstName() + ",\n\n" +
-                        "Your password has been successfully updated. If you did not make this change, please contact support immediately.\n\n" +
+                        "Your password has been successfully updated. If you did not make this change, your account is at risk and you should contact s302team600@cosc.canterbury.ac.nz .\n\n" +
                         "Best,\n" +
                         "The Gardener's Grove Team";
 
