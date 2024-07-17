@@ -37,6 +37,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 @WebMvcTest
 public class EditGardenTests {
 
+    private static final String SURFACE_AREA_OF_EARTH = "510100000";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -105,7 +107,7 @@ public class EditGardenTests {
     @WithMockUser
     @CsvSource({
             "325, My Garden, 12.00009123",
-            "211, Tomato's, " + Long.MAX_VALUE,
+            "211, Tomato's, " + SURFACE_AREA_OF_EARTH,
             "1955, Bob, ''",
     })
     public void PutForm_WithValidFields_Success(Long gardenID, String gardenName, String gardenSize) throws Exception {
