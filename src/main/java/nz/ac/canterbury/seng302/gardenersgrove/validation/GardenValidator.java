@@ -68,15 +68,21 @@ public class GardenValidator {
      * @return object error if there is an error otherwise null
      */
     public static FieldError validateSize(String size) {
+        double sizeOfEarth = 510100000;
         if (!size.isEmpty()
-                && ((!validateWithRegex("[1-9]+[[\\.,]?([0-9]+)]$", size)
-                && !validateWithRegex("[0]*([\\.,]?[0-9]+)+$", size))
-                || validateWithRegex("[0]*([\\.,]?[0]+)*$", size))
-                || validateWithRegex("^(?=.*[.,].*[.,]).*$", size)) {
+                && ((!validateWithRegex("[1-9]+[[\\.,]?([0-9]+)]$", size)   // Checks for digits 1-9 followed by optional comma or period and digits
+                && !validateWithRegex("[0]*([\\.,]?[0-9]+)+$", size))       // Checks for optional leading zeros, comma/period, and digits
+                || validateWithRegex("[0]*([\\.,]?[0]+)*$", size))          // Checks for zeros or decimal format with optional zeros
+                || validateWithRegex("^(?=.*[.,].*[.,]).*$", size)) {       // Checks if there are at least two commas or periods
             return new FieldError("garden", "size", "Garden size must be a positive number");
+        }
+
+        if (Double.parseDouble(size.replace(",", ".")) > sizeOfEarth) {
+            return new FieldError("garden", "size", "Garden cannot be bigger than the earth");
         }
         return null;
     }
+
 
 
     /**
