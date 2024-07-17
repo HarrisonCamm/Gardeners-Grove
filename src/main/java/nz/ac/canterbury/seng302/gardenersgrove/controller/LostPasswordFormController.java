@@ -89,7 +89,7 @@ public class LostPasswordFormController {
                 // Create confirmation email
                 String emailSubject = "Reset Your Password for Gardener's Grove";
 
-                String emailURL = String.valueOf(request.getRequestURL()).replace("lost-password-form", "");
+                String emailURL = String.valueOf(request.getRequestURI()).replace("lost-password-form", "");
                 String emailText = generateResetPasswordEmail(verificationToken, newUser, emailURL);
 
                 model.addAttribute("emailText", emailText); // For testing purposes :)
