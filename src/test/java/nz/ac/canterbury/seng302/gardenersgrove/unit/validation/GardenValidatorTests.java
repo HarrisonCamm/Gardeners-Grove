@@ -23,7 +23,7 @@ public class GardenValidatorTests {
     }
 
     @ParameterizedTest
-    @CsvSource({"#Garden", "&&Garden", "Nice_Garden", "Cool._.Garden"})
+    @CsvSource({"#Garden", "&&Garden", "Nice_Garden", "Cool._.Garden", "Hype()"})
     public void ValidatingGardenName_NonEmptyStrings_Invalid(String gardenName) {
         ObjectError objectError = GardenValidator.validateGardenName(gardenName);
         assertNotNull(objectError);
@@ -44,7 +44,16 @@ public class GardenValidatorTests {
     }
 
     @ParameterizedTest
-    @CsvSource({"Cool Garden", "Garden123", "John Doe", "   Garden   ",})
+    @CsvSource({"Cool Garden",
+            "Garden123",
+            "John Doe",
+            "   Garden   ",
+            "Oliver is cool-",
+            "'Oliver is cool'",
+            "-Oliver",
+            "Oli-ver",
+            "Oli'ver"
+        })
     public void ValidatingGardenName_NonEmptyStrings_Valid(String gardenName) {
         ObjectError objectError = GardenValidator.validateGardenName(gardenName);
         assertNull(objectError);

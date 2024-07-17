@@ -17,17 +17,15 @@ public class GardenValidator {
      * @return object error if there is an error otherwise null
      */
     public static FieldError validateGardenName(String name) {
-        if (name.trim().isEmpty()) {
+        if (name == null || name.trim().isEmpty()) {
             return new FieldError("garden", "name", "Garden name cannot be empty");
         } else if (name.length() > 255) {
             return new FieldError("garden", "name", "Garden name must be under 255 characters");
-        } else if (!validateWithRegex("[0-9\\p{L}\\s'-,.]+", name)) {
+        } else if (!validateWithRegex("[\\p{L}\\d\\s'\\-.,]+", name)) {
             return new FieldError("garden", "name", "Garden name must only include letters, numbers, spaces, dots, hyphens, or apostrophes");
         }
         return null;
     }
-
-
 
     /**
      * Validates a garden's location

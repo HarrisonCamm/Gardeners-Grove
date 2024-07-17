@@ -102,7 +102,7 @@ public class CreateGardenController {
         Garden garden = new Garden(gardenName, gardenLocation, gardenSize);
         garden.setOwner(currentUser);
 
-        // Perform validation
+        // Perform validation, get back all errors
         ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize);
 
         addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize);
@@ -131,9 +131,13 @@ public class CreateGardenController {
      */
     public ArrayList<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize) {
 
+        // List for all the errors
         ArrayList<FieldError> errors = new ArrayList<>();
 
+        // Validates Garden Name
         FieldError nameError = validateGardenName(gardenName);
+
+        // Check for name error and display
         if (nameError != null) {
             errors.add(nameError);
         }
