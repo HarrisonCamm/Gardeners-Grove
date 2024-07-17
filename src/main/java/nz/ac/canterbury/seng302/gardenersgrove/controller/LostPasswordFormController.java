@@ -95,7 +95,7 @@ public class LostPasswordFormController {
                 String emailURI = String.valueOf(request.getRequestURI()).replace("lost-password-form", "");
                 String emailText = generateResetPasswordEmail(verificationToken, newUser, emailURI, emailURL);
 
-                model.addAttribute("emailText", emailText); // For testing purposes :)
+                model.addAttribute("emailText", emailText); // used for cucumber tests
 
 
                 // Try to send confirmation email
@@ -120,7 +120,6 @@ public class LostPasswordFormController {
         } else {
             tokenLink = "https://csse-seng302-team600.canterbury.ac.nz" + emailURI + "reset-password-form?token=" + verificationToken.getToken();
         }
-//        String tokenLink = emailURL + "reset-password-form?token=" + verificationToken.getToken();
 
         String emailText = "Dear " + newUser.getFirstName() + ",\n\n" +
                 "To reset your password, please use the following link:\n\n" +
