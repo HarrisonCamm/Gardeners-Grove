@@ -89,7 +89,8 @@ public class LostPasswordFormController {
                 // Create confirmation email
                 String emailSubject = "Reset Your Password for Gardener's Grove";
 
-                String emailText = generateResetPasswordEmail(verificationToken, newUser);
+                String emailURL = String.valueOf(request.getRequestURL()).replace("lost-password-form", "");
+                String emailText = generateResetPasswordEmail(verificationToken, newUser, emailURL);
 
                 model.addAttribute("emailText", emailText); // For testing purposes :)
 
@@ -109,8 +110,8 @@ public class LostPasswordFormController {
         }
     }
 
-    public static String generateResetPasswordEmail(VerificationToken verificationToken, User newUser) {
-        String tokenLink = "http://localhost:8080/reset-password-form?token=" + verificationToken.getToken();
+    public static String generateResetPasswordEmail(VerificationToken verificationToken, User newUser, String emailURL) {
+        String tokenLink = emailURL + "reset-password-form?token=" + verificationToken.getToken();
 
         String emailText = "Dear " + newUser.getFirstName() + ",\n\n" +
                 "To reset your password, please use the following link:\n\n" +
