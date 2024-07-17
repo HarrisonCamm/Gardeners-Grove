@@ -230,7 +230,7 @@ public class ResetPasswordSteps {
     //AC5
     @When("I go to the given URL passed in the email")
     public void i_go_to_the_given_url_passed_in_the_email() throws Exception {
-        String emailText = LostPasswordFormController.generateResetPasswordEmail(verificationToken, userService.getUserByEmail(enteredEmail), "URL");
+        String emailText = LostPasswordFormController.generateResetPasswordEmail(verificationToken, userService.getUserByEmail(enteredEmail), "URI", "URL");
         Pattern pattern = Pattern.compile("(reset-password-form)\\?token=(\\w+)");
         Matcher matcher = pattern.matcher(emailText);
         String path = "";

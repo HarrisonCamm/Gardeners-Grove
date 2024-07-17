@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Objects;
+
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.UserValidator.isEmailValid;
 
 /**
@@ -90,7 +92,8 @@ public class LostPasswordFormController {
                 String emailSubject = "Reset Your Password for Gardener's Grove";
 
                 String emailURL = String.valueOf(request.getRequestURL()).replace("lost-password-form", "");
-                String emailText = generateResetPasswordEmail(verificationToken, newUser, emailURL);
+                String emailURI = String.valueOf(request.getRequestURI()).replace("lost-password-form", "");
+                String emailText = generateResetPasswordEmail(verificationToken, newUser, emailURI, emailURL);
 
                 model.addAttribute("emailText", emailText); // For testing purposes :)
 
@@ -110,8 +113,14 @@ public class LostPasswordFormController {
         }
     }
 
-    public static String generateResetPasswordEmail(VerificationToken verificationToken, User newUser, String emailURL) {
-        String tokenLink = emailURL + "reset-password-form?token=" + verificationToken.getToken();
+    public static String generateResetPasswordEmail(VerificationToken verificationToken, User newUser, String emailURI, String emailURL) {
+        String tokenLink = "";
+        if (Objects.equals(emailURI, "/")) {
+            tokenLink = emailURL + "reset-password-form?token=" + verificationToken.getToken();
+        } else {
+            tokenLink = "https://csse-seng302-team600.canterbury.ac.nz" + emailURI + "reset-password-form?token=" + verificationToken.getToken();
+        }
+//        String tokenLink = emailURL + "reset-password-form?token=" + verificationToken.getToken();
 
         String emailText = "Dear " + newUser.getFirstName() + ",\n\n" +
                 "To reset your password, please use the following link:\n\n" +
