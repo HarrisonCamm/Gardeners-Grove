@@ -67,6 +67,13 @@ dependencies {
 	testImplementation 'io.cucumber:cucumber-java:7.15.0'
 	testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.15.0'
 	testImplementation 'org.junit.platform:junit-platform-suite:1.10.2'
+
+//	// for Azure moderation
+//	implementation "com.microsoft.azure.cognitiveservices:1.0.2-beta"
+//	implementation "com.google.code.gson:2.8.5"
+
+	implementation 'com.microsoft.azure.cognitiveservices:azure-cognitiveservices-contentmoderator:1.0.2-beta'
+	implementation 'com.google.code.gson:gson:2.8.5'
 }
 
 tasks.named('test') {
