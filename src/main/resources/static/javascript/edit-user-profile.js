@@ -31,6 +31,12 @@ function toggleChangePasswordForm(showForm) {
     }
 }
 
+function changePassword() {
+    let editProfileForm = document.getElementById('editProfileForm');
+    editProfileForm.action = '/edit-user-profile-password';
+    editProfileForm.submit();
+}
+
 window.onload = function() {
     let changePasswordFormInput = document.getElementById('changePasswordFormInput');
     let showForm = changePasswordFormInput.value === 'true';

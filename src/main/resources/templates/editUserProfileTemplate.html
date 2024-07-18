@@ -30,7 +30,7 @@
                 <div>
                     <div id="imageError" class="error-message"></div>
 
-                    <form class="hasImage" th:action="@{/edit-user-profile}" method="post" novalidate>
+                    <form id="editProfileForm" class="hasImage" th:action="@{/edit-user-profile}" method="post" novalidate>
                         <label for="firstName"> First Name:
                             <span class="required-input"> * </span>
                         </label>
@@ -81,52 +81,60 @@
                                th:value="${changePasswordFormInput}" >
                         <!-- Hidden Change Password Form -->
                         <div id="changePasswordForm" th:hidden="${!changePasswordFormInput}">
+<!--                            <form id="changePasswordForm" th:action="@{/edit-user-profile}" method="post">-->
+<!--                                <input type="hidden" name="_method" value="PATCH">-->
 
-                            <!-- Old Password Field -->
-                            <label for="oldPassword">Old Password:
-                                <span class="required-input"> * </span>
-                            </label>
-                            <br/>
-                            <input type="password" id="oldPassword" name="oldPassword" class="form-control"
-                                   th:value="${oldPassword}"
-                                   th:classappend="${oldPasswordError != null ? 'error' : ''}">
-                            <!-- Placeholder for Incorrect Old Password Error -->
-                            <br/>
-                            <div class="password-error-message" th:if="${oldPasswordError}" th:text="${oldPasswordError}"></div>
-                            <br/>
+                                <!-- Old Password Field -->
+                                <label for="oldPassword">Old Password:
+                                    <span class="required-input"> * </span>
+                                </label>
+                                <br/>
+                                <input type="password" id="oldPassword" name="oldPassword" class="form-control"
+                                       th:value="${oldPassword}"
+                                       th:classappend="${oldPasswordError != null ? 'error' : ''}">
+                                <!-- Placeholder for Incorrect Old Password Error -->
+                                <br/>
+                                <div class="password-error-message" th:if="${oldPasswordError}" th:text="${oldPasswordError}"></div>
+                                <br/>
 
-                            <!-- New Password Field -->
-                            <label for="newPassword">New Password:
-                                <span class="required-input"> * </span>
-                            </label>
-                            <br/>
-                            <input type="password" id="newPassword" name="newPassword" class="form-control"
-                                   th:value="${newPassword}"
-                                   th:classappend="${newPasswordError != null ? 'error' : ''}">
-                            <!-- Placeholder for New Password Validation Error -->
-                            <br/>
-                            <div class="password-error-message" th:if="${newPasswordError}" th:text="${newPasswordError}"></div>
-                            <br/>
+                                <!-- New Password Field -->
+                                <label for="newPassword">New Password:
+                                    <span class="required-input"> * </span>
+                                </label>
+                                <br/>
+                                <input type="password" id="newPassword" name="newPassword" class="form-control"
+                                       th:value="${newPassword}"
+                                       th:classappend="${newPasswordError != null ? 'error' : ''}">
+                                <!-- Placeholder for New Password Validation Error -->
+                                <br/>
+                                <div class="password-error-message" th:if="${newPasswordError}" th:text="${newPasswordError}"></div>
+                                <br/>
 
-                            <!-- Retype New Password Field -->
-                            <label for="retypePassword">Retype New Password:
-                                <span class="required-input"> * </span>
-                            </label>
-                            <br/>
-                            <input type="password" id="retypePassword" name="retypePassword" class="form-control"
-                                   th:value="${retypePassword}"
-                                   th:classappend="${passwordMatchError != null ? 'error' : ''}">
-                            <!-- Placeholder for Password Match Error -->
-                            <br/>
-                            <div class="password-error-message" th:if="${passwordMatchError}" th:text="${passwordMatchError}"></div>
-                            <br/>
+                                <!-- Retype New Password Field -->
+                                <label for="retypePassword">Retype New Password:
+                                    <span class="required-input"> * </span>
+                                </label>
+                                <br/>
+                                <input type="password" id="retypePassword" name="retypePassword" class="form-control"
+                                       th:value="${retypePassword}"
+                                       th:classappend="${passwordMatchError != null ? 'error' : ''}">
+                                <!-- Placeholder for Password Match Error -->
+                                <br/>
+                                <div class="password-error-message" th:if="${passwordMatchError}" th:text="${passwordMatchError}"></div>
+                                <br/>
 
-                            <!-- Submit Changed Password and Cancel Change Password Buttons -->
-                            <div class="buttons-centre">
-                                <button type="submit" id="submitNewPasswordButton">Change Password</button>
-                                &nbsp;
-                                <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
-                            </div>
+                                <!-- Submit Changed Password and Cancel Change Password Buttons -->
+                                <div class="buttons-centre">
+<!--                                    <button type="submit" id="submitNewPasswordButton">Change Password</button>-->
+                                    <button type="button" onclick="changePassword()" id="submitNewPasswordButton">Change Password</button>
+                                    &nbsp
+                                    <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
+                                </div>
+
+                                <br/>
+                                <div class="password-error-message" th:if="${emailError}" th:text="${emailError}"></div>
+                                <br/>
+<!--                            </form>-->
                         </div>
                         <!-- End Change Password Section -->
                         <br/>
