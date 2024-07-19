@@ -21,15 +21,15 @@ public class ModerationService {
 
 
     //authenticating the client
-    ContentModeratorClient client = ContentModeratorManager.authenticate(AzureRegionBaseUrl.fromString(moderatorApiUrl),
+    private ContentModeratorClient client = ContentModeratorManager.authenticate(AzureRegionBaseUrl.fromString(moderatorApiUrl),
             moderatorApiKey);
 
-    public void moderateText(ContentModeratorClient client) {
+    //below is adapted from microsoft quickstart
+    public void moderateText(String line) {
         logger.info("---------------------------------------");
         logger.info("MODERATE TEXT");
 
         try {
-            String line = "fuck shit crap damn dang hello whoops okay";
             Screen textResults = null;
             // For formatting the printed results
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
