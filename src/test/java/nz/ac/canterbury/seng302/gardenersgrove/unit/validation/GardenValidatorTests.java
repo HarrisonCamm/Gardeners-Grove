@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GardenValidatorTests {
 
+    private static final String SURFACE_AREA_OF_EARTH = "510100000";
+
     @Test
     public void ValidatingGardenName_EmptyString_Invalid() {
         ObjectError objectError = GardenValidator.validateGardenName("");
@@ -51,14 +53,22 @@ public class GardenValidatorTests {
     }
 
     @ParameterizedTest
-    @CsvSource({"-1", "123..234", "123\\,\\,\\234", "" + Integer.MIN_VALUE})
+    @CsvSource(value = {
+            "-1",
+            "123..234",
+            "123,,234",
+            "" + Integer.MIN_VALUE,
+            "" + Integer.MAX_VALUE,
+            SURFACE_AREA_OF_EARTH + ".1",
+            SURFACE_AREA_OF_EARTH + ",1"
+    }, delimiter = ';') //Changed delimiter for allowing comma test cases
     public void ValidatingGardenSize_NonEmptyStrings_Invalid(String gardenSize) {
         ObjectError objectError = GardenValidator.validateSize(gardenSize);
         assertNotNull(objectError);
     }
 
     @ParameterizedTest
-    @CsvSource({"1", "0.00000000001", "" + Integer.MAX_VALUE})
+    @CsvSource({"1", "0.00000000001", SURFACE_AREA_OF_EARTH})
     public void ValidatingGardenSize_NonEmptyStrings_Valid(String gardenSize) {
         ObjectError objectError = GardenValidator.validateSize(gardenSize);
         assertNull(objectError);

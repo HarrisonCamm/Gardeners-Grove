@@ -230,7 +230,7 @@ public class ResetPasswordSteps {
     //AC5
     @When("I go to the given URL passed in the email")
     public void i_go_to_the_given_url_passed_in_the_email() throws Exception {
-        String emailText = LostPasswordFormController.generateResetPasswordEmail(verificationToken, userService.getUserByEmail(enteredEmail));
+        String emailText = LostPasswordFormController.generateResetPasswordEmail(verificationToken, userService.getUserByEmail(enteredEmail), "URI", "URL");
         Pattern pattern = Pattern.compile("(reset-password-form)\\?token=(\\w+)");
         Matcher matcher = pattern.matcher(emailText);
         String path = "";
@@ -240,7 +240,6 @@ public class ResetPasswordSteps {
             path = matcher.group(1); // Get the path
             token = matcher.group(2); // Get the token
         }
-
         resultActions = mockMvcResetPassword.perform(get("/" + path)
                         .param("token", token)) // Include the token in the parameters
                 .andExpect(status().isOk())
