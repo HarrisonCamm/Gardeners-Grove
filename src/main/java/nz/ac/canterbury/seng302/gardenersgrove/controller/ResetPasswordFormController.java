@@ -90,6 +90,11 @@ public class ResetPasswordFormController {
         // To check if the user's fields match the password or not AC7
         User currentUser = verificationTokenService.getUserByToken(token);
 
+        if (currentUser == null) {
+            logger.info("A Reset password link has expired.");
+            return "redirect:/sign-in-form?token=" + token;
+        }
+
 
         model.addAttribute("newPassword", newPassword);
         model.addAttribute("retypePassword", retypedPassword);
