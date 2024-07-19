@@ -141,13 +141,11 @@ public class ResetPasswordFormController {
                 logger.info("Sent confirmation email to " + emailAddress);
 
                 // Password updated, allow user to login page
-                // todo check authentication of user??
                 verificationTokenService.deleteToken(token);
                 return "redirect:/sign-in-form";
             } catch (Exception e) {
                 // Log the error
                 logger.error("Failed to send password change confirmation email to " + emailAddress, e);
-                // TODO display an error message
 
             }
         }
