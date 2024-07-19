@@ -45,7 +45,8 @@ public class GardenValidatorTests {
             "Oli'ver" +
             "Oli.ver" +
             ".Oli'ver." +
-            ".Oliver"
+            ".Oliver" +
+            "Oliver."
         })
     public void ValidatingGardenName_NonEmptyStrings_Valid(String gardenName) {
         ObjectError objectError = GardenValidator.validateGardenName(gardenName);
