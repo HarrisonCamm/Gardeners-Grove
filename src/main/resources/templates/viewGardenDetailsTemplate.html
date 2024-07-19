@@ -93,6 +93,25 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Weather Section -->
+                <div class="wrapper">
+                    <div class="weather-info">
+                        <div th:if="${weather != null}">
+                        <h2>Current Weather</h2>
+                            <p><strong>Day of Week:</strong> <span th:text="${weather.dayOfWeek}"></span></p>
+                            <p><strong>Date:</strong> <span th:text="${weather.date}"></span></p>
+                            <p><strong>Description:</strong> <span th:text="${weather.description}"></span></p>
+                            <p><strong>Temperature:</strong> <span th:text="${weather.temperature}"></span>&#8451;</p>
+                            <p><strong>Humidity:</strong> <span th:text="${weather.humidity}"></span>%</p>
+                            <img th:src="@{'http://openweathermap.org/img/wn/' + ${weather.icon} + '@2x.png'}" alt="Weather Icon"/>
+                        </div>
+                        <div th:if="${weather == null}">
+                            <p>Weather data is not available.</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </body>

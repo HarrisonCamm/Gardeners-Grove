@@ -58,6 +58,9 @@ dependencies {
 	// MariaDB (deployment db)
 	implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
 
+	// JSON processing
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
+
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

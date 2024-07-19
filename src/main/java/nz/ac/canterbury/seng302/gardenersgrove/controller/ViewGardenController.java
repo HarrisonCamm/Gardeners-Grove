@@ -3,14 +3,12 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,11 +37,16 @@ public class ViewGardenController {
     private final PlantService plantService;
     private final UserService userService;
 
-    public ViewGardenController(GardenService gardenService, PlantService plantService, UserService userService, ImageService imageService) {
+    private final WeatherService weatherService;
+
+
+    public ViewGardenController(GardenService gardenService, PlantService plantService, UserService userService, ImageService imageService, WeatherService weatherService) {
         this.gardenService = gardenService;
         this.plantService  = plantService;
         this.userService = userService;
         this.imageService = imageService;
+        this.weatherService = weatherService;
+
     }
 
     @GetMapping("/view-garden")
@@ -68,6 +71,15 @@ public class ViewGardenController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
+
+
+        //New Code Added to get weather
+        if (garden.isPresent()) { // if the garden ID exists
+            Weather weather = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+            model.addAttribute("weather", weather);
+            List<Weather> forecast = weatherService.getForecast(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+            model.addAttribute("forecast", forecast);
+        }
 
         return addAttributes(currentUser, gardenID, model, plantService, gardenService);
     }
