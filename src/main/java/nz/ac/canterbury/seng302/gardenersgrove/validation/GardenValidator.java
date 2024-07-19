@@ -28,39 +28,6 @@ public class GardenValidator {
     }
 
     /**
-     * Validates a garden's location
-     * @param location garden location object
-     * @return object error if there is an error otherwise null
-     */
-    public static FieldError validateGardenLocation(Location location, boolean isCity) {
-        if (isCity) {
-            if (validateWithRegex("^$", location.getCity()) || location.getCity().length() > 255 || location.getCity().trim().isEmpty()) {
-                return new FieldError("garden", "location.city", "City name must be under 255 characters and not empty");
-            } else if (!validateWithRegex("[\\p{L}\\s'-]+", location.getCity())) {
-                return new FieldError("garden", "location.city", "City must only include letters and spaces");
-            }
-        } else {
-            if (validateWithRegex("^$", location.getCountry()) || location.getCountry().length() > 255 || location.getCountry().trim().isEmpty()) {
-                return new FieldError("garden", "location.country", "Country name must be under 255 characters and not empty");
-            } else if (!validateWithRegex("[\\p{L}\\s'-]+", location.getCountry())) {
-                return new FieldError("garden", "location.country", "Country must only include letters and spaces");
-            }
-        }
-
-        if (location.getSuburb() != null && location.getSuburb().length() > 255) {
-            return new FieldError("garden", "location.suburb", "Suburb name must be under 255 characters");
-        }
-
-
-        if (location.getStreetAddress() != null && location.getStreetAddress().length() > 255) {
-            return new FieldError("garden", "location.streetAddress", "Street Address name must be under 255 characters");
-        }
-
-        return null;
-    }
-
-
-    /**
      * Validates a garden's size
      * @param size garden size
      * @return object error if there is an error otherwise null

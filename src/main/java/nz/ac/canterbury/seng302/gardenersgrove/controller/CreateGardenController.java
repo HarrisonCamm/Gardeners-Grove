@@ -115,7 +115,6 @@ public class CreateGardenController {
             model.addAttribute("garden", garden);
             return "createGardenFormTemplate";
         } else {
-            //TODO figure out how to not have duplicate locations. Probably next sprint tbh
             locationService.addLocation(garden.getLocation());
             gardenService.addGarden(garden);
             return "redirect:/view-garden?gardenID=" +garden.getId();
@@ -142,7 +141,7 @@ public class CreateGardenController {
             errors.add(nameError);
         }
 
-
+        // Valid the location fields in Location
         List<FieldError> locationErrors = validateGardenLocation(gardenLocation);
         errors.addAll(locationErrors);
 
