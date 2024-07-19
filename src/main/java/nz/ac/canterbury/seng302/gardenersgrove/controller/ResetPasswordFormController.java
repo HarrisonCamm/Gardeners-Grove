@@ -62,7 +62,7 @@ public class ResetPasswordFormController {
 
         // If token is expired or null
         if (!verificationTokenService.validateToken(token)) {
-            logger.info("A Reset password link has expired.");
+            logger.info("Reset password link has expired.");
             return "redirect:/sign-in-form?token=" + token; //todo show error message in sign in form no matter how many times link is clicked
         }
 
@@ -86,15 +86,14 @@ public class ResetPasswordFormController {
                              Model model) {
         logger.info("POST /reset-password-form");
 
-        // Getting the user for sending the confirmation email and validating retyped password
-        // To check if the user's fields match the password or not AC7
-        User currentUser = verificationTokenService.getUserByToken(token);
-
-        if (currentUser == null) {
-            logger.info("A Reset password link has expired.");
+        if (!verificationTokenService.validateToken(token)) {
+            logger.info("Reset password link has expired.");
             return "redirect:/sign-in-form?token=" + token;
         }
 
+        // Getting the user for sending the confirmation email and validating retyped password
+        // To check if the user's fields match the password or not AC7
+        User currentUser = verificationTokenService.getUserByToken(token);
 
         model.addAttribute("newPassword", newPassword);
         model.addAttribute("retypePassword", retypedPassword);
