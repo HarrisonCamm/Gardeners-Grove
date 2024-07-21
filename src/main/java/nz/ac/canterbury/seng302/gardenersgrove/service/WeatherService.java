@@ -12,13 +12,13 @@ import java.util.*;
 
 @Service
 public class WeatherService {
-    @Value("${weather.api.key}")
+    @Value("${weather.api.key:#{null}}")
     private String apiKey;
 
-    @Value("${weather.api.url}")
+    @Value("${weather.api.url:#{null}}")
     private String apiUrl;
 
-    private Map<String, String> countryCodes = getCountryCodeMap();
+    private final Map<String, String> countryCodes = getCountryCodeMap();
 
     private final RestTemplate restTemplate = new RestTemplate();
 
