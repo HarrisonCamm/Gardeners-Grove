@@ -61,7 +61,21 @@ public class GardenValidatorTests {
             "" + Integer.MIN_VALUE,
             "" + Integer.MAX_VALUE,
             SURFACE_AREA_OF_EARTH + ".1",
-            SURFACE_AREA_OF_EARTH + ",1"
+            SURFACE_AREA_OF_EARTH + ",1",
+            "10000000000000000,111",
+            "000000000000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "00000000000000000001"
     }, delimiter = ';') //Changed delimiter for allowing comma test cases
     public void ValidatingGardenSize_NonEmptyStrings_Invalid(String gardenSize) {
         ObjectError objectError = GardenValidator.validateSize(gardenSize);
@@ -69,7 +83,7 @@ public class GardenValidatorTests {
     }
 
     @ParameterizedTest
-    @CsvSource({"1", "0.00000000001", SURFACE_AREA_OF_EARTH})
+    @CsvSource(value = {"1", "0.00000000001", SURFACE_AREA_OF_EARTH, "1,1111111"}, delimiter = ';')
     public void ValidatingGardenSize_NonEmptyStrings_Valid(String gardenSize) {
         ObjectError objectError = GardenValidator.validateSize(gardenSize);
         assertNull(objectError);

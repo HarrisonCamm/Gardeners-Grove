@@ -36,10 +36,9 @@ public class GardenValidator {
         double sizeOfEarth = 510100000;
 
         if (!size.isEmpty()) {
-            if ((!validateWithRegex("[1-9]+[[\\.,]?([0-9]+)]$", size)   // Checks for digits 1-9 followed by optional comma or period and digits
-                    && !validateWithRegex("[0]*([\\.,]?[0-9]+)+$", size))       // Checks for optional leading zeros, comma/period, and digits
-                    || validateWithRegex("[0]*([\\.,]?[0]+)*$", size)            // Checks for zeros or decimal format with optional zeros
-                    || validateWithRegex("^(?=.*[.,].*[.,]).*$", size)) {        // Checks if there are at least two commas or periods
+            if ((!validateWithRegex("^[1-9][0-9]*([.,][0-9]+)?$", size)   // Checks for digits 1-9 followed by digits and optional comma/period and digits
+                    && !validateWithRegex("^0([.,][0-9]+)?$", size))       // Checks for zero or zero with optional comma/period and digits
+                    || validateWithRegex("^(?=.*[.,].*[.,]).*$", size)) {  // Checks if there are at least two commas or periods
                 return new FieldError("garden", "size", "Garden size must be a positive number");
             }
 
