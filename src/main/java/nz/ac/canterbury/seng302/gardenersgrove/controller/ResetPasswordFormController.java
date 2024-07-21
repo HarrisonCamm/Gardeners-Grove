@@ -126,7 +126,6 @@ public class ResetPasswordFormController {
             // new password and retyped password are valid
             logger.info("Password is valid, user has a token");
             logger.info("User first name is: " + currentUser.getFirstName());
-
             userService.updateUserPassword(currentUser, newPassword);
             // send user confirmation email of password change
             String emailAddress = currentUser.getEmail();
@@ -142,13 +141,11 @@ public class ResetPasswordFormController {
                 logger.info("Sent confirmation email to " + emailAddress);
 
                 // Password updated, allow user to login page
-                // todo check authentication of user??
-
-                return "redirect:/sign-in-form?token=" + token;
+                verificationTokenService.deleteToken(token);
+                return "redirect:/sign-in-form";
             } catch (Exception e) {
                 // Log the error
                 logger.error("Failed to send password change confirmation email to " + emailAddress, e);
-                // TODO display an error message
 
             }
         }
