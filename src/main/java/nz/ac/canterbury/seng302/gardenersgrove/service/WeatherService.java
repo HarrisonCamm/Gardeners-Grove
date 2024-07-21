@@ -1,6 +1,9 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
+import nz.ac.canterbury.seng302.gardenersgrove.controller.CreateGardenController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Weather;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -22,6 +25,7 @@ public class WeatherService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
     private Weather parseWeatherJson(JsonNode node) {
         Weather weather = new Weather();
@@ -41,6 +45,8 @@ public class WeatherService {
         String countryCode = countryCodes.get(country.toLowerCase());
         countryCode = (countryCode == null) ? "" : "," + countryCode;
         String location = city + countryCode;
+
+        logger.info("Fetching current weather for " + location + " from " + apiUrl);
         try {
             String url = String.format("%sweather?q=%s&appid=%s&units=metric", apiUrl, location, apiKey);
             String response = restTemplate.getForObject(url, String.class);
@@ -48,7 +54,7 @@ public class WeatherService {
             JsonNode node = mapper.readTree(response);
             return parseWeatherJson(node);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.info("Failed to fetch current weather for " + location + " from " + apiUrl);
             return null;
         }
     }
@@ -57,6 +63,8 @@ public class WeatherService {
         String countryCode = countryCodes.get(country.toLowerCase());
         countryCode = (countryCode == null) ? "" : "," + countryCode;
         String location = city + countryCode;
+
+        logger.info("Fetching forecast for " + location + " from " + apiUrl);
         try {
             String url = String.format("%sforecast?q=%s&appid=%s&units=metric", apiUrl, location, apiKey);
             String response = restTemplate.getForObject(url, String.class);
@@ -69,7 +77,7 @@ public class WeatherService {
             }
             return forecast;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.info("Failed to fetch forecast for " + location + " from " + apiUrl);
             return null;
         }
     }
