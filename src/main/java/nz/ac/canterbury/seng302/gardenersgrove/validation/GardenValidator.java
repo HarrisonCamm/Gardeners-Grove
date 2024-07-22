@@ -35,10 +35,14 @@ public class GardenValidator {
     public static FieldError validateSize(String size) {
         double sizeOfEarth = 510100000;
 
+        if (size.length() > 255) {
+            return new FieldError("garden", "size", "Garden size must be under 255 characters");
+        }
+
         if (!size.isEmpty()) {
             if ((!validateWithRegex("^[1-9][0-9]*([.,][0-9]+)?$", size)   // Checks for digits 1-9 followed by digits and optional comma/period and digits
                     && !validateWithRegex("^0([.,][0-9]+)?$", size))       // Checks for zero or zero with optional comma/period and digits
-                    || validateWithRegex("^(?=.*[.,].*[.,]).*$", size)) {  // Checks if there are at least two commas or periods
+                    || validateWithRegex("^(?=.*[.,].*[.,]).*$", size)) { // Checks if there are at least two commas or periods
                 return new FieldError("garden", "size", "Garden size must be a positive number");
             }
 
