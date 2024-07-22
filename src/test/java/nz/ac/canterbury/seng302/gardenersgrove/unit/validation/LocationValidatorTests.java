@@ -4,47 +4,57 @@ import org.springframework.validation.FieldError;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.lang.reflect.Field;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class LocationValidatorTests {
 
+    private static final String longString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmn" +
+            "opqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij" +
+            "klmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg" +
+            "hijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV";
+
+
+
     @ParameterizedTest
-    @CsvSource({"4 Kotare", "32 Clyde", "59 Lochee Rd", "4 Charente Way"})
+    @CsvSource({"4 Kotare", "32 Clyde", "59 Lochee Rd", "4 Charente Way", "''"})
     public void ValidatingStreetAddress_Valid(String address) {
         FieldError fieldError = LocationValidator.validateStreetAddress(address);
         assertNull(fieldError);
     }
 
     @ParameterizedTest
-    @CsvSource({"123 Main South Rd.!@#", "56 Prevel St<>", "&*@(#$"})
+    @CsvSource({"123 Main South Rd.!@#", "56 Prevel St<>", "&*@(#$", longString})
     public void ValidatingStreetAddress_Invalid(String address) {
         FieldError fieldError = LocationValidator.validateStreetAddress(address);
         assertNotNull(fieldError);
     }
 
     @ParameterizedTest
-    @CsvSource({"yaldy", "ricc", "Hornby", "Bishopdale"})
+    @CsvSource({"yaldy", "ricc", "Hornby", "Bishopdale", "''"})
     public void ValidatingSuburb_Valid(String suburb) {
         FieldError fieldError = LocationValidator.validateSuburb(suburb);
         assertNull(fieldError);
     }
 
     @ParameterizedTest
-    @CsvSource({"_==-@#", "___332$$%<>", "&*#*@$"})
+    @CsvSource({"_==-@#", "___332$$%<>", "&*#*@$", longString})
     public void ValidatingSuburb_Invalid(String suburb) {
         FieldError fieldError = LocationValidator.validateSuburb(suburb);
         assertNotNull(fieldError);
     }
 
     @ParameterizedTest
-    @CsvSource({"1234", "6789"})
+    @CsvSource({"1234", "6789", "''"})
     public void ValidatingPostcode_Valid(String postcode) {
         FieldError fieldError = LocationValidator.validatePostcode(postcode);
         assertNull(fieldError);
     }
 
     @ParameterizedTest
-    @CsvSource({"ABCDE", "1234A", "12 345"})
+    @CsvSource({"ABCDE", "1234A", "12 345", longString})
     public void ValidatingPostcode_Invalid(String postcode) {
         FieldError fieldError = LocationValidator.validatePostcode(postcode);
         assertNotNull(fieldError);
@@ -58,7 +68,7 @@ public class LocationValidatorTests {
     }
 
     @ParameterizedTest
-    @CsvSource({"San Francisco!@#", "New York<>", "BadCity$"})
+    @CsvSource({"San Francisco!@#", "New York<>", "BadCity$", longString, "''"})
     public void ValidatingCity_Invalid(String city) {
         FieldError fieldError = LocationValidator.validateCity(city);
         assertNotNull(fieldError);
@@ -72,7 +82,7 @@ public class LocationValidatorTests {
     }
 
     @ParameterizedTest
-    @CsvSource({"United States!@#", "Canada<>", "BadCountry$"})
+    @CsvSource({"United States!@#", "Canada<>", "BadCountry$", longString, "''"})
     public void ValidatingCountry_Invalid(String country) {
         FieldError fieldError = LocationValidator.validateCountry(country);
         assertNotNull(fieldError);
