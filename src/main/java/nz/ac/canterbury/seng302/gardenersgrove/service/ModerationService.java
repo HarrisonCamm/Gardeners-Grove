@@ -25,7 +25,7 @@ public class ModerationService {
             moderatorApiKey);
 
     //below is adapted from microsoft quickstart
-    public void moderateText(String line) {
+    public String moderateText(String line) {
         logger.info("---------------------------------------");
         logger.info("MODERATE TEXT");
 
@@ -48,6 +48,11 @@ public class ModerationService {
             logger.info("Text moderation status: " + textResults.status().description());
 //            logger.info(textResults.classification().toString()); // todo fix this to retrieve the classification
 
+            logger.info("Text moderation terms: " + gson.toJson(textResults.terms()));
+
+            return gson.toJson(textResults.terms());
+
+
 //
 //            // Create output results file to TextModerationOutput.json
 //            BufferedWriter writer = new BufferedWriter(
@@ -61,5 +66,6 @@ public class ModerationService {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
+        return line;
     }
 }
