@@ -85,7 +85,6 @@ public class LostPasswordFormController {
             if (userService.emailExists(email)) {
                 // Create Verification Token
                 User newUser = userService.getUserByEmail(email);
-                newUser.grantAuthority("ROLE_UNVERIFIED");
                 VerificationToken verificationToken = verificationTokenService.createVerificationToken(newUser);
 
                 // Create confirmation email
