@@ -65,15 +65,21 @@ public class ResetPasswordFormControllerTests {
     private static VerificationTokenRepository verificationTokenRepository;
 
     private static VerificationToken verificationToken;
+
     @BeforeEach
     public void setUp() {
-        Mockito.reset(verificationTokenService, authorityService, userService, authenticationManager, mailService);
+        Mockito.reset(verificationTokenRepository, verificationTokenService, authorityService, userService, authenticationManager, mailService);
         User loggedInUser = new User(1L,"Test", "User", false, "user@gmail.com", "P@ssw0rd123", "");
 
         // Mock the services and repositories
         authenticationManager = Mockito.mock(AuthenticationManager.class);
         verificationTokenService = Mockito.mock(VerificationTokenService.class);
-        verificationTokenRepository = Mockito.mock(VerificationTokenRepository.class);
+
+        // We have to do it this way
+        // Because there may only be a @BeforeEach method, the repository is instantiated here
+        if (verificationTokenRepository == null) {
+            verificationTokenRepository = Mockito.mock(VerificationTokenRepository.class);
+        }
         mailService = Mockito.mock(MailService.class);
         userService = Mockito.mock(UserService.class);
 
@@ -112,26 +118,22 @@ public class ResetPasswordFormControllerTests {
         verify(verificationTokenService).deleteToken(verificationToken.getToken());
     }
 
-//    @Test
-//    @WithMockUser
-//    public void whenPostResetPasswordWithExpiredToken_thenRedirectToSignIn() throws Exception {
-//        System.out.println(verificationToken.getToken());
-//
-//
-//        verificationToken.setExpiryDate(LocalDateTime.now().minusMinutes(10));
-//        when(verificationTokenService.validateToken(any(String.class))).thenReturn(false);
-//        mockMvc.perform(post("/reset-password-form")
-//                        .with(csrf())
-//                        .param("newPassword", "Password1!")
-//                        .param("retypedPassword", "Password1!")
-//                        .param("token", verificationToken.getToken()))
-//                .andExpect(status().is3xxRedirection())
-//                .andExpect(view().name("redirect:/sign-in-form?token=" + verificationToken.getToken()));
-//
-//        mockMvcSignIn.perform(get("/sign-in-form?token=" + verificationToken.getToken()))
-//                .andExpect(status().is2xxSuccessful())
-//                .andExpect(model().attribute("expiredTokenError", "Reset link has expired."));
-//
-//
-//    }
+    @Test
+    @WithMockUser
+    public void whenPostResetPasswordWithExpiredToken_thenRedirectToSignIn() throws Exception {
+
+        verificationToken.setExpiryDate(LocalDateTime.now().minusMinutes(10));
+        when(verificationTokenService.validateToken(any(String.class))).thenReturn(false);
+        mockMvc.perform(post("/reset-password-form")
+                        .with(csrf())
+                        .param("newPassword", "Password1!")
+                        .param("retypedPassword", "Password1!")
+                        .param("token", verificationToken.getToken()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/sign-in-form?token=" + verificationToken.getToken()));
+
+        mockMvcSignIn.perform(get("/sign-in-form?token=" + verificationToken.getToken()))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(model().attribute("expiredTokenError", "Reset link has expired."));
+    }
 }
