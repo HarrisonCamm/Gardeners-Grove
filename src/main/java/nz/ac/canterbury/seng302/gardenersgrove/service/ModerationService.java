@@ -30,17 +30,20 @@ public class ModerationService {
         logger.info("MODERATE TEXT");
 
         try {
+            client = ContentModeratorManager.authenticate(AzureRegionBaseUrl.fromString(moderatorApiUrl),
+                    moderatorApiKey);
+
             Screen textResults = null;
             // For formatting the printed results
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-            while ((line != null)) {
-                if (line.length() > 0) {
-                    textResults = client.textModerations().screenText("text/plain", line.getBytes(), null);
-                    // Uncomment below line to print in console
-                    logger.info(gson.toJson(textResults).toString());
-                }
+
+            if (line.length() > 0) {
+                textResults = client.textModerations().screenText("text/plain", line.getBytes(), null);
+                // Uncomment below line to print in console
+                logger.info(gson.toJson(textResults).toString());
             }
+
 
             logger.info("Text moderation status: " + textResults.status().description());
 

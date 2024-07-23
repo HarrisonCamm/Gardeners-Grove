@@ -6,7 +6,17 @@
 </head>
 <body>
     <div class="content">
-        <input>
+        <form id="tagForm" th:action="@{/tag}" method="post" novalidate>
+
+            <input type="text" class="form-control" id="tag"
+                   th:name="tag" required autofocus
+
+            <br/>
+
+            <div class="buttons-centre">
+                <button type="submit" id="submitButton">Add tag</button>
+            </div>
+        </form>
     </div>
 
 </body>

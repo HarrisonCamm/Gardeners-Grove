@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class TagModerationController {
@@ -32,8 +33,11 @@ public class TagModerationController {
     }
 
     @PostMapping("/tag")
-    public String moderateTagsPost( Model model) {
-        logger.info("POST /tag");
+    public String moderateTagsPost(@RequestParam String tag, Model model) {
+        logger.info("POST /tag " + tag);
+
+        moderationService.moderateText(tag);
+
         return "tagTemplate";
     }
 
