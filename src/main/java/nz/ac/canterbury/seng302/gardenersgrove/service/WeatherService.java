@@ -32,10 +32,10 @@ public class WeatherService {
 
     private Weather parseWeatherJson(JsonNode node) {
         Weather weather = new Weather();
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE", Locale.ENGLISH);
-
-        weather.setDayOfWeek(sdf.format(new Date(node.get("dt").asLong() * 1000)));
-        weather.setDate(new Date(node.get("dt").asLong() * 1000).toString());
+        SimpleDateFormat dayDateFormat = new SimpleDateFormat("EEEE", Locale.ENGLISH);    //Format to for day of the week
+        SimpleDateFormat dateDateFormat = new SimpleDateFormat("dd/MM/YYYY", Locale.ENGLISH);    //Format to for date
+        weather.setDayOfWeek(dayDateFormat.format(new Date(node.get("dt").asLong() * 1000)));
+        weather.setDate(dateDateFormat.format(new Date(node.get("dt").asLong() * 1000)));
         weather.setDescription(node.get("weather").get(0).get("description").asText());
         weather.setIcon(node.get("weather").get(0).get("icon").asText());
         weather.setTemperature(node.get("main").get("temp").asText());
