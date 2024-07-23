@@ -1,6 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Weather;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.WeatherResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,21 +30,21 @@ public class WeatherService {
         this.countryCodeService = countryCodeService;
     }
 
-    private Weather parseWeatherJson(JsonNode node) {
-        Weather weather = new Weather();
+    private WeatherResponse parseWeatherJson(JsonNode node) {
+        WeatherResponse weatherResponse = new WeatherResponse();
         SimpleDateFormat dayDateFormat = new SimpleDateFormat("EEEE", Locale.ENGLISH);    //Format to for day of the week
         SimpleDateFormat dateDateFormat = new SimpleDateFormat("dd/MM/YYYY", Locale.ENGLISH);    //Format to for date
-        weather.setDayOfWeek(dayDateFormat.format(new Date(node.get("dt").asLong() * 1000)));
-        weather.setDate(dateDateFormat.format(new Date(node.get("dt").asLong() * 1000)));
-        weather.setDescription(node.get("weather").get(0).get("description").asText());
-        weather.setIcon(node.get("weather").get(0).get("icon").asText());
-        weather.setTemperature(node.get("main").get("temp").asText());
-        weather.setHumidity(node.get("main").get("humidity").asText());
+        weatherResponse.setDayOfWeek(dayDateFormat.format(new Date(node.get("dt").asLong() * 1000)));
+        weatherResponse.setDate(dateDateFormat.format(new Date(node.get("dt").asLong() * 1000)));
+        weatherResponse.setDescription(node.get("weather").get(0).get("description").asText());
+        weatherResponse.setIcon(node.get("weather").get(0).get("icon").asText());
+        weatherResponse.setTemperature(node.get("main").get("temp").asText());
+        weatherResponse.setHumidity(node.get("main").get("humidity").asText());
 
-        return weather;
+        return weatherResponse;
     }
 
-    public Weather getCurrentWeather(String city, String country) {
+    public WeatherResponse getCurrentWeather(String city, String country) {
         String countryCode = countryCodeService.getCountryCode(country);
         String location = city + (countryCode.isEmpty() ? "" : "," + countryCode);
 
@@ -61,7 +61,7 @@ public class WeatherService {
         }
     }
 
-    public List<Weather> getForecast(String city, String country) {
+    public List<WeatherResponse> getForecast(String city, String country) {
         String countryCode = countryCodeService.getCountryCode(country);
         String location = city + (countryCode.isEmpty() ? "" : "," + countryCode);
 
@@ -72,7 +72,7 @@ public class WeatherService {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(response);
             JsonNode listNode = rootNode.get("list");
-            List<Weather> forecast = new ArrayList<>();
+            List<WeatherResponse> forecast = new ArrayList<>();
             for (JsonNode forecastNode : listNode) {
                 forecast.add(parseWeatherJson(forecastNode));
             }

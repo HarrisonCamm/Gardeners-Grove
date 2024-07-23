@@ -5,25 +5,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,9 +67,9 @@ public class ViewGardenController {
 
         //New Code Added to get weather
         if (garden.isPresent()) { // if the garden ID exists
-            Weather weather = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
-            model.addAttribute("weather", weather);
-            List<Weather> forecast = weatherService.getForecast(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+            WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+            model.addAttribute("weatherResponse", weatherResponse);
+            List<WeatherResponse> forecast = weatherService.getForecast(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
             model.addAttribute("forecast", forecast);
         }
 

@@ -1,6 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
-public class Weather {
+public class WeatherResponse {
     private String dayOfWeek;
     private String date;
     private String description;
