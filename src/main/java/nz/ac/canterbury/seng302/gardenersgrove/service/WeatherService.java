@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.WeatherResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,25 +25,43 @@ public class WeatherService {
 
     Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
+
     private final CountryCodeService countryCodeService;
 
     public WeatherService(CountryCodeService countryCodeService) {
         this.countryCodeService = countryCodeService;
     }
 
-    private WeatherResponse parseWeatherJson(JsonNode node) {
-        WeatherResponse weatherResponse = new WeatherResponse();
-        SimpleDateFormat dayDateFormat = new SimpleDateFormat("EEEE", Locale.ENGLISH);    //Format to for day of the week
-        SimpleDateFormat dateDateFormat = new SimpleDateFormat("dd/MM/YYYY", Locale.ENGLISH);    //Format to for date
-        weatherResponse.setDayOfWeek(dayDateFormat.format(new Date(node.get("dt").asLong() * 1000)));
-        weatherResponse.setDate(dateDateFormat.format(new Date(node.get("dt").asLong() * 1000)));
-        weatherResponse.setDescription(node.get("weather").get(0).get("description").asText());
-        weatherResponse.setIcon(node.get("weather").get(0).get("icon").asText());
-        weatherResponse.setTemperature(node.get("main").get("temp").asText());
-        weatherResponse.setHumidity(node.get("main").get("humidity").asText());
+//    private WeatherResponse parseWeatherJson(JsonNode node) {
+//        WeatherResponse weatherResponse = new WeatherResponse();
+//        SimpleDateFormat dayDateFormat = new SimpleDateFormat("EEEE", Locale.ENGLISH);    //Format to for day of the week
+//        SimpleDateFormat dateDateFormat = new SimpleDateFormat("dd/MM/YYYY", Locale.ENGLISH);    //Format to for date
+//        weatherResponse.setDayOfWeek(dayDateFormat.format(new Date(node.get("dt").asLong() * 1000)));
+//        weatherResponse.setDate(dateDateFormat.format(new Date(node.get("dt").asLong() * 1000)));
+//        weatherResponse.setDescription(node.get("weather").get(0).get("description").asText());
+//        weatherResponse.setIcon(node.get("weather").get(0).get("icon").asText());
+//        weatherResponse.setTemperature(node.get("main").get("temp").asText());
+//        weatherResponse.setHumidity(node.get("main").get("humidity").asText());
+//
+//        return weatherResponse;
+//    }
 
+
+
+    private WeatherResponse parseWeatherJson(String stringResult) {
+        WeatherResponse weatherResponse = null;
+        try {
+            logger.info(stringResult);
+            weatherResponse = objectMapper.readValue(stringResult, WeatherResponse.class);
+        } catch (JsonProcessingException e) {
+            logger.error("Error parsing API response", e);
+        }
+        logger.info("Weather response: " + weatherResponse);
         return weatherResponse;
     }
+
 
     public WeatherResponse getCurrentWeather(String city, String country) {
         String countryCode = countryCodeService.getCountryCode(country);
@@ -52,9 +71,9 @@ public class WeatherService {
         try {
             String url = String.format("%sweather?q=%s&appid=%s&units=metric", apiUrl, location, apiKey);
             String response = restTemplate.getForObject(url, String.class);
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode node = mapper.readTree(response);
-            return parseWeatherJson(node);
+//            ObjectMapper mapper = new ObjectMapper();
+//            JsonNode node = mapper.readTree(response);
+            return parseWeatherJson(response);
         } catch (Exception e) {
             logger.info("Failed to fetch current weather for " + location + " from " + apiUrl);
             return null;
@@ -74,7 +93,7 @@ public class WeatherService {
             JsonNode listNode = rootNode.get("list");
             List<WeatherResponse> forecast = new ArrayList<>();
             for (JsonNode forecastNode : listNode) {
-                forecast.add(parseWeatherJson(forecastNode));
+                forecast.add(parseWeatherJson(response));
             }
             return forecast;
         } catch (Exception e) {

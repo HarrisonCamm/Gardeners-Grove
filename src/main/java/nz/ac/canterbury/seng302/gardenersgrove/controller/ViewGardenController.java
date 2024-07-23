@@ -69,8 +69,8 @@ public class ViewGardenController {
         if (garden.isPresent()) { // if the garden ID exists
             WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
             model.addAttribute("weatherResponse", weatherResponse);
-            List<WeatherResponse> forecast = weatherService.getForecast(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
-            model.addAttribute("forecast", forecast);
+//            List<WeatherResponse> forecast = weatherService.getForecast(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+//            model.addAttribute("forecast", forecast);
         }
 
         return addAttributes(currentUser, gardenID, model, plantService, gardenService);
