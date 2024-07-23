@@ -406,6 +406,43 @@ p {
     margin: 0
 }
 
+.garden-details-button-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.tag-input {
+    width: 300px;
+    display: flex;
+}
+
+.input-clear {
+    position: relative;
+}
+
+.input-clear input {
+    padding-right: 30px;
+}
+
+.input-clear button {
+    position: absolute;
+    right: 10%;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #000;
+    transition: background-color 0.3s ease;
+    border-radius: 50%;
+}
+
+.input-clear button:hover {
+    background-color: transparent !important;
+    color: #000 !important;
+}
+
 
 @media only screen and (orientation: portrait) {
     h2 {

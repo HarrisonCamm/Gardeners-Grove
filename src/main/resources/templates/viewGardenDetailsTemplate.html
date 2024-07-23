@@ -39,13 +39,22 @@
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col">
-                            <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
-                                Edit
-                            </a>
-                            <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}" class="btn btn-primary ms-2 button">
-                                Add new plant
-                            </a>
+                        <div class="col garden-details-button-row">
+                            <div>
+                                <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
+                                    Edit
+                                </a>
+                                <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}" class="btn btn-primary ms-2 button">
+                                    Add new plant
+                                </a>
+                            </div>
+                            <div class="tag-input">
+                                <div class="input-group ms-2 input-clear">
+                                    <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput">
+                                    <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
+                                </div>
+                                <button class="btn btn-primary button ms-2" type="button" id="addTagButton">+</button>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -113,5 +122,13 @@
             const width = plantContainer.offsetWidth;
             gardenDetails.style.width = `${width}px`;
         }
+
+        const clearButton = document.getElementById('clearButton');
+
+        const tagInput = document.getElementById('tagInput');
+
+        clearButton.addEventListener('click', () => {
+            tagInput.value = '';
+        });
     });
 </script>
