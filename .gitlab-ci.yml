@@ -55,6 +55,7 @@ deploy-staging:
     - echo "export SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}" >> /home/gitlab-runner/staging/.env
     - echo "export SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}" >> /home/gitlab-runner/staging/.env
     - echo "export SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL_TEST}" >> /home/gitlab-runner/staging/.env
+    - echo "export GARDENERSGROVE_DEPLOYMENT=${GARDENERSGROVE_DEPLOYMENT_TEST}" >> /home/gitlab-runner/staging/.env
     - echo "export SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME_DEPLOY}" >> /home/gitlab-runner/staging/.env
     - echo "export SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD_DEPLOY}" >> /home/gitlab-runner/staging/.env
     - echo "export SPRING_JPA_DATABASE_PLATFORM=${SPRING_JPA_DATABASE_PLATFORM_DEPLOY}" >> /home/gitlab-runner/staging/.env
@@ -80,6 +81,7 @@ deploy-production:
     - echo "export SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}" >> /home/gitlab-runner/production/.env
     - echo "export SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}" >> /home/gitlab-runner/production/.env
     - echo "export SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL_PROD}" >> /home/gitlab-runner/production/.env
+    - echo "export GARDENERSGROVE_DEPLOYMENT=${GARDENERSGROVE_DEPLOYMENT_PROD}" >> /home/gitlab-runner/production/.env
     - echo "export SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME_DEPLOY}" >> /home/gitlab-runner/production/.env
     - echo "export SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD_DEPLOY}" >> /home/gitlab-runner/production/.env
     - echo "export SPRING_JPA_DATABASE_PLATFORM=${SPRING_JPA_DATABASE_PLATFORM_DEPLOY}" >> /home/gitlab-runner/production/.env
