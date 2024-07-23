@@ -38,6 +38,13 @@
                             <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
                         </div>
                     </div>
+                    <div class="row mb-3" th:if="${tags != null and tags.size() > 0}">
+                        <div class="col d-flex flex-wrap">
+                            <th:block th:each="tag : ${tags}">
+                                <label class="me-2 mb-2" th:text="${tag}"></label>
+                            </th:block>
+                        </div>
+                    </div>
                     <div class="row mb-3">
                         <div class="col garden-details-button-row">
                             <div>
@@ -48,13 +55,15 @@
                                     Add new plant
                                 </a>
                             </div>
-                            <div class="tag-input">
-                                <div class="input-group ms-2 input-clear">
-                                    <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput">
-                                    <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
+                            <form id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
+                                <div class="tag-input">
+                                    <div class="input-group ms-2 input-clear">
+                                        <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput" name="tag">
+                                        <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
+                                    </div>
+                                    <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
                                 </div>
-                                <button class="btn btn-primary button ms-2" type="button" id="addTagButton">+</button>
-                            </div>
+                            </form>
                         </div>
                     </div>
                     <div class="row">
@@ -111,6 +120,9 @@
     window.addEventListener('DOMContentLoaded', () => {
         const plantContainer = document.querySelector('.plantContainer');
         const gardenDetails = document.querySelector('.gardenDetails');
+        const clearButton = document.getElementById('clearButton');
+        const tagInput = document.getElementById('tagInput');
+        const tagSubmitButton = document.getElementById('addTagButton');
 
         // Adjust width of gardenDetails initially
         adjustWidth();
@@ -123,12 +135,19 @@
             gardenDetails.style.width = `${width}px`;
         }
 
-        const clearButton = document.getElementById('clearButton');
-
-        const tagInput = document.getElementById('tagInput');
-
         clearButton.addEventListener('click', () => {
             tagInput.value = '';
+        });
+
+        tagSubmitButton.addEventListener('click', () => {
+            document.getElementById('tagForm').submit();
+        });
+
+        tagInput.addEventListener('keydown', (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                document.getElementById('tagForm').submit();
+            }
         });
     });
 </script>

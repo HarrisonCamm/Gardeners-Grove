@@ -101,7 +101,6 @@ public class ViewGardenController {
         Plant plant = foundPlant.get();
 
         try {
-//            Image image = new Image(file, false);
             Image image = Image.removeTemporaryImage(session, imageService);
             image = (image == null ? new Image(file, false) : image.makePermanent());
 
@@ -118,6 +117,24 @@ public class ViewGardenController {
         addAttributes(currentUser, gardenID, model, plantService, gardenService);
 
         return "redirect:/view-garden?gardenID=" +gardenID;
+    }
+
+    @PostMapping("/add-tag")
+    public String addTag(@RequestParam("gardenID") Long gardenID,
+                         @RequestParam("tag") String tag,
+                         Model model) {
+        logger.info("POST /add-tag");
+
+        Optional<Garden> garden = gardenService.findGarden(gardenID);
+        User currentUser = userService.getAuthenicatedUser();
+        if (garden.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
+        else if (!garden.get().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
+
+        // TODO add the tag to the garden and database for autocomplete later on (in another task)
+
+        return "redirect:/view-garden?gardenID=" + gardenID;
     }
 
     private static String addAttributes(User owner, @RequestParam("gardenID") Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
