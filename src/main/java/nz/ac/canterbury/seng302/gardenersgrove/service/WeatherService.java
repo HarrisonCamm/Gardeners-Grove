@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
-import nz.ac.canterbury.seng302.gardenersgrove.controller.CreateGardenController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Weather;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
