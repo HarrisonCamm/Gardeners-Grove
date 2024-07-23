@@ -36,17 +36,21 @@ public class TagModerationController {
     public String moderateTagsPost(@RequestParam String tag, Model model) {
         logger.info("POST /tag " + tag);
 
-        String possibleTerms = moderationService.moderateText(tag);
+        if (tag != "") {
+            String possibleTerms = moderationService.moderateText(tag);
 
-        logger.info(possibleTerms + " returned terms in tag mod");
+            logger.info(possibleTerms + " returned terms in tag mod");
 
-        // todo remove tagError attribute if clean
-
-
-
-        if (possibleTerms != null) {
-            model.addAttribute("tagError", "Profanity or inappropriate language detected");
+            if (!possibleTerms.equals("null")) {
+                logger.info("possible terms not = null");
+                model.addAttribute("tagError", "Profanity or inappropriate language detected");
+            } else {
+                logger.info("valid terms");
+                model.addAttribute("tagError", "valid terms");
+            }
         }
+
+
 
         return "tagTemplate";
     }
