@@ -150,10 +150,9 @@ h2 {
 }
 
 /* Container styles */
-.container {
+.sideBarColour {
     background: #0A3407;
     height: 100vh;
-    text-align: left;
 }
 
 /* Sidebar styles */
