@@ -46,6 +46,7 @@ public class ModerationService {
 
 
             logger.info("Text moderation status: " + textResults.status().description());
+//            logger.info(textResults.classification().toString()); // todo fix this to retrieve the classification
 
 //
 //            // Create output results file to TextModerationOutput.json
