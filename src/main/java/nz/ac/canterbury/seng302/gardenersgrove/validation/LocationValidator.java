@@ -18,7 +18,12 @@ public class LocationValidator {
      * @return FieldError if the validation fails, otherwise null if the input is valid.
      */
     public static FieldError validateStreetAddress(String address) {
-        if (!validateWithRegex("[\\p{L}\\p{N}\\s,'-]*", address)) {
+
+
+
+        if (address.length() > 255) {
+            return new FieldError("garden", "location.streetAddress", "Street address must be under 255 characters");
+        } else if (!validateWithRegex("[\\p{L}\\p{N}\\s,'-]*", address)) {
             return new FieldError("garden", "location.streetAddress", "Street address must only include letters, numbers, spaces, commas, periods, hyphens, or apostrophes");
         }
         return null;
@@ -33,9 +38,10 @@ public class LocationValidator {
      * @return FieldError if the validation fails, otherwise null if the input is valid.
      */
     public static FieldError validateSuburb(String suburb) {
-
-        if (!validateWithRegex("^[\\p{L}\\s'-]*$", suburb)) {
-            return new FieldError("garden", "location.suburb", "Suburb must only include letters, spaces, hyphens, or apostrophes");
+        if (suburb.length() > 255) {
+            return new FieldError("garden", "location.suburb", "Suburb must be under 255 characters");
+        } else if (!validateWithRegex("[\\p{L}\\p{N}\\s,'-]*", suburb)) {
+            return new FieldError("garden", "location.suburb", "Suburb must only include letters, numbers, spaces, commas, periods, hyphens, or apostrophes");
         }
         return null;
     }
@@ -50,20 +56,19 @@ public class LocationValidator {
      * @return FieldError if the validation fails, otherwise null if the input is valid.
      */
     public static FieldError validatePostcode(String postcode) {
-        if (!postcode.trim().isEmpty() &&  !validateWithRegex("^[0-9]{4}$", postcode)) { // Assuming postcode is 5 digits. Adjust regex as needed.
+        if (postcode.length() > 255) {
+            return new FieldError("garden", "location.postcode", "Postcode must be under 255 characters");
+        } else if (!postcode.trim().isEmpty() &&  !validateWithRegex("^[0-9]{4}$", postcode)) {
             return new FieldError("garden", "location.postcode", "Postcode must be a 4 digit number");
         }
         return null;
     }
 
-
-
     public static FieldError validateCity(String city) {
         if (city == null || city.trim().isEmpty()) {
             return new FieldError("garden", "location.city", "City is required");
-        }
-        if (validateWithRegex("^$", city)) {
-            return new FieldError("garden", "location.city", "City is required");
+        } else if (city.length() > 255) {
+            return new FieldError("garden", "location.city", "City must be under 255 characters");
         } else if (!validateWithRegex("[\\p{L}\\s'-]+", city)) {
             return new FieldError("garden", "location.city", "City must only include letters and spaces");
         }
@@ -73,16 +78,13 @@ public class LocationValidator {
     public static FieldError validateCountry(String country) {
         if (country == null || country.trim().isEmpty()) {
             return new FieldError("garden", "location.country", "Country is required");
-        }
-        if (validateWithRegex("^$", country)) {
-            return new FieldError("garden", "location.country", "Country is required");
+        } else if (country.length() > 255) {
+            return new FieldError("garden", "location.country", "Country must be under 255 characters");
         } else if (!validateWithRegex("[\\p{L}\\s'-]+", country)) {
             return new FieldError("garden", "location.country", "Country must only include letters and spaces");
         }
         return null;
     }
-
-
 
 
 
