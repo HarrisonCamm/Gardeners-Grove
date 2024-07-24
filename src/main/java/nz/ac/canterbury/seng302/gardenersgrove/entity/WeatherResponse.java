@@ -128,6 +128,14 @@ public class WeatherResponse {
         return cod;
     }
 
+    public String getDescription() {
+        return weatherInfo != null && weatherInfo.length > 0 ? weatherInfo[0].mainDescription : "";
+    }
+
+    public String getIcon() {
+        return weatherInfo != null && weatherInfo.length > 0 ? weatherInfo[0].icon : "";
+    }
+
     // Inner classes for nested objects
 
     @JsonDeserialize

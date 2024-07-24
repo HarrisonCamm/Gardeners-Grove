@@ -101,10 +101,10 @@
                         <h2>Current Weather</h2>
                             <p><strong>Day of Week:</strong> <span th:text="${weatherResponse.dayOfWeek}"></span></p>
                             <p><strong>Date:</strong> <span th:text="${weatherResponse.date}"></span></p>
-<!--                            <p><strong>Description:</strong> <span th:text="${weatherResponse.description}"></span></p>-->
+                            <p><strong>Description:</strong> <span th:text="${weatherResponse.description}"></span></p>
                             <p><strong>Temperature:</strong> <span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
                             <p><strong>Humidity:</strong> <span th:text="${weatherResponse.humidity}"></span>%</p>
-<!--                            <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" alt="Weather Icon"/>-->
+                            <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" alt="Weather Icon"/>
                         </div>
                         <div th:if="${weatherResponse == null}">
                             <p>Weather data is not available.</p>
