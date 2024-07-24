@@ -36,7 +36,7 @@ public class TagModerationController {
     public String moderateTagsPost(@RequestParam String tag, Model model) {
         logger.info("POST /tag " + tag);
 
-        if (tag != "") {
+        if (!tag.isBlank()) {
             String possibleTerms = moderationService.moderateText(tag);
 
             logger.info(possibleTerms + " returned terms in tag mod");
@@ -50,11 +50,7 @@ public class TagModerationController {
             }
         }
 
-
-
         return "tagTemplate";
     }
-
-
 
 }

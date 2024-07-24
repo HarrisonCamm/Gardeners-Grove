@@ -20,11 +20,11 @@ public class ModerationService {
     Logger logger = LoggerFactory.getLogger(ModerationService.class);
 
 
-    //authenticating the client
+    // authenticating the client
     private ContentModeratorClient client = ContentModeratorManager.authenticate(AzureRegionBaseUrl.fromString(moderatorApiUrl),
             moderatorApiKey);
 
-    //below is adapted from microsoft quickstart
+    // below is adapted from microsoft quickstart
     public String moderateText(String line) {
         logger.info("---------------------------------------");
         logger.info("MODERATE TEXT");
@@ -38,7 +38,7 @@ public class ModerationService {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 
-            if (line.length() > 0) {
+            if (!line.isEmpty()) {
                 textResults = client.textModerations().screenText("text/plain", line.getBytes(), null);
                 // Uncomment below line to print in console
                 logger.info(gson.toJson(textResults).toString());
