@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.unit.validation;
 
 import nz.ac.canterbury.seng302.gardenersgrove.validation.GardenValidator;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
+import nz.ac.canterbury.seng302.gardenersgrove.validation.LocationValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -18,44 +19,37 @@ public class GardenValidatorTests {
         assertNotNull(objectError);
     }
 
-    @Test
-    public void ValidatingGardenLocation_EmptyCountryAndCity_Invalid() {
-        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", "", "", ""), true);
-        assertNotNull(objectError);
-    }
-
     @ParameterizedTest
-    @CsvSource({"#Garden", "&&Garden", "Nice_Garden", "Cool._.Garden"})
+    @CsvSource({"#Garden", "&&Garden", "Nice_Garden", "Cool._.Garden", "Hype()"})
     public void ValidatingGardenName_NonEmptyStrings_Invalid(String gardenName) {
         ObjectError objectError = GardenValidator.validateGardenName(gardenName);
         assertNotNull(objectError);
     }
 
     @ParameterizedTest
-    @CsvSource({"#Location, ''", "'', &&Location", "'', ''"})
-    public void ValidatingGardenLocation_NonEmptyStrings_Invalid(String city, String country) {
-        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", "", country, city), true);
-        assertNotNull(objectError);
-    }
-
-    @ParameterizedTest
     @CsvSource(value = {"Cool, Garden", "Garden,123", "John,Doe", "   Garden,Cool,Name,Aakrista   ",}, delimiter = ';')
-    public void ValidatingGardenLocation_IncludesComma_Valid( String gardenName) {
+    public void ValidatingGardenName_IncludesComma_Valid( String gardenName) {
         ObjectError objectError = GardenValidator.validateGardenName(gardenName);
         assertNull(objectError);
     }
 
     @ParameterizedTest
-    @CsvSource({"Cool Garden", "Garden123", "John Doe", "   Garden   ",})
+    @CsvSource({"Cool Garden",
+            "Garden123",
+            "John Doe",
+            "   Garden   ",
+            "Oliver is cool-",
+            "'Oliver is cool'",
+            "-Oliver",
+            "Oli-ver",
+            "Oli'ver" +
+            "Oli.ver" +
+            ".Oli'ver." +
+            ".Oliver" +
+            "Oliver."
+        })
     public void ValidatingGardenName_NonEmptyStrings_Valid(String gardenName) {
         ObjectError objectError = GardenValidator.validateGardenName(gardenName);
-        assertNull(objectError);
-    }
-
-    @ParameterizedTest
-    @CsvSource({"Timaru, New Zealand",})
-    public void ValidatingGardenLocation_NonEmptyStrings_Valid(String gardenLocation) {
-        ObjectError objectError = GardenValidator.validateGardenName(gardenLocation);
         assertNull(objectError);
     }
 
@@ -67,7 +61,21 @@ public class GardenValidatorTests {
             "" + Integer.MIN_VALUE,
             "" + Integer.MAX_VALUE,
             SURFACE_AREA_OF_EARTH + ".1",
-            SURFACE_AREA_OF_EARTH + ",1"
+            SURFACE_AREA_OF_EARTH + ",1",
+            "10000000000000000,111",
+            "000000000000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "0000000000000000000" +
+                    "00000000000000000001"
     }, delimiter = ';') //Changed delimiter for allowing comma test cases
     public void ValidatingGardenSize_NonEmptyStrings_Invalid(String gardenSize) {
         ObjectError objectError = GardenValidator.validateSize(gardenSize);
@@ -75,7 +83,7 @@ public class GardenValidatorTests {
     }
 
     @ParameterizedTest
-    @CsvSource({"1", "0.00000000001", SURFACE_AREA_OF_EARTH})
+    @CsvSource(value = {"1", "0.00000000001", SURFACE_AREA_OF_EARTH, "1,1111111"}, delimiter = ';')
     public void ValidatingGardenSize_NonEmptyStrings_Valid(String gardenSize) {
         ObjectError objectError = GardenValidator.validateSize(gardenSize);
         assertNull(objectError);
@@ -93,7 +101,7 @@ public class GardenValidatorTests {
             "uvsmbptsdyvdgpoxvkrbaaelpfnmdgtlwkyuigtqnciuzzviobgeisyeqgtdiumxwumgtuhwlnkdtgpfvbpzugncscningysdlauvf" +
             "vdrbhgwwhbstpabjddabjibvsrjkrgbjeyqvzlrzyxvcinjyglesyucft"})
     public void ValidatingGardenLocation_CityLength_Invalid(String city) {
-        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", "", "", city), true);
+        ObjectError objectError = LocationValidator.validateCity(city);
         assertNotNull(objectError);
     }
 
@@ -102,7 +110,7 @@ public class GardenValidatorTests {
             "uvsmbptsdyvdgpoxvkrbaaelpfnmdgtlwkyuigtqnciuzzviobgeisyeqgtdiumxwumgtuhwlnkdtgpfvbpzugncscningysdlauvf" +
             "vdrbhgwwhbstpabjddabjibvsrjkrgbjeyqvzlrzyxvcinjyglesyucft"})
     public void ValidatingGardenLocation_CountryLength_Invalid(String country) {
-        ObjectError objectError = GardenValidator.validateGardenLocation(new Location("", "", country, "", ""), false);
+        ObjectError objectError = LocationValidator.validateCity(country);
         assertNotNull(objectError);
     }
 }

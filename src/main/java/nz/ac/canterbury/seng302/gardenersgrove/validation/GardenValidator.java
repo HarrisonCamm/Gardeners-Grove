@@ -17,50 +17,15 @@ public class GardenValidator {
      * @return object error if there is an error otherwise null
      */
     public static FieldError validateGardenName(String name) {
-        if (name.trim().isEmpty()) {
+        if (name == null || name.trim().isEmpty()) {
             return new FieldError("garden", "name", "Garden name cannot be empty");
         } else if (name.length() > 255) {
             return new FieldError("garden", "name", "Garden name must be under 255 characters");
-        } else if (!validateWithRegex("[0-9\\p{L}\\s'-,.]+", name)) {
+        } else if (!validateWithRegex("[\\p{L}\\d\\s'\\-.,]+", name)) {
             return new FieldError("garden", "name", "Garden name must only include letters, numbers, spaces, dots, hyphens, or apostrophes");
         }
         return null;
     }
-
-
-
-    /**
-     * Validates a garden's location
-     * @param location garden location object
-     * @return object error if there is an error otherwise null
-     */
-    public static FieldError validateGardenLocation(Location location, boolean isCity) {
-        if (isCity) {
-            if (validateWithRegex("^$", location.getCity()) || location.getCity().length() > 255 || location.getCity().trim().isEmpty()) {
-                return new FieldError("garden", "location.city", "City name must be under 255 characters and not empty");
-            } else if (!validateWithRegex("[\\p{L}\\s'-]+", location.getCity())) {
-                return new FieldError("garden", "location.city", "City must only include letters and spaces");
-            }
-        } else {
-            if (validateWithRegex("^$", location.getCountry()) || location.getCountry().length() > 255 || location.getCountry().trim().isEmpty()) {
-                return new FieldError("garden", "location.country", "Country name must be under 255 characters and not empty");
-            } else if (!validateWithRegex("[\\p{L}\\s'-]+", location.getCountry())) {
-                return new FieldError("garden", "location.country", "Country must only include letters and spaces");
-            }
-        }
-
-        if (location.getSuburb() != null && location.getSuburb().length() > 255) {
-            return new FieldError("garden", "location.suburb", "Suburb name must be under 255 characters");
-        }
-
-
-        if (location.getStreetAddress() != null && location.getStreetAddress().length() > 255) {
-            return new FieldError("garden", "location.streetAddress", "Street Address name must be under 255 characters");
-        }
-
-        return null;
-    }
-
 
     /**
      * Validates a garden's size
@@ -70,11 +35,14 @@ public class GardenValidator {
     public static FieldError validateSize(String size) {
         double sizeOfEarth = 510100000;
 
+        if (size.length() > 255) {
+            return new FieldError("garden", "size", "Garden size must be under 255 characters");
+        }
+
         if (!size.isEmpty()) {
-            if ((!validateWithRegex("[1-9]+[[\\.,]?([0-9]+)]$", size)   // Checks for digits 1-9 followed by optional comma or period and digits
-                    && !validateWithRegex("[0]*([\\.,]?[0-9]+)+$", size))       // Checks for optional leading zeros, comma/period, and digits
-                    || validateWithRegex("[0]*([\\.,]?[0]+)*$", size)            // Checks for zeros or decimal format with optional zeros
-                    || validateWithRegex("^(?=.*[.,].*[.,]).*$", size)) {        // Checks if there are at least two commas or periods
+            if ((!validateWithRegex("^[1-9][0-9]*([.,][0-9]+)?$", size)   // Checks for digits 1-9 followed by digits and optional comma/period and digits
+                    && !validateWithRegex("^0([.,][0-9]+)?$", size))       // Checks for zero or zero with optional comma/period and digits
+                    || validateWithRegex("^(?=.*[.,].*[.,]).*$", size)) { // Checks if there are at least two commas or periods
                 return new FieldError("garden", "size", "Garden size must be a positive number");
             }
 
