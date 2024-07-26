@@ -8,6 +8,8 @@ import java.time.format.DateTimeParseException;
 import java.util.regex.Pattern;
 
 public class PlantValidator {
+    public final static int MIN_PLANT_AGE = -200;
+    public final static int MAX_PLANT_AGE = 14000;
 
     /**
      * Validates the plant name when creating new Plant objects
@@ -53,10 +55,10 @@ public class PlantValidator {
             LocalDate today = LocalDate.now();
             Period period = Period.between(datePlanted, today);
             int plantAge = period.getYears();
-            if (plantAge >= 400) {
-                return new FieldError("plant", "datePlanted", "Date planted must be within the past 400 years.");
-            } else if (plantAge < -200) {
-                return new FieldError("plant", "datePlanted", "Date planted must be within the next 200 years.");
+            if (plantAge >= MAX_PLANT_AGE) {
+                return new FieldError("plant", "datePlanted", "Date planted must be within the past " + MAX_PLANT_AGE + "years.");
+            } else if (plantAge < MIN_PLANT_AGE) {
+                return new FieldError("plant", "datePlanted", "Date planted must be within the next " + Math.abs(MIN_PLANT_AGE) + " years.");
             } else {
                 return null;
             }
