@@ -428,8 +428,6 @@ p {
 .input-clear button {
     position: absolute;
     right: 10%;
-    width: 20px;
-    height: 20px;
     border: none;
     background: transparent;
     cursor: pointer;
@@ -535,6 +533,18 @@ p {
         width: 120px;
         height: 120px;
         border-radius: 60px;
+    }
+
+    .input-clear button {
+        position: absolute;
+        right: 10%;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        color: #000;
+        transition: background-color 0.3s ease;
+        border-radius: 50%;
+        font-size: 200%;
     }
 
 }

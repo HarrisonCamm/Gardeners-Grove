@@ -122,7 +122,6 @@
         const gardenDetails = document.querySelector('.gardenDetails');
         const clearButton = document.getElementById('clearButton');
         const tagInput = document.getElementById('tagInput');
-        const tagSubmitButton = document.getElementById('addTagButton');
 
         // Adjust width of gardenDetails initially
         adjustWidth();
@@ -137,10 +136,6 @@
 
         clearButton.addEventListener('click', () => {
             tagInput.value = '';
-        });
-
-        tagSubmitButton.addEventListener('click', () => {
-            document.getElementById('tagForm').submit();
         });
 
         tagInput.addEventListener('keydown', (event) => {
