@@ -1,18 +1,25 @@
 package nz.ac.canterbury.seng302.gardenersgrove.validation;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
  * This class provides utility methods for validating user information.
  */
 public class UserValidator {
+    private static final int MAX_NAME_LENGTH = 64;
+    private static final String PASSWORD_ERROR = "Your password must be at least 8 characters long and include at  " +
+            "least one uppercase letter, one lowercase letter, one number, and one special character.";
+
     /**
      * Formats a name by trimming leading and trailing white spaces.
      * If the input name is null, it returns an empty string.
@@ -174,16 +181,124 @@ public class UserValidator {
         return containsFirstName || containsLastName || containsEmail || containsDOB;
     }
 
+    /**
+     * Checks if the input is not null and not empty.
+     * @param input the input to check
+     * @return true if the input is not null and not empty, false otherwise
+     */
+    public static boolean hasInput(String input) {
+        return input != null && !input.isEmpty();
+    }
 
     /**
-     * Checks if the provided passwords match.
-     * For the checking retyping password.
-     *
-     * @param password1 the first password to compare
-     * @param password2 the second password to compare
-     * @return true if the passwords match, false otherwise
+     * Validates a user's details for registering a new user and editing an existing user.
+     * @param model the model to add error messages to
+     * @param userService the user service to check if the email already exists
+     * @param user the user to check if the email already exists if logged in, otherwise null
+     * @param email the email to validate
+     * @param noLastName true if the user has no last name, false otherwise
+     * @param firstName the first name to validate
+     * @param lastName the last name to validate
+     * @param formattedDob the date of birth to validate
      */
-    public static boolean doPasswordsMatch(String password1, String password2) {
-        return Objects.equals(password1, password2);
+    public static void doUserValidations(Model model, UserService userService, User user, String email,
+        boolean noLastName, String firstName, String lastName, String formattedDob) {
+
+        // Checks if the email is input and valid
+        if (!hasInput(email) || !isEmailValid(email)) {
+            model.addAttribute("registrationEmailError", "Email address must be in the form ‘jane@doe.nz’");
+        }
+        // Checks if the email already exists and is not the user's email if a user is given
+        else if (userService.emailExists(email) && (user == null || !email.equals(user.getEmail()))) {
+            model.addAttribute("registrationEmailError", "This email address is already in use");
+        }
+
+        // Checks if the first name is input and valid
+        if (!hasInput(firstName)) {
+            model.addAttribute("firstNameError", "First name cannot be empty");
+        }
+        else {
+            if (firstName.length() > MAX_NAME_LENGTH) {
+                model.addAttribute("firstNameError", "First name must be 64 characters long or less");
+            }
+            if (!isNameValid(firstName)) {
+                model.addAttribute("firstNameError", "First name must only include letters, spaces, hyphens or apostrophes");
+            }
+        }
+
+        // Checks if the last name is input and valid if the user has a last name
+        if (!noLastName) {
+            if (!hasInput(lastName)) {
+                model.addAttribute("lastNameError", "Last name cannot be empty");
+            }
+            if (lastName.length() > MAX_NAME_LENGTH) {
+                model.addAttribute("lastNameError", "Last name must be 64 characters long or less");
+            }
+            if (!isNameValid(lastName)) {
+                model.addAttribute("lastNameError", "Last name must only include letters, spaces, hyphens or apostrophes");
+            }
+        }
+
+        // If present, checks if the date of birth is valid
+        if (hasInput(formattedDob)) {
+            if (!checkDateValidity(formattedDob)) {
+                model.addAttribute("ageError", "Date in not in valid format, DD/MM/YYYY");
+            } else {
+                if (calculateAge(formattedDob) < 13) {
+                    model.addAttribute("ageError", "You must be 13 years old or older to create an account");
+                }
+                if (calculateAge(formattedDob) > 120) {
+                    model.addAttribute("ageError", "The maximum age allowed is 120 years");
+                }
+            }
+        }
+    }
+
+    /**
+     * Validates a user's password. If a user is not logged in, the old password is not validated.
+     * @param model the model to add error messages to
+     * @param userService the user service to validate the user's old password
+     * @param user the user to validate the old password for, or null if the user is not logged in
+     * @param oldPassword the old password to validate
+     * @param newPassword the new password to validate
+     * @param retypePassword the retyped password to validate
+     */
+    public static void doPasswordValidations(Model model, UserService userService, User user, String oldPassword,
+                                             String newPassword, String retypePassword) {
+        // Check if the user is logged in
+        if (user != null) {
+            // Check if the old password is empty
+            if (!hasInput(oldPassword)) {
+                model.addAttribute("oldPasswordError", PASSWORD_ERROR);
+            } else {
+                // Attempt to validate the user with the provided old password
+                Optional<User> validatedUser = userService.validateUser(user.getEmail(), oldPassword);
+
+                // If the Optional is empty, the old password does not match
+                if (validatedUser.isEmpty()) {
+                    model.addAttribute("oldPasswordError", "Your old password is incorrect");
+                }
+            }
+        }
+
+        // Check if the new password is empty
+        if (!hasInput(newPassword)) {
+            model.addAttribute("newPasswordError", PASSWORD_ERROR);
+        } else {
+            // Validate the new password strength and check if it contains user details
+            if (!isPasswordValid(newPassword) || (user != null && passwordContainsDetails(user, newPassword))) {
+                model.addAttribute("newPasswordError", PASSWORD_ERROR);
+            }
+        }
+
+        // Check if the retyped password is empty
+        if (!hasInput(retypePassword)) {
+            model.addAttribute("passwordMatchError", PASSWORD_ERROR);
+        } else {
+            // Check if the new password and retype password match
+            if (!newPassword.equals(retypePassword)) {
+                model.addAttribute("passwordMatchError", "The new passwords do not match");
+            }
+        }
     }
 }
