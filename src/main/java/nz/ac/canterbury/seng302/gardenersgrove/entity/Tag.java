@@ -4,24 +4,20 @@ import jakarta.persistence.*;
 
 @Entity
 public class Tag {
-    @jakarta.persistence.Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private Garden garden;
+    @Column(nullable = false)
+    private Long gardenId;
 
     @Column(nullable = false)
     private String name;
 
-    /**
-     * Required constructor
-     */
     protected Tag() {}
 
-    public Tag(Garden garden, String name) {
-        this.garden = garden;
+    public Tag(Long gardenId, String name) {
+        this.gardenId = gardenId;
         this.name = name;
     }
 
@@ -29,16 +25,16 @@ public class Tag {
         return id;
     }
 
-    public void setId(Long Id) {
-        this.id = Id;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Garden getGarden() {
-        return garden;
+    public Long getGardenId() {
+        return gardenId;
     }
 
-    public void setGarden(Garden garden) {
-        this.garden = garden;
+    public void setGardenId(Long gardenId) {
+        this.gardenId = gardenId;
     }
 
     public String getName() {

@@ -134,7 +134,7 @@ public class ViewGardenController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
         // Add tag to the database
-        tagService.addTag(new Tag(garden.get(), tag));
+        tagService.addTag(new Tag(garden.get().getId(), tag));
 
         return "redirect:/view-garden?gardenID=" + gardenID;
     }
@@ -152,6 +152,7 @@ public class ViewGardenController {
             model.addAttribute("gardenLocation", garden.get().getLocation().toString());
             model.addAttribute("gardenSize", garden.get().getSize());
             model.addAttribute("gardenTags", tagService.getGardenTags(gardenID));
+            model.addAttribute("allTags", tagService.getTags());
             return "viewGardenDetailsTemplate";
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " does not exist");
