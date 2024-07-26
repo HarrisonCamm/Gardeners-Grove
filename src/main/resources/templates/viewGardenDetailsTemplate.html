@@ -55,7 +55,7 @@
                                     Add new plant
                                 </a>
                             </div>
-                            <form id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
+                            <form class="tags" id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
                                 <div class="tag-input">
                                     <div class="input-group ms-2 input-clear">
                                         <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput" name="tag">
@@ -63,6 +63,7 @@
                                     </div>
                                     <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
                                 </div>
+                                <div class="container" id="autocompleteList"></div>
                             </form>
                         </div>
                     </div>
@@ -123,10 +124,7 @@
         const gardenDetails = document.querySelector('.gardenDetails');
         const clearButton = document.getElementById('clearButton');
         const tagInput = document.getElementById('tagInput');
-        const autocompleteList = document.createElement('div');
-
-        autocompleteList.setAttribute('id', 'autocompleteList');
-        tagInput.parentNode.appendChild(autocompleteList);
+        const autocompleteList = document.getElementById('autocompleteList');
 
         function adjustWidth() {
             const width = plantContainer.offsetWidth;
@@ -151,30 +149,40 @@
         });
 
         tagInput.addEventListener('input', function() {
-            // Clear the autocomplete list
-            autocompleteList.innerHTML = '';
-
             // Get the current input
             let input = this.value;
 
-            // Filter the tags
-            let suggestions = allTags.filter(function(tag) {
-                return tag.name.toLowerCase().startsWith(input.toLowerCase());
-            });
+            // Clear the autocomplete list
+            autocompleteList.innerHTML = '';
 
-            // Create an autocomplete item for each suggestion
-            suggestions.forEach(function(tag) {
-                let item = document.createElement('div');
-                item.textContent = tag.name;
-                item.addEventListener('click', function() {
-                    // Set the input value to the clicked item's text
-                    tagInput.value = this.textContent;
-
-                    // Clear the autocomplete list
-                    autocompleteList.innerHTML = '';
+            // Only proceed if the input is not empty
+            if (input.trim() !== '') {
+                // Filter the tags
+                let suggestions = allTags.filter(function(tag) {
+                    return tag.name.toLowerCase().startsWith(input.toLowerCase());
                 });
-                autocompleteList.appendChild(item);
-            });
+
+                // Create an autocomplete item for each suggestion
+                suggestions.forEach(function(tag, index) {
+                    let item = document.createElement('button');
+                    item.className = 'dropdown-item autocomplete-tag-item'; // Bootstrap class
+                    item.textContent = tag.name.length > 20 ? tag.name.substring(0, 17) + '...' : tag.name;
+                    item.addEventListener('click', function() {
+                        // Set the input value to the clicked item's text
+                        tagInput.value = this.textContent;
+
+                        // Clear the autocomplete list
+                        autocompleteList.innerHTML = '';
+                    });
+                    autocompleteList.appendChild(item);
+
+                    // Add a horizontal line after each item, except the last one
+                    if (index !== suggestions.length - 1) {
+                        let hr = document.createElement('hr');
+                        autocompleteList.appendChild(hr);
+                    }
+                });
+            }
         });
     });
 </script>
