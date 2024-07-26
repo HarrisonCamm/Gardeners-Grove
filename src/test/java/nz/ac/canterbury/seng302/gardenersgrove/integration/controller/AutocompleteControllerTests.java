@@ -74,6 +74,9 @@ public class AutocompleteControllerTests {
     @MockBean
     private FriendRequestService friendRequestService;
 
+    @MockBean
+    private WeatherService weatherService;
+
     @Mock
     Authentication authentication;
 

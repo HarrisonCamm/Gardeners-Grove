@@ -18,8 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -93,7 +91,7 @@ public class RegisterUserTest {
             "'', Doe, john.doe@example.com, Password@123, Password@123, 01/01/1990, firstNameError",
             "John, '', john.doe@example.com, Password@123, Password@123, 01/01/1990, lastNameError",
             "John, Doe, not-an-email, Password@123, Password@123, 01/01/1990, registrationEmailError",
-            "John, Doe, john.doe@example.com, pass, pass, 01/01/1990, passwordValidityError",
+            "John, Doe, john.doe@example.com, pass, pass, 01/01/1990, newPasswordError",
             "John, Doe, john.doe@example.com, Password@123, DifferentPassword@123, 01/01/1990, passwordMatchError",
             "John, Doe, john.doe@example.com, Password@123, Password@123, 01/01/1902, ageError",
     })

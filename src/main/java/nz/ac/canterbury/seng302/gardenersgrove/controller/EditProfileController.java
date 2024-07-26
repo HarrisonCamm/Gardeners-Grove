@@ -9,7 +9,6 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +16,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.UserValidator.*;
@@ -46,8 +40,6 @@ public class EditProfileController {
     private final MailService mailService;
     private final ImageService imageService;
 
-    private static final String PASSWORD_ERROR = "Your password must be at least 8 characters long and include at  " +
-            "least one uppercase letter, one lowercase letter, one number, and one special character.";
 
     @Autowired
     public EditProfileController(UserService userService, UserRepository newUserRepository,
@@ -72,14 +64,9 @@ public class EditProfileController {
         RedirectService.addEndpoint("/edit-user-profile");
         User currentUser = userService.getAuthenicatedUser();
 
-        model.addAttribute("user", currentUser);
-        model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
-        model.addAttribute("firstName", currentUser.getFirstName());
-        model.addAttribute("lastName", currentUser.getLastName());
-        model.addAttribute("noLastName", currentUser.getNoLastName());
-        model.addAttribute("email", currentUser.getEmail());
-        model.addAttribute("changePasswordFormInput", false);
-        model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
+        addModelAttributes(model, currentUser, currentUser.getFirstName(), currentUser.getLastName(), currentUser.getNoLastName(),
+                currentUser.getEmail(), currentUser.getDateOfBirth(), false, true,
+                null, null, null);
         logger.info("current user + "  + currentUser.getDateOfBirth());
 
         Image.removeTemporaryImage(session, imageService);
@@ -89,7 +76,7 @@ public class EditProfileController {
     }
 
     /**
-     * Handles the submission of the edit user profile form.
+     * Handles the submission of the edit user profile form, but not the password subform.
      * This method processes form inputs for user profile updates, including personal information and password changes.
      * It performs validations on the provided inputs such as name validity, email format, and password criteria.
      * If any validation fails, it returns to the form with error messages; otherwise, it updates the user's information.
@@ -138,144 +125,101 @@ public class EditProfileController {
 
 
         // Pre-populate the model with submitted values to persist them in case of an error
-        model.addAttribute("user", currentUser);
-        model.addAttribute("firstName", firstName);
-        model.addAttribute("lastName", lastName);
-        model.addAttribute("noLastName", noLastName);
-        model.addAttribute("changePasswordFormInput", changePasswordFormInput);
-        model.addAttribute("oldPassword", oldPassword);
-        model.addAttribute("newPassword", newPassword);
-        model.addAttribute("retypePassword", retypePassword);
-        model.addAttribute("email", email);
-        model.addAttribute("dateOfBirth", dateOfBirth);
+        addModelAttributes(model, currentUser, firstName, lastName, noLastName, email, dateOfBirth,
+                changePasswordFormInput, true, oldPassword, newPassword, retypePassword);
 
-        // Begin Validations
-
-        // Change Password Validations
-        if (changePasswordFormInput) {
-            // Only perform password validation when change password form open (changePasswordFormInput == true)
-
-            // Check if the old password is empty
-            if (oldPassword == null || oldPassword.isEmpty()) {
-                model.addAttribute("oldPasswordError", PASSWORD_ERROR);
-            } else {
-                // Attempt to validate the user with the provided old password
-                Optional<User> validatedUser = userService.validateUser(currentUser.getEmail(), oldPassword);
-
-                // If the Optional is empty, the old password does not match
-                if (!validatedUser.isPresent()) {
-                    model.addAttribute("oldPasswordError", "Your old password is incorrect");
-                }
-            }
-
-            // Check if the new password is empty
-            if (newPassword == null || newPassword.isEmpty()) {
-                model.addAttribute("newPasswordError", PASSWORD_ERROR);
-            } else {
-                // Validate the new password strength and check if it contains user details
-                if (!isPasswordValid(newPassword) || passwordContainsDetails(currentUser, newPassword)) {
-                    model.addAttribute("newPasswordError", PASSWORD_ERROR);
-                }
-            }
-
-            // Check if the retyped password is empty
-            if (retypePassword == null || retypePassword.isEmpty()) {
-                model.addAttribute("passwordMatchError", PASSWORD_ERROR);
-            } else {
-                // Check if the new password and retype password match
-                if (!newPassword.equals(retypePassword)) {
-                    model.addAttribute("passwordMatchError", "The new passwords do not match");
-                }
-            }
-        }
-
-        // Begin User Details Validations
-        // Check if email already exists
-        if (userService.emailExists(email) && !Objects.equals(email, currentUser.getEmail())) {
-            model.addAttribute("registrationEmailError", "This email address is already in use");
-        }
-        if (email.isEmpty() ||!isEmailValid(email)){
-            model.addAttribute("registrationEmailError", "Email address must be in the form ‘jane@doe.nz’");
-        }
-        if (firstName.length() > 64) {
-            model.addAttribute("firstNameError", "First name must be 64 characters long or less");
-        }
-        if (!isNameValid(firstName)) {
-            model.addAttribute("firstNameError", "First name must only include letters, spaces, hyphens or apostrophes");
-        }
-        if (firstName.isEmpty()) {
-            model.addAttribute("firstNameError", "First name cannot be empty");
-        }
-        if (lastName.length() > 64) {
-            model.addAttribute("lastNameError", "Last name must be 64 characters long or less");
-        }
-        if (!isNameValid(lastName) && !lastName.isEmpty()) {
-            model.addAttribute("lastNameError", "Last name must only include letters, spaces, hyphens or apostrophes");
-        }
-        if (!noLastName && lastName.isEmpty()) {
-            model.addAttribute("lastNameError", "Last name cannot be empty");
-        }
-        if (!dateOfBirth.isEmpty() && !checkDateValidity(formattedDateOfBirth)) {
-            model.addAttribute("ageError", "Date in not in valid format, DD/MM/YYYY");
-        }
-        if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) < 13) {
-            model.addAttribute("ageError", "You must be 13 years old or older to create an account");
-        }
-        if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) > 120) {
-            model.addAttribute("ageError", "The maximum age allowed is 120 years");
-        }
+        doUserValidations(model, userService, currentUser, email, noLastName, firstName, lastName, formattedDateOfBirth);
 
         // Check for errors, if error thrown display error message
-        if (model.containsAttribute("registrationEmailError") || model.containsAttribute("firstNameError")
-                || model.containsAttribute("lastNameError") || model.containsAttribute("ageError")
-                || model.containsAttribute("oldPasswordError") || model.containsAttribute("newPasswordError")
-                || model.containsAttribute("passwordMatchError")) {
+        if (model.containsAttribute("registrationEmailError")
+                || model.containsAttribute("firstNameError")
+                || model.containsAttribute("lastNameError")
+                || model.containsAttribute("ageError")) {
             return "editUserProfileTemplate";
         } else {
             // No errors, continue with updating user details
             currentUser = userService.updateUser(currentUser, firstName, lastName, noLastName, email, dateOfBirth);
 
-            // If the change password form is open, and the password fields are valid (which they are if reaching this stage), update the password
-            if (changePasswordFormInput) {
-                userService.updateUserPassword(currentUser, newPassword);
-                // send user confirmation email of password change
-                String emailAddress = currentUser.getEmail();
-                String emailSubject = "Password Change Confirmation";
-                String emailText = "Dear " + currentUser.getFirstName() + ",\n\n" +
-                        "Your password has been successfully updated. If you did not make this change, please contact support immediately.\n\n" +
-                        "Best,\n" +
-                        "The Gardener's Grove Team";
-
-                // Try to send the email
-                try {
-                    mailService.sendSimpleMessage(emailAddress, emailSubject, emailText);
-                    // Close password form
-                    model.addAttribute("changePasswordFormInput", false);
-                    // Password updated, allow user to continue to edit other details
-                    return "editUserProfileTemplate";
-                } catch (Exception e) {
-                    // Log the error
-                    logger.error("Failed to send password change confirmation email to " + emailAddress, e);
-                    // TODO display an error message
-                }
-            }
-
             // Display the user's full name
             model.addAttribute("displayName", firstName + " " + lastName);
 
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(currentUser.getEmail(), currentUser.getPassword(), currentUser.getAuthorities());
-            // Authenticate the token properly with the CustomAuthenticationProvider
-            Authentication authenticationToken = authenticationManager.authenticate(token);
-            // Check if the authentication is actually authenticated (any username/password is accepted, so this should never be false)
-            if(authenticationToken.isAuthenticated()) {
-                // Add the authentication to the current security context (Stateful)
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                // Add the token to the request session (needed so the authentication can be properly used)
-                request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-            }
+            renewAuthentication(currentUser);
+
             // Redirect to the user profile page after successful update of user details
             return "redirect:/view-user-profile";
         }
+    }
+
+    /**
+     * Handles the change password nested form submission, and nothing of the outer form.
+     * @param firstName The first name of the user, mandatory.
+     * @param lastName The last name of the user, optional.
+     * @param noLastName A boolean flag to indicate if the user has no last name.
+     * @param email The email address of the user, used for contact and login.
+     * @param changePasswordFormInput A flag indicating whether the password change form was triggered.
+     * @param oldPassword The user's current password, required for password change validation.
+     * @param newPassword The user's new password to be set, must meet security criteria.
+     * @param retypePassword The new password retyped for confirmation.
+     * @param dateOfBirth The user's date of birth in the format DD/MM/YYYY.
+     * @param model The Spring MVC model used to pass attributes to the view.
+     * @param request The HttpServletRequest object, providing request information for HTTP servlets.
+     * @return The name of the view to be rendered, depending on the result of the form submission.
+     */
+    @PostMapping("/edit-user-profile-password")
+    public String changePassword(@RequestParam(name="firstName") String firstName,
+                                 @RequestParam(name="lastName", required=false) String lastName,
+                                 @RequestParam(name="noLastName", required=false) boolean noLastName,
+                                 @RequestParam(name="email") String email,
+                                 @RequestParam(name="changePasswordFormInput", required=false) boolean changePasswordFormInput,
+                                 @RequestParam(name="oldPassword", required = false) String oldPassword,
+                                 @RequestParam(name="newPassword", required = false) String newPassword,
+                                 @RequestParam(name="retypePassword", required = false) String retypePassword,
+                                 @RequestParam(name="dateOfBirth", required = false) String dateOfBirth,
+                                 Model model, HttpServletRequest request) {
+        logger.info("POST /edit-user-profile-password");
+
+        // Format first and last names
+        firstName = formatName(firstName);
+        lastName = formatName(lastName);
+
+        User currentUser = userService.getAuthenicatedUser();
+
+        // Pre-populate the model with submitted values to persist them in case of an error
+        addModelAttributes(model, currentUser, firstName, lastName, noLastName, email, dateOfBirth,
+                changePasswordFormInput, true, oldPassword, newPassword, retypePassword);
+
+        doPasswordValidations(model, userService, currentUser, oldPassword, newPassword, retypePassword);
+
+        // Check for errors, if error thrown display error message
+        if (!((model.containsAttribute("oldPasswordError")
+                || model.containsAttribute("newPasswordError")
+                || model.containsAttribute("passwordMatchError")))) {
+
+            userService.updateUserPassword(currentUser, newPassword);
+            // send user confirmation email of password change
+            String emailAddress = currentUser.getEmail();
+            String emailSubject = "Password Change Confirmation";
+            String emailText = "Dear " + currentUser.getFirstName() + ",\n\n" +
+                    "Your password has been successfully updated. If you did not make this change, your account is at risk and you should contact s302team600@cosc.canterbury.ac.nz .\n\n" +
+                    "Best,\n" +
+                    "The Gardener's Grove Team";
+
+            // Try to send the email
+            try {
+                mailService.sendSimpleMessage(emailAddress, emailSubject, emailText);
+                // Close password form
+                model.addAttribute("changePasswordFormInput", false);
+            } catch (Exception e) {
+                // Log the error
+                final String errorMessage = "Failed to send password change confirmation email to " + emailAddress
+                        + ". Please try again later.";
+                logger.error(errorMessage, e);
+                model.addAttribute("emailError", errorMessage);
+            }
+
+            renewAuthentication(currentUser);
+        }
+        return "editUserProfileTemplate";
     }
 
     /**
@@ -297,7 +241,6 @@ public class EditProfileController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
-        User currentUser = userService.getUserByEmail(currentPrincipalName);
 
         Optional<User> user = userRepository.findById(userID);
         if (user.isPresent()) {
@@ -313,5 +256,44 @@ public class EditProfileController {
         }
 
         return "redirect:/edit-user-profile";
+    }
+
+    /**
+     * Adds the model attributes for the edit profile form
+     */
+    private void addModelAttributes(Model model, User currentUser, String firstName, String lastName, boolean noLastName,
+                                    String email, String dateOfBirth, boolean changePasswordFormInput, boolean addDisplayName,
+                                    String oldPassword, String newPassword, String retypePassword) {
+        model.addAttribute("user", currentUser);
+        model.addAttribute("firstName", firstName);
+        model.addAttribute("lastName", lastName);
+        model.addAttribute("noLastName", noLastName);
+        model.addAttribute("changePasswordFormInput", changePasswordFormInput);
+        if (addDisplayName)
+            model.addAttribute("displayName", firstName + " " + lastName);
+        if (oldPassword != null)
+            model.addAttribute("oldPassword", oldPassword);
+        if (newPassword != null)
+            model.addAttribute("newPassword", newPassword);
+        if (retypePassword != null)
+            model.addAttribute("retypePassword", retypePassword);
+        model.addAttribute("email", email);
+        model.addAttribute("dateOfBirth", dateOfBirth);
+    }
+
+    /**
+     * Renews the authentication of the user
+     *
+     * @param user The user to renew the authentication for
+     */
+    private void renewAuthentication(User user) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), user.getAuthorities());
+        // Authenticate the token properly with the CustomAuthenticationProvider
+        Authentication authenticationToken = authenticationManager.authenticate(token);
+        // Check if the authentication is actually authenticated (any username/password is accepted, so this should never be false)
+        if (authenticationToken.isAuthenticated()) {
+            // Add the authentication to the current security context (Stateful)
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        }
     }
 }
