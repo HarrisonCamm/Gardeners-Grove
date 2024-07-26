@@ -76,7 +76,7 @@ public class EditProfileController {
     }
 
     /**
-     * Handles the submission of the edit user profile form.
+     * Handles the submission of the edit user profile form, but not the password subform.
      * This method processes form inputs for user profile updates, including personal information and password changes.
      * It performs validations on the provided inputs such as name validity, email format, and password criteria.
      * If any validation fails, it returns to the form with error messages; otherwise, it updates the user's information.
@@ -151,7 +151,7 @@ public class EditProfileController {
     }
 
     /**
-     * Handles the change password nested form submission.
+     * Handles the change password nested form submission, and nothing of the outer form.
      * @param firstName The first name of the user, mandatory.
      * @param lastName The last name of the user, optional.
      * @param noLastName A boolean flag to indicate if the user has no last name.
@@ -241,7 +241,6 @@ public class EditProfileController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
-        User currentUser = userService.getUserByEmail(currentPrincipalName);
 
         Optional<User> user = userRepository.findById(userID);
         if (user.isPresent()) {
@@ -259,6 +258,9 @@ public class EditProfileController {
         return "redirect:/edit-user-profile";
     }
 
+    /**
+     * Adds the model attributes for the edit profile form
+     */
     private void addModelAttributes(Model model, User currentUser, String firstName, String lastName, boolean noLastName,
                                     String email, String dateOfBirth, boolean changePasswordFormInput, boolean addDisplayName,
                                     String oldPassword, String newPassword, String retypePassword) {
@@ -279,6 +281,11 @@ public class EditProfileController {
         model.addAttribute("dateOfBirth", dateOfBirth);
     }
 
+    /**
+     * Renews the authentication of the user
+     *
+     * @param user The user to renew the authentication for
+     */
     private void renewAuthentication(User user) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), user.getAuthorities());
         // Authenticate the token properly with the CustomAuthenticationProvider
