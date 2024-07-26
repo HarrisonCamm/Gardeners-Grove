@@ -11,10 +11,6 @@ import java.util.Locale;
 public class WeatherResponse {
 
     @JsonDeserialize
-    @JsonProperty("coord")
-    private Coord coord;
-
-    @JsonDeserialize
     @JsonProperty("weather")
     private WeatherInfo[] weatherInfo;
 
@@ -29,14 +25,6 @@ public class WeatherResponse {
     @JsonDeserialize
     @JsonProperty("visibility")
     private int visibility;
-
-    @JsonDeserialize
-    @JsonProperty("wind")
-    private Wind wind;
-
-    @JsonDeserialize
-    @JsonProperty("clouds")
-    private Clouds clouds;
 
     @JsonDeserialize
     @JsonProperty("dt")
@@ -61,12 +49,6 @@ public class WeatherResponse {
     @JsonDeserialize
     @JsonProperty("cod")
     private int cod;
-
-    // Getters for parent class attributes
-
-    public Coord getCoord() {
-        return coord;
-    }
 
     public double getTemperature() {
         return mainInfo != null ? mainInfo.temperature : 0.0;
@@ -102,14 +84,6 @@ public class WeatherResponse {
         return visibility;
     }
 
-    public Wind getWind() {
-        return wind;
-    }
-
-    public Clouds getClouds() {
-        return clouds;
-    }
-
     public Sys getSys() {
         return sys;
     }
@@ -140,19 +114,7 @@ public class WeatherResponse {
 
     // Inner classes for nested objects
 
-    @JsonDeserialize
-    public static class Coord {
 
-        @JsonProperty("lon")
-        public double lon;
-
-        @JsonProperty("lat")
-        public double lat;
-
-        public Coord() {
-            // no-args jackson constructor
-        }
-    }
 
     @JsonDeserialize
     public static class MainInfo {
@@ -202,34 +164,6 @@ public class WeatherResponse {
         public String icon;
 
         public WeatherInfo() {
-            // no-args jackson constructor
-        }
-    }
-
-    @JsonDeserialize
-    public static class Wind {
-
-        @JsonProperty("speed")
-        public double speed;
-
-        @JsonProperty("deg")
-        public int deg;
-
-        @JsonProperty("gust")
-        public double gust;
-
-        public Wind() {
-            // no-args jackson constructor
-        }
-    }
-
-    @JsonDeserialize
-    public static class Clouds {
-
-        @JsonProperty("all")
-        public int all;
-
-        public Clouds() {
             // no-args jackson constructor
         }
     }
