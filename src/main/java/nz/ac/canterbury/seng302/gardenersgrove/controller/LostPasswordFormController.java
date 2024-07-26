@@ -9,7 +9,6 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,17 +27,15 @@ public class LostPasswordFormController {
     Logger logger = LoggerFactory.getLogger(LostPasswordFormController.class);
 
     private final UserService userService;
-    private final AuthenticationManager authenticationManager;
     private final VerificationTokenService verificationTokenService;
     private final MailService mailService;
 
 
     @Autowired
-    public LostPasswordFormController(UserService userService, AuthenticationManager authenticationManager,
+    public LostPasswordFormController(UserService userService,
                                       VerificationTokenService verificationTokenService,
                                       MailService mailService) {
         this.userService = userService;
-        this.authenticationManager = authenticationManager;
         this.verificationTokenService = verificationTokenService;
         this.mailService = mailService;
     }
@@ -83,15 +80,16 @@ public class LostPasswordFormController {
             if (userService.emailExists(email)) {
                 // Create Verification Token
                 User newUser = userService.getUserByEmail(email);
-                newUser.grantAuthority("ROLE_UNVERIFIED");
                 VerificationToken verificationToken = verificationTokenService.createVerificationToken(newUser);
 
                 // Create confirmation email
                 String emailSubject = "Reset Your Password for Gardener's Grove";
 
-                String emailText = generateResetPasswordEmail(verificationToken, newUser);
+                String emailURL = String.valueOf(request.getRequestURL()).replace("lost-password-form", "");
+                String emailURI = String.valueOf(request.getRequestURI()).replace("lost-password-form", "");
+                String emailText = generateResetPasswordEmail(verificationToken, newUser, emailURI, emailURL);
 
-                model.addAttribute("emailText", emailText); // For testing purposes :)
+                model.addAttribute("emailText", emailText); // used for cucumber tests
 
 
                 // Try to send confirmation email
@@ -109,8 +107,14 @@ public class LostPasswordFormController {
         }
     }
 
-    public static String generateResetPasswordEmail(VerificationToken verificationToken, User newUser) {
-        String tokenLink = "http://localhost:8080/reset-password-form?token=" + verificationToken.getToken();
+    public static String generateResetPasswordEmail(VerificationToken verificationToken, User newUser, String emailURI, String emailURL) {
+        String tokenLink = "";
+        String deploymentType = System.getenv("GARDENERSGROVE_DEPLOYMENT");
+        if (deploymentType != null && (deploymentType.equals("test") || deploymentType.equals("prod"))) {
+            tokenLink = "https://csse-seng302-team600.canterbury.ac.nz" + emailURI + "reset-password-form?token=" + verificationToken.getToken();
+        } else {
+            tokenLink = emailURL + "reset-password-form?token=" + verificationToken.getToken();
+        }
 
         String emailText = "Dear " + newUser.getFirstName() + ",\n\n" +
                 "To reset your password, please use the following link:\n\n" +

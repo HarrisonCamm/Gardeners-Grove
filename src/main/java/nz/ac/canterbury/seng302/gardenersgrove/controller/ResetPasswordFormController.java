@@ -62,7 +62,7 @@ public class ResetPasswordFormController {
 
         // If token is expired or null
         if (!verificationTokenService.validateToken(token)) {
-            logger.info("A Reset password link has expired.");
+            logger.info("Reset password link has expired.");
             return "redirect:/sign-in-form?token=" + token; //todo show error message in sign in form no matter how many times link is clicked
         }
 
@@ -86,10 +86,14 @@ public class ResetPasswordFormController {
                              Model model) {
         logger.info("POST /reset-password-form");
 
+        if (!verificationTokenService.validateToken(token)) {
+            logger.info("Reset password link has expired.");
+            return "redirect:/sign-in-form?token=" + token;
+        }
+
         // Getting the user for sending the confirmation email and validating retyped password
         // To check if the user's fields match the password or not AC7
         User currentUser = verificationTokenService.getUserByToken(token);
-
 
         model.addAttribute("newPassword", newPassword);
         model.addAttribute("retypePassword", retypedPassword);
@@ -126,7 +130,6 @@ public class ResetPasswordFormController {
             // new password and retyped password are valid
             logger.info("Password is valid, user has a token");
             logger.info("User first name is: " + currentUser.getFirstName());
-
             userService.updateUserPassword(currentUser, newPassword);
             // send user confirmation email of password change
             String emailAddress = currentUser.getEmail();
@@ -142,13 +145,11 @@ public class ResetPasswordFormController {
                 logger.info("Sent confirmation email to " + emailAddress);
 
                 // Password updated, allow user to login page
-                // todo check authentication of user??
-
-                return "redirect:/sign-in-form?token=" + token;
+                verificationTokenService.deleteToken(token);
+                return "redirect:/sign-in-form";
             } catch (Exception e) {
                 // Log the error
                 logger.error("Failed to send password change confirmation email to " + emailAddress, e);
-                // TODO display an error message
 
             }
         }

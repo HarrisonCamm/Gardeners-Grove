@@ -28,6 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest
 public class ViewGardenTests {
 
+    private static final String SURFACE_AREA_OF_EARTH = "510100000";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -82,7 +84,7 @@ public class ViewGardenTests {
     @WithMockUser
     @CsvSource({
             "Lovely Garden, 12.00009123",
-            "Tomato's, " +Long.MAX_VALUE,
+            "Tomato's, " +SURFACE_AREA_OF_EARTH,
             "Bob, ''",
     })
     public void PostForm_WithValidFields_Success(String gardenName, String gardenSize) throws Exception {
