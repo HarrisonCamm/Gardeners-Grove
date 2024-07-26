@@ -9,15 +9,11 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.Objects;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.UserValidator.isEmailValid;
 
@@ -31,17 +27,15 @@ public class LostPasswordFormController {
     Logger logger = LoggerFactory.getLogger(LostPasswordFormController.class);
 
     private final UserService userService;
-    private final AuthenticationManager authenticationManager;
     private final VerificationTokenService verificationTokenService;
     private final MailService mailService;
 
 
     @Autowired
-    public LostPasswordFormController(UserService userService, AuthenticationManager authenticationManager,
+    public LostPasswordFormController(UserService userService,
                                       VerificationTokenService verificationTokenService,
                                       MailService mailService) {
         this.userService = userService;
-        this.authenticationManager = authenticationManager;
         this.verificationTokenService = verificationTokenService;
         this.mailService = mailService;
     }
