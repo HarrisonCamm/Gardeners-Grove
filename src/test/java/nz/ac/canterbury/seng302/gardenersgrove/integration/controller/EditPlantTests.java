@@ -132,9 +132,28 @@ public class EditPlantTests {
         verify(plantService).addPlant(any(Plant.class));
     }
 
-    @Test
-    public void OnForm_InvalidPlantName_ErrorGiven() {
+    @ParameterizedTest
+    @WithMockUser
+    @CsvSource({
+            "1,  !, 3453125, 24/10/2000, this is an invalid plant",
+            "2, \"  \", 3453125, 01/10/1950, this is also invalid",
+            "3, \" \", 3453125, 06/12/2100, ''",
+            "4, 1123232~#@, 3453125, 31/07/2024, not a grape"
+    })
+    public void OnForm_InvalidPlantName_ErrorGiven(Long plantID, String plantName, String count, String date, String description) throws Exception {
+        Plant oldPlant = new Plant(testGarden, "default plant", "1", "a regular plant", "1/1/1111");
+        when(plantService.findPlant(plantID)).thenReturn(Optional.of(oldPlant));
 
+        mockMvc.perform(put("/edit-plant")
+                        .with(csrf())
+                        .param("plantID", plantID.toString())
+                        .param("name", plantName)
+                        .param("count", count)
+                        .param("datePlanted", date)
+                        .param("description", description))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(plantService).findPlant(plantID);
     }
 
     @Test
