@@ -13,16 +13,30 @@ basic project using ```gradle```, ```Spring Boot```, ```Thymeleaf```, and ```Git
 - Type the following line
 ```
 geoapify.api.key=YOUR_API_KEY
+weather.api.key=YOUR_OPENWEATHERMAP_API_KEY
+weather.api.url=https://api.openweathermap.org/data/2.5/
+
 ```
 See below for instructions for getting an API key
 
 ### 2 - Getting an API key
+
+## Geoapify API Key
 
 - Go to https://www.geoapify.com/
 - Create an account
 - Create a project
 - Select "Autocomplete API" under "Choose Geoapify API key"
 - Copy and paste the API key into the application-dev.properties file (see above)
+
+## OpenWeatherMap API Key
+
+- Go to https://openweathermap.org/
+- Create an account.
+- Navigate to the API keys section.
+- Generate an API key.
+- Copy and paste the API key into the application-dev.properties file (see above).
+
 
 ### 3 - Setting Credentials in application-dev.properties
 

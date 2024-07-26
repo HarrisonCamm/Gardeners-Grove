@@ -89,6 +89,9 @@ public class SecurityConfigurationTest {
     @MockBean
     private ImageService imageService;
 
+    @MockBean
+    private WeatherService weatherService;
+
     @BeforeEach
     void setUp() {
         // Create new user
