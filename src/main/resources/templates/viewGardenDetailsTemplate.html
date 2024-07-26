@@ -148,12 +148,14 @@
             }
         });
 
+        // This code is AI generated :)
         tagInput.addEventListener('input', function() {
             // Get the current input
             let input = this.value;
 
             // Clear the autocomplete list
             autocompleteList.innerHTML = '';
+            autocompleteList.classList.add('hidden'); // Hide the border
 
             // Only proceed if the input is not empty
             if (input.trim() !== '') {
@@ -173,6 +175,10 @@
 
                         // Clear the autocomplete list
                         autocompleteList.innerHTML = '';
+                        autocompleteList.classList.add('hidden'); // Hide the border
+
+                        // Submit the form
+                        document.getElementById('tagForm').submit();
                     });
                     autocompleteList.appendChild(item);
 
@@ -182,6 +188,10 @@
                         autocompleteList.appendChild(hr);
                     }
                 });
+
+                if (suggestions.length > 0) {
+                    autocompleteList.classList.remove('hidden'); // Show the border
+                }
             }
         });
     });
