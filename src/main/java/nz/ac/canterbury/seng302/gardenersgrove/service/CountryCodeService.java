@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -32,7 +31,7 @@ public class CountryCodeService {
 
     private Map<String, String> loadCountryCodes(Resource resource, ObjectMapper objectMapper) {
         try (InputStream inputStream = resource.getInputStream()) {
-            return objectMapper.readValue(inputStream, new TypeReference<Map<String, String>>() {});
+            return objectMapper.readValue(inputStream, new TypeReference<>() {});
         } catch (IOException e) {
             logger.info("Error loading country codes", e);
         }
