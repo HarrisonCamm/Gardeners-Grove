@@ -15,3 +15,17 @@ Feature: U17 As Liam, I want to connect with my friends on Gardener’s Grove so
     Given I am on the manage friends page
     When I hit the add friend button
     Then I see a search bar
+
+  Scenario: AC4 -
+    Given I am on the manage friends page
+    And I have opened the search bar
+    When I enter a full name (first and last name, if any)
+    And I hit the search button
+    Then I can see a list of users of the app exactly matching the name I provided
+
+  Scenario: AC5
+    Given I am on the manage friends page
+    And I have opened the search bar
+    When I enter an email address
+    And I hit the search button
+    Then I can see a list of users of the app exactly matching the email provided
