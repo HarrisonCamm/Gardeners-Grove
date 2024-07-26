@@ -9,7 +9,6 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +16,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.UserValidator.*;
@@ -43,8 +40,6 @@ public class EditProfileController {
     private final MailService mailService;
     private final ImageService imageService;
 
-    private static final String PASSWORD_ERROR = "Your password must be at least 8 characters long and include at  " +
-            "least one uppercase letter, one lowercase letter, one number, and one special character.";
 
     @Autowired
     public EditProfileController(UserService userService, UserRepository newUserRepository,
@@ -133,42 +128,7 @@ public class EditProfileController {
         addModelAttributes(model, currentUser, firstName, lastName, noLastName, email, dateOfBirth,
                 changePasswordFormInput, true, oldPassword, newPassword, retypePassword);
 
-        // Begin Validations
-        // Begin User Details Validations
-        // Check if email already exists
-        if (userService.emailExists(email) && !Objects.equals(email, currentUser.getEmail())) {
-            model.addAttribute("registrationEmailError", "This email address is already in use");
-        }
-        if (email.isEmpty() || !isEmailValid(email)) {
-            model.addAttribute("registrationEmailError", "Email address must be in the form ‘jane@doe.nz’");
-        }
-        if (firstName.length() > 64) {
-            model.addAttribute("firstNameError", "First name must be 64 characters long or less");
-        }
-        if (!isNameValid(firstName)) {
-            model.addAttribute("firstNameError", "First name must only include letters, spaces, hyphens or apostrophes");
-        }
-        if (firstName.isEmpty()) {
-            model.addAttribute("firstNameError", "First name cannot be empty");
-        }
-        if (lastName.length() > 64) {
-            model.addAttribute("lastNameError", "Last name must be 64 characters long or less");
-        }
-        if (!isNameValid(lastName) && !lastName.isEmpty()) {
-            model.addAttribute("lastNameError", "Last name must only include letters, spaces, hyphens or apostrophes");
-        }
-        if (!noLastName && lastName.isEmpty()) {
-            model.addAttribute("lastNameError", "Last name cannot be empty");
-        }
-        if (!dateOfBirth.isEmpty() && !checkDateValidity(formattedDateOfBirth)) {
-            model.addAttribute("ageError", "Date in not in valid format, DD/MM/YYYY");
-        }
-        if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) < 13) {
-            model.addAttribute("ageError", "You must be 13 years old or older to create an account");
-        }
-        if (!formattedDateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) > 120) {
-            model.addAttribute("ageError", "The maximum age allowed is 120 years");
-        }
+        doUserValidations(model, userService, currentUser, email, noLastName, firstName, lastName, formattedDateOfBirth);
 
         // Check for errors, if error thrown display error message
         if (model.containsAttribute("registrationEmailError")
@@ -228,39 +188,7 @@ public class EditProfileController {
         addModelAttributes(model, currentUser, firstName, lastName, noLastName, email, dateOfBirth,
                 changePasswordFormInput, true, oldPassword, newPassword, retypePassword);
 
-        // Begin Validations
-        // Check if the old password is empty
-        if (oldPassword == null || oldPassword.isEmpty()) {
-            model.addAttribute("oldPasswordError", PASSWORD_ERROR);
-        } else {
-            // Attempt to validate the user with the provided old password
-            Optional<User> validatedUser = userService.validateUser(currentUser.getEmail(), oldPassword);
-
-            // If the Optional is empty, the old password does not match
-            if (!validatedUser.isPresent()) {
-                model.addAttribute("oldPasswordError", "Your old password is incorrect");
-            }
-        }
-
-        // Check if the new password is empty
-        if (newPassword == null || newPassword.isEmpty()) {
-            model.addAttribute("newPasswordError", PASSWORD_ERROR);
-        } else {
-            // Validate the new password strength and check if it contains user details
-            if (!isPasswordValid(newPassword) || passwordContainsDetails(currentUser, newPassword)) {
-                model.addAttribute("newPasswordError", PASSWORD_ERROR);
-            }
-        }
-
-        // Check if the retyped password is empty
-        if (retypePassword == null || retypePassword.isEmpty()) {
-            model.addAttribute("passwordMatchError", PASSWORD_ERROR);
-        } else {
-            // Check if the new password and retype password match
-            if (!newPassword.equals(retypePassword)) {
-                model.addAttribute("passwordMatchError", "The new passwords do not match");
-            }
-        }
+        doPasswordValidations(model, userService, currentUser, oldPassword, newPassword, retypePassword);
 
         // Check for errors, if error thrown display error message
         if (!((model.containsAttribute("oldPasswordError")
