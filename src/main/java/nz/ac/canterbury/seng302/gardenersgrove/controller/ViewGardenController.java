@@ -3,12 +3,8 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -16,16 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,11 +29,16 @@ public class ViewGardenController {
     private final PlantService plantService;
     private final UserService userService;
 
-    public ViewGardenController(GardenService gardenService, PlantService plantService, UserService userService, ImageService imageService) {
+    private final WeatherService weatherService;
+
+
+    public ViewGardenController(GardenService gardenService, PlantService plantService, UserService userService, ImageService imageService, WeatherService weatherService) {
         this.gardenService = gardenService;
         this.plantService  = plantService;
         this.userService = userService;
         this.imageService = imageService;
+        this.weatherService = weatherService;
+
     }
 
     @GetMapping("/view-garden")
@@ -68,6 +63,11 @@ public class ViewGardenController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
+
+
+        //New Code Added to get weather
+        WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+        model.addAttribute("weatherResponse", weatherResponse);
 
         return addAttributes(currentUser, gardenID, model, plantService, gardenService);
     }
@@ -101,7 +101,6 @@ public class ViewGardenController {
         Plant plant = foundPlant.get();
 
         try {
-//            Image image = new Image(file, false);
             Image image = Image.removeTemporaryImage(session, imageService);
             image = (image == null ? new Image(file, false) : image.makePermanent());
 
@@ -118,6 +117,24 @@ public class ViewGardenController {
         addAttributes(currentUser, gardenID, model, plantService, gardenService);
 
         return "redirect:/view-garden?gardenID=" +gardenID;
+    }
+
+    @PostMapping("/add-tag")
+    public String addTag(@RequestParam("gardenID") Long gardenID,
+                         @RequestParam("tag") String tag,
+                         Model model) {
+        logger.info("POST /add-tag");
+
+        Optional<Garden> garden = gardenService.findGarden(gardenID);
+        User currentUser = userService.getAuthenicatedUser();
+        if (garden.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
+        else if (!garden.get().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
+
+        // TODO add the tag to the garden and database for autocomplete later on (in another task)
+
+        return "redirect:/view-garden?gardenID=" + gardenID;
     }
 
     private static String addAttributes(User owner, @RequestParam("gardenID") Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
