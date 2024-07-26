@@ -15,7 +15,7 @@ public class PlantValidator {
      * @return FieldError if the plant name is empty or contains invalid characters
      */
     public static FieldError validatePlantName(String name) {
-        if (name.isEmpty() || !isValidPlantName(name)) {
+        if (name.isEmpty() || name.trim().isEmpty() || !isValidPlantName(name)) {
             return new FieldError("plant", "name",
                     "Plant name cannot be empty and must only include letters, numbers, spaces, dots, " +
                             "hyphens or apostrophes.");
