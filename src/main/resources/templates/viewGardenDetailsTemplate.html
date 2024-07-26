@@ -38,10 +38,10 @@
                             <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
                         </div>
                     </div>
-                    <div class="row mb-3" th:if="${tags != null and tags.size() > 0}">
+                    <div class="row mb-3" th:if="${gardenTags != null and gardenTags.size() > 0}">
                         <div class="col d-flex flex-wrap">
-                            <th:block th:each="tag : ${tags}">
-                                <label class="me-2 mb-2" th:text="${tag}"></label>
+                            <th:block th:each="tag : ${gardenTags}">
+                                <span class="badge me-2 mb-2 tag-colour" th:text="${#strings.abbreviate(tag.name,20)}"></span>
                             </th:block>
                         </div>
                     </div>

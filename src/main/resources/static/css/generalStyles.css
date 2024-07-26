@@ -441,6 +441,15 @@ p {
     color: #000 !important;
 }
 
+.tag-colour {
+    background-color: #BEE186;
+    color: black;
+    border-radius: 10px;
+    padding: 5px 10px 5px 10px;
+    margin: 5px;
+    font-weight: normal;
+}
+
 
 @media only screen and (orientation: portrait) {
     h2 {
