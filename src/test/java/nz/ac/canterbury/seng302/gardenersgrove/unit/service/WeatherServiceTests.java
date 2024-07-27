@@ -46,20 +46,32 @@ public class WeatherServiceTests {
     }
 
     @Test
-    public void EmptyCityCountry_GetCurrentWeather_ReturnsNull() {
-        WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather("", "");
+    public void EmptyCity_GetCurrentWeather_ReturnsNull() {
+        WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather("", "New Zealand");
         Assertions.assertNull(weatherServiceResponse);
     }
 
     @Test
-    public void NullCityCountry_GetCurrentWeather_ReturnsNull() {
-    WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather(null, null);
+    public void NullCity_GetCurrentWeather_ReturnsNull() {
+    WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather(null, "New Zealand");
         Assertions.assertNull(weatherServiceResponse);
+    }
+
+    @Test
+    public void EmptyCountry_GetCurrentWeather_ReturnsWeatherResponse() {
+        WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather("Auckland", "");
+        Assertions.assertNotNull(weatherServiceResponse);
+    }
+
+    @Test
+    public void NullCountry_GetCurrentWeather_ReturnsWeatherResponse() {
+        WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather("Auckland", null);
+        Assertions.assertNotNull(weatherServiceResponse);
     }
 
     @Test
     public void ValidJson_GetCurrentWeather_ReturnsWeatherResponse() {
-        WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather("", "");
+        WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather("Auckland", "New Zealand");
         Assertions.assertNotNull(weatherServiceResponse);
 
         Assertions.assertEquals(expectedDayOfWeek, weatherServiceResponse.getDayOfWeek());
