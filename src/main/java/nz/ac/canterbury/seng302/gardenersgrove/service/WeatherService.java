@@ -69,9 +69,13 @@ public class WeatherService {
      * @return A null object if the API call fails or a WeatherResponse object representing the current weather
      */
     public WeatherResponse getCurrentWeather(String city, String country) {
-
+        //reject null and empty inputs
+        if (city == null || city.isEmpty()) {
+            logger.info("getCurrentWeather call with null/empty city has been rejected");
+            return null;
+        }
         //Uses the country code service to get the country code (2 letter ) for the given country name
-        String countryCode = countryCodeService.getCountryCode(country);
+        String countryCode = country == null ? "" : countryCodeService.getCountryCode(country);
 
         //Combines the city and country code to form the location string used in API call
         String location = city + (countryCode.isEmpty() ? "" : "," + countryCode);
