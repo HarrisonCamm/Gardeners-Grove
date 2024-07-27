@@ -22,7 +22,7 @@ public class WeatherService {
     @Value("${weather.api.url:#{null}}")
     private String apiUrl;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
@@ -32,7 +32,14 @@ public class WeatherService {
 
     @Autowired
     public WeatherService(CountryCodeService countryCodeService) {
+        this.restTemplate = new RestTemplate();
         this.countryCodeService = countryCodeService;
+    }
+
+    //test use constructor
+    public WeatherService(CountryCodeService countryCodeService, RestTemplate restTemplate) {
+        this.countryCodeService = countryCodeService;
+        this.restTemplate = restTemplate;
     }
 
     /**
