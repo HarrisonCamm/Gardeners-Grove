@@ -7,9 +7,12 @@
         <link th:href="@{/css/navBar.css}" rel="stylesheet">
     </head>
     <body>
+        <!-- Navigation Bar Fragment -->
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+
         <div class="wrapper">
-            <div class="container">
+            <div class="sideBarColour">
+                <!-- Garden Side Navigation Bar -->
                 <table class="sideBar">
                     <thead>
                         <tr>
@@ -27,6 +30,7 @@
                     </tbody>
                 </table>
             </div>
+
             <div class="wrapper">
                 <div class="gardenTable">
                     <table>
