@@ -4,8 +4,6 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.WeatherResponse;
 import nz.ac.canterbury.seng302.gardenersgrove.service.CountryCodeService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.WeatherService;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,15 +15,6 @@ import static org.mockito.ArgumentMatchers.any;
 public class WeatherServiceTests {
     private WeatherService weatherService;
     private static String jsonString;
-
-    //Expected values from json
-    private final String expectedDayOfWeek = "Saturday";
-    private final String expectedDate = "27/07/2024";
-    private final String expectedDescription = "Clouds";
-    private final Double expectedTemperature = 281.54;
-    private final int expectedHumidity = 73;
-    private final String expectedIcon = "04d";
-
 
     @BeforeAll
     static public void  jsonSetup() throws Exception {
@@ -71,6 +60,14 @@ public class WeatherServiceTests {
 
     @Test
     public void ValidJson_GetCurrentWeather_ReturnsWeatherResponse() {
+        //Expected values from json
+        String expectedDayOfWeek = "Saturday";
+        String expectedDate = "27/07/2024";
+        String expectedDescription = "Clouds";
+        Double expectedTemperature = 281.54;
+        int expectedHumidity = 73;
+        String expectedIcon = "04d";
+
         WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather("Auckland", "New Zealand");
         Assertions.assertNotNull(weatherServiceResponse);
 
