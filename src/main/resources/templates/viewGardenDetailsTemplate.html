@@ -16,7 +16,7 @@
                 <div class="list-group">
                     <th:block th:each="garden : ${gardens}">
                         <a class="list-group-item list-group-item-action" th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
-                            <span th:text="${#strings.abbreviate(garden.name,20)}"> Name </span>
+                            <span th:text="${#strings.abbreviate(garden.name,23)}"> Name </span>
                         </a>
                     </th:block>
                 </div>
@@ -63,10 +63,12 @@
                                     </div>
                                     <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
                                 </div>
-                                <div class="container" id="autocompleteList"></div>
                             </form>
                         </div>
+                        <!-- Moving the autocomplete list below the input form -->
+                        <div class="container mt-3" id="autocompleteList"></div>
                     </div>
+
                     <div class="row">
                         <div class="col">
                             <div id="imageError" class="error-message"></div>
@@ -155,7 +157,6 @@
 
             // Clear the autocomplete list
             autocompleteList.innerHTML = '';
-            autocompleteList.classList.add('hidden'); // Hide the border
 
             // Only proceed if the input is not empty
             if (input.trim() !== '') {
@@ -168,14 +169,14 @@
                 suggestions.forEach(function(tag, index) {
                     let item = document.createElement('button');
                     item.className = 'dropdown-item autocomplete-tag-item'; // Bootstrap class
-                    item.textContent = tag.name.length > 20 ? tag.name.substring(0, 17) + '...' : tag.name;
+                    item.textContent = tag.name.length > 20 ? tag.name.substring(0, 20) + '...' : tag.name;
                     item.addEventListener('click', function() {
                         // Set the input value to the clicked item's text
                         tagInput.value = this.textContent;
 
                         // Clear the autocomplete list
                         autocompleteList.innerHTML = '';
-                        autocompleteList.classList.add('hidden'); // Hide the border
+                        autocompleteList.style.display = 'none'; // Hide the list
 
                         // Submit the form
                         document.getElementById('tagForm').submit();
@@ -190,8 +191,12 @@
                 });
 
                 if (suggestions.length > 0) {
-                    autocompleteList.classList.remove('hidden'); // Show the border
+                    autocompleteList.style.display = 'block'; // Show the list
+                } else {
+                    autocompleteList.style.display = 'none'; // Hide the list if no suggestions
                 }
+            } else {
+                autocompleteList.style.display = 'none'; // Hide the list if input is empty
             }
         });
     });
