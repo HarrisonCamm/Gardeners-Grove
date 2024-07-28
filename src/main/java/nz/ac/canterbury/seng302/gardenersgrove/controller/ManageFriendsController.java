@@ -3,8 +3,10 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.UserRelationship;
 import nz.ac.canterbury.seng302.gardenersgrove.service.FriendRequestService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserRelationshipService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +26,15 @@ public class ManageFriendsController {
 
     private final UserService userService;
     private final FriendRequestService friendRequestService;
+    private final UserRelationshipService userRelationshipService;
     private boolean showSearch = true;
 
 
     @Autowired
-    public ManageFriendsController(UserService userService, FriendRequestService friendRequestService) {
+    public ManageFriendsController(UserService userService, FriendRequestService friendRequestService, UserRelationshipService userRelationshipService) {
         this.userService = userService;
         this.friendRequestService = friendRequestService;
+        this.userRelationshipService = userRelationshipService;
     }
 
 
@@ -93,9 +97,15 @@ public class ManageFriendsController {
 
         List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
 
+        List<UserRelationship> usersRelationships = userRelationshipService.getUserRelationships(currentUser);
+
         for (FriendRequest request : sentFriendRequests) {
-            if (request.getStatus().equals("Declined") && searchedUsers.contains(request.getReceiver())) {
-                searchedUsers.remove(request.getReceiver());
+            searchedUsers.remove(request.getReceiver());
+        }
+
+        for (UserRelationship relationship: usersRelationships) {
+            if (relationship.getStatus().equals("Declined")) {
+                searchedUsers.remove(relationship.getReceiver());
             }
         }
 
@@ -127,6 +137,7 @@ public class ManageFriendsController {
 
         FriendRequest friendRequest = new FriendRequest(currentUser, invitedUser);
         friendRequestService.save(friendRequest);
+        friendRequestService.cancelRequest(invitedUser, currentUser);
 
         return "redirect:/manage-friends";
     }
@@ -162,6 +173,8 @@ public class ManageFriendsController {
         User rejectedUser = userService.getUserByEmail(email);
 
         friendRequestService.rejectRequest(currentUser, rejectedUser);
+        UserRelationship userRelationship = new UserRelationship(rejectedUser, currentUser, "Declined");
+        userRelationshipService.save(userRelationship);
 
         return "redirect:/manage-friends";
     }
@@ -183,6 +196,15 @@ public class ManageFriendsController {
         // Removes duplicate requests.
         friendRequestService.cancelRequest(acceptedFriend, currentUser);
         friendRequestService.cancelRequest(currentUser, acceptedFriend);
+
+
+        UserRelationship relationship = userRelationshipService.getRelationship(acceptedFriend, currentUser);
+        if (relationship != null) {
+            relationship.setStatus("Accepted");
+        } else {
+            UserRelationship userRelationship = new UserRelationship( acceptedFriend, currentUser,"Accepted");
+            userRelationshipService.save(userRelationship);
+        }
 
         // Add each user to the other's friends list
         if (!currentUser.getFriends().contains(acceptedFriend)) {
@@ -208,6 +230,10 @@ public class ManageFriendsController {
 
         User currentUser = userService.getAuthenicatedUser();
         User friendToRemove = userService.getUserByEmail(email);
+
+        UserRelationship relationship = userRelationshipService.getRelationship(friendToRemove, currentUser);
+        userRelationshipService.remove(relationship);
+
         // Check if the user to remove is indeed a friend
         if (currentUser.getFriends().contains(friendToRemove)) {
             // Remove the user from the current user's friend list
