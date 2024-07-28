@@ -31,7 +31,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
 public class EditGardenPlantsSteps {
     private static MockMvc mockMvcEditPlant;
     private static MockMvc mockMvcViewGarden;
