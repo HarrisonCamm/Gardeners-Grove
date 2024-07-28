@@ -1,29 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head th:replace="fragments/head :: head(title='View Garden')">
-<!--        <meta charset="UTF-8">-->
-<!--        <meta name="_csrf" th:content="${_csrf.token}"/>-->
-<!--        <title>View Garden</title>-->
-<!--        <link th:href="@{/css/generalStyles.css}" rel="stylesheet">-->
-<!--        <link th:href="@{/css/navBar.css}" rel="stylesheet">-->
-<!--        <script th:src="@{/javascript/image-handling.js}"></script>-->
-    </head>
+    <head th:replace="fragments/head :: head(title='View Garden')"> </head>
     <body>
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 
         <div class="wrapper">
-            <!-- Garden Side Navigation Bar -->
-            <div class="d-flex flex-column flex-shrink-0 p-3 sideBarColour">
-                <h3 class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none text-white">Gardens</h3>
-                <div class="list-group">
-                    <th:block th:each="garden : ${gardens}">
-                        <a class="list-group-item list-group-item-action" th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
-                            <span th:text="${#strings.abbreviate(garden.name,20)}"> Name </span>
-                        </a>
-                    </th:block>
-                </div>
-            </div>
+            <!-- Garden Side Navigation Bar Fragment -->
+            <div th:insert="~{fragments/sideBar.html :: sideBar}"></div>
 
+            <!-- View Garden Page Content -->
             <div class="gardenContainer">
                 <div class="gardenDetails container">
                     <div class="row mb-3">

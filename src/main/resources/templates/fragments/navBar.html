@@ -1,11 +1,8 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <head>
-        <!-- CSS for the NavBar -->
-        <link rel="stylesheet" th:href="@{/css/navBar.css}" />
-    </head>
     <body>
         <ul th:fragment="navBar" class="navBar">
+            <!-- NavBar page links -->
             <div class="navBar-centre">
                 <li><a class="navLink" th:href="@{main}">Main</a></li>
                 <li><a class="navLink" th:href="@{view-user-profile}">View Profile</a></li>
