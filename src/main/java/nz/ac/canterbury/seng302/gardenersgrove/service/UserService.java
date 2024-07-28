@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -167,5 +168,14 @@ public class UserService {
 
     public List<FriendRequest> getPendingFriendRequests(User currentUser) {
         return userRepository.getPendingFriendRequests(currentUser.getUserId());
+    }
+
+    public boolean areUsersEqual(User user1, User user2) {
+        return Objects.equals(user1.getUserId(), user2.getUserId()) &&
+                user1.getFirstName().equals(user2.getFirstName()) &&
+                user1.getLastName().equals(user2.getLastName()) &&
+                user1.getEmail().equals(user2.getEmail()) &&
+                user1.getPassword().equals(user2.getPassword()) &&
+                user1.getDateOfBirth().equals(user2.getDateOfBirth());
     }
 }

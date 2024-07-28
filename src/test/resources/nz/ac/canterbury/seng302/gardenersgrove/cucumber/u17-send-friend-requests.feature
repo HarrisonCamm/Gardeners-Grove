@@ -57,19 +57,33 @@ Feature: U17 As Liam, I want to connect with my friends on Gardener’s Grove so
       | "123"            |
       | "user@email"     |
 
-  Scenario: AC7 - Adding a friend from search
-    Given I see a matching person for the search I made
+  Scenario Outline: AC7 - Adding a friend from search
+    Given I enter a search string <string>
+    And I hit the search button
+    And I see a matching person for the search I made
     When I hit the invite as friend button
     Then the other user receives an invite that will be shown in their manage friends page
+    Examples:
+      | string            |
+      | "Lei Yuan"        |
+      | "Sarah"           |
+      | "kaia@email.com"  |
+      | "inaya@email.com" |
 
-  Scenario: AC8 - Accepting a friend request
+  Scenario Outline: AC8 - Accepting a friend request
     Given I am on the manage friends page
-    And I have pending invites
+    And I have pending invites from <user>
     When I accept an invite
     Then that person is added to my list of friends
     And I can see their profile
     And I am added to that person’s friends list
     And that person can see my profile
+    Examples:
+      | user              |
+      | "kaia@email.com"  |
+      | "inaya@email.com" |
+      | "lei@email.com"   |
+      | "sarah@email.com" |
 
   Scenario: AC9 - Declining a friend request
     Given I am on the manage friends page

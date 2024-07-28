@@ -5,7 +5,10 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.FriendRequestService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,12 +34,19 @@ public class SendFriendRequestsSteps {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
+
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    FriendRequestService friendRequestService;
     private MockMvc mockMvc;
     private MvcResult mvcResult;
     private String searchQuery;
-
+    private User friend;
 
     @Before
     public void setup() {
@@ -198,34 +208,64 @@ public class SendFriendRequestsSteps {
         Assertions.assertEquals(message, modelAndView.getModel().get("searchResultMessage"));
     }
 
-    @Given("I see a matching person for the search I made")
+//    AC 7
+    @And("I see a matching person for the search I made")
     public void i_see_a_matching_person_for_the_search_i_made() {
-        
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        List<User> friends = (List<User>) modelAndView.getModel().get("matchedUsers");
+        friend = friends.get(0);
+        String fullName;
+        if (friend.getNoLastName()) {
+            fullName = friend.getFirstName();
+        } else {
+            fullName = friend.getFirstName() + " " + friend.getLastName();
+        }
+        Assertions.assertTrue(searchQuery.equals(fullName) || searchQuery.equals(friend.getEmail()));
     }
 
     @When("I hit the invite as friend button")
-    public void i_hit_the_invite_as_friend_button() {
-        
+    public void i_hit_the_invite_as_friend_button() throws Exception {
+        mvcResult = mockMvc.perform(post("/manage-friends")
+                        .param("action", "invite")
+                        .param("email", friend.getEmail()))
+                .andExpect(status().isFound())
+                .andReturn();
     }
 
     @Then("the other user receives an invite that will be shown in their manage friends page")
     public void the_other_user_receives_an_invite_that_will_be_shown_in_their_manage_friends_page() {
-        
+        List<FriendRequest> friendRequests = userService.getPendingFriendRequests(friend);
+        boolean receivesInvite = friendRequests.stream()
+                .anyMatch(request -> userService.areUsersEqual(request.getSender(), userService.getAuthenicatedUser()));
+        Assertions.assertTrue(receivesInvite);
     }
 
-    @And("I have pending invites")
-    public void i_have_pending_invites() {
-        
+    @And("I have pending invites from {string}")
+    public void i_have_pending_invites_from(String email) {
+        friend = userService.getUserByEmail(email);
+        User user = userService.getAuthenicatedUser();
+        FriendRequest friendRequest = new FriendRequest(friend, user);
+        friendRequestService.save(friendRequest);
+
+        List<FriendRequest> friendRequests = userService.getPendingFriendRequests(user);
+        Assertions.assertNotNull(friendRequests);
     }
 
     @When("I accept an invite")
-    public void i_accept_an_invite() {
-        
+    public void i_accept_an_invite() throws Exception {
+        mvcResult = mockMvc.perform(post("/manage-friends")
+                        .param("action", "accept")
+                        .param("email", friend.getEmail()))
+                .andExpect(status().isFound())
+                .andReturn();
     }
 
     @Then("that person is added to my list of friends")
     public void that_person_is_added_to_my_list_of_friends() {
-        
+        User user = userService.getAuthenicatedUser();
+        List<User> friends = user.getFriends();
+        Assertions.assertTrue(friends.stream().anyMatch(friendCheck -> userService.areUsersEqual(friendCheck, friend)));
     }
 
     @And("I can see their profile")
@@ -243,6 +283,9 @@ public class SendFriendRequestsSteps {
         
     }
 
+    @And("I have pending invites")
+    public void i_have_pending_invites() {
+    }
     @When("I decline an invite")
     public void i_decline_an_invite() {
         
