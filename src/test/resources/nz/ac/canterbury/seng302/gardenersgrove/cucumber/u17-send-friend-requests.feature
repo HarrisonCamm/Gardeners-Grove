@@ -9,7 +9,6 @@ Feature: U17 As Liam, I want to connect with my friends on Gardener’s Grove so
 
   Scenario: AC2 - Viewing list of friends
     Given I am on the manage friends page
-    When the page is loaded
     Then I see the list of my friends with their names and their profile pictures
     And a link to their gardens list including private and public gardens
 
@@ -18,32 +17,50 @@ Feature: U17 As Liam, I want to connect with my friends on Gardener’s Grove so
     When I hit the add friend button
     Then I see a search bar
 
-  Scenario: AC4 - Viewing list of users from name search
+  Scenario Outline: AC4 - Viewing list of users from name search
     Given I am on the manage friends page
     And I have opened the search bar
-    When I enter a full name (first and last name, if any)
+    When I enter a full name <name>
     And I hit the search button
     Then I can see a list of users of the app exactly matching the name I provided
+    Examples:
+      | name           |
+      | "Kaia Pene"    |
+      | "Inaya Singh"  |
+      | "Lei Yuan"     |
+      | "Sarah"        |
 
-  Scenario: AC5 - Viewing list of users from email search
+  Scenario Outline: AC5 - Viewing list of users from email search
     Given I am on the manage friends page
     And I have opened the search bar
-    When I enter an email address
+    When I enter an email address <email>
     And I hit the search button
     Then I can see a list of users of the app exactly matching the email provided
+    Examples:
+      | email             |
+      | "kaia@email.com"  |
+      | "inaya@email.com" |
+      | "lei@email.com"   |
+      | "sarah@email.com" |
 
-  Scenario: AC6 - No perfect matches from search
+  Scenario Outline: AC6 - No perfect matches from search
     Given I am on the manage friends page
     And I have opened the search bar
-    When I enter a search string
-    And I press the search button
+    When I enter a search string <string>
+    And I hit the search button
     And there are no perfect matches
     Then I see a message saying "There is nobody with that name or email in Gardener’s Grove"
+    Examples:
+      | string           |
+      | "Bob"            |
+      | "john@email.com" |
+      | "123"            |
+      | "user@email"     |
 
   Scenario: AC7 - Adding a friend from search
     Given I see a matching person for the search I made
-    When I hit the "invite as friend" button
-    Then the other user receives an invite that will be shown in their "manage friends" page
+    When I hit the invite as friend button
+    Then the other user receives an invite that will be shown in their manage friends page
 
   Scenario: AC8 - Accepting a friend request
     Given I am on the manage friends page
@@ -64,4 +81,4 @@ Feature: U17 As Liam, I want to connect with my friends on Gardener’s Grove so
   Scenario: AC10 - Viewing friend request status
     Given I have sent an invite
     When I check the status of the invite
-    Then I can see the status of the invite as one of "pending", or "declined"
+    Then I can see the status of the invite as one of "Pending", or "Declined"

@@ -5,15 +5,23 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -26,6 +34,9 @@ public class SendFriendRequestsSteps {
     @Autowired
     private AuthenticationManager authenticationManager;
     private MockMvc mockMvc;
+    private MvcResult mvcResult;
+    private String searchQuery;
+
 
     @Before
     public void setup() {
@@ -38,102 +49,153 @@ public class SendFriendRequestsSteps {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-
-
+//    AC 1
     @Given("I am anywhere on the app")
     public void i_am_anywhere_on_the_app() throws Exception{
          mockMvc.perform(get("/main"))
                  .andExpect(status().isOk());
     }
 
+//    AC 1
     @When("I click on a UI element that allows me to send friend requests")
     public void i_click_on_a_ui_element_that_allows_me_to_send_friend_requests() throws Exception{
-        mockMvc.perform(get("/manage-friends"))
-                .andExpect(status().isOk());
+        mvcResult = mockMvc.perform(get("/manage-friends"))
+                .andExpect(status().isOk())
+                .andReturn();
     }
 
+//    AC 1
     @Then("I am shown a manage friends page")
-    public void i_am_shown_a_manage_friends_page() throws Exception {
-        mockMvc.perform(get("/manage-friends"))
-                .andExpect(view().name("manageFriendsTemplate"));
+    public void i_am_shown_a_manage_friends_page() {
+        String viewName = Objects.requireNonNull(mvcResult.getModelAndView()).getViewName();
+        Assertions.assertEquals("manageFriendsTemplate", viewName);
     }
 
+//    AC 2, 3
     @Given("I am on the manage friends page")
-    public void i_am_on_the_manage_friends_page() {
-        
+    public void i_am_on_the_manage_friends_page() throws Exception{
+        mvcResult = mockMvc.perform(get("/manage-friends"))
+                .andExpect(view().name("manageFriendsTemplate"))
+                .andExpect(status().isOk())
+                .andReturn();
     }
 
-    @When("the page is loaded")
-    public void the_page_is_loaded() {
-    }
-
+//    AC 2
     @Then("I see the list of my friends with their names and their profile pictures")
     public void i_see_the_list_of_my_friends_with_their_names_and_their_profile_pictures() {
-        
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+        List<User> friends = (List<User>) modelAndView.getModel().get("friends");
+        for (User friend : friends) {
+            Assertions.assertNotNull(friend.getFirstName());
+            if (!friend.getNoLastName()) {
+                Assertions.assertNotNull(friend.getLastName());
+            }
+            Assertions.assertNotNull(friend.getImage());
+        }
     }
 
+//    AC 2
     @And("a link to their gardens list including private and public gardens")
     public void a_link_to_their_gardens_list_including_private_and_public_gardens() {
         
     }
 
+//    AC 3
     @When("I hit the add friend button")
     public void i_hit_the_add_friend_button() {
-        
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        modelAndView.addObject("showSearch", true);
     }
 
+//    AC 3
     @Then("I see a search bar")
     public void i_see_a_search_bar() {
-        
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        Assertions.assertTrue((Boolean) modelAndView.getModel().get("showSearch"));
+
     }
 
+//    AC 4
     @And("I have opened the search bar")
     public void i_have_opened_the_search_bar() {
-        
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        modelAndView.addObject("showSearch", true);
     }
 
-    @When("I enter a full name \\(first and last name, if any)")
-    public void i_enter_a_full_name_first_and_last_name_if_any() {
+//    AC 4
+    @When("I enter a full name {string}")
+    public void i_enter_a_full_name(String name) {
+        searchQuery = name;
     }
 
+//    AC 4, 5, 6
     @And("I hit the search button")
-    public void i_hit_the_search_button() {
-        
+    public void i_hit_the_search_button() throws Exception{
+        mvcResult = mockMvc.perform(post("/manage-friends")
+                        .param("action", "search")
+                        .param("searchQuery", searchQuery))
+                .andExpect(status().isOk())
+                .andReturn();
     }
 
+//    AC 4
     @Then("I can see a list of users of the app exactly matching the name I provided")
     public void i_can_see_a_list_of_users_of_the_app_exactly_matching_the_name_i_provided() {
-        
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        List<User> users = (List<User>) modelAndView.getModel().get("matchedUsers");
+        for (User user: users) {
+            String fullName;
+            if (user.getNoLastName()) {
+                fullName = user.getFirstName();
+            } else {
+                fullName = user.getFirstName() + " " + user.getLastName();
+            }
+            Assertions.assertEquals(searchQuery, fullName);
+        }
     }
 
-    @When("I enter an email address")
-    public void i_enter_an_email_address() {
-        
+//    AC 5
+    @When("I enter an email address {string}")
+    public void i_enter_an_email_address(String email) {
+        searchQuery = email;
     }
 
+//    AC 5
     @Then("I can see a list of users of the app exactly matching the email provided")
     public void i_can_see_a_list_of_users_of_the_app_exactly_matching_the_email_provided() {
-        
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        List<User> users = (List<User>) modelAndView.getModel().get("matchedUsers");
+        for (User user: users) {
+            Assertions.assertEquals(searchQuery, (user.getEmail()));
+        }
     }
 
-    @When("I enter a search string")
-    public void i_enter_a_search_string() {
-        
+//    AC 6
+    @When("I enter a search string {string}")
+    public void i_enter_a_search_string(String searchString) {
+        searchQuery = searchString;
     }
 
-    @And("I press the search button")
-    public void i_press_the_search_button() {
-        
-    }
-
+//    AC 6
     @And("there are no perfect matches")
     public void there_are_no_perfect_matches() {
-        
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        List<User> users = (List<User>) modelAndView.getModel().get("matchedUsers");
+        Assertions.assertNull(users);
     }
 
+//    AC 6
     @Then("I see a message saying {string}")
-    public void i_see_a_message_saying(String arg0) {
-        
+    public void i_see_a_message_saying(String message) {
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        Assertions.assertEquals(message, modelAndView.getModel().get("searchResultMessage"));
     }
 
     @Given("I see a matching person for the search I made")
@@ -141,13 +203,13 @@ public class SendFriendRequestsSteps {
         
     }
 
-    @When("I hit the {string} button")
-    public void i_hit_the_button(String arg0) {
+    @When("I hit the invite as friend button")
+    public void i_hit_the_invite_as_friend_button() {
         
     }
 
-    @Then("the other user receives an invite that will be shown in their {string} page")
-    public void the_other_user_receives_an_invite_that_will_be_shown_in_their_page(String arg0) {
+    @Then("the other user receives an invite that will be shown in their manage friends page")
+    public void the_other_user_receives_an_invite_that_will_be_shown_in_their_manage_friends_page() {
         
     }
 
@@ -207,6 +269,6 @@ public class SendFriendRequestsSteps {
     }
 
     @Then("I can see the status of the invite as one of {string}, or {string}")
-    public void i_can_see_the_status_of_the_invite_as_one_of_or(String arg0, String arg1) {
+    public void i_can_see_the_status_of_the_invite_as_one_of_or(String pending, String declined) {
     }
 }
