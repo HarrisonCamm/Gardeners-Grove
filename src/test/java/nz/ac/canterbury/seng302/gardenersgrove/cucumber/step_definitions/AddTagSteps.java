@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,6 +24,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 public class AddTagSteps {
 
     @Autowired
+    private WebApplicationContext webApplicationContext;
+
     private MockMvc mockMvc;
 
     private Garden ownedGarden;
@@ -35,6 +38,7 @@ public class AddTagSteps {
 
     @Before
     public void setup() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         location = new Location("Test Location", "Test Address", "Test City", "Test Country", "Test Postcode");
         owner = new User("user@gmail.com", "Test", "User", "p@ssw0rd123");
     }

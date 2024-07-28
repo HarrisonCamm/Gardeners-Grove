@@ -80,6 +80,7 @@ public class RecordGardenPlantsSteps {
         gardenService = Mockito.mock(GardenService.class);
         userService = Mockito.mock(UserService.class);
         imageService = Mockito.mock(ImageService.class);
+        tagService = Mockito.mock(TagService.class);
 
         if (mockPlantDB != null) {mockPlantDB.clear();} //Clear pseudo plant database in between examples
 
