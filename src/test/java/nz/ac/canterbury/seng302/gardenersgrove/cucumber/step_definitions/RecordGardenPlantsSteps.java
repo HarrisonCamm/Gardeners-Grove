@@ -52,6 +52,9 @@ public class RecordGardenPlantsSteps {
     @MockBean
     private static ImageService imageService;
 
+    @MockBean
+    private static TagService tagService;
+
     private static Map<Long, Plant> mockPlantDB;
 
     private static Plant testPlant;
@@ -119,7 +122,7 @@ public class RecordGardenPlantsSteps {
 
         //Create Controller objects for MockMVC pages
         CreatePlantController CreatePlantController = new CreatePlantController(plantService, gardenService, userService, imageService);
-        ViewGardenController ViewGardenController = new ViewGardenController(gardenService, plantService, userService, imageService);
+        ViewGardenController ViewGardenController = new ViewGardenController(gardenService, plantService, userService, imageService, tagService);
 
         //Build MockMVC page
         mockMvcCreatePlant = MockMvcBuilders.standaloneSetup(CreatePlantController).build();

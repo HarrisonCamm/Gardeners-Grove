@@ -33,12 +33,4 @@ public class TagService {
     public Optional<Tag> findTag(Long id) {
         return tagRepository.getTag(id);
     }
-
-    public void deleteTag(Long id) {
-        tagRepository.deleteById(id);
-    }
-
-    public void deleteAllTags() {
-        tagRepository.deleteAll();
-    }
 }

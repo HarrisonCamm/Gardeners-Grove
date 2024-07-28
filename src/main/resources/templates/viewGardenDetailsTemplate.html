@@ -58,8 +58,7 @@
                             <form class="tags" id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
                                 <div class="tag-input">
                                     <div class="input-group ms-2 input-clear">
-                                        <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput" name="tag">
-                                        <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
+                                        <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput" name="tag" th:value="${tagInput}">                                        <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
                                     </div>
                                     <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
                                 </div>

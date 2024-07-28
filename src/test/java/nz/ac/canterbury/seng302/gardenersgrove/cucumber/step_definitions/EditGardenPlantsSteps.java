@@ -49,6 +49,9 @@ public class EditGardenPlantsSteps {
     @MockBean
     private static ImageService imageService;
 
+    @MockBean
+    private static TagService tagService;
+
     private static Map<Long, Plant> mockPlantDB;
 
     private static Garden testGarden;
@@ -106,7 +109,7 @@ public class EditGardenPlantsSteps {
 
         //Create Controller objects for MockMVC pages
         EditPlantController EditPlantController = new EditPlantController(plantService, gardenService, userService, imageService);
-        ViewGardenController ViewGardenController = new ViewGardenController(gardenService, plantService, userService, imageService);
+        ViewGardenController ViewGardenController = new ViewGardenController(gardenService, plantService, userService, imageService, tagService);
 
         //Build MockMVC page
         mockMvcEditPlant = MockMvcBuilders.standaloneSetup(EditPlantController).build();
