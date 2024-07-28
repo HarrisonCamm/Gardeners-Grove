@@ -1,27 +1,61 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 
-@SpringBootTest
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class SendFriendRequestsSteps {
+
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    private MockMvc mockMvc;
+
+    @Before
+    public void setup() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
+    @Given("I am logged in")
+    public void i_am_logged_in() {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("liam@email.com", "Password1!");
+        var authentication = authenticationManager.authenticate(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+
+
     @Given("I am anywhere on the app")
-    public void i_am_anywhere_on_the_app() {
-;
+    public void i_am_anywhere_on_the_app() throws Exception{
+         mockMvc.perform(get("/main"))
+                 .andExpect(status().isOk());
     }
 
     @When("I click on a UI element that allows me to send friend requests")
-    public void i_click_on_a_ui_element_that_allows_me_to_send_friend_requests() {
-        
+    public void i_click_on_a_ui_element_that_allows_me_to_send_friend_requests() throws Exception{
+        mockMvc.perform(get("/manage-friends"))
+                .andExpect(status().isOk());
     }
 
-    @Then("I am shown a {string} page")
-    public void i_am_shown_a_page(String arg0) {
-        
+    @Then("I am shown a manage friends page")
+    public void i_am_shown_a_manage_friends_page() throws Exception {
+        mockMvc.perform(get("/manage-friends"))
+                .andExpect(view().name("manageFriendsTemplate"));
     }
 
     @Given("I am on the manage friends page")

@@ -1,9 +1,11 @@
 Feature: U17 As Liam, I want to connect with my friends on Gardener’s Grove so that we can build a community on the app.
+  Background: Logged in user
+    Given I am logged in
 
   Scenario: AC1 - Viewing the Manage Friends page.
     Given I am anywhere on the app
     When I click on a UI element that allows me to send friend requests
-    Then I am shown a "manage friends" page
+    Then I am shown a manage friends page
 
   Scenario: AC2 - Viewing list of friends
     Given I am on the manage friends page
