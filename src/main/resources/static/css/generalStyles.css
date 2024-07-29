@@ -149,7 +149,7 @@ h2 {
     justify-content: space-between; /* Horizontally center the items */
 }
 
-/* Container styles */
+/* Side Bar Container styles (What was container is now SideBarColour)*/
 .sideBarColour {
     background: #0A3407;
     height: 100vh;
