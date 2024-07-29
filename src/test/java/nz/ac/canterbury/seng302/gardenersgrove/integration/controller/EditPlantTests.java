@@ -177,7 +177,7 @@ public class EditPlantTests {
     @ParameterizedTest
     @WithMockUser
     @CsvSource({
-            "1, 'name', '', '', EQTtqCgSEZTqRynfspZYsrWqbZczPwyWMYERsnmaddRzSOFeprNBJJwkapqpfyxSxKlnbtizTIkzJKQMkvwMryHYKYniFMhiZsnBFjSTZtUAfRnwNNSEIUGCtsZVcRkDpoeynycrYolVgALsPpBotLTmpOYKMGciRqJzoMiXHnRolTEDeijkkNoQgtclZhAYLKWOnOPMKTWYKgwKtEfDmFlHrUYHeHVsKyBLvRGTXLLgwBjmIuKoJHaIDoLShgXuQJHGgfpFlFdiOrBhacpCjApMBJTfMJubUhYXjJIEgWOoZcSJUNRtZwDENcxtYTXLHAFJJAmFpWEVYhWbnzHSKBWoXVfOrtQAcxBMtiQgQKzXfxiHOidoCmhIXmCVqlIjsEIjFfMoiIeycyvJcPlNChLggtebBOqqhRNsEjyqSlSArVWGyNKPUFtWSjSifkrKiFNQZDYOXDWmUcBvnwONbRyHOzgWCkZmVGHrhmomrkoFqfGCakJSkjPIlwjULomDc"
+            "1, name, '', '', EQTtqCgSEZTqRynfspZYsrWqbZczPwyWMYERsnmaddRzSOFeprNBJJwkapqpfyxSxKlnbtizTIkzJKQMkvwMryHYKYniFMhiZsnBFjSTZtUAfRnwNNSEIUGCtsZVcRkDpoeynycrYolVgALsPpBotLTmpOYKMGciRqJzoMiXHnRolTEDeijkkNoQgtclZhAYLKWOnOPMKTWYKgwKtEfDmFlHrUYHeHVsKyBLvRGTXLLgwBjmIuKoJHaIDoLShgXuQJHGgfpFlFdiOrBhacpCjApMBJTfMJubUhYXjJIEgWOoZcSJUNRtZwDENcxtYTXLHAFJJAmFpWEVYhWbnzHSKBWoXVfOrtQAcxBMtiQgQKzXfxiHOidoCmhIXmCVqlIjsEIjFfMoiIeycyvJcPlNChLggtebBOqqhRNsEjyqSlSArVWGyNKPUFtWSjSifkrKiFNQZDYOXDWmUcBvnwONbRyHOzgWCkZmVGHrhmomrkoFqfGCakJSkjPIlwjULomDc"
     })
     public void OnForm_InvalidDescription_ErrorGiven(Long plantID, String plantName, String count, String date, String description) throws Exception {
         Plant plant = new Plant(testGarden, "default plant", "1", "a regular plant", "");
@@ -195,22 +195,62 @@ public class EditPlantTests {
                         .param("description", description))
                 .andExpect(status().isOk());
 
-        verify(mockFactory).createFieldError(eq("plant"), eq("description"),
-                anyString());
+        verify(mockFactory).createFieldError(eq("plant"), eq("description"), anyString());
     }
 
-    @Test
-    public void OnForm_InvalidCount_ErrorGiven() {
+    @ParameterizedTest
+    @WithMockUser
+    @CsvSource({
+            "1, name, -, '', ''",
+            "2, name, -1, '', ''",
+            "3, name, -0032425, '', ''",
+            "4, name, hi, '', ''",
+            "5, name, null, '', ''",
+    })
+    public void OnForm_InvalidCount_ErrorGiven(Long plantID, String plantName, String count, String date, String description) throws Exception {
+        Plant plant = new Plant(testGarden, "default plant", "1", "a regular plant", "");
+        FieldErrorFactory mockFactory = mock(FieldErrorFactory.class);
+        PlantValidator.setFieldErrorFactory(mockFactory);
+        when(plantService.findPlant(plantID)).thenReturn(Optional.of(plant));
+        when(mockFactory.createFieldError(anyString(), anyString(), anyString())).thenCallRealMethod();
 
+        mockMvc.perform(put("/edit-plant")
+                        .with(csrf())
+                        .param("plantID", plantID.toString())
+                        .param("name", plantName)
+                        .param("count", count)
+                        .param("datePlanted", date)
+                        .param("description", description))
+                .andExpect(status().isOk());
+
+        verify(mockFactory).createFieldError(eq("plant"), eq("count"), anyString());
     }
 
-    @Test
-    public void OnForm_DateWrongFormat_ErrorGiven() {
+    @ParameterizedTest
+    @WithMockUser
+    @CsvSource({
+            "1, name, '', 01-01-2024, ''",
+            "2, name, '', 2024/01/01, ''",
+            "3, name, '', 2024-01-01, ''",
+            "4, name, '', 10/05/3000, ''",
+            "5, name, '', 10/05/-20000, ''",
+    })
+    public void OnForm_InvalidDate_ErrorGiven(Long plantID, String plantName, String count, String date, String description) throws Exception {
+        Plant plant = new Plant(testGarden, "default plant", "1", "a regular plant", "");
+        FieldErrorFactory mockFactory = mock(FieldErrorFactory.class);
+        PlantValidator.setFieldErrorFactory(mockFactory);
+        when(plantService.findPlant(plantID)).thenReturn(Optional.of(plant));
+        when(mockFactory.createFieldError(anyString(), anyString(), anyString())).thenCallRealMethod();
 
-    }
+        mockMvc.perform(put("/edit-plant")
+                        .with(csrf())
+                        .param("plantID", plantID.toString())
+                        .param("name", plantName)
+                        .param("count", count)
+                        .param("datePlanted", date)
+                        .param("description", description))
+                .andExpect(status().isOk());
 
-    @Test
-    public void OnForm_CancelClicked_ReturnToViewGarden() {
-
+        verify(mockFactory).createFieldError(eq("plant"), eq("datePlanted"), anyString());
     }
 }
