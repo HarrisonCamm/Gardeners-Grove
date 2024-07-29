@@ -11,9 +11,12 @@
     </head>
 
 <body>
-<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+    <!-- Navigation Bar Fragment -->
+    <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+
 <div class="wrapper">
-    <div class="container">
+    <!-- Garden Side Navigation Bar -->
+    <div class="sideBarColour">
         <table class="sideBar">
             <thead>
             <tr>
@@ -28,6 +31,7 @@
             </tbody>
         </table>
     </div>
+
     <br/>
     <div class="form">
 
