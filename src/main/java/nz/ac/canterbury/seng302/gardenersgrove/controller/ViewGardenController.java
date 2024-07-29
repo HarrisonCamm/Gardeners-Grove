@@ -139,7 +139,7 @@ public class ViewGardenController {
         // Add tag to the database
         tagService.addTag(new Tag(garden.get().getId(), tag));
 
-        return "redirect:/view-garden?gardenID=" + gardenID;
+        return addAttributes(currentUser, gardenID, "", model, plantService, gardenService);
     }
 
     private String addAttributes(User owner, @RequestParam("gardenID") Long gardenID, @RequestParam("tag") String tag, Model model, PlantService plantService, GardenService gardenService) {
@@ -151,7 +151,7 @@ public class ViewGardenController {
         Optional<Garden> garden = gardenService.findGarden(gardenID);
         if (garden.isPresent()) { // if the garden ID exists
             model.addAttribute("gardenID", gardenID);
-            model.addAttribute("tagInput", tag);
+            model.addAttribute("tagInput", (tag == null) ? "" : tag);
             model.addAttribute("gardenName", garden.get().getName());
             model.addAttribute("gardenLocation", garden.get().getLocation().toString());
             model.addAttribute("gardenSize", garden.get().getSize());
