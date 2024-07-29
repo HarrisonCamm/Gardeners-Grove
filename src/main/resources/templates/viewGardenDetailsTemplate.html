@@ -38,6 +38,56 @@
                             <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
                         </div>
                     </div>
+
+                    <!-- Weather Section -->
+                    <div class="overflow-scroll">
+                        <div class="row">
+                            <div class="col">
+                                <div class="container bg-info bg-gradient rounded rounded-4 p-4 z-3 position-relative">
+                                    <div th:if="${weatherResponse != null}">
+
+                                        <h3><strong> <span th:text="${weatherResponse.dayOfWeek}"></span></strong></h3>
+                                        <p><strong>Date:</strong> <span th:text="${weatherResponse.date}"></span></p>
+                                        <p><strong>Description:</strong> <span th:text="${weatherResponse.description}"></span></p>
+                                        <p><strong>Temperature:</strong> <span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
+                                        <p><strong>Humidity:</strong> <span th:text="${weatherResponse.humidity}"></span>%</p>
+
+                                    <div class="z-2 position-absolute top-0 end-0">
+                                        <span>
+                                        <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" class="img-fluid w-200" alt="Weather Icon" />
+                                        </span>
+                                    </div>
+                                    </div>
+                                    <div th:if="${weatherResponse == null}">
+                                        <p>Weather data is not available.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="container bg-info bg-gradient rounded rounded-4 p-4 z-3 position-relative">
+                                    <div th:if="${weatherResponse != null}">
+
+                                        <h3><strong> <span th:text="${weatherResponse.dayOfWeek}"></span></strong></h3>
+                                        <p><strong>Date:</strong> <span th:text="${weatherResponse.date}"></span></p>
+                                        <p><strong>Description:</strong> <span th:text="${weatherResponse.description}"></span></p>
+                                        <p><strong>Temperature:</strong> <span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
+                                        <p><strong>Humidity:</strong> <span th:text="${weatherResponse.humidity}"></span>%</p>
+
+                                        <div class="z-2 position-absolute top-0 end-0">
+                                        <span>
+                                        <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" class="img-fluid w-200" alt="Weather Icon" />
+                                        </span>
+                                        </div>
+                                    </div>
+                                    <div th:if="${weatherResponse == null}">
+                                        <p>Weather data is not available.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="row mb-3" th:if="${tags != null and tags.size() > 0}">
                         <div class="col d-flex flex-wrap">
                             <th:block th:each="tag : ${tags}">
@@ -110,25 +160,6 @@
                         </tbody>
                     </table>
                 </div>
-
-                <!-- Weather Section -->
-                <div class="wrapper">
-                    <div class="weatherResponse-info">
-                        <div th:if="${weatherResponse != null}">
-                        <h2>Current Weather</h2>
-                            <p><strong>Day of Week:</strong> <span th:text="${weatherResponse.dayOfWeek}"></span></p>
-                            <p><strong>Date:</strong> <span th:text="${weatherResponse.date}"></span></p>
-                            <p><strong>Description:</strong> <span th:text="${weatherResponse.description}"></span></p>
-                            <p><strong>Temperature:</strong> <span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
-                            <p><strong>Humidity:</strong> <span th:text="${weatherResponse.humidity}"></span>%</p>
-                            <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" alt="Weather Icon"/>
-                        </div>
-                        <div th:if="${weatherResponse == null}">
-                            <p>Weather data is not available.</p>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
         <div th:replace="~{fragments/scripts :: scripts}"></div>
