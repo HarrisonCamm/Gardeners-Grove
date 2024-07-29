@@ -7,7 +7,9 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.UserRelationship;
 import nz.ac.canterbury.seng302.gardenersgrove.service.FriendRequestService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserRelationshipService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,8 @@ public class SendFriendRequestsSteps {
 
     @Autowired
     UserService userService;
+    @Autowired
+    UserRelationshipService userRelationshipService;
 
     @Autowired
     FriendRequestService friendRequestService;
@@ -47,6 +51,7 @@ public class SendFriendRequestsSteps {
     private MvcResult mvcResult;
     private String searchQuery;
     private User friend;
+    private User currentUser;
 
     @Before
     public void setup() {
@@ -57,6 +62,10 @@ public class SendFriendRequestsSteps {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("liam@email.com", "Password1!");
         var authentication = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        currentUser = userService.getAuthenicatedUser();
+        currentUser.removeAllFriends();
+        userService.updateUserFriends(currentUser);
+        userRelationshipService.removeAll();
     }
 
 //    AC 1
@@ -107,7 +116,7 @@ public class SendFriendRequestsSteps {
 //    AC 2
     @And("a link to their gardens list including private and public gardens")
     public void a_link_to_their_gardens_list_including_private_and_public_gardens() {
-        
+        //Todo update this when the functionality is there
     }
 
 //    AC 3
@@ -224,9 +233,10 @@ public class SendFriendRequestsSteps {
         Assertions.assertTrue(searchQuery.equals(fullName) || searchQuery.equals(friend.getEmail()));
     }
 
+//    AC 7
     @When("I hit the invite as friend button")
     public void i_hit_the_invite_as_friend_button() throws Exception {
-        mvcResult = mockMvc.perform(post("/manage-friends")
+        mockMvc.perform(post("/manage-friends")
                         .param("action", "invite")
                         .param("email", friend.getEmail()))
                 .andExpect(status().isFound())
@@ -237,81 +247,155 @@ public class SendFriendRequestsSteps {
     public void the_other_user_receives_an_invite_that_will_be_shown_in_their_manage_friends_page() {
         List<FriendRequest> friendRequests = userService.getPendingFriendRequests(friend);
         boolean receivesInvite = friendRequests.stream()
-                .anyMatch(request -> userService.areUsersEqual(request.getSender(), userService.getAuthenicatedUser()));
+                .anyMatch(request -> userService.areUsersEqual(request.getSender(), currentUser));
         Assertions.assertTrue(receivesInvite);
     }
 
+//    AC 8
     @And("I have pending invites from {string}")
     public void i_have_pending_invites_from(String email) {
         friend = userService.getUserByEmail(email);
-        User user = userService.getAuthenicatedUser();
-        FriendRequest friendRequest = new FriendRequest(friend, user);
+        currentUser = userService.getAuthenicatedUser();
+        FriendRequest friendRequest = new FriendRequest(friend, currentUser);
         friendRequestService.save(friendRequest);
 
-        List<FriendRequest> friendRequests = userService.getPendingFriendRequests(user);
+        List<FriendRequest> friendRequests = userService.getPendingFriendRequests(currentUser);
         Assertions.assertNotNull(friendRequests);
+        Assertions.assertTrue(friendRequests.stream().anyMatch(request -> request.getStatus().equals("Pending")));
     }
 
+//    AC 8
     @When("I accept an invite")
     public void i_accept_an_invite() throws Exception {
-        mvcResult = mockMvc.perform(post("/manage-friends")
+        mockMvc.perform(post("/manage-friends")
                         .param("action", "accept")
                         .param("email", friend.getEmail()))
-                .andExpect(status().isFound())
-                .andReturn();
+                .andExpect(status().isFound());
     }
 
+//    AC 8
     @Then("that person is added to my list of friends")
     public void that_person_is_added_to_my_list_of_friends() {
-        User user = userService.getAuthenicatedUser();
-        List<User> friends = user.getFriends();
+        currentUser = userService.getAuthenicatedUser();
+        List<User> friends = currentUser.getFriends();
         Assertions.assertTrue(friends.stream().anyMatch(friendCheck -> userService.areUsersEqual(friendCheck, friend)));
     }
 
+//    AC 8
     @And("I can see their profile")
-    public void i_can_see_their_profile() {
-        
+    public void i_can_see_their_profile() throws Exception {
+        mvcResult = mockMvc.perform(get("/manage-friends"))
+                .andExpect(status().isOk())
+                .andReturn();
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        List<User> friends = (List<User>) modelAndView.getModel().get("friends");
+        Assertions.assertTrue(friends.stream().anyMatch(friendCheck -> userService.areUsersEqual(friendCheck, friend)));
     }
 
+//    AC 8
     @And("I am added to that person’s friends list")
     public void i_am_added_to_that_persons_friends_list() {
-        
+        currentUser = userService.getAuthenicatedUser();
+        friend = userService.getUserByEmail(friend.getEmail());
+        List<User> friends = friend.getFriends();
+        Assertions.assertTrue(friends.stream().anyMatch(friendCheck -> userService.areUsersEqual(friendCheck, currentUser)));
     }
 
+    @And("they log into their account with {string} and {string}")
+    public void they_log_into_their_account_with_user_and_password(String username, String password) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+        var authentication = authenticationManager.authenticate(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+//    Ac 8
     @And("that person can see my profile")
-    public void that_person_can_see_my_profile() {
-        
+    public void that_person_can_see_my_profile() throws Exception {
+        mvcResult = mockMvc.perform(get("/manage-friends"))
+                .andExpect(status().isOk())
+                .andReturn();
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        List<User> friends = (List<User>) modelAndView.getModel().get("friends");
+        Assertions.assertTrue(friends.stream().anyMatch(friendCheck -> userService.areUsersEqual(friendCheck, currentUser)));
     }
 
-    @And("I have pending invites")
-    public void i_have_pending_invites() {
-    }
+//    AC 9
     @When("I decline an invite")
-    public void i_decline_an_invite() {
-        
+    public void i_decline_an_invite() throws Exception {
+        mockMvc.perform(post("/manage-friends")
+                        .param("action", "delete")
+                        .param("email", friend.getEmail()))
+                .andExpect(status().isFound());
     }
 
+//    AC 9
     @Then("that person is not added to my list of friends")
     public void that_person_is_not_added_to_my_list_of_friends() {
-        
+        currentUser = userService.getAuthenicatedUser();
+        List<User> friends = currentUser.getFriends();
+        Assertions.assertFalse(friends.stream().anyMatch(friendCheck -> userService.areUsersEqual(friendCheck, friend)));
     }
 
+//    AC 9
     @And("they cannot invite me anymore")
-    public void they_cannot_invite_me_anymore() {
-        
+    public void they_cannot_invite_me_anymore() throws Exception {
+        mvcResult = mockMvc.perform(post("/manage-friends")
+                        .param("action", "search")
+                        .param("searchQuery", currentUser.getEmail()))
+                .andReturn();
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        List<User> users = (List<User>) modelAndView.getModel().get("matchedUsers");
+        Assertions.assertNull(users);
+        UserRelationship relationship = userRelationshipService.getRelationship(currentUser, friend);
+        Assertions.assertEquals("Declined", relationship.getStatus());
     }
 
-    @Given("I have sent an invite")
-    public void i_have_sent_an_invite() {
-        
+//    AC 10
+    @Given("I have sent an invite to {string}")
+    public void i_have_sent_an_invite(String userEmail) throws Exception {
+        mockMvc.perform(post("/manage-friends")
+                        .param("action", "invite")
+                        .param("email", userEmail))
+                .andExpect(status().isFound())
+                .andReturn();
+
     }
 
-    @When("I check the status of the invite")
-    public void i_check_the_status_of_the_invite() {
-        
+//    AC 10
+    @And("they leave or decline the invite {string}")
+    public void they_leave_or_decline_the_invite(String status) throws Exception {
+        if (status.equals("Declined")) {
+            mockMvc.perform(post("/manage-friends")
+                            .param("action", "delete")
+                            .param("email", currentUser.getEmail()))
+                    .andExpect(status().isFound());
+        }
     }
 
+//    AC 10
+    @When("I log in and check the status of the invite")
+    public void i_log_in_and_check_the_status_of_the_invite() throws Exception {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("liam@email.com", "Password1!");
+        var authentication = authenticationManager.authenticate(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        mvcResult = mockMvc.perform(get("/manage-friends"))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+//    AC 10
     @Then("I can see the status of the invite as one of {string}, or {string}")
     public void i_can_see_the_status_of_the_invite_as_one_of_or(String pending, String declined) {
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        List<FriendRequest> friendRequests = (List<FriendRequest>) modelAndView.getModel().get("sentRequests");
+        System.out.println(friendRequests);
+        Assertions.assertTrue(friendRequests
+                .stream().anyMatch(request ->
+                        (request.getStatus().equals(pending) || request.getStatus().equals(declined))));
     }
+
 }

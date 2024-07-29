@@ -34,4 +34,8 @@ public class UserRelationshipService {
     public void remove(UserRelationship userRelationship) {
         userRelationshipRepository.delete(userRelationship);
     }
+
+    public void removeAll() {
+        userRelationshipRepository.deleteAll();
+    }
 }

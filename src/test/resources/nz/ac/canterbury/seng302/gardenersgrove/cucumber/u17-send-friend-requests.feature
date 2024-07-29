@@ -77,22 +77,38 @@ Feature: U17 As Liam, I want to connect with my friends on Gardener’s Grove so
     Then that person is added to my list of friends
     And I can see their profile
     And I am added to that person’s friends list
+    And they log into their account with <user> and <password>
     And that person can see my profile
     Examples:
-      | user              |
-      | "kaia@email.com"  |
-      | "inaya@email.com" |
-      | "lei@email.com"   |
-      | "sarah@email.com" |
+      | user              | password     |
+      | "kaia@email.com"  | "Password1!" |
+      | "inaya@email.com" | "Password1!" |
+      | "lei@email.com"   | "Password1!" |
+      | "sarah@email.com" | "Password1!" |
 
-  Scenario: AC9 - Declining a friend request
+  Scenario Outline: AC9 - Declining a friend request
     Given I am on the manage friends page
-    And I have pending invites
+    And I have pending invites from <user>
     When I decline an invite
     Then that person is not added to my list of friends
+    And they log into their account with <user> and <password>
     And they cannot invite me anymore
+    Examples:
+      | user              | password     |
+      | "kaia@email.com"  | "Password1!" |
+      | "inaya@email.com" | "Password1!" |
+      | "lei@email.com"   | "Password1!" |
+      | "sarah@email.com" | "Password1!" |
 
-  Scenario: AC10 - Viewing friend request status
-    Given I have sent an invite
-    When I check the status of the invite
+  Scenario Outline: AC10 - Viewing friend request status
+    Given I have sent an invite to <user>
+    And they log into their account with <user> and <password>
+    And they leave or decline the invite <status>
+    When I log in and check the status of the invite
     Then I can see the status of the invite as one of "Pending", or "Declined"
+    Examples:
+      | user              | status     | password     |
+      | "kaia@email.com"  | ""         | "Password1!" |
+      | "inaya@email.com" | ""         | "Password1!" |
+      | "lei@email.com"   | "Declined" | "Password1!" |
+      | "sarah@email.com" | "Declined" | "Password1!" |

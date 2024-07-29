@@ -15,4 +15,6 @@ public interface UserRelationshipRepository extends CrudRepository<UserRelations
     Optional<UserRelationship> findUserRelationshipByReceiverAndSender(User receiver, User sender);
     List<UserRelationship> findUserRelationshipBySender(User sender);
 
+    void deleteAll();
+
 }

@@ -207,6 +207,10 @@ public class User {
 
     }
 
+    public void removeAllFriends() {
+        friends.clear();
+    }
+
     public List<User> getFriends() {
         return friends;
     }
