@@ -86,9 +86,9 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td th:text="${#strings.abbreviate(plant.name, 20)}"></td>
+                                <td th:text="${#strings.abbreviate(plant.name, 30)}"></td>
                                 <td th:text="${plant.count}"></td>
-                                <td th:text="${plant.description}"></td>
+                                <td th:text="${plant.description}" class="text-wrap"></td>
                                 <td th:text="${plant.datePlanted}"></td>
                                 <td>
                                     <a th:href="@{'/edit-plant?plantID=' + ${plant.id}}">
