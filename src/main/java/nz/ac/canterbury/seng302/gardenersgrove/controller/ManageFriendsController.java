@@ -28,6 +28,8 @@ public class ManageFriendsController {
     private final FriendRequestService friendRequestService;
     private final UserRelationshipService userRelationshipService;
     private boolean showSearch = true;
+    public static final String DECLINED = "Declined";
+    public static final String ACCEPTED = "Accepted";
 
 
     @Autowired
@@ -104,7 +106,7 @@ public class ManageFriendsController {
         }
 
         for (UserRelationship relationship: usersRelationships) {
-            if (relationship.getStatus().equals("Declined")) {
+            if (relationship.getStatus().equals(DECLINED)) {
                 searchedUsers.remove(relationship.getReceiver());
             }
         }
@@ -173,7 +175,7 @@ public class ManageFriendsController {
         User rejectedUser = userService.getUserByEmail(email);
 
         friendRequestService.rejectRequest(currentUser, rejectedUser);
-        UserRelationship userRelationship = new UserRelationship(rejectedUser, currentUser, "Declined");
+        UserRelationship userRelationship = new UserRelationship(rejectedUser, currentUser, DECLINED);
         userRelationshipService.save(userRelationship);
 
         return "redirect:/manage-friends";
@@ -198,9 +200,9 @@ public class ManageFriendsController {
 
         UserRelationship relationship = userRelationshipService.getRelationship(acceptedFriend, currentUser);
         if (relationship != null) {
-            relationship.setStatus("Accepted");
+            relationship.setStatus(ACCEPTED);
         } else {
-            UserRelationship userRelationship = new UserRelationship( acceptedFriend, currentUser,"Accepted");
+            UserRelationship userRelationship = new UserRelationship( acceptedFriend, currentUser,ACCEPTED);
             userRelationshipService.save(userRelationship);
         }
 
