@@ -8,8 +8,11 @@ import java.time.format.DateTimeParseException;
 import java.util.regex.Pattern;
 
 public class PlantValidator {
-    public final static int MIN_PLANT_AGE = -200;
-    public final static int MAX_PLANT_AGE = 14000;
+    private final static int MIN_AGE = -200;
+    private final static int MAX_AGE = 14000;
+
+    private final static int MAX_NAME_LENGTH = 255;
+    private final static int MAX_DESCRIPTION_LENGTH = 512;
 
     /**
      * Validates the plant name when creating new Plant objects
@@ -17,10 +20,13 @@ public class PlantValidator {
      * @return FieldError if the plant name is empty or contains invalid characters
      */
     public static FieldError validatePlantName(String name) {
-        if (name.isEmpty() || name.trim().isEmpty() || !isValidPlantName(name)) {
+        if (name == null || name.isEmpty() || name.trim().isEmpty() || !isValidPlantName(name)) {
             return new FieldError("plant", "name",
                     "Plant name cannot be empty and must only include letters, numbers, spaces, dots, " +
                             "hyphens or apostrophes.");
+        }
+        if (name.length() > MAX_NAME_LENGTH) {
+            return new FieldError("plant", "name", "Plant name must be less than " + MAX_NAME_LENGTH + " characters");
         }
         return null;
     }
@@ -43,8 +49,8 @@ public class PlantValidator {
      * @return FieldError if the description is longer than 512 characters
      */
     public static FieldError validatePlantDescription(String description) {
-        if (description.length() > 512) {
-            return new FieldError("plant", "description", "Plant description must be less than 512 characters");
+        if (description.length() > MAX_DESCRIPTION_LENGTH) {
+            return new FieldError("plant", "description", "Plant description must be less than " + MAX_DESCRIPTION_LENGTH + " characters");
         }
         return null;
     }
@@ -55,10 +61,10 @@ public class PlantValidator {
             LocalDate today = LocalDate.now();
             Period period = Period.between(datePlanted, today);
             int plantAge = period.getYears();
-            if (plantAge >= MAX_PLANT_AGE) {
-                return new FieldError("plant", "datePlanted", "Date planted must be within the past " + MAX_PLANT_AGE + "years.");
-            } else if (plantAge < MIN_PLANT_AGE) {
-                return new FieldError("plant", "datePlanted", "Date planted must be within the next " + Math.abs(MIN_PLANT_AGE) + " years.");
+            if (plantAge >= MAX_AGE) {
+                return new FieldError("plant", "datePlanted", "Date planted must be within the past " + MAX_AGE + "years.");
+            } else if (plantAge < MIN_AGE) {
+                return new FieldError("plant", "datePlanted", "Date planted must be within the next " + Math.abs(MIN_AGE) + " years.");
             } else {
                 return null;
             }
