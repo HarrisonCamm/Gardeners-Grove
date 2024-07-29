@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,17 +29,19 @@ public class ViewGardenController {
     private final GardenService gardenService;
     private final PlantService plantService;
     private final UserService userService;
+    private final WeatherService weatherService;
     private final TagService tagService;
 
     @Autowired
     public ViewGardenController(GardenService gardenService, PlantService plantService,
                                 UserService userService, ImageService imageService,
-                                TagService tagService) {
+                                TagService tagService, WeatherService weatherService) {
         this.gardenService = gardenService;
         this.plantService  = plantService;
         this.userService = userService;
         this.imageService = imageService;
         this.tagService = tagService;
+        this.weatherService = weatherService;
     }
 
     @GetMapping("/view-garden")
@@ -73,7 +68,12 @@ public class ViewGardenController {
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
-        return addAttributes(currentUser, gardenID, tag, model, plantService, gardenService);
+
+        //New Code Added to get weather
+        WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+        model.addAttribute("weatherResponse", weatherResponse);
+
+        return addAttributes(currentUser, gardenID, model, plantService, gardenService);
     }
 
     /**

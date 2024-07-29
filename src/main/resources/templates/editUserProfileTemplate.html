@@ -30,7 +30,7 @@
                 <div>
                     <div id="imageError" class="error-message"></div>
 
-                    <form class="hasImage" th:action="@{/edit-user-profile}" method="post" novalidate>
+                    <form id="editProfileForm" class="hasImage" th:action="@{/edit-user-profile}" method="post" novalidate>
                         <label for="firstName"> First Name:
                             <span class="required-input"> * </span>
                         </label>
@@ -81,7 +81,6 @@
                                th:value="${changePasswordFormInput}" >
                         <!-- Hidden Change Password Form -->
                         <div id="changePasswordForm" th:hidden="${!changePasswordFormInput}">
-
                             <!-- Old Password Field -->
                             <label for="oldPassword">Old Password:
                                 <span class="required-input"> * </span>
@@ -119,12 +118,16 @@
                             <!-- Placeholder for Password Match Error -->
                             <br/>
                             <div class="password-error-message" th:if="${passwordMatchError}" th:text="${passwordMatchError}"></div>
+<!--                            <br/>-->
+
+                            <div class="password-error-message" th:if="${emailError}" th:text="${emailError}"></div>
                             <br/>
 
                             <!-- Submit Changed Password and Cancel Change Password Buttons -->
                             <div class="buttons-centre">
-                                <button type="submit" id="submitNewPasswordButton">Change Password</button>
-                                &nbsp;
+<!--                                    <button type="submit" id="submitNewPasswordButton">Change Password</button>-->
+                                <button type="button" onclick="changePassword()" id="submitNewPasswordButton">Change Password</button>
+                                &nbsp
                                 <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
                             </div>
                         </div>

@@ -8,7 +8,6 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +24,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.UserValidator.*;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeParseException;
-import java.util.Objects;
-import java.util.regex.Pattern;
 
 /**
  * Controller for registration form.
@@ -122,45 +115,12 @@ public class RegisterFormController {
             formattedDateOfBirth = convertDateFormat(dateOfBirth);
         }
 
-        // Check if email already exists
-        if (userService.emailExists(email)) {
-            model.addAttribute("registrationEmailError", "This email address is already in use");
-        }
-        if (email.isEmpty() ||!isEmailValid(email)){
-            model.addAttribute("registrationEmailError", "Email address must be in the form ‘jane@doe.nz’");
-        }
-        if (firstName.length() > 64) {
-            model.addAttribute("firstNameError", "First name must be 64 characters long or less");
-        }
-        if (firstName.isEmpty() || !isNameValid(firstName)) {
-            model.addAttribute("firstNameError", "First name cannot be empty and must only include letters, spaces, hyphens or apostrophes");
-        }
-        if (lastName.length() > 64) {
-            model.addAttribute("lastNameError", "Last name must be 64 characters long or less");
-        }
-        if (!isNameValid(lastName) && !lastName.isEmpty()) {
-            model.addAttribute("lastNameError", "Last name cannot be empty and must only include letters, spaces, hyphens or apostrophes");
-        }
-        if (!noLastName && lastName.isEmpty()) {
-            model.addAttribute("lastNameError", "Last name cannot be empty and must only include letters, spaces, hyphens or apostrophes");
-        }
-        if (!isPasswordValid(password) || password.isEmpty()) {
-            model.addAttribute("passwordValidityError", "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
-        }
-        if (!doPasswordsMatch(password, password2) || password2.isEmpty()) {
-            model.addAttribute("passwordMatchError", "Passwords do not match");
-        }
-        if (!dateOfBirth.isEmpty() && !checkDateValidity(formattedDateOfBirth)) {
-            model.addAttribute("ageError", "Date in not in valid format, DD/MM/YYYY");
-        }
-        if (!dateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) < 13) {
-            model.addAttribute("ageError", "You must be 13 years old or older to create an account");
-        }
-        if (!dateOfBirth.isEmpty() && checkDateValidity(formattedDateOfBirth) && calculateAge(formattedDateOfBirth) > 120) {
-            model.addAttribute("ageError", "The maximum age allowed is 120 years");
-        }
+        // Validate user details on just these details as no user is logged in yet
+        doUserValidations(model, userService, null, email, noLastName, firstName, lastName, formattedDateOfBirth);
+        doPasswordValidations(model, userService, null, null, password, password2);
+
         if (model.containsAttribute("registrationEmailError") || model.containsAttribute("firstNameError")
-                || model.containsAttribute("lastNameError") || model.containsAttribute("passwordValidityError")
+                || model.containsAttribute("lastNameError") || model.containsAttribute("newPasswordError")
                 || model.containsAttribute("passwordMatchError") || model.containsAttribute("ageError")) {
             return "registerFormTemplate";
         } else {

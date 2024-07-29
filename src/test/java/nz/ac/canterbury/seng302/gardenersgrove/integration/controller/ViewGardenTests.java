@@ -78,6 +78,10 @@ public class ViewGardenTests {
     private TagService tagService;
 
     private static User testUser;
+    @MockBean
+    private WeatherService weatherService;
+
+    private User testUser;
 
     @BeforeEach
     public void setUp() {

@@ -81,6 +81,9 @@ public class EditGardenTests {
     @MockBean
     private TagService tagService;
 
+    @MockBean
+    private WeatherService weatherService;
+
     private User mockUser;
 
     @BeforeEach

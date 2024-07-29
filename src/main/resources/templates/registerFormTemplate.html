@@ -55,9 +55,9 @@
                         <br/>
                         <input autocomplete="new-password" type="password" class="form-control" id="password"
                                th:name="password" th:value="*{password}" data-cy="password"
-                               th:classappend="${passwordValidityError != null ? 'error' : 'form-control'}" autofocus>
+                               th:classappend="${newPasswordError != null ? 'error' : 'form-control'}" autofocus>
                         <br/>
-                        <div th:if="${passwordValidityError}" class="error-message" th:text="${passwordValidityError}"></div>
+                        <div th:if="${newPasswordError}" class="error-message" th:text="${newPasswordError}"></div>
                         <br/>
                         <label for="password2"> Repeat Password:
                             <span class="required-input"> * </span>
