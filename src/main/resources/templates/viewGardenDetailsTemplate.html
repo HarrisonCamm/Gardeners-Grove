@@ -1,71 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="_csrf" th:content="${_csrf.token}"/>
-        <title>View Garden</title>
-        <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
-        <link th:href="@{/css/navBar.css}" rel="stylesheet">
-        <script th:src="@{/javascript/image-handling.js}"></script>
-    </head>
+    <!-- Head fragment holding all the style sheets-->
+    <head th:replace="fragments/head :: head(title='View Garden')"> </head>
     <body>
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+
         <div class="wrapper">
-            <div class="container">
-                <table class="sideBar">
-                    <thead>
-                        <tr>
-                            <th class="garden-header">Gardens</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="garden : ${gardens}">
-                            <td>
-                                <a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
-                                    <span th:text="${#strings.abbreviate(garden.name,10)}"> Name </span>
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <!-- Garden Side Navigation Bar Fragment -->
+            <div th:insert="~{fragments/sideBar.html :: sideBar}"></div>
+
+            <!-- View Garden Page Content -->
             <div class="gardenContainer">
-                <div class="gardenDetails">
-                    <div class="containerRow">
-                        <label></label>
-                        <h3 th:text="${gardenName}">  </h3>
+                <div class="gardenDetails container">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h3 th:text="${gardenName}">  </h3>
+                        </div>
                     </div>
-                    <div class="containerRow">
-                        <label></label>
-                        <h3 th:text="${gardenLocation}">  </h3>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h3 th:text="${gardenLocation}">  </h3>
+                        </div>
                     </div>
-                    <div class="containerRow" th:classappend="${gardenSize == '' ? 'disabled' : ''}">
-                        <label></label>
-                        <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
+                    <div class="row mb-3" th:classappend="${gardenSize == '' ? 'disabled' : ''}">
+                        <div class="col">
+                            <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
+                        </div>
                     </div>
-                    <div class="buttons-right">
-                        <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}">
-                            <button type="button">Edit</button>
-                        </a>
-                        &nbsp;
-                        <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}">
-                            <button type="button">Add new plant</button>
-                        </a>
+                    <div class="row mb-3" th:if="${tags != null and tags.size() > 0}">
+                        <div class="col d-flex flex-wrap">
+                            <th:block th:each="tag : ${tags}">
+                                <label class="me-2 mb-2" th:text="${tag}"></label>
+                            </th:block>
+                        </div>
                     </div>
-                    <div>
-                        <div id="imageError" class="error-message"></div>
+                    <div class="row mb-3">
+                        <div class="col garden-details-button-row">
+                            <div>
+                                <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
+                                    Edit
+                                </a>
+                                <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}" class="btn btn-primary ms-2 button">
+                                    Add new plant
+                                </a>
+                            </div>
+                            <form id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
+                                <div class="tag-input">
+                                    <div class="input-group ms-2 input-clear">
+                                        <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput" name="tag">
+                                        <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
+                                    </div>
+                                    <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div id="imageError" class="error-message"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="plantContainer">
-                    <table>
+                <div class="plantContainer table-responsive bg-light" style="max-height: calc(97px * 6); overflow-y: auto;">
+                    <table class="table">
                         <thead>
-                            <tr class="garden-table">
-                                <th>Picture &nbsp;</th>
-                                <th>Plant Name &nbsp;</th>
-                                <th>Count &nbsp;</th>
-                                <th>Description &nbsp;</th>
-                                <th>Date Planted</th>
-                            </tr>
+                        <tr class="garden-table">
+                            <th>Picture &nbsp;</th>
+                            <th>Plant Name &nbsp;</th>
+                            <th>Count &nbsp;</th>
+                            <th>Description &nbsp;</th>
+                            <th>Date Planted</th>
+                            <th>Edit Plant</th>
+                        </tr>
                         </thead>
                         <tbody>
                             <tr th:each="plant : ${plants}" class="plant-row">
@@ -82,19 +88,39 @@
                                 </td>
                                 <td th:text="${#strings.abbreviate(plant.name, 20)}"></td>
                                 <td th:text="${plant.count}"></td>
-                                <td class="wrap-description" th:text="${plant.description}"></td>
+                                <td th:text="${plant.description}"></td>
                                 <td th:text="${plant.datePlanted}"></td>
                                 <td>
                                     <a th:href="@{'/edit-plant?plantID=' + ${plant.id}}">
-                                        <button type="button">Edit</button>
+                                        <button type="button" class="btn btn-primary button">Edit</button>
                                     </a>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Weather Section -->
+                <div class="wrapper">
+                    <div class="weatherResponse-info">
+                        <div th:if="${weatherResponse != null}">
+                        <h2>Current Weather</h2>
+                            <p><strong>Day of Week:</strong> <span th:text="${weatherResponse.dayOfWeek}"></span></p>
+                            <p><strong>Date:</strong> <span th:text="${weatherResponse.date}"></span></p>
+                            <p><strong>Description:</strong> <span th:text="${weatherResponse.description}"></span></p>
+                            <p><strong>Temperature:</strong> <span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
+                            <p><strong>Humidity:</strong> <span th:text="${weatherResponse.humidity}"></span>%</p>
+                            <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" alt="Weather Icon"/>
+                        </div>
+                        <div th:if="${weatherResponse == null}">
+                            <p>Weather data is not available.</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
+        <div th:replace="~{fragments/scripts :: scripts}"></div>
     </body>
 </html>
 
@@ -102,6 +128,8 @@
     window.addEventListener('DOMContentLoaded', () => {
         const plantContainer = document.querySelector('.plantContainer');
         const gardenDetails = document.querySelector('.gardenDetails');
+        const clearButton = document.getElementById('clearButton');
+        const tagInput = document.getElementById('tagInput');
 
         // Adjust width of gardenDetails initially
         adjustWidth();
@@ -113,5 +141,16 @@
             const width = plantContainer.offsetWidth;
             gardenDetails.style.width = `${width}px`;
         }
+
+        clearButton.addEventListener('click', () => {
+            tagInput.value = '';
+        });
+
+        tagInput.addEventListener('keydown', (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                document.getElementById('tagForm').submit();
+            }
+        });
     });
 </script>

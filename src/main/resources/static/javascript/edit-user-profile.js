@@ -1,3 +1,13 @@
+function getDeployPath(url) {
+    if (url == null)
+        url = new URL(window.location.href);
+    const deployPath = url.pathname.split('/')[1];
+    if (deployPath === 'test' || deployPath === 'prod')
+        return '/' + deployPath;
+    else
+        return '';
+}
+
 function toggleChangePasswordForm(showForm) {
     let changePasswordButton = document.getElementById('passwordContainer');
     let changePasswordForm = document.getElementById('changePasswordForm');
@@ -29,6 +39,12 @@ function toggleChangePasswordForm(showForm) {
             errorMessages[i].innerText = '';
         }
     }
+}
+
+function changePassword() {
+    let editProfileForm = document.getElementById('editProfileForm');
+    editProfileForm.action = getDeployPath() + '/edit-user-profile-password';
+    editProfileForm.submit();
 }
 
 window.onload = function() {

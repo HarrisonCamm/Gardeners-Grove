@@ -156,11 +156,10 @@ h2 {
     justify-content: space-between; /* Horizontally center the items */
 }
 
-/* Container styles */
-.container {
+/* Side Bar Container styles (What was container is now SideBarColour)*/
+.sideBarColour {
     background: #0A3407;
     height: 100vh;
-    text-align: left;
 }
 
 /* Sidebar styles */
@@ -414,6 +413,41 @@ p {
     margin: 0
 }
 
+.garden-details-button-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.tag-input {
+    width: 300px;
+    display: flex;
+}
+
+.input-clear {
+    position: relative;
+}
+
+.input-clear input {
+    padding-right: 30px;
+}
+
+.input-clear button {
+    position: absolute;
+    right: 10%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #000;
+    transition: background-color 0.3s ease;
+    border-radius: 50%;
+}
+
+.input-clear button:hover {
+    background-color: transparent !important;
+    color: #000 !important;
+}
+
 
 @media only screen and (orientation: portrait) {
     h2 {
@@ -506,6 +540,18 @@ p {
         width: 120px;
         height: 120px;
         border-radius: 60px;
+    }
+
+    .input-clear button {
+        position: absolute;
+        right: 10%;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        color: #000;
+        transition: background-color 0.3s ease;
+        border-radius: 50%;
+        font-size: 200%;
     }
 
 }
