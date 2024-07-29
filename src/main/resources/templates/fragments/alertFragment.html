@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        .highlight {
+            border: 2px solid red;
+            padding: 10px;
+            background-color: #ffdddd;
+        }
+    </style>
+</head>
+<body>
+    <div th:fragment="alert" class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Warning!</strong> There hasn't been any rain recently, make sure to water your plants if they need it.
+<!--        <button type="button" class="button" data-dismiss="alert" aria-label="Close" onclick="toggleAlert()">-->
+<!--            <span aria-hidden="true">&times;</span>-->
+<!--        </button>-->
+        <button onclick="console.log('Element was clicked!')">
+            close
+<!--            <span aria-hidden="true">&times;</span>-->
+        </button>
+    </div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

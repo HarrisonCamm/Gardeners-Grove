@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head th:replace="fragments/head :: head(title='View Garden')">
-<!--        <meta charset="UTF-8">-->
-<!--        <meta name="_csrf" th:content="${_csrf.token}"/>-->
-<!--        <title>View Garden</title>-->
-<!--        <link th:href="@{/css/generalStyles.css}" rel="stylesheet">-->
-<!--        <link th:href="@{/css/navBar.css}" rel="stylesheet">-->
-<!--        <script th:src="@{/javascript/image-handling.js}"></script>-->
+<!--    <head th:replace="fragments/head :: head(title='View Garden')">-->
+
+        <meta charset="UTF-8">
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <title>View Garden</title>
+        <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
+        <link th:href="@{/css/navBar.css}" rel="stylesheet">
+        <script th:src="@{/javascript/image-handling.js}"></script>
+        <script th:src="@{/javascript/popup.js}"></script>
+
+
     </head>
     <body>
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
@@ -22,6 +26,8 @@
                 </div>
             </div>
             <div class="gardenContainer">
+                <!-- Include the alert fragment -->
+                <div th:replace="~{fragments/alertFragment :: alert}"></div>
                 <div class="gardenDetails container">
                     <div class="row mb-3">
                         <div class="col">
@@ -129,11 +135,14 @@
                     </div>
                 </div>
 
+
             </div>
         </div>
         <div th:replace="~{fragments/scripts :: scripts}"></div>
     </body>
 </html>
+
+
 
 <script>
     window.addEventListener('DOMContentLoaded', () => {

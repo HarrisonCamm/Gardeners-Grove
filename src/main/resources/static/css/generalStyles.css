@@ -120,6 +120,10 @@ button:hover, .button:hover {
     cursor: pointer;
 }
 
+.button-close {
+    padding: 1px;
+}
+
 .buttons-centre {
     display: flex;
     justify-content: flex-end;
