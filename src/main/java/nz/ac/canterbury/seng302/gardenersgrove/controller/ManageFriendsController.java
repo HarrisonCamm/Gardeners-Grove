@@ -229,7 +229,7 @@ public class ManageFriendsController {
         User currentUser = userService.getAuthenicatedUser();
         User friendToRemove = userService.getUserByEmail(email);
 
-        UserRelationship relationship = userRelationshipService.getRelationship(friendToRemove, currentUser);
+        UserRelationship relationship = userRelationshipService.getRelationship(currentUser, friendToRemove);
         userRelationshipService.remove(relationship);
 
         // Check if the user to remove is indeed a friend
