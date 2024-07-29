@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -101,8 +102,10 @@ public class ManageFriendsController {
 
         List<UserRelationship> usersRelationships = userRelationshipService.getUserRelationships(currentUser);
 
+
+        List<User> mutableSearchedUsers = new ArrayList<>(searchedUsers);
         for (FriendRequest request : sentFriendRequests) {
-            searchedUsers.remove(request.getReceiver());
+            mutableSearchedUsers.remove(request.getReceiver());
         }
 
         for (UserRelationship relationship: usersRelationships) {
@@ -115,7 +118,7 @@ public class ManageFriendsController {
             model.addAttribute("searchResultMessage",
                     "There is nobody with that name or email in Gardener’s Grove");
         } else {
-            model.addAttribute("matchedUsers", searchedUsers);
+            model.addAttribute("matchedUsers", mutableSearchedUsers);
         }
 
         model.addAttribute("searchQuery", searchQuery);

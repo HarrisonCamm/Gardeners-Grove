@@ -77,6 +77,9 @@ public class ViewGardenTests {
     @MockBean
     private TagService tagService;
 
+    @MockBean
+    private UserRelationshipService userRelationshipService;
+
     private static User testUser;
     @MockBean
     private WeatherService weatherService;

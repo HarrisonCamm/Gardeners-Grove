@@ -80,6 +80,9 @@ public class AutocompleteControllerTests {
     @MockBean
     private WeatherService weatherService;
 
+    @MockBean
+    private UserRelationshipService userRelationshipService;
+
     @Mock
     Authentication authentication;
 
