@@ -124,7 +124,42 @@ public class AddTagSteps {
     }
 
 
+    @When("I click on one suggestion")
+    public void iClickOnOneSuggestion() throws Exception {
+        resultActions = mockMvc.perform(post("/add-tag")
+                        .param("gardenID", ownedGarden.getId().toString())
+                        .param("tag", "Test Tag")
+                        .with(csrf()))
+                .andExpect(status().is2xxSuccessful());
+    }
 
+    @Then("that tag should be added to my garden and the text box cleared")
+    public void thatTagShouldBeAddedToMyGardenAndTheTextBoxCleared() throws Exception {
+        // Get all tags from the model
+        List<Tag> allTags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("allTags");
 
+        // Assert that the size of allTags is 2
+        assertEquals(2, allTags.size());
 
+        // Get the tagInput field from the model
+        String tagInput = (String) resultActions.andReturn().getModelAndView().getModel().get("tagInput");
+
+        // Assert that the tagInput field is empty
+        assertTrue(tagInput.isEmpty());
+    }
+
+    @Given("I have entered invalid text")
+    public void iHaveEnteredInvalidText() {
+        // TODO: Implement this step
+    }
+
+    @When("I click the \"+\" button or press enter")
+    public void iClickThePlusButtonOrPressEnter() {
+        // TODO: Implement this step
+    }
+
+    @Then("an error message tells me \"The tag name must only contain alphanumeric characters, spaces, -, _, ', or ” , and no tag is added to my garden and no tag is added to the user defined tags the system knows")
+    public void anErrorMessageTellsMe() {
+        // TODO: Implement this step
+    }
 }

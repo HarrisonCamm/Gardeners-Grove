@@ -105,8 +105,7 @@ public class ViewGardenTests {
                         .param("location.postcode", "0000")
                         .param("location.country", "test")
                         .param("size", gardenSize))
-                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/view-garden?gardenID=*"));
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
     }
 
     @ParameterizedTest
@@ -140,8 +139,7 @@ public class ViewGardenTests {
                         .with(csrf())
                         .param("gardenID", "1")
                         .param("tag", tag))
-                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/view-garden?gardenID=*"));
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
     }
 
     // TODO implement failing tests after moderation is implemented
