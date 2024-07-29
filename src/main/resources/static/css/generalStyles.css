@@ -75,6 +75,13 @@ textarea:focus {
     font-size: 101%;
 }
 
+.wrap-description {
+    max-width: 50ch;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
 .error {
     border: 1px solid #DE2929;
     outline: 1px solid #DE2929;
