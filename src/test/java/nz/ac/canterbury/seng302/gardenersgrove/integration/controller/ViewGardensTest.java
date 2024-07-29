@@ -58,6 +58,9 @@ public class ViewGardensTest {
     @MockBean
     private FriendRequestService friendRequestService;
 
+    @MockBean
+    private TagService tagService;
+
     private User testUser;
 
     @BeforeEach

@@ -105,7 +105,7 @@ public class ViewGardenTests {
                         .param("location.postcode", "0000")
                         .param("location.country", "test")
                         .param("size", gardenSize))
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
     }
 
     @ParameterizedTest
