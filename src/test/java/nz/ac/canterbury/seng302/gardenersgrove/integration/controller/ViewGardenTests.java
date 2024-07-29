@@ -81,8 +81,6 @@ public class ViewGardenTests {
     @MockBean
     private WeatherService weatherService;
 
-    private User testUser;
-
     @BeforeEach
     public void setUp() {
         testUser = new User("user@email.com", "User", "Name", "password");
