@@ -44,8 +44,8 @@
                                         <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" class="img-fluid w-200" alt="Weather Icon" />
                                     </div>
                                     </div>
-                                    <div th:if="${weatherResponse == null}">
-                                        <p>Weather data is not available.</p>
+                                    <div th:if="${weatherResponse == null}" class="error-message">
+                                        <p>Location not found, please update your location to see the weather</p>
                                     </div>
                                 </div>
                             </div>
