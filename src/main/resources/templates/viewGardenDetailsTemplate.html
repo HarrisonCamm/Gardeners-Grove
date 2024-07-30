@@ -34,34 +34,34 @@
                             </th:block>
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col garden-details-button-row">
-                            <div>
-                                <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
-                                    Edit
-                                </a>
-                                <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}" class="btn btn-primary ms-2 button">
-                                    Add new plant
-                                </a>
-                            </div>
-                            <form class="tags" id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
-                                <div class="tag-input">
-                                    <div class="input-group ms-2 input-clear">
-                                        <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput" name="tag" th:value="${tagInput}">                                        <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
-                                    </div>
-                                    <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
-                                </div>
-                            </form>
-                        </div>
-                        <!-- Moving the autocomplete list below the input form -->
-                        <div class="container mt-3" id="autocompleteList"></div>
-                    </div>
 
                     <div class="row">
                         <div class="col">
                             <div id="imageError" class="error-message"></div>
                         </div>
                     </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col garden-details-button-row">
+                        <div class="view-garden-plant-buttons">
+                            <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
+                                Edit
+                            </a>
+                            <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}" class="btn btn-primary button">
+                                Add new plant
+                            </a>
+                        </div>
+                        <form class="tags" id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
+                            <div class="tag-input">
+                                <div class="input-group ms-2 input-clear">
+                                    <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput" name="tag" th:value="${tagInput}">                                        <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
+                                </div>
+                                <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Moving the autocomplete list below the input form -->
+                    <div class="container mt-3" id="autocompleteList"></div>
                 </div>
                 <div class="plantContainer table-responsive bg-light" style="max-height: calc(97px * 6); overflow-y: auto;">
                     <table class="table">
@@ -176,6 +176,7 @@
                 suggestions.forEach(function(tag, index) {
                     let item = document.createElement('button');
                     item.className = 'dropdown-item autocomplete-tag-item'; // Bootstrap class
+                    //Abbreviate the tag name if it is too long to fit within a reasonable width (20 characters)
                     item.textContent = tag.name.length > 20 ? tag.name.substring(0, 20) + '...' : tag.name;
                     item.addEventListener('click', function() {
                         // Set the input value to the clicked item's text
@@ -198,6 +199,7 @@
                 });
 
                 if (suggestions.length > 0) {
+                    console.log(suggestions);
                     autocompleteList.style.display = 'block'; // Show the list
                 } else {
                     autocompleteList.style.display = 'none'; // Hide the list if no suggestions
