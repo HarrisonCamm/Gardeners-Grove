@@ -1,11 +1,11 @@
 Feature: Add tags to garden
 
   Background: User is logged in
-    Given I am logged in with email "startup@user.com" and password "Password1!"
+    Given I am logged in with email "inaya@email.com" and password "Password1!"
+    And I am a garden owner
 
   Scenario: Owner adds tags to their garden
-    Given I am a garden owner
-    And I am on the garden details page for a garden I own to observe the tags feature
+    Given I am on the garden details page for a garden I own to observe the tags feature
     Then there is a text box where I can type in tags to the garden
 
   Scenario: View tags of a public garden

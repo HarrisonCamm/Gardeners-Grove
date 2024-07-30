@@ -71,6 +71,7 @@
                             <div id="imageError" class="error-message"></div>
                         </div>
                     </div>
+
                 </div>
                 <div class="plantContainer table-responsive bg-light" style="max-height: calc(97px * 6); overflow-y: auto;">
                     <table class="table">
@@ -185,6 +186,7 @@
                 suggestions.forEach(function(tag, index) {
                     let item = document.createElement('button');
                     item.className = 'dropdown-item autocomplete-tag-item'; // Bootstrap class
+                    //Abbreviate the tag name if it is too long to fit within a reasonable width (20 characters)
                     item.textContent = tag.name.length > 20 ? tag.name.substring(0, 20) + '...' : tag.name;
                     item.addEventListener('click', function() {
                         // Set the input value to the clicked item's text
@@ -207,6 +209,7 @@
                 });
 
                 if (suggestions.length > 0) {
+                    console.log(suggestions);
                     autocompleteList.style.display = 'block'; // Show the list
                 } else {
                     autocompleteList.style.display = 'none'; // Hide the list if no suggestions

@@ -23,10 +23,10 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class AddTagSteps {
@@ -100,11 +100,19 @@ public class AddTagSteps {
 
     @Given("I have already created a tag for a garden I own")
     public void iHaveAlreadyCreatedATagForAGardenIOwn() throws Exception {
-        resultActions = mockMvc.perform(post("/add-tag")
+        mockMvc.perform(post("/add-tag")
+                .param("gardenID", ownedGarden.getId().toString())
+                .param("tag", "Test Tag")
+                .with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/view-garden?gardenID=" + ownedGarden.getId()));
+
+        // MockMvc doesn't do the redirect, so we need to get the garden again
+        resultActions = mockMvc.perform(get("/view-garden")
                         .param("gardenID", ownedGarden.getId().toString())
-                        .param("tag", "Test Tag")
-                        .with(csrf()))
-                .andExpect(status().is2xxSuccessful());
+                        .with(csrf())) // Add CSRF token
+                .andExpect(status().isOk());
     }
 
     @When("I have typed a tag into the text box that matches the tag I created")
@@ -130,7 +138,13 @@ public class AddTagSteps {
                         .param("gardenID", ownedGarden.getId().toString())
                         .param("tag", "Test Tag")
                         .with(csrf()))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(status().is3xxRedirection());
+
+        // MockMvc doesn't do the redirect, so we need to get the garden again
+        resultActions = mockMvc.perform(get("/view-garden")
+                        .param("gardenID", ownedGarden.getId().toString())
+                        .with(csrf())) // Add CSRF token
+                .andExpect(status().isOk());
     }
 
     @Then("that tag should be added to my garden and the text box cleared")
