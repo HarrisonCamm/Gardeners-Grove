@@ -74,28 +74,28 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="plant : ${plants}" class="plant-row">
-                            <td>
-                                <div class="image-icon-div-small">
-                                    <div class="image-upload">
-                                        <img class="image-small"
-                                             th:id="${plant.id}" th:data-plant-id="${plant.id}"
-                                             th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
-                                        <input th:value="imagePath" class="file-input" type="file" name="file" id="file">
-                                        <button class="image-picker-small" th:image-button-id="${plant.id}">+</button>
+                            <tr th:each="plant : ${plants}" class="plant-row">
+                                <td>
+                                    <div class="image-icon-div-small">
+                                        <div class="image-upload">
+                                            <img class="image-small"
+                                                 th:id="${plant.id}" th:data-plant-id="${plant.id}"
+                                                 th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
+                                            <input th:value="imagePath" class="file-input" type="file" name="file" id="file">
+                                            <button class="image-picker-small" th:image-button-id="${plant.id}">+</button>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td th:text="${plant.name}"></td>
-                            <td th:text="${plant.count}"></td>
-                            <td th:text="${plant.description}"></td>
-                            <td th:text="${plant.datePlanted}"></td>
-                            <td>
-                                <a th:href="@{'/edit-plant?plantID=' + ${plant.id}}">
-                                    <button type="button" class="btn btn-primary button">Edit</button>
-                                </a>
-                            </td>
-                        </tr>
+                                </td>
+                                <td th:text="${#strings.abbreviate(plant.name, 30)}"></td>
+                                <td th:text="${plant.count}"></td>
+                                <td th:text="${plant.description}" class="text-wrap"></td>
+                                <td th:text="${plant.datePlanted}"></td>
+                                <td>
+                                    <a th:href="@{'/edit-plant?plantID=' + ${plant.id}}">
+                                        <button type="button" class="btn btn-primary button">Edit</button>
+                                    </a>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
