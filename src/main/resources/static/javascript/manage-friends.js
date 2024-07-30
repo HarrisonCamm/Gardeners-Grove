@@ -18,3 +18,8 @@ function toggleRemoveFriend(){
     removeFriendButton.hidden = !(removeFriendButton.hidden)
     confirmRemoveFriendButton.hidden = !(confirmRemoveFriendButton.hidden)
 }
+
+function setActionAndEmail(action, email){
+    document.getElementById('friend-request-action').value = action;
+    document.getElementById('friend-request-email').value = email;
+}
