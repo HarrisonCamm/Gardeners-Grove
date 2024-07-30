@@ -5,7 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.microsoft.azure.cognitiveservices.vision.contentmoderator.*;
 import com.microsoft.azure.cognitiveservices.vision.contentmoderator.models.*;
 
@@ -35,22 +36,21 @@ public class ModerationService {
 
             Screen textResults = null;
             // For formatting the printed results
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
             if (!line.isEmpty()) {
                 textResults = client.textModerations().screenText("text/plain", line.getBytes(), null);
                 // Uncomment below line to print in console
-                logger.info(gson.toJson(textResults).toString());
+                logger.info(objectMapper.writeValueAsString(textResults));
             }
-
 
             logger.info("Text moderation status: " + textResults.status().description());
 //            logger.info(textResults.classification().toString()); // todo fix this to retrieve the classification
 
-            logger.info("Text moderation terms: " + gson.toJson(textResults.terms()));
+            logger.info("Text moderation terms: " + objectMapper.writeValueAsString(textResults.terms()));
 
-            return gson.toJson(textResults.terms());
+            return objectMapper.writeValueAsString(textResults.terms());
 
 
 //

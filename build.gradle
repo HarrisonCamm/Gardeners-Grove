@@ -63,7 +63,6 @@ dependencies {
 
     // Microsoft Azure Content Moderation
     implementation 'com.microsoft.azure.cognitiveservices:azure-cognitiveservices-contentmoderator:1.0.2-beta'
-    implementation 'com.google.code.gson:gson:2.8.5'
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
