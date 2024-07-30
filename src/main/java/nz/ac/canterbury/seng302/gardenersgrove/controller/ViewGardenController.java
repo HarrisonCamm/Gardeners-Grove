@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
-
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
@@ -22,26 +21,27 @@ import java.util.Optional;
 
 @Controller
 public class ViewGardenController {
-
-    private final ImageService imageService;
     Logger logger = LoggerFactory.getLogger(ViewGardenController.class);
-
+    private final ImageService imageService;
     private final GardenService gardenService;
     private final PlantService plantService;
     private final UserService userService;
     private final WeatherService weatherService;
     private final TagService tagService;
+    private final ModerationService moderationService;
 
     @Autowired
     public ViewGardenController(GardenService gardenService, PlantService plantService,
                                 UserService userService, ImageService imageService,
-                                TagService tagService, WeatherService weatherService) {
+                                TagService tagService, WeatherService weatherService,
+                                ModerationService moderationService) {
         this.gardenService = gardenService;
         this.plantService  = plantService;
         this.userService = userService;
         this.imageService = imageService;
         this.tagService = tagService;
         this.weatherService = weatherService;
+        this.moderationService = moderationService;
     }
 
     @GetMapping("/view-garden")
@@ -136,9 +136,19 @@ public class ViewGardenController {
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
-        // Add tag to the database
-        tagService.addTag(new Tag(garden.get().getId(), tag));
+        // Moderate the tag before adding
+        String possibleTerms = moderationService.moderateText(tag);
 
+        // If the possible terms are not empty, then it contains profanity
+        if (!possibleTerms.equals("null")) {
+            // show error
+            model.addAttribute("tagError", "Profanity or inappropriate language detected");
+        } else {
+            // Tag is ok, add to the database
+            tagService.addTag(new Tag(garden.get().getId(), tag));
+        }
+
+        // Add tags to garden
         return addAttributes(currentUser, gardenID, "", model, plantService, gardenService);
     }
 

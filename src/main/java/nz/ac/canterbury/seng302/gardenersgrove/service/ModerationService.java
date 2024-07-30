@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,21 +19,30 @@ public class ModerationService {
     @Value("${azure.api.url}")
     private String moderatorApiUrl;
 
-    Logger logger = LoggerFactory.getLogger(ModerationService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ModerationService.class);
 
+    private ContentModeratorClient client;
 
-    // authenticating the client
-    private ContentModeratorClient client = ContentModeratorManager.authenticate(AzureRegionBaseUrl.fromString(moderatorApiUrl),
-            moderatorApiKey);
+    @Autowired
+    public ModerationService(@Value("${azure.api.url}") String moderatorApiUrl,
+                             @Value("${azure.api.key}") String moderatorApiKey) {
+        this.moderatorApiUrl = moderatorApiUrl;
+        this.moderatorApiKey = moderatorApiKey;
+        this.client = ContentModeratorManager.authenticate(AzureRegionBaseUrl.fromString(moderatorApiUrl), moderatorApiKey);
+    }
 
-    // below is adapted from microsoft quickstart
+    /**
+     * Moderates the given text using Azure Content Moderator.
+     *
+     * @param line The text to be moderated.
+     * @return JSON string containing detected terms if any inappropriate content is found, "null" otherwise.
+     */
     public String moderateText(String line) {
-        logger.info("---------------------------------------");
         logger.info("MODERATE TEXT");
 
         try {
-            client = ContentModeratorManager.authenticate(AzureRegionBaseUrl.fromString(moderatorApiUrl),
-                    moderatorApiKey);
+            // Re-authenticate the client
+            client = ContentModeratorManager.authenticate(AzureRegionBaseUrl.fromString(moderatorApiUrl), moderatorApiKey);
 
             Screen textResults = null;
             // For formatting the printed results
@@ -45,26 +55,16 @@ public class ModerationService {
                 logger.info(objectMapper.writeValueAsString(textResults));
             }
 
+            // Log moderation status and terms
             logger.info("Text moderation status: " + textResults.status().description());
-//            logger.info(textResults.classification().toString()); // todo fix this to retrieve the classification
-
+            // todo fix this to retrieve the classification
+//            logger.info(textResults.classification().toString());
             logger.info("Text moderation terms: " + objectMapper.writeValueAsString(textResults.terms()));
 
             return objectMapper.writeValueAsString(textResults.terms());
 
-
-//
-//            // Create output results file to TextModerationOutput.json
-//            BufferedWriter writer = new BufferedWriter(
-//                    new FileWriter(new File("src\\main\\resources\\TextModerationOutput.json")));
-//            writer.write(gson.toJson(textResults).toString());
-//            System.out.println("Check TextModerationOutput.json to see printed results.");
-//            System.out.println();
-//            writer.close();
-
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            logger.error("Error during text moderation: ", e);
         }
         return line;
     }

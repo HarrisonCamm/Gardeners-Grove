@@ -36,6 +36,7 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col garden-details-button-row">
+                            <!-- Edit, Add Sections -->
                             <div>
                                 <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
                                     Edit
@@ -44,6 +45,8 @@
                                     Add new plant
                                 </a>
                             </div>
+
+                            <!-- tag section -->
                             <form class="tags" id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
                                 <div class="tag-input">
                                     <div class="input-group ms-2 input-clear">
@@ -53,6 +56,12 @@
                                 </div>
                             </form>
                         </div>
+
+                        <!-- tag error message -->
+                        <div th:if="${tagError}" class="alert alert-danger">
+                            <p th:text="${tagError}"></p>
+                        </div>
+
                         <!-- Moving the autocomplete list below the input form -->
                         <div class="container mt-3" id="autocompleteList"></div>
                     </div>
