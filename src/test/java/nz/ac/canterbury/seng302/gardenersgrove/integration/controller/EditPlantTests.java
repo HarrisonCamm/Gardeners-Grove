@@ -206,6 +206,7 @@ public class EditPlantTests {
             "3, name, -0032425, '', ''",
             "4, name, hi, '', ''",
             "5, name, null, '', ''",
+            "5, name, 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111, '', ''",
     })
     public void OnForm_InvalidCount_ErrorGiven(Long plantID, String plantName, String count, String date, String description) throws Exception {
         Plant plant = new Plant(testGarden, "default plant", "1", "a regular plant", "");
