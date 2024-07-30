@@ -54,14 +54,15 @@
                         <form class="tags" id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
                             <div class="tag-input">
                                 <div class="input-group ms-2 input-clear">
-                                    <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput" name="tag" th:value="${tagInput}">                                        <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
+                                    <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput" name="tag" th:value="${tagInput}">
+                                    <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
                                 </div>
                                 <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
+                                <div class="container mt-3" id="autocompleteList"></div>
                             </div>
                         </form>
                     </div>
-                    <!-- Moving the autocomplete list below the input form -->
-                    <div class="container mt-3" id="autocompleteList"></div>
+
                 </div>
                 <div class="plantContainer table-responsive bg-light" style="max-height: calc(97px * 6); overflow-y: auto;">
                     <table class="table">
@@ -148,6 +149,7 @@
 
         clearButton.addEventListener('click', () => {
             tagInput.value = '';
+            autocompleteList.style.display = 'none';
         });
 
         tagInput.addEventListener('keydown', (event) => {

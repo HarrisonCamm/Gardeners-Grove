@@ -403,6 +403,7 @@ p {
 .tag-input {
     width: 300px;
     display: flex;
+    position: relative;
 }
 
 .input-clear {
@@ -442,9 +443,12 @@ p {
     position: absolute;
     border: 1px solid black;
     background-color: rgba(190, 225, 134); /* Adjust the alpha value to control transparency */
-    width: 20%;
     display: none; /* Initially hidden, display when needed */
-    margin-left: 30%;
+    z-index: 99;
+    margin-top: 15% !important;
+    max-height: 400px;
+    overflow: auto;
+    overflow-x: hidden;
 }
 
 
