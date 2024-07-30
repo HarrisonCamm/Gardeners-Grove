@@ -96,16 +96,15 @@ public class ManageFriendsController {
 
         User currentUser = userService.getAuthenicatedUser();
 
-        List<User> searchedUsers = userService.searchForUsers(searchQuery.toLowerCase(), currentUser);
+        List<User> searchedUsers = new ArrayList<>(userService.searchForUsers(searchQuery.toLowerCase(), currentUser));
 
         List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
 
         List<UserRelationship> usersRelationships = userRelationshipService.getUserRelationships(currentUser);
 
 
-        List<User> mutableSearchedUsers = new ArrayList<>(searchedUsers);
         for (FriendRequest request : sentFriendRequests) {
-            mutableSearchedUsers.remove(request.getReceiver());
+            searchedUsers.remove(request.getReceiver());
         }
 
         for (UserRelationship relationship: usersRelationships) {
@@ -118,7 +117,7 @@ public class ManageFriendsController {
             model.addAttribute("searchResultMessage",
                     "There is nobody with that name or email in Gardener’s Grove");
         } else {
-            model.addAttribute("matchedUsers", mutableSearchedUsers);
+            model.addAttribute("matchedUsers", searchedUsers);
         }
 
         model.addAttribute("searchQuery", searchQuery);
