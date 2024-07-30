@@ -4,6 +4,9 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.WeatherResponse;
 import nz.ac.canterbury.seng302.gardenersgrove.service.CountryCodeService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.WeatherService;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,27 +37,19 @@ public class WeatherServiceTests {
         weatherService = new WeatherService(countryCodeService, restTemplate);
     }
 
-    @Test
-    public void EmptyCity_GetCurrentWeather_ReturnsNull() {
-        WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather("", "New Zealand");
+    @ParameterizedTest
+    @ValueSource(strings = {"", " "})
+    @NullAndEmptySource
+    public void NullEmptyCity_GetCurrentWeather_ReturnsNull(String city) {
+        WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather(city, "New Zealand");
         Assertions.assertNull(weatherServiceResponse);
     }
 
-    @Test
-    public void NullCity_GetCurrentWeather_ReturnsNull() {
-    WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather(null, "New Zealand");
-        Assertions.assertNull(weatherServiceResponse);
-    }
 
-    @Test
-    public void EmptyCountry_GetCurrentWeather_ReturnsWeatherResponse() {
-        WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather("Auckland", "");
-        Assertions.assertNotNull(weatherServiceResponse);
-    }
-
-    @Test
-    public void NullCountry_GetCurrentWeather_ReturnsWeatherResponse() {
-        WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather("Auckland", null);
+    @ParameterizedTest
+    @ValueSource(strings = {"", " "})
+    @NullAndEmptySource    public void NullEmptyCountry_GetCurrentWeather_ReturnsWeatherResponse(String country) {
+        WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather("Auckland", country);
         Assertions.assertNotNull(weatherServiceResponse);
     }
 
@@ -79,12 +74,9 @@ public class WeatherServiceTests {
         Assertions.assertEquals(expectedIcon, weatherServiceResponse.getWeatherIcon());
     }
 
-
-
-
     //Will return to this when I can get help to get the right properties profile to activate
 //    @Nested
-////    @ActiveProfiles("test")
+//    @ActiveProfiles("test")
 //    class WeatherServiceTestsTestProperties {
 //        //really just testing that it won't 💥 if there's no api key
 //        @Test
@@ -93,6 +85,4 @@ public class WeatherServiceTests {
 //            Assertions.assertNull(weatherServiceResponse);
 //        }
 //    }
-
-
 }

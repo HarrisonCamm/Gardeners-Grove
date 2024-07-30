@@ -70,7 +70,7 @@ public class WeatherService {
      */
     public WeatherResponse getCurrentWeather(String city, String country) {
         //reject null and empty inputs
-        if (city == null || city.isEmpty()) {
+        if (city == null || city.isBlank()) {
             logger.info("getCurrentWeather call with null/empty city has been rejected");
             return null;
         }
