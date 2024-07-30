@@ -120,7 +120,7 @@ public class ResetPasswordSteps {
         // Create for mockMvc
         ResetPasswordFormController resetPasswordFormController = new ResetPasswordFormController( userService, authenticationManager, verificationTokenService, mailService);
         SignInController signInController = new SignInController(userService, userRepository, authenticationManager, verificationTokenService);
-        LostPasswordFormController lostPasswordFormController = new LostPasswordFormController(userService, authenticationManager, verificationTokenService, mailService);
+        LostPasswordFormController lostPasswordFormController = new LostPasswordFormController(userService, verificationTokenService, mailService);
 
         // Build the mockMVC
         mockMvcResetPassword = MockMvcBuilders.standaloneSetup(resetPasswordFormController).build();

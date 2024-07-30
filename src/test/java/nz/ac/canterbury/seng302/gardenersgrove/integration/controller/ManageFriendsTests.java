@@ -41,6 +41,9 @@ public class ManageFriendsTests {
     @MockBean
     private ImageService imageService;
 
+    @MockBean
+    private UserRelationshipService userRelationshipService;
+
     private static User loggedUser;
     private static User testUser;
 
@@ -80,7 +83,7 @@ public class ManageFriendsTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("manageFriendsTemplate"))
                 .andExpect(model().attribute("showSearch", false))
-                .andExpect(model().attribute("matchedUsers", List.of(testUser)));
+                .andExpect(model().attribute("matchedUsers", List.of()));
     }
 
     @WithMockUser

@@ -102,7 +102,7 @@ public class CreateGardenController {
         Garden garden = new Garden(gardenName, gardenLocation, gardenSize);
         garden.setOwner(currentUser);
 
-        // Perform validation
+        // Perform validation, get back all errors
         ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize);
 
         addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize);
@@ -115,7 +115,6 @@ public class CreateGardenController {
             model.addAttribute("garden", garden);
             return "createGardenFormTemplate";
         } else {
-            //TODO figure out how to not have duplicate locations. Probably next sprint tbh
             locationService.addLocation(garden.getLocation());
             gardenService.addGarden(garden);
             return "redirect:/view-garden?gardenID=" +garden.getId();
@@ -131,14 +130,18 @@ public class CreateGardenController {
      */
     public ArrayList<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize) {
 
+        // List for all the errors
         ArrayList<FieldError> errors = new ArrayList<>();
 
+        // Validates Garden Name
         FieldError nameError = validateGardenName(gardenName);
+
+        // Check for name error and display
         if (nameError != null) {
             errors.add(nameError);
         }
 
-
+        // Valid the location fields in Location
         List<FieldError> locationErrors = validateGardenLocation(gardenLocation);
         errors.addAll(locationErrors);
 

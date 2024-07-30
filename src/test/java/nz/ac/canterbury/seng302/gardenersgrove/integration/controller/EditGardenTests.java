@@ -79,6 +79,15 @@ public class EditGardenTests {
     private FriendRequestService friendRequestService;
 
     @MockBean
+    private TagService tagService;
+
+    @MockBean
+    private WeatherService weatherService;
+
+    @MockBean
+    private UserRelationshipService userRelationshipService;
+
+    @MockBean
     private ModerationService moderationService;
 
     private User mockUser;

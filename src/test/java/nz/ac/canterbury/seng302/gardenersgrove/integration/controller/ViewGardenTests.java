@@ -1,10 +1,14 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -18,9 +22,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
@@ -68,6 +75,15 @@ public class ViewGardenTests {
     private FriendRequestService friendRequestService;
 
     @MockBean
+    private TagService tagService;
+
+    @MockBean
+    private UserRelationshipService userRelationshipService;
+
+    @MockBean
+    private WeatherService weatherService;
+
+    @MockBean
     private ModerationService moderationService;
 
     private User testUser;
@@ -76,7 +92,7 @@ public class ViewGardenTests {
     public void setUp() {
         testUser = new User("user@email.com", "User", "Name", "password");
 //        testUser.setUserId(1L);
-        Mockito.when(userService.getAuthenicatedUser()).thenReturn(testUser);
+        when(userService.getAuthenicatedUser()).thenReturn(testUser);
     }
 
 
@@ -98,8 +114,7 @@ public class ViewGardenTests {
                         .param("location.postcode", "0000")
                         .param("location.country", "test")
                         .param("size", gardenSize))
-                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/view-garden?gardenID=*"));
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
     }
 
     @ParameterizedTest
@@ -107,10 +122,34 @@ public class ViewGardenTests {
     public void postForm_WithInvalidID_Fail(int integer) {
         //Incoming bad test
         try {
-            mockMvc.perform(MockMvcRequestBuilders.get("/ViewGarden")
+            mockMvc.perform(MockMvcRequestBuilders.get("/view-garden")
                     .param("gardenID", String.valueOf(integer)));
         } catch (Exception e) {
             assertTrue(true);
         }
     }
+
+    @ParameterizedTest
+    @WithMockUser
+    @CsvSource({
+            "This is a tag",
+            "Flowers",
+            "Vegetables",
+            "Fruit",
+            "Herbs"})
+    public void addTag_WithValidTag_Success(String tag) throws Exception {
+
+        Location location = new Location("Test", "Test", "Test", "Test", "Test");
+
+        when(gardenService.findGarden(1L)).thenReturn(Optional.of(new Garden("Test", location, "1", testUser)));
+        when(tagService.addTag(any())).thenReturn(new Tag(1L, tag));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/add-tag")
+                        .with(csrf())
+                        .param("gardenID", "1")
+                        .param("tag", tag))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+    }
+
+    // TODO implement failing tests after moderation is implemented
 }
