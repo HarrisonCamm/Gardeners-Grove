@@ -148,6 +148,8 @@ public class ViewGardenTests {
                         .param("gardenID", "1")
                         .param("tag", tag))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
+
+        verify(tagService).addTag(any(Tag.class));
     }
 
     // TODO implement failing tests after moderation is implemented
