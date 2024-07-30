@@ -22,10 +22,6 @@ public class TagService {
         return tagRepository.findAll();
     }
 
-    public List<Tag> getGardenTags(Long gardenId) {
-        return tagRepository.findByGardenId(gardenId);
-    }
-
     public Tag addTag(Tag tag) {
         return tagRepository.save(tag);
     }

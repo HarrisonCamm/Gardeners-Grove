@@ -136,8 +136,9 @@ public class ViewGardenController {
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
-        // Add tag to the database
-        tagService.addTag(new Tag(garden.get().getId(), tag));
+        // Add tag to the database and add the tag to the garden's list of tags
+        Tag addedTag = tagService.addTag(new Tag(tag));
+        gardenService.addTagToGarden(gardenID, addedTag);
 
         return addAttributes(currentUser, gardenID, "", model, plantService, gardenService);
     }
@@ -155,7 +156,7 @@ public class ViewGardenController {
             model.addAttribute("gardenName", garden.get().getName());
             model.addAttribute("gardenLocation", garden.get().getLocation().toString());
             model.addAttribute("gardenSize", garden.get().getSize());
-            model.addAttribute("gardenTags", tagService.getGardenTags(gardenID));
+            model.addAttribute("gardenTags", gardenService.getTags(gardenID));
             model.addAttribute("allTags", tagService.getTags());
             return "viewGardenDetailsTemplate";
         } else {

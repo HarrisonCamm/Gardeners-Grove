@@ -9,15 +9,11 @@ public class Tag {
     private Long id;
 
     @Column(nullable = false)
-    private Long gardenId;
-
-    @Column(nullable = false)
     private String name;
 
     protected Tag() {}
 
-    public Tag(Long gardenId, String name) {
-        this.gardenId = gardenId;
+    public Tag(String name) {
         this.name = name;
     }
 
@@ -27,14 +23,6 @@ public class Tag {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getGardenId() {
-        return gardenId;
-    }
-
-    public void setGardenId(Long gardenId) {
-        this.gardenId = gardenId;
     }
 
     public String getName() {

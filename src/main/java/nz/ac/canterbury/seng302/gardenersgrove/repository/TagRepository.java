@@ -17,9 +17,6 @@ public interface TagRepository extends CrudRepository<Tag, Long> {
     @Query("SELECT DISTINCT t FROM Tag t")
     List<Tag> findAll();
 
-    @Query("SELECT t FROM Tag t WHERE t.gardenId = ?1")
-    List<Tag> findByGardenId(@Param("gardenId") Long gardenId);
-
     Tag save(Tag tag);
 
     @Query("SELECT t FROM Tag t WHERE t.id = ?1")
