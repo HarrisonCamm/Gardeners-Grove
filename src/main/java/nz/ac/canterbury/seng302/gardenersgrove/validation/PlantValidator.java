@@ -14,6 +14,8 @@ public class PlantValidator {
     private final static int MAX_NAME_LENGTH = 255;
     private final static int MAX_DESCRIPTION_LENGTH = 512;
 
+    private final static int MAX_PLANT_COUNT = 255;
+
     private static FieldErrorFactory fieldErrorFactory = new FieldErrorFactory();
 
     /**
@@ -57,6 +59,9 @@ public class PlantValidator {
     public static FieldError validatePlantCount(String count) {
         if (!isPositiveNumber(count)) {
             return fieldErrorFactory.createFieldError("plant", "count", "Plant count must be a positive number");
+        }
+        if (count.length() > MAX_PLANT_COUNT) {
+            return fieldErrorFactory.createFieldError("plant", "count", "Plant count must be less than 255 chars");
         }
         return null;
     }
