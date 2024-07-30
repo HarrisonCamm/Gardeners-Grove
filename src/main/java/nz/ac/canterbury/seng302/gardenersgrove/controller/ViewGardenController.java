@@ -46,7 +46,6 @@ public class ViewGardenController {
 
     @GetMapping("/view-garden")
     public String viewGarden(@RequestParam("gardenID") Long gardenID,
-                             @RequestParam(value = "tag", required = false) String tag,
                              HttpSession session,
                              Model model,
                              HttpServletResponse response) {
@@ -73,7 +72,7 @@ public class ViewGardenController {
         WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
         model.addAttribute("weatherResponse", weatherResponse);
 
-        return addAttributes(currentUser, gardenID, "", model, plantService, gardenService);
+        return addAttributes(currentUser, gardenID, model, plantService, gardenService);
     }
 
     /**
@@ -118,7 +117,7 @@ public class ViewGardenController {
             logger.error("Failed to upload new plant image", e);
         }
 
-        addAttributes(currentUser, gardenID, "", model, plantService, gardenService);
+        addAttributes(currentUser, gardenID, model, plantService, gardenService);
 
         return "redirect:/view-garden?gardenID=" +gardenID;
     }
@@ -140,10 +139,10 @@ public class ViewGardenController {
         Tag addedTag = tagService.addTag(new Tag(tag));
         gardenService.addTagToGarden(gardenID, addedTag);
 
-        return addAttributes(currentUser, gardenID, "", model, plantService, gardenService);
+        return "redirect:/view-garden?gardenID=" + gardenID;
     }
 
-    private String addAttributes(User owner, @RequestParam("gardenID") Long gardenID, @RequestParam("tag") String tag, Model model, PlantService plantService, GardenService gardenService) {
+    private String addAttributes(User owner, @RequestParam("gardenID") Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
         List<Plant> plants = plantService.getGardenPlant(gardenID);
         List<Garden> gardens = gardenService.getOwnedGardens(owner.getUserId());
         model.addAttribute("gardens", gardens);
@@ -152,7 +151,7 @@ public class ViewGardenController {
         Optional<Garden> garden = gardenService.findGarden(gardenID);
         if (garden.isPresent()) { // if the garden ID exists
             model.addAttribute("gardenID", gardenID);
-            model.addAttribute("tagInput", (tag == null) ? "" : tag);
+            model.addAttribute("tagInput", "");
             model.addAttribute("gardenName", garden.get().getName());
             model.addAttribute("gardenLocation", garden.get().getLocation().toString());
             model.addAttribute("gardenSize", garden.get().getSize());

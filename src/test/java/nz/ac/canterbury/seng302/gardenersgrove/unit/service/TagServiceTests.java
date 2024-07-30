@@ -44,10 +44,9 @@ public class TagServiceTests {
                 new Location("test", "test", "test", "test", "test"),
                 "1");
 
-        Tag tag1 = new Tag(1L, "tag1");
-        Tag tag2 = new Tag(1L, "tag2");
+        Tag tag1 = new Tag("tag1");
+        Tag tag2 = new Tag("tag2");
 
-        when(tagRepository.findByGardenId(1L)).thenReturn(Arrays.asList(tag1, tag2));
         when(tagRepository.findAll()).thenReturn(Arrays.asList(tag1, tag2)); // Mock the findAll method
         when(tagRepository.save(tag1)).thenReturn(tag1);
         when(tagRepository.save(tag2)).thenReturn(tag2);
@@ -67,11 +66,6 @@ public class TagServiceTests {
     @Test
     public void testGetTags() {
         assertEquals(2, tagService.getTags().size());
-    }
-
-    @Test
-    public void testGetGardenTags() {
-        assertEquals(2, tagService.getGardenTags(1L).size());
     }
 
     @Test

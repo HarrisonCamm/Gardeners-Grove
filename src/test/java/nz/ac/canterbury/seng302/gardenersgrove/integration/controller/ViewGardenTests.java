@@ -137,14 +137,17 @@ public class ViewGardenTests {
 
         Location location = new Location("Test", "Test", "Test", "Test", "Test");
 
-        when(gardenService.findGarden(1L)).thenReturn(Optional.of(new Garden("Test", location, "1", testUser)));
-        when(tagService.addTag(any())).thenReturn(new Tag(1L, tag));
+        Garden testGarden = new Garden("Test", location, "1", testUser);
+
+        when(gardenService.findGarden(1L)).thenReturn(Optional.of(testGarden));
+        when(tagService.addTag(any())).thenReturn(new Tag(tag));
+        when(gardenService.addTagToGarden(1L, new Tag(tag))).thenReturn(testGarden);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/add-tag")
                         .with(csrf())
                         .param("gardenID", "1")
                         .param("tag", tag))
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
     }
 
     // TODO implement failing tests after moderation is implemented
