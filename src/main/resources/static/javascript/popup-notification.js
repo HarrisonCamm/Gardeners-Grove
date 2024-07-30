@@ -3,4 +3,3 @@ function toggleAlert() {
     form.hidden = !form.hidden;
 }
 
-
