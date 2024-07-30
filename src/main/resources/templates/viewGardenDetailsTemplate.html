@@ -40,10 +40,9 @@
                     </div>
 
                     <!-- Weather Section -->
-                    <div class="overflow-scroll">
-                        <div class="row">
+                        <div class="row p-3">
                             <div class="col">
-                                <div class="container bg-info bg-gradient rounded rounded-4 p-4 z-3 position-relative">
+                                <div class="container bg-info bg-gradient shadow rounded-4 p-4 z-3 position-relative">
                                     <div th:if="${weatherResponse != null}">
 
                                         <h3><strong> <span th:text="${weatherResponse.dayOfWeek}"></span></strong></h3>
@@ -53,31 +52,8 @@
                                         <p><strong>Humidity:</strong> <span th:text="${weatherResponse.humidity}"></span>%</p>
 
                                     <div class="z-2 position-absolute top-0 end-0">
-                                        <span>
                                         <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" class="img-fluid w-200" alt="Weather Icon" />
-                                        </span>
                                     </div>
-                                    </div>
-                                    <div th:if="${weatherResponse == null}">
-                                        <p>Weather data is not available.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="container bg-info bg-gradient rounded rounded-4 p-4 z-3 position-relative">
-                                    <div th:if="${weatherResponse != null}">
-
-                                        <h3><strong> <span th:text="${weatherResponse.dayOfWeek}"></span></strong></h3>
-                                        <p><strong>Date:</strong> <span th:text="${weatherResponse.date}"></span></p>
-                                        <p><strong>Description:</strong> <span th:text="${weatherResponse.description}"></span></p>
-                                        <p><strong>Temperature:</strong> <span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
-                                        <p><strong>Humidity:</strong> <span th:text="${weatherResponse.humidity}"></span>%</p>
-
-                                        <div class="z-2 position-absolute top-0 end-0">
-                                        <span>
-                                        <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" class="img-fluid w-200" alt="Weather Icon" />
-                                        </span>
-                                        </div>
                                     </div>
                                     <div th:if="${weatherResponse == null}">
                                         <p>Weather data is not available.</p>
@@ -85,7 +61,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
 
                     <div class="row mb-3" th:if="${tags != null and tags.size() > 0}">
