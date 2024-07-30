@@ -55,7 +55,7 @@ public class WeatherService {
             logger.info(stringResult);
             weatherResponse = objectMapper.readValue(stringResult, WeatherResponse.class);
         } catch (JsonProcessingException e) {
-            logger.error("Error parsing API response", e);
+            logger.error("Error parsing API response" +  e.getMessage());
         }
         logger.info("Weather response: " + weatherResponse);
         return weatherResponse;
@@ -88,6 +88,7 @@ public class WeatherService {
             return parseWeatherJson(response);
         } catch (Exception e) {
             logger.info("Failed to fetch current weather for " + location + " from " + apiUrl);
+            logger.info("Caused by: " + e.getMessage());
             return null;
         }
     }
