@@ -10,20 +10,28 @@
     </style>
 </head>
 <body>
-    <div th:fragment="alert" class="alert">
-        <div id="alert" class="alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>Warning!</strong> There hasn't been any rain recently, make sure to water your plants if they need it.
-    <!--        <button type="button" class="button" data-dismiss="alert" aria-label="Close" onclick="toggleAlert()">-->
-    <!--            <span aria-hidden="true">&times;</span>-->
-    <!--        </button>-->
-            <button onclick="toggleAlert()">
-                close
-    <!--            <span aria-hidden="true">&times;</span>-->
+    <div th:fragment="alert(message, id)" class="alert">
+        <div id="${id}" class="alert alert-danger alert-dismissible fade show element" role="alert">
+            <strong>Warning!</strong>
+            <span th:text="${message}"></span>
+            <button type="button" class="button" data-dismiss="alert" aria-label="Close" onclick="toggleAlert()">
+                <span aria-hidden="true">&times;</span>
             </button>
         </div>
     </div>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 </body>
+
+<script>
+    function toggleAlert(id) {
+        console.log(`ID is ${id}`);
+        const alertElement = document.getElementById(id);
+        if (alertElement) {
+            alertElement.hidden = !alertElement.hidden;
+        }
+    }
+</script>
+
 </html>
 
 

@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head th:replace="fragments/head :: head(title='View Garden')">
-
 <!--        <meta charset="UTF-8">-->
 <!--        <meta name="_csrf" th:content="${_csrf.token}"/>-->
 <!--        <title>View Garden</title>-->
 <!--        <link th:href="@{/css/generalStyles.css}" rel="stylesheet">-->
 <!--        <link th:href="@{/css/navBar.css}" rel="stylesheet">-->
 <!--        <script th:src="@{/javascript/image-handling.js}"></script>-->
-        <script th:src="@{/javascript/popup-notification.js}"></script>
-
-
     </head>
     <body>
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
@@ -26,9 +22,13 @@
                 </div>
             </div>
             <div class="gardenContainer">
-                <!-- Include the alert fragment -->
+                <!-- Include the alert fragments -->
+                <div th:replace="~{fragments/alertFragment :: alert('There hasn\'t been any rain recently, make sure to water your plants if they need it.', 'alert1')}">
+                </div>
 
-                <div th:replace="~{fragments/alertFragment :: alert}"></div>
+                <div th:replace="~{fragments/alertFragment :: alert('Outdoor plants don’t need any water today', 'alert2')}">
+                </div>
+
 
                 <div class="gardenDetails container">
                     <div class="row mb-3">
@@ -140,7 +140,6 @@
 
             </div>
         </div>
-        <button onclick="toggleAlert()">close</button>
         <div th:replace="~{fragments/scripts :: scripts}"></div>
     </body>
 </html>
