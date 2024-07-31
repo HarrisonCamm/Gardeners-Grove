@@ -50,7 +50,7 @@ deploy-staging:
     - cp -r ./build/libs /home/gitlab-runner/staging
     - cp runner-scripts/staging.sh /home/gitlab-runner/staging.sh
     - chmod u+x /home/gitlab-runner/staging.sh
-    - echo "export AZURE_API_KEY=${AZURE_API_KEY}" >> /home/gitlab-runner/staging/.env
+    - echo "export AZURE_API_KEY=${AZURE_API_KEY}" > /home/gitlab-runner/staging/.env
     - echo "export AZURE_API_URL=${AZURE_API_URL}" >> /home/gitlab-runner/staging/.env
     - echo "export SONARQUBE_TOKEN=${SONARQUBE_TOKEN}" > /home/gitlab-runner/staging/.env
     - echo "export WEATHER_API_KEY=${WEATHER_API_KEY}" >> /home/gitlab-runner/staging/.env
