@@ -8,6 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.file.Files;
@@ -18,22 +20,33 @@ import static org.mockito.ArgumentMatchers.any;
 public class WeatherServiceTests {
     private WeatherService weatherService;
     private static String jsonString;
+    private static String jsonNullCityResponse;
+
+    Logger logger = LoggerFactory.getLogger(WeatherServiceTests.class);
+
 
     @BeforeAll
     static public void  jsonSetup() throws Exception {
         //read json example file
         jsonString = Files.readString(Paths.get("src/test/resources/json/blueSkyWeather.json"));
+        jsonNullCityResponse = Files.readString(Paths.get("src/test/resources/json/invalidCityWeatherResponse.json"));
+
     }
 
     @BeforeEach
-    public void setUp() {
+    public void setUp(TestInfo testInfo) {
         //mock CountryCodeService for separation of concerns
         CountryCodeService countryCodeService = Mockito.mock(CountryCodeService.class);
         Mockito.when(countryCodeService.getCountryCode(any(String.class))).thenReturn("");
 
         RestTemplate restTemplate;
         restTemplate = Mockito.mock(RestTemplate.class);
-        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(jsonString);
+
+        if (testInfo.getDisplayName().equals("invalid city test")) {
+            Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(jsonNullCityResponse);
+        } else {
+            Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(jsonString);
+        }
         weatherService = new WeatherService(countryCodeService, restTemplate);
     }
 
@@ -45,14 +58,13 @@ public class WeatherServiceTests {
         Assertions.assertNull(weatherServiceResponse);
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "invalid city test")
     @ValueSource(strings = {"chch", "Welly", "Akl", "'", "otautahi"})
     public void InvalidCity_GetCurrentWeather_ReturnsNull(String city) {
         WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather(city, "New Zealand");
         Assertions.assertNull(weatherServiceResponse);
     }
-
-
+    
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
     @NullAndEmptySource    public void NullEmptyCountry_GetCurrentWeather_ReturnsWeatherResponse(String country) {
