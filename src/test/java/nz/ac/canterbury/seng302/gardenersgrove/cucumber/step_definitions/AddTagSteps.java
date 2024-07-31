@@ -44,7 +44,9 @@ public class AddTagSteps {
 
     private static Location location;
 
-    private static Garden ownedGarden;
+    private static Garden ownedGarden1;
+
+    private static Garden ownedGarden2;
 
     private static String typedTag;
 
@@ -60,7 +62,7 @@ public class AddTagSteps {
     public void iAmAGardenOwner() throws Exception {
 
         resultActions = mockMvc.perform(post("/create-garden")
-                        .param("name", "Test Garden")
+                        .param("name", "Test Garden 1")
                         .param("location.streetAddress", location.getStreetAddress())
                         .param("location.suburb", location.getSuburb())
                         .param("location.city", location.getCity())
@@ -69,15 +71,26 @@ public class AddTagSteps {
                         .param("size", "10")
                         .with(csrf())); // Add CSRF token
 
+        mockMvc.perform(post("/create-garden")
+                .param("name", "Test Garden 2")
+                .param("location.streetAddress", location.getStreetAddress())
+                .param("location.suburb", location.getSuburb())
+                .param("location.city", location.getCity())
+                .param("location.postcode", location.getPostcode())
+                .param("location.country", location.getCountry())
+                .param("size", "10")
+                .with(csrf())); // Add CSRF token
+
         ArrayList<Garden> gardens = (ArrayList<Garden>) gardenService.getOwnedGardens(userService.getAuthenicatedUser().getUserId());
-        ownedGarden = gardens.get(gardens.size() - 1);
+        ownedGarden1 = gardens.get(gardens.size() - 2);
+        ownedGarden2 = gardens.get(gardens.size() - 1);
         assertNotNull(gardens);
     }
 
     @And("I am on the garden details page for a garden I own to observe the tags feature")
     public void iAmOnTheGardenDetailsPageForAGardenIOwnToObserveTheTags() throws Exception {
         resultActions = mockMvc.perform(get("/view-garden")
-                        .param("gardenID", ownedGarden.getId().toString())
+                        .param("gardenID", ownedGarden1.getId().toString())
                         .with(csrf())) // Add CSRF token
                 .andExpect(status().isOk());
     }
@@ -101,16 +114,16 @@ public class AddTagSteps {
     @Given("I have already created a tag for a garden I own")
     public void iHaveAlreadyCreatedATagForAGardenIOwn() throws Exception {
         mockMvc.perform(post("/add-tag")
-                .param("gardenID", ownedGarden.getId().toString())
+                .param("gardenID", ownedGarden1.getId().toString())
                 .param("tag", "Test Tag")
                 .with(csrf()))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/view-garden?gardenID=" + ownedGarden.getId()));
+                .andExpect(redirectedUrl("/view-garden?gardenID=" + ownedGarden1.getId()));
 
         // MockMvc doesn't do the redirect, so we need to get the garden again
         resultActions = mockMvc.perform(get("/view-garden")
-                        .param("gardenID", ownedGarden.getId().toString())
+                        .param("gardenID", ownedGarden1.getId().toString())
                         .with(csrf())) // Add CSRF token
                 .andExpect(status().isOk());
     }
@@ -135,14 +148,14 @@ public class AddTagSteps {
     @When("I click on one suggestion")
     public void iClickOnOneSuggestion() throws Exception {
         resultActions = mockMvc.perform(post("/add-tag")
-                        .param("gardenID", ownedGarden.getId().toString())
+                        .param("gardenID", ownedGarden2.getId().toString())
                         .param("tag", "Test Tag")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection());
 
         // MockMvc doesn't do the redirect, so we need to get the garden again
         resultActions = mockMvc.perform(get("/view-garden")
-                        .param("gardenID", ownedGarden.getId().toString())
+                        .param("gardenID", ownedGarden2.getId().toString())
                         .with(csrf())) // Add CSRF token
                 .andExpect(status().isOk());
     }
@@ -152,8 +165,8 @@ public class AddTagSteps {
         // Get all tags from the model
         List<Tag> allTags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("allTags");
 
-        // Assert that the size of allTags is 2
-        assertEquals(2, allTags.size());
+        // Assert that the size of allTags is 1
+        assertEquals(1, allTags.size());
 
         // Get the tagInput field from the model
         String tagInput = (String) resultActions.andReturn().getModelAndView().getModel().get("tagInput");
