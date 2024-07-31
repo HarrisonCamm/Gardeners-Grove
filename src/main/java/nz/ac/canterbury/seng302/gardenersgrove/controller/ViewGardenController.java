@@ -144,11 +144,14 @@ public class ViewGardenController {
             // show error
             model.addAttribute("tagError", "Profanity or inappropriate language detected");
         } else {
-            // Tag is ok, add to the database
-            tagService.addTag(new Tag(garden.get().getId(), tag));
+            // Tag is ok
+            // Add tag to the database and add the tag to the garden's list of tags
+            Tag addedTag = tagService.addTag(new Tag(tag));
+            gardenService.addTagToGarden(gardenID, addedTag);
         }
 
-        return addAttributes(currentUser, gardenID, "", model, plantService, gardenService);
+        // Add tags to garden
+        return addAttributes(currentUser, gardenID, model, plantService, gardenService);
     }
 
     private String addAttributes(User owner, @RequestParam("gardenID") Long gardenID, Model model, PlantService plantService, GardenService gardenService) {

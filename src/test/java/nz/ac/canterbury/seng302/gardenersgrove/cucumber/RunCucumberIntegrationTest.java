@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("cucumber")
 @AutoConfigureMockMvc
 
-// Always mock moderation api
+// Permanent moderation api mock
 @MockBean(ModerationService.class)
 
 public class RunCucumberIntegrationTest {
