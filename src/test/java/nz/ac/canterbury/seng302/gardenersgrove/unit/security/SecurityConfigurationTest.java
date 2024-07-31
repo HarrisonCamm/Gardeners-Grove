@@ -90,6 +90,9 @@ public class SecurityConfigurationTest {
     private ImageService imageService;
 
     @MockBean
+    private TagService tagService;
+
+    @MockBean
     private WeatherService weatherService;
 
     @BeforeEach

@@ -67,7 +67,13 @@ public class CreatePlantTests {
     private FriendRequestService friendRequestService;
 
     @MockBean
+    private TagService tagService;
+
+    @MockBean
     private WeatherService weatherService;
+
+    @MockBean
+    private UserRelationshipService userRelationshipService;
 
     private Garden testGarden;
     private Location testLocation;

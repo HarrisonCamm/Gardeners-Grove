@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,17 +29,19 @@ public class ViewGardenController {
     private final GardenService gardenService;
     private final PlantService plantService;
     private final UserService userService;
-
     private final WeatherService weatherService;
+    private final TagService tagService;
 
-
-    public ViewGardenController(GardenService gardenService, PlantService plantService, UserService userService, ImageService imageService, WeatherService weatherService) {
+    @Autowired
+    public ViewGardenController(GardenService gardenService, PlantService plantService,
+                                UserService userService, ImageService imageService,
+                                TagService tagService, WeatherService weatherService) {
         this.gardenService = gardenService;
         this.plantService  = plantService;
         this.userService = userService;
         this.imageService = imageService;
+        this.tagService = tagService;
         this.weatherService = weatherService;
-
     }
 
     @GetMapping("/view-garden")
@@ -132,12 +135,14 @@ public class ViewGardenController {
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
-        // TODO add the tag to the garden and database for autocomplete later on (in another task)
+        // Add tag to the database and add the tag to the garden's list of tags
+        Tag addedTag = tagService.addTag(new Tag(tag));
+        gardenService.addTagToGarden(gardenID, addedTag);
 
         return "redirect:/view-garden?gardenID=" + gardenID;
     }
 
-    private static String addAttributes(User owner, @RequestParam("gardenID") Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
+    private String addAttributes(User owner, @RequestParam("gardenID") Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
         List<Plant> plants = plantService.getGardenPlant(gardenID);
         List<Garden> gardens = gardenService.getOwnedGardens(owner.getUserId());
         model.addAttribute("gardens", gardens);
@@ -146,9 +151,12 @@ public class ViewGardenController {
         Optional<Garden> garden = gardenService.findGarden(gardenID);
         if (garden.isPresent()) { // if the garden ID exists
             model.addAttribute("gardenID", gardenID);
+            model.addAttribute("tagInput", "");
             model.addAttribute("gardenName", garden.get().getName());
             model.addAttribute("gardenLocation", garden.get().getLocation().toString());
             model.addAttribute("gardenSize", garden.get().getSize());
+            model.addAttribute("gardenTags", gardenService.getTags(gardenID));
+            model.addAttribute("allTags", tagService.getTags());
             return "viewGardenDetailsTemplate";
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " does not exist");

@@ -2,14 +2,15 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 public class Garden {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-
 
     private String name;
 
@@ -22,6 +23,15 @@ public class Garden {
     @ManyToOne
     @JoinColumn(nullable = false)
     private User owner;
+
+    @ManyToMany
+    @JoinTable(
+            name = "garden_tag",
+            joinColumns = @JoinColumn(name = "garden_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<Tag> tags = new ArrayList<>();
+
 
     /**
      * Required constructor
@@ -91,5 +101,13 @@ public class Garden {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }
