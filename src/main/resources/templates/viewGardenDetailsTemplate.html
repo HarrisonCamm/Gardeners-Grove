@@ -3,10 +3,11 @@
     <!-- Head fragment holding all the style sheets-->
     <head th:replace="fragments/head :: head(title='View Garden')"> </head>
     <body>
+        <!-- NavBar Fragment -->
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 
         <div class="wrapper">
-            <!-- Garden Side Navigation Bar Fragment -->
+            <!-- SideNav Fragment -->
             <div th:insert="~{fragments/sideBar.html :: sideBar}"></div>
 
             <!-- View Garden Page Content -->
@@ -132,6 +133,7 @@
 
             </div>
         </div>
+        <!-- Scripts fragment, contains bootstrap scripts -->
         <div th:replace="~{fragments/scripts :: scripts}"></div>
     </body>
 </html>
