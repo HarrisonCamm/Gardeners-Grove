@@ -1,6 +1,7 @@
 Feature: U17 As Liam, I want to connect with my friends on Gardener’s Grove so that we can build a community on the app.
   Background: Logged in user
-    Given I am logged in
+    Given I am logged in with email "liam@email.com" and password "Password1!"
+    And I have no friends
 
   Scenario: AC1 - Viewing the Manage Friends page.
     Given I am anywhere on the app

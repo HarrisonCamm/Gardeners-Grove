@@ -57,11 +57,8 @@ public class SendFriendRequestsSteps {
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
-    @Given("I am logged in")
-    public void i_am_logged_in() {
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("liam@email.com", "Password1!");
-        var authentication = authenticationManager.authenticate(token);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+    @Given("I have no friends")
+    public void i_have_no_friends() {
         currentUser = userService.getAuthenicatedUser();
         currentUser.removeAllFriends();
         userService.updateUserFriends(currentUser);
