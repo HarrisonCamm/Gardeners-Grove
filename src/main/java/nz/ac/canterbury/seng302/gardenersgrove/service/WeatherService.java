@@ -85,6 +85,7 @@ public class WeatherService {
         try {
             String url = String.format("%sweather?q=%s&appid=%s&units=metric", apiUrl, location, apiKey);
             String response = restTemplate.getForObject(url, String.class);
+            logger.info("rest template response" + response);
             return parseWeatherJson(response);
         } catch (Exception e) {
             logger.info("Failed to fetch current weather for " + location + " from " + apiUrl);

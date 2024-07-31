@@ -45,6 +45,13 @@ public class WeatherServiceTests {
         Assertions.assertNull(weatherServiceResponse);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"chch", "Welly", "Akl", "'", "otautahi"})
+    public void InvalidCity_GetCurrentWeather_ReturnsNull(String city) {
+        WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather(city, "New Zealand");
+        Assertions.assertNull(weatherServiceResponse);
+    }
+
 
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
