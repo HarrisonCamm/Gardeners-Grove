@@ -131,6 +131,7 @@ public class ViewGardenController {
 
         Optional<Garden> garden = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenicatedUser();
+
         if (garden.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!garden.get().getOwner().equals(currentUser))
@@ -139,18 +140,39 @@ public class ViewGardenController {
         // Moderate the tag before adding
         String possibleTerms = moderationService.moderateText(tag);
 
-        // If the possible terms are not empty, then it contains profanity
-        if (!possibleTerms.equals("null")) {
-            // show error
+        // TODO: HARD CODE IN EVALUATION ERROR TO TEST NEW CODE
+
+
+        if (possibleTerms.equals("evaluation_error")) {
+            // Add tag to a waiting list for later evaluation
+
+            // The tag is initialized as not appropriate and not evaluated yet
+            Tag waitingTag = new Tag(tag, gardenID, currentUser.getUserId(), false, false);
+
+            // Add tag to database
+            tagService.addTag(waitingTag);
+
+            // Show evaluation error
+            model.addAttribute("tagError", "Tag could not be evaluated at this time and will be reviewed shortly.");
+
+        } else if (!possibleTerms.equals("null")) {
+            // If the possible terms are not empty, then it contains profanity
+            // show profanity error
             model.addAttribute("tagError", "Profanity or inappropriate language detected");
+
         } else {
             // Tag is ok
             // Add tag to the database and add the tag to the garden's list of tags
-            Tag addedTag = tagService.addTag(new Tag(tag));
+            Tag addedTag = new Tag(tag, gardenID, currentUser.getUserId(), true, true);
+
+            // Add tag to database
+            tagService.addTag(addedTag);
+
+            // Add tag to garden
             gardenService.addTagToGarden(gardenID, addedTag);
         }
 
-        // Add tags to garden
+        // Add tag or errors to model and review
         return addAttributes(currentUser, gardenID, model, plantService, gardenService);
     }
 

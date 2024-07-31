@@ -53,6 +53,9 @@ public class User {
     @JoinColumn(name = "user_id")
     private List<Authority> userRoles;
 
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private Integer inappropriateTagCount = 0;
+
     public User() {
         // JPA empty constructor
     }
@@ -169,7 +172,6 @@ public class User {
         return password;
     }
 
-
     public void setImage(Image image) {
         this.image = image;
     }
@@ -180,6 +182,14 @@ public class User {
 
     public List<FriendRequest> getSentFriendRequests() {
         return null;
+    }
+
+    public int getInappropriateTagCount() {
+        return inappropriateTagCount;
+    }
+
+    public void setInappropriateTagCount(int inappropriateTagCount) {
+        this.inappropriateTagCount = inappropriateTagCount;
     }
 
     @Override
@@ -210,6 +220,8 @@ public class User {
     public List<User> getFriends() {
         return friends;
     }
+
+
 }
 
 

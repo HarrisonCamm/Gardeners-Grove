@@ -55,6 +55,11 @@ public class ModerationService {
                 logger.info(objectMapper.writeValueAsString(textResults));
             }
 
+            // Check for evaluation error AC3
+            if (textResults.status().code().equals("3000")) {
+                return "evaluation_error";
+            }
+
             // Log moderation status and terms
             logger.info("Text moderation status: " + textResults.status().description());
             // todo fix this to retrieve the classification
@@ -65,7 +70,14 @@ public class ModerationService {
 
         } catch (Exception e) {
             logger.error("Error during text moderation: ", e);
+            return "evaluation_error";
         }
-        return line;
+    }
+
+    // If the tag is appropriate returns true, otherwise false
+    public boolean isContentAppropriate(String content) {
+        Screen textResults = client.textModerations().screenText("text/plain", content.getBytes(), null);
+        // Return true if no terms are found, indicating the content is appropriate
+        return textResults.terms().isEmpty();
     }
 }

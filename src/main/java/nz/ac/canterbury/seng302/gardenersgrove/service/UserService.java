@@ -168,4 +168,9 @@ public class UserService {
     public List<FriendRequest> getPendingFriendRequests(User currentUser) {
         return userRepository.getPendingFriendRequests(currentUser.getUserId());
     }
+
+    // Used to increment the number of delayed tags that were deemed inappropriate
+    public void incrementInappropriateTagCount(Long userId) {
+        userRepository.incrementInappropriateTagCount(userId);
+    }
 }
