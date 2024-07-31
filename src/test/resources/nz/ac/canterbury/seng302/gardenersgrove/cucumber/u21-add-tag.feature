@@ -14,7 +14,7 @@ Feature: Add tags to garden
 
   Scenario: Autocomplete options for tags
     Given I have already created a tag for a garden I own
-    When I have typed a tag into the text box that matches the tag I created
+    When I type a tag into the text box that matches the tag I created
     Then I should see autocomplete options for tags that already exist in the system
 
   Scenario: Add tag from autocomplete options

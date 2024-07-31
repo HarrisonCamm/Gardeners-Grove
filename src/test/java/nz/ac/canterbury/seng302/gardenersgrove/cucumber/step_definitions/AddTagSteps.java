@@ -100,22 +100,19 @@ public class AddTagSteps {
 
     @Given("I have already created a tag for a garden I own")
     public void iHaveAlreadyCreatedATagForAGardenIOwn() throws Exception {
-        mockMvc.perform(post("/add-tag")
+        resultActions = mockMvc.perform(post("/add-tag")
                 .param("gardenID", ownedGarden.getId().toString())
                 .param("tag", "Test Tag")
                 .with(csrf()))
                 .andDo(print())
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/view-garden?gardenID=" + ownedGarden.getId()));
-
-        // MockMvc doesn't do the redirect, so we need to get the garden again
-        resultActions = mockMvc.perform(get("/view-garden")
-                        .param("gardenID", ownedGarden.getId().toString())
-                        .with(csrf())) // Add CSRF token
                 .andExpect(status().isOk());
     }
 
-    @When("I have typed a tag into the text box that matches the tag I created")
+    @When("I type a tag into the text box that matches the tag I created")
+    public void iTypeATagIntoTheTextBoxThatMatchesTheTagICreated() {
+        typedTag = "Test";
+    }
+    @Given("I have typed a tag into the text box that matches the tag I created")
     public void iHaveTypedATagIntoTheTextBoxThatMatchesTheTagICreated() {
         typedTag = "Test";
     }
@@ -138,12 +135,6 @@ public class AddTagSteps {
                         .param("gardenID", ownedGarden.getId().toString())
                         .param("tag", "Test Tag")
                         .with(csrf()))
-                .andExpect(status().is3xxRedirection());
-
-        // MockMvc doesn't do the redirect, so we need to get the garden again
-        resultActions = mockMvc.perform(get("/view-garden")
-                        .param("gardenID", ownedGarden.getId().toString())
-                        .with(csrf())) // Add CSRF token
                 .andExpect(status().isOk());
     }
 
@@ -153,6 +144,7 @@ public class AddTagSteps {
         List<Tag> allTags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("allTags");
 
         // Assert that the size of allTags is 2
+        // CAUTION: this is dependent on the previous scenario running for a previously created tag
         assertEquals(2, allTags.size());
 
         // Get the tagInput field from the model

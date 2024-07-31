@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -91,8 +91,13 @@ public class ViewGardenTests {
     @BeforeEach
     public void setUp() {
         testUser = new User("user@email.com", "User", "Name", "password");
-//        testUser.setUserId(1L);
         when(userService.getAuthenicatedUser()).thenReturn(testUser);
+
+        // Mock successful moderation
+        when(moderationService.moderateText(anyString())).thenReturn("null");
+
+        // Mock unsuccessful moderation (profanity detected)
+        when(moderationService.moderateText(eq("InappropriateTag"))).thenReturn("[{\"term\":\"InappropriateTerm\"}]");
     }
 
 
@@ -151,7 +156,7 @@ public class ViewGardenTests {
                         .with(csrf())
                         .param("gardenID", "1")
                         .param("tag", tag))
-                .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
+                .andExpect(MockMvcResultMatchers.status().isOk());
 
         verify(tagService).addTag(any(Tag.class));
     }
