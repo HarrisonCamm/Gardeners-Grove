@@ -53,6 +53,9 @@ public class RecordGardenPlantsSteps {
     private static ImageService imageService;
 
     @MockBean
+    private static TagService tagService;
+
+    @MockBean
     private static WeatherService weatherService;
 
     private static Map<Long, Plant> mockPlantDB;
@@ -81,6 +84,7 @@ public class RecordGardenPlantsSteps {
         gardenService = Mockito.mock(GardenService.class);
         userService = Mockito.mock(UserService.class);
         imageService = Mockito.mock(ImageService.class);
+        tagService = Mockito.mock(TagService.class);
         weatherService = Mockito.mock(WeatherService.class);
 
 
@@ -124,7 +128,7 @@ public class RecordGardenPlantsSteps {
 
         //Create Controller objects for MockMVC pages
         CreatePlantController CreatePlantController = new CreatePlantController(plantService, gardenService, userService, imageService);
-        ViewGardenController ViewGardenController = new ViewGardenController(gardenService, plantService, userService, imageService, weatherService);
+        ViewGardenController ViewGardenController = new ViewGardenController(gardenService, plantService, userService, imageService, tagService, weatherService);
 
         //Build MockMVC page
         mockMvcCreatePlant = MockMvcBuilders.standaloneSetup(CreatePlantController).build();
