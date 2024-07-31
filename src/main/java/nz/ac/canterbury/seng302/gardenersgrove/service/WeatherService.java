@@ -84,6 +84,7 @@ public class WeatherService {
         //Attempts to retrieve a response from api, any cause of failure results in null return value
         try {
             String url = String.format("%sweather?q=%s&appid=%s&units=metric", apiUrl, location, apiKey);
+            logger.info("Attempting to fetch weather using url " + url);
             String response = restTemplate.getForObject(url, String.class);
             logger.info("API Response: " + response);
             if (response.contains("not found")) {
@@ -91,7 +92,7 @@ public class WeatherService {
             }
             return parseWeatherJson(response);
         } catch (Exception e) {
-            logger.info("Failed to fetch current weather for " + location + " from " + apiUrl);
+            logger.info("Failed to fetch current weather for " + location);
             logger.info("Caused by: " + e.getMessage());
             return null;
         }
