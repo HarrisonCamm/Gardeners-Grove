@@ -35,16 +35,9 @@ public class ForecastResponse {
      * @param weatherResponse The WeatherResponse to be added.
      */
     public void addWeatherResponse(WeatherResponse weatherResponse) {
-        // Create a new array with one extra space
         WeatherResponse[] newArray = new WeatherResponse[weatherResponses.length + 1];
-
-        // Copy existing elements to the new array
-        System.arraycopy(weatherResponses, 0, newArray, 0, weatherResponses.length);
-
-        // Add the new weather response to the end of the new array
-        newArray[weatherResponses.length] = weatherResponse;
-
-        // Assign the new array to the weatherResponses attribute
+        System.arraycopy(weatherResponses, 0, newArray, 1, weatherResponses.length);
+        newArray[0] = weatherResponse;
         weatherResponses = newArray;
     }
 }
