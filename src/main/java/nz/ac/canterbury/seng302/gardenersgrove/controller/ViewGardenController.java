@@ -73,7 +73,8 @@ public class ViewGardenController {
         String gardenCountry = garden.get().getLocation().getCountry();
 
         ForecastResponse forecastResponse = weatherService.getForecastWeather(gardenCity, gardenCountry);       //Get forecast
-        forecastResponse.addWeatherResponse(weatherService.getCurrentWeather(gardenCity, gardenCountry));       //Get current weather and add to forecast
+        WeatherResponse currentWeather = weatherService.getCurrentWeather(gardenCity, gardenCountry);       //Get current weather
+        if (currentWeather != null) forecastResponse.addWeatherResponse(currentWeather);                    //Add current weather to forecast
         model.addAttribute("forecastResponse", forecastResponse);
 
         return addAttributes(currentUser, gardenID, model, plantService, gardenService);
