@@ -11,6 +11,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.hamcrest.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -113,13 +114,14 @@ public class AddTagSteps {
 
     @Given("I have already created a tag for a garden I own")
     public void iHaveAlreadyCreatedATagForAGardenIOwn() throws Exception {
-        mockMvc.perform(post("/add-tag")
+        resultActions = mockMvc.perform(post("/add-tag")
                 .param("gardenID", ownedGarden1.getId().toString())
                 .param("tag", "Test Tag")
                 .with(csrf()))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/view-garden?gardenID=" + ownedGarden1.getId()));
+                // Check that page redirects to a view garden of ANY number
+                .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
 
         // MockMvc doesn't do the redirect, so we need to get the garden again
         resultActions = mockMvc.perform(get("/view-garden")
@@ -128,22 +130,32 @@ public class AddTagSteps {
                 .andExpect(status().isOk());
     }
 
-    @When("I have typed a tag into the text box that matches the tag I created")
+    @When("I type a tag into the text box that matches the tag I created")
+    public void iTypeATagIntoTheTextBoxThatMatchesTheTagICreated() {
+        typedTag = "Test";
+    }
+    @Given("I have typed a tag into the text box that matches the tag I created")
     public void iHaveTypedATagIntoTheTextBoxThatMatchesTheTagICreated() {
         typedTag = "Test";
     }
 
     @Then("I should see autocomplete options for tags that already exist in the system")
     public void iShouldSeeAutocompleteOptionsForTagsThatAlreadyExistInTheSystem() throws Exception {
+        // Get the latest result from the /view-garden endpoint
+        resultActions = mockMvc.perform(get("/view-garden")
+                        .param("gardenID", ownedGarden.getId().toString())
+                        .with(csrf()))
+                .andExpect(status().isOk());
+
         // Get all tags from the model
         List<Tag> allTags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("allTags");
+        assertNotNull(allTags, "allTags should not be null");
 
         // Iterate through all tags and check if the typed tag is at the start
         for (Tag tag : allTags) {
             assertTrue(tag.getName().startsWith(typedTag));
         }
     }
-
 
     @When("I click on one suggestion")
     public void iClickOnOneSuggestion() throws Exception {

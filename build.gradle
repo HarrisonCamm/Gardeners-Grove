@@ -61,6 +61,9 @@ dependencies {
 	// Bootstrap + webjars
 	implementation 'org.webjars:bootstrap:5.3.3'
 
+    // Microsoft Azure Content Moderation
+    implementation 'com.microsoft.azure.cognitiveservices:azure-cognitiveservices-contentmoderator:1.0.2-beta'
+
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -71,7 +74,6 @@ dependencies {
 	testImplementation 'io.cucumber:cucumber-spring:7.15.0'
 	testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.15.0'
 	testImplementation 'org.junit.platform:junit-platform-suite:1.10.2'
-
 }
 
 tasks.named("check") {

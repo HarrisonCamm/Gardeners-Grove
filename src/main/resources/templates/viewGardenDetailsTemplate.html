@@ -3,10 +3,11 @@
     <!-- Head fragment holding all the style sheets-->
     <head th:replace="fragments/head :: head(title='View Garden')"> </head>
     <body>
+        <!-- NavBar Fragment -->
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 
         <div class="wrapper">
-            <!-- Garden Side Navigation Bar Fragment -->
+            <!-- SideNav Fragment -->
             <div th:insert="~{fragments/sideBar.html :: sideBar}"></div>
 
             <!-- View Garden Page Content -->
@@ -27,6 +28,30 @@
                             <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
                         </div>
                     </div>
+
+                    <!-- Weather Section -->
+                    <div class="row p-3">
+                        <div class="col">
+                            <div class="container bg-info bg-gradient shadow rounded-4 p-4 z-3 position-relative">
+                                <div th:if="${weatherResponse != null}">
+
+                                    <h3><strong> <span th:text="${weatherResponse.dayOfWeek}"></span></strong></h3>
+                                    <p><strong>Date:</strong> <span th:text="${weatherResponse.date}"></span></p>
+                                    <p><strong>Description:</strong> <span th:text="${weatherResponse.description}"></span></p>
+                                    <p><strong>Temperature:</strong> <span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
+                                    <p><strong>Humidity:</strong> <span th:text="${weatherResponse.humidity}"></span>%</p>
+
+                                    <div class="z-2 position-absolute top-0 end-0">
+                                        <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" class="img-fluid w-200" alt="Weather Icon" />
+                                    </div>
+                                </div>
+                                <div th:if="${weatherResponse == null}" class="error-message">
+                                    <p>Location not found, please update your location to see the weather</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row mb-3" th:if="${gardenTags != null and gardenTags.size() > 0}">
                         <div class="col d-flex flex-wrap">
                             <th:block th:each="tag : ${gardenTags}">
@@ -104,27 +129,9 @@
                         </tbody>
                     </table>
                 </div>
-
-                <!-- Weather Section -->
-                <div class="wrapper">
-                    <div class="weatherResponse-info">
-                        <div th:if="${weatherResponse != null}">
-                        <h2>Current Weather</h2>
-                            <p><strong>Day of Week:</strong> <span th:text="${weatherResponse.dayOfWeek}"></span></p>
-                            <p><strong>Date:</strong> <span th:text="${weatherResponse.date}"></span></p>
-                            <p><strong>Description:</strong> <span th:text="${weatherResponse.description}"></span></p>
-                            <p><strong>Temperature:</strong> <span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
-                            <p><strong>Humidity:</strong> <span th:text="${weatherResponse.humidity}"></span>%</p>
-                            <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" alt="Weather Icon"/>
-                        </div>
-                        <div th:if="${weatherResponse == null}">
-                            <p>Weather data is not available.</p>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
+        <!-- Scripts fragment, contains bootstrap scripts -->
         <div th:replace="~{fragments/scripts :: scripts}"></div>
     </body>
 </html>
@@ -151,7 +158,6 @@
 
         clearButton.addEventListener('click', () => {
             tagInput.value = '';
-            autocompleteList.style.display = 'none';
         });
 
         tagInput.addEventListener('keydown', (event) => {

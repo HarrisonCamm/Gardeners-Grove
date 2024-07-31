@@ -22,26 +22,27 @@ import java.util.Optional;
 
 @Controller
 public class ViewGardenController {
-
-    private final ImageService imageService;
     Logger logger = LoggerFactory.getLogger(ViewGardenController.class);
-
+    private final ImageService imageService;
     private final GardenService gardenService;
     private final PlantService plantService;
     private final UserService userService;
     private final WeatherService weatherService;
     private final TagService tagService;
+    private final ModerationService moderationService;
 
     @Autowired
     public ViewGardenController(GardenService gardenService, PlantService plantService,
                                 UserService userService, ImageService imageService,
-                                TagService tagService, WeatherService weatherService) {
+                                TagService tagService, WeatherService weatherService,
+                                ModerationService moderationService) {
         this.gardenService = gardenService;
-        this.plantService  = plantService;
+        this.plantService = plantService;
         this.userService = userService;
         this.imageService = imageService;
         this.tagService = tagService;
         this.weatherService = weatherService;
+        this.moderationService = moderationService;
     }
 
     @GetMapping("/view-garden")
@@ -67,20 +68,19 @@ public class ViewGardenController {
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
-
-        //New Code Added to get weather
+        // New Code Added to get weather
         WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
         model.addAttribute("weatherResponse", weatherResponse);
 
-        return addAttributes(currentUser, gardenID, model, plantService, gardenService);
+        addAttributes(currentUser, gardenID, model, plantService, gardenService);
+        return "viewGardenDetailsTemplate";
     }
 
     /**
-     *
-     * @param plantID The ID of the plant to add the picture to
+     * @param plantID  The ID of the plant to add the picture to
      * @param gardenID The ID of the garden the plant is in
-     * @param file The image file to upload
-     * @param model The Spring Boot model
+     * @param file     The image file to upload
+     * @param model    The Spring Boot model
      * @return The view garden page
      */
     @PostMapping("/view-garden")
@@ -118,8 +118,7 @@ public class ViewGardenController {
         }
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService);
-
-        return "redirect:/view-garden?gardenID=" +gardenID;
+        return "redirect:/view-garden?gardenID=" + gardenID; // Decide the view to return here
     }
 
     @PostMapping("/add-tag")
@@ -135,20 +134,30 @@ public class ViewGardenController {
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
-        // Add tag to the database and add the tag to the garden's list of tags
-        List<Tag> allTags = tagService.getTags();
-        Tag addedTag;
-        if (!allTags.stream().anyMatch(existingTag -> existingTag.getName().equals(tag))) {
-            addedTag = tagService.addTag(new Tag(tag));
-        } else {
-            addedTag = tagService.getTagByName(tag);
-        }
-        gardenService.addTagToGarden(gardenID, addedTag);
+        // Moderate the tag before adding
+        String possibleTerms = moderationService.moderateText(tag);
 
+        if (!possibleTerms.equals("null")) {
+            // Show error
+            model.addAttribute("tagError", "Profanity or inappropriate language detected");
+
+            // Add attributes and return the same view
+            addAttributes(currentUser, gardenID, model, plantService, gardenService);
+            return "viewGardenDetailsTemplate";
+        } else {
+            // Tag is ok, Add tag to the database and to the garden's list of tags
+            Tag addedTag = tagService.addTag(new Tag(tag));
+            gardenService.addTagToGarden(gardenID, addedTag);
+        }
+
+        // Add attributes
+        addAttributes(currentUser, gardenID, model, plantService, gardenService);
+
+        // Return user to page
         return "redirect:/view-garden?gardenID=" + gardenID;
     }
 
-    private String addAttributes(User owner, @RequestParam("gardenID") Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
+    private void addAttributes(User owner, Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
         List<Plant> plants = plantService.getGardenPlant(gardenID);
         List<Garden> gardens = gardenService.getOwnedGardens(owner.getUserId());
         model.addAttribute("gardens", gardens);
@@ -163,9 +172,9 @@ public class ViewGardenController {
             model.addAttribute("gardenSize", garden.get().getSize());
             model.addAttribute("gardenTags", gardenService.getTags(gardenID));
             model.addAttribute("allTags", tagService.getTags());
-            return "viewGardenDetailsTemplate";
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " does not exist");
         }
     }
 }
+
