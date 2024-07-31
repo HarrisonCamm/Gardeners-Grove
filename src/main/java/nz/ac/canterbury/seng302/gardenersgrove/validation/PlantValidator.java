@@ -15,15 +15,17 @@ public class PlantValidator {
      * @return FieldError if the plant name is empty or contains invalid characters
      */
     public static FieldError validatePlantName(String name) {
-        if (name.length() > 255){
-            return new FieldError("plant", "name",
-                    "Plant name must be under 255 characters");
-        }
-        if (name.isEmpty() || !isValidPlantName(name)) {
+        if (name == null || name.isEmpty() || !isValidPlantName(name)) {
             return new FieldError("plant", "name",
                     "Plant name cannot be empty and must only include letters, numbers, spaces, dots, " +
                             "hyphens or apostrophes.");
         }
+
+        if (name.length() > 255){
+            return new FieldError("plant", "name",
+                    "Plant name must be under 255 characters");
+        }
+
         return null;
     }
 
@@ -49,6 +51,7 @@ public class PlantValidator {
      * @return FieldError if the description is longer than 512 characters
      */
     public static FieldError validatePlantDescription(String description) {
+        boolean a = description.length() > 512;
         if (description.length() > 512) {
             return new FieldError("plant", "description", "Plant description must be less than 512 characters");
         }
