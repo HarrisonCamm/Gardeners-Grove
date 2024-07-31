@@ -13,9 +13,12 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class WeatherService {
+
+    //Retrieved from application-dev.properties
     @Value("${weather.api.key:#{null}}")
     private String apiKey;
 
+    //Retrieved from application-dev.properties
     @Value("${weather.api.url:#{null}}")
     private String apiUrl;
 

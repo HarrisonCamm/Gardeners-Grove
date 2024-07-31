@@ -3,10 +3,11 @@
     <!-- Head fragment holding all the style sheets-->
     <head th:replace="fragments/head :: head(title='View Garden')"> </head>
     <body>
+        <!-- NavBar Fragment -->
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 
         <div class="wrapper">
-            <!-- Garden Side Navigation Bar Fragment -->
+            <!-- SideNav Fragment -->
             <div th:insert="~{fragments/sideBar.html :: sideBar}"></div>
 
             <!-- View Garden Page Content -->
@@ -63,33 +64,42 @@
                             </th:block>
                         </div>
                     </div>
+                    <div class="row mb-3">
+                        <div class="col garden-details-button-row">
+                            <!-- Edit, Add Sections -->
+                            <div>
+                                <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
+                                    Edit
+                                </a>
+                                <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}" class="btn btn-primary ms-2 button">
+                                    Add new plant
+                                </a>
+                            </div>
+
+                            <!-- tag section -->
+                            <form class="tags" id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
+                                <div class="tag-input">
+                                    <div class="input-group ms-2 input-clear">
+                                        <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput" name="tag" th:value="${tagInput}">                                        <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
+                                    </div>
+                                    <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- tag error message -->
+                        <div th:if="${tagError}" class="alert alert-danger">
+                            <p th:text="${tagError}"></p>
+                        </div>
+
+                        <!-- Moving the autocomplete list below the input form -->
+                        <div class="container mt-3" id="autocompleteList"></div>
+                    </div>
 
                     <div class="row">
                         <div class="col">
                             <div id="imageError" class="error-message"></div>
                         </div>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col garden-details-button-row">
-                        <div class="view-garden-plant-buttons">
-                            <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
-                                Edit
-                            </a>
-                            <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}" class="btn btn-primary button">
-                                Add new plant
-                            </a>
-                        </div>
-                        <form class="tags" id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
-                            <div class="tag-input">
-                                <div class="input-group ms-2 input-clear">
-                                    <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput" name="tag" th:value="${tagInput}">
-                                    <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
-                                </div>
-                                <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
-                                <div class="container mt-3" id="autocompleteList"></div>
-                            </div>
-                        </form>
                     </div>
 
                 </div>
@@ -133,6 +143,7 @@
                 </div>
             </div>
         </div>
+        <!-- Scripts fragment, contains bootstrap scripts -->
         <div th:replace="~{fragments/scripts :: scripts}"></div>
     </body>
 </html>
@@ -159,7 +170,6 @@
 
         clearButton.addEventListener('click', () => {
             tagInput.value = '';
-            autocompleteList.style.display = 'none';
         });
 
         tagInput.addEventListener('keydown', (event) => {
