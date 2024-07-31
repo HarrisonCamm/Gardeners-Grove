@@ -49,22 +49,24 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col" th:each="weatherResponse: ${forecastResponse.weatherResponses}">
-                            <div class="container bg-info bg-gradient shadow rounded-4 p-4 z-3 position-relative">
-                                <div th:if="${weatherResponse != null}">
+                        <div th:if="${forecastResponse != null}">
+                            <div class="col" th:each="weatherResponse: ${forecastResponse.weatherResponses}">
+                                <div class="container bg-info bg-gradient shadow rounded-4 p-4 z-3 position-relative">
+                                    <div th:if="${weatherResponse != null}">
 
-                                    <h3><strong> <span th:text="${weatherResponse.dayOfWeek}"></span></strong></h3>
-                                    <p><strong>Date:</strong> <span th:text="${weatherResponse.date}"></span></p>
-                                    <p><strong>Description:</strong> <span th:text="${weatherResponse.description}"></span></p>
-                                    <p><strong>Temperature:</strong> <span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
-                                    <p><strong>Humidity:</strong> <span th:text="${weatherResponse.humidity}"></span>%</p>
+                                        <h3><strong> <span th:text="${weatherResponse.dayOfWeek}"></span></strong></h3>
+                                        <p><strong>Date:</strong> <span th:text="${weatherResponse.date}"></span></p>
+                                        <p><strong>Description:</strong> <span th:text="${weatherResponse.description}"></span></p>
+                                        <p><strong>Temperature:</strong> <span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
+                                        <p><strong>Humidity:</strong> <span th:text="${weatherResponse.humidity}"></span>%</p>
 
-                                    <div class="z-2 position-absolute top-0 end-0">
-                                        <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" class="img-fluid w-200" alt="Weather Icon" />
+                                        <div class="z-2 position-absolute top-0 end-0">
+                                            <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" class="img-fluid w-200" alt="Weather Icon" />
+                                        </div>
                                     </div>
-                                </div>
-                                <div th:if="${weatherResponse == null}" class="error-message">
-                                    <p>Location not found, please update your location to see the weather</p>
+                                    <div th:if="${weatherResponse == null}" class="error-message">
+                                        <p>Location not found, please update your location to see the weather</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -126,7 +128,7 @@
                                         <div class="image-upload">
                                             <img class="image-small"
                                                  th:id="${plant.id}" th:data-plant-id="${plant.id}"
-                                                 th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
+                                                 th:src="@{/get-image?view-garden=true(plantID = ${plant.id})}" alt="">
                                             <input th:value="imagePath" class="file-input" type="file" name="file" id="file">
                                             <button class="image-picker-small" th:image-button-id="${plant.id}">+</button>
                                         </div>
