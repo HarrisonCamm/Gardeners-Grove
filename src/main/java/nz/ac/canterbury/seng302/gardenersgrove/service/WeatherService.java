@@ -22,7 +22,7 @@ public class WeatherService {
     @Value("${weather.api.url:#{null}}")
     private String apiUrl;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
@@ -32,7 +32,14 @@ public class WeatherService {
 
     @Autowired
     public WeatherService(CountryCodeService countryCodeService) {
+        this.restTemplate = new RestTemplate();
         this.countryCodeService = countryCodeService;
+    }
+
+    //test use constructor
+    public WeatherService(CountryCodeService countryCodeService, RestTemplate restTemplate) {
+        this.countryCodeService = countryCodeService;
+        this.restTemplate = restTemplate;
     }
 
     /**
@@ -48,7 +55,7 @@ public class WeatherService {
             logger.info(stringResult);
             weatherResponse = objectMapper.readValue(stringResult, WeatherResponse.class);
         } catch (JsonProcessingException e) {
-            logger.error("Error parsing API response", e);
+            logger.error("Error parsing API response" +  e.getMessage());
         }
         logger.info("Weather response: " + weatherResponse);
         return weatherResponse;
@@ -62,9 +69,13 @@ public class WeatherService {
      * @return A null object if the API call fails or a WeatherResponse object representing the current weather
      */
     public WeatherResponse getCurrentWeather(String city, String country) {
-
+        //reject null and empty inputs
+        if (city == null || city.isBlank()) {
+            logger.info("getCurrentWeather call with null/empty city has been rejected");
+            return null;
+        }
         //Uses the country code service to get the country code (2 letter ) for the given country name
-        String countryCode = countryCodeService.getCountryCode(country);
+        String countryCode = country == null ? "" : countryCodeService.getCountryCode(country);
 
         //Combines the city and country code to form the location string used in API call
         String location = city + (countryCode.isEmpty() ? "" : "," + countryCode);
@@ -73,10 +84,12 @@ public class WeatherService {
         //Attempts to retrieve a response from api, any cause of failure results in null return value
         try {
             String url = String.format("%sweather?q=%s&appid=%s&units=metric", apiUrl, location, apiKey);
+            logger.info("Attempting to fetch weather using url " + url);
             String response = restTemplate.getForObject(url, String.class);
             return parseWeatherJson(response);
         } catch (Exception e) {
-            logger.info("Failed to fetch current weather for " + location + " from " + apiUrl);
+            logger.info("Failed to fetch current weather for " + location);
+            logger.info("Caused by: " + e.getMessage());
             return null;
         }
     }
