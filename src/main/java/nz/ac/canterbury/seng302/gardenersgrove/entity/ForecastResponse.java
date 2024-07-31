@@ -15,4 +15,7 @@ public class ForecastResponse {
         // no-args jackson constructor
     }
 
+    public WeatherResponse[] getWeatherResponses() {
+        return weatherResponses;
+    }
 }
