@@ -72,6 +72,10 @@ public class ViewGardenController {
         WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
         model.addAttribute("weatherResponse", weatherResponse);
 
+        //Newer Code to get forecast
+        ForecastResponse forecastResponse = weatherService.getForecastWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+        model.addAttribute("forecastResponse", forecastResponse);
+
         return addAttributes(currentUser, gardenID, model, plantService, gardenService);
     }
 

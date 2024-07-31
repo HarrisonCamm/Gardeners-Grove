@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.ForecastResponse;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.WeatherResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +63,25 @@ public class WeatherService {
     }
 
     /**
+     * Parses the JSON response from the weather API into a ForecastResponse object
+     * Attribution: Based off of SENG301 Lab 6 example code
+     *
+     * @param stringResult The JSON response from the weather API as a String
+     * @return A ForecastResponse object representing the JSON response
+     */
+    private ForecastResponse parseForecastJson(String stringResult) {
+        ForecastResponse forecastResponse = null;
+        try {
+            logger.info(stringResult);
+            forecastResponse = objectMapper.readValue(stringResult, ForecastResponse.class);
+        } catch (JsonProcessingException e) {
+            logger.error("Error parsing API response" +  e.getMessage());
+        }
+        logger.info("Forecast response: " + forecastResponse);
+        return forecastResponse;
+    }
+
+    /**
      * Fetches the current weather for a given city and country
      *
      * @param city    A string of City name to fetch weather for not case-sensitive
@@ -93,4 +113,35 @@ public class WeatherService {
         }
     }
 
+    /**
+     * Fetches the forecasted weather for a given city and country
+     *
+     * @param city    A string of City name to fetch weather for not case-sensitive
+     * @param country A string of full country name to fetch weather for not case-sensitive disregarded if invalid
+     * @return A null object if the API call fails or a ForecastResponse object representing the current weather
+     */
+    public ForecastResponse getForecastWeather(String city, String country) {
+        //reject null and empty inputs
+        if (city == null || city.isBlank()) {
+            logger.info("getCurrentWeather call with null/empty city has been rejected");
+            return null;
+        }
+        //Uses the country code service to get the country code (2 letter ) for the given country name
+        String countryCode = country == null ? "" : countryCodeService.getCountryCode(country);
+
+        //Combines the city and country code to form the location string used in API call
+        String location = city + (countryCode.isEmpty() ? "" : "," + countryCode);
+        logger.info("Fetching forecast weather for " + location + " from " + apiUrl);
+
+        //Attempts to retrieve a response from api, any cause of failure results in null return value
+        try {
+            String url = String.format("%sforecast/daily?q=%s&appid=%s&cnt=5&units=metric", apiUrl, location, apiKey);
+            String response = restTemplate.getForObject(url, String.class);
+            return parseForecastJson(response);
+        } catch (Exception e) {
+            logger.info("Failed to fetch forecast weather for " + location + " from " + apiUrl);
+            logger.info("Caused by: " + e.getMessage());
+            return null;
+        }
+    }
 }
