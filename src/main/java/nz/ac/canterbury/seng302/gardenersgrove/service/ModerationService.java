@@ -38,7 +38,7 @@ public class ModerationService {
      * @return JSON string containing detected terms if any inappropriate content is found, "null" otherwise.
      */
     public String moderateText(String line) {
-        logger.info("MODERATE TEXT");
+//        logger.info("MODERATE TEXT");
 
         try {
             // Re-authenticate the client
@@ -52,14 +52,14 @@ public class ModerationService {
             if (!line.isEmpty()) {
                 textResults = client.textModerations().screenText("text/plain", line.getBytes(), null);
                 // Uncomment below line to print in console
-                logger.info(objectMapper.writeValueAsString(textResults));
+//                logger.info(objectMapper.writeValueAsString(textResults));
             }
 
             // Log moderation status and terms
-            logger.info("Text moderation status: " + textResults.status().description());
+//            logger.info("Text moderation status: " + textResults.status().description());
             // todo fix this to retrieve the classification
 //            logger.info(textResults.classification().toString());
-            logger.info("Text moderation terms: " + objectMapper.writeValueAsString(textResults.terms()));
+//            logger.info("Text moderation terms: " + objectMapper.writeValueAsString(textResults.terms()));
 
             return objectMapper.writeValueAsString(textResults.terms());
 

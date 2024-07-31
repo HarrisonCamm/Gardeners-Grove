@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,8 +30,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 @WebMvcTest
 public class ViewGardenTests {
@@ -156,7 +157,9 @@ public class ViewGardenTests {
                         .with(csrf())
                         .param("gardenID", "1")
                         .param("tag", tag))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                        .andExpect(status().is3xxRedirection())
+                        // Check that page redirects to a view garden of ANY number
+                        .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
 
         verify(tagService).addTag(any(Tag.class));
     }
