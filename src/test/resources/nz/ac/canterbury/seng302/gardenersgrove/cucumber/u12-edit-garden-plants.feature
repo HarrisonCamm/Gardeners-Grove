@@ -48,15 +48,16 @@ Feature: U12 As Kaia, I want to update the plants I have in my garden so that I 
     Then The plant details are not updated and stay as <name>, <count>, <description>, and <date planted>
     And An error message tells me "Plant name cannot be empty and must only include letters, numbers, spaces, dots, hyphens or apostrophes."
     Examples:
-      | name     | count | description        | date planted | new name        | new count | new description               | new date planted |
-      | "plant1" | "1"   | "Small cactus"     | "01/02/2002" | ""              | "2"       | "Thrives in dry environments" | "15/03/2022"     |
-      | "plant2" | "2"   | "Orchid bloom"     | "01/02/2022" | "123*Orch"      | "3"       | "Needs indirect sunlight"     | "16/04/2023"     |
-      | "plant3" | "3"   | "Rose bush"        | "01/02/2023" | "Rose#"         | "1"       | "Requires frequent watering"  | "17/05/2024"     |
-      | "plant4" | "4"   | "Lavender field"   | "12/08/2019" | "Rose@home"     | "2"       | "Fragrant and calming"        | "18/06/2025"     |
-      | "plant5" | "5"   | "Sunflower array"  | "23/09/2021" | "Lavender%"     | "3"       | "Loves full sun exposure"     | "19/07/2026"     |
-      | "plant6" | "6"   | "Herb garden"      | "05/11/2020" | "Mint&Rosemary" | "4"       | "Useful in cooking"           | "20/08/2027"     |
-      | "plant7" | "7"   | "Cactus collection"| "15/01/2018" | "$Cacti"        | "5"       | "Requires minimal water"      | "21/09/2028"     |
-#      | "plant8" | "8"   | "Fiddle leaf fig"  | "05/06/2019" | " "             | "2"       | "Prefers bright, indirect light" | "22/10/2029"  |      #ACs technically allow this "must only include... ...spaces..." but could look into it
+      | name     | count | description        | date planted | new name        | new count | new description                  | new date planted |
+      | "plant1" | "1"   | "Small cactus"     | "01/02/2002" | ""              | "2"       | "Thrives in dry environments"    | "15/03/2022"     |
+      | "plant2" | "2"   | "Orchid bloom"     | "01/02/2022" | "123*Orch"      | "3"       | "Needs indirect sunlight"        | "16/04/2023"     |
+      | "plant3" | "3"   | "Rose bush"        | "01/02/2023" | "Rose#"         | "1"       | "Requires frequent watering"     | "17/05/2024"     |
+      | "plant4" | "4"   | "Lavender field"   | "12/08/2019" | "Rose@home"     | "2"       | "Fragrant and calming"           | "18/06/2025"     |
+      | "plant5" | "5"   | "Sunflower array"  | "23/09/2021" | "Lavender%"     | "3"       | "Loves full sun exposure"        | "19/07/2026"     |
+      | "plant6" | "6"   | "Herb garden"      | "05/11/2020" | "Mint&Rosemary" | "4"       | "Useful in cooking"              | "20/08/2027"     |
+      | "plant7" | "7"   | "Cactus collection"| "15/01/2018" | "$Cacti"        | "5"       | "Requires minimal water"         | "21/09/2028"     |
+      | "plant8" | "8"   | "Fiddle leaf fig"  | "05/06/2019" | " "             | "2"       | "Prefers bright, indirect light" | "22/10/2029"     |
+      | "plant9" | "9"   | "Applorange tree"  | "05/06/2019" | " ! ~ #"        | "1"       | "yummy orange apple tree"        | "22/10/2029"     |
 
   Scenario Outline: AC6 - Updating a plant with a description that is too long
     Given I have 1 plants in my garden with the details <name>, <count>, <description>, and <date planted>
