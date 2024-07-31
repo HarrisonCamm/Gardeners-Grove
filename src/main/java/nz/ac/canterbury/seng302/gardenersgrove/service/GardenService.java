@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.GardenRepository;
 import org.springframework.stereotype.Service;
 
@@ -37,4 +38,24 @@ public class GardenService {
     }
 
     public Optional<Garden> findGarden(Long id) { return gardenRepository.findById(id); }
+
+    public List<Tag> getTags(Long gardenId) {
+        Optional<Garden> optionalGarden = gardenRepository.findById(gardenId);
+        if (optionalGarden.isPresent()) {
+            return optionalGarden.get().getTags();
+        } else {
+            throw new RuntimeException("Garden not found with id: " + gardenId);
+        }
+    }
+
+    public Garden addTagToGarden(Long gardenId, Tag tag) {
+        Optional<Garden> optionalGarden = gardenRepository.findById(gardenId);
+        if (optionalGarden.isPresent()) {
+            Garden garden = optionalGarden.get();
+            garden.getTags().add(tag);
+            return gardenRepository.save(garden);
+        } else {
+            throw new RuntimeException("Garden not found with id: " + gardenId);
+        }
+    }
 }

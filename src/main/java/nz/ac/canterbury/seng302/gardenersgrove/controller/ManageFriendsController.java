@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -95,11 +96,12 @@ public class ManageFriendsController {
 
         User currentUser = userService.getAuthenicatedUser();
 
-        List<User> searchedUsers = userService.searchForUsers(searchQuery.toLowerCase(), currentUser);
+        List<User> searchedUsers = new ArrayList<>(userService.searchForUsers(searchQuery.toLowerCase(), currentUser));
 
         List<FriendRequest> sentFriendRequests = userService.getSentFriendRequests(currentUser);
 
         List<UserRelationship> usersRelationships = userRelationshipService.getUserRelationships(currentUser);
+
 
         for (FriendRequest request : sentFriendRequests) {
             searchedUsers.remove(request.getReceiver());

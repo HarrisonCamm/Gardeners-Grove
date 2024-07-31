@@ -15,7 +15,7 @@ tag-checker:
 junit:
   stage: test
   script:
-    - ./gradlew test
+    - ./gradlew check
     - ls ./build/jacoco
   artifacts:
     paths:
