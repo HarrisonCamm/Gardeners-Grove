@@ -64,7 +64,7 @@ public class WeatherServiceTests {
         WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather(city, "New Zealand");
         Assertions.assertNull(weatherServiceResponse);
     }
-    
+
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
     @NullAndEmptySource    public void NullEmptyCountry_GetCurrentWeather_ReturnsWeatherResponse(String country) {
