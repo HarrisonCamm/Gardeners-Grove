@@ -15,7 +15,7 @@ tag-checker:
 junit:
   stage: test
   script:
-    - ./gradlew test
+    - ./gradlew check
     - ls ./build/jacoco
   artifacts:
     paths:
@@ -51,8 +51,8 @@ deploy-staging:
     - cp runner-scripts/staging.sh /home/gitlab-runner/staging.sh
     - chmod u+x /home/gitlab-runner/staging.sh
     - echo "export SONARQUBE_TOKEN=${SONARQUBE_TOKEN}" > /home/gitlab-runner/staging/.env
-    - echo "export WEATHER_API_KEY=${WEATHER_API_KEY}" > /home/gitlab-runner/staging/.env
-    - echo "export WEATHER_API_URL=${WEATHER_API_URL}" > /home/gitlab-runner/staging/.env
+    - echo "export WEATHER_API_KEY=${WEATHER_API_KEY}" >> /home/gitlab-runner/staging/.env
+    - echo "export WEATHER_API_URL=${WEATHER_API_URL}" >> /home/gitlab-runner/staging/.env
     - echo "export GEOAPIFY_API_KEY=${GEOAPIFY_API_KEY}" >> /home/gitlab-runner/staging/.env
     - echo "export SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}" >> /home/gitlab-runner/staging/.env
     - echo "export SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}" >> /home/gitlab-runner/staging/.env
@@ -79,8 +79,8 @@ deploy-production:
     - cp runner-scripts/production.sh /home/gitlab-runner/production.sh
     - chmod u+x /home/gitlab-runner/production.sh
     - echo "export SONARQUBE_TOKEN=${SONARQUBE_TOKEN}" > /home/gitlab-runner/production/.env
-    - echo "export WEATHER_API_KEY=${WEATHER_API_KEY}" > /home/gitlab-runner/production/.env
-    - echo "export WEATHER_API_URL=${WEATHER_API_URL}" > /home/gitlab-runner/production/.env
+    - echo "export WEATHER_API_KEY=${WEATHER_API_KEY}" >> /home/gitlab-runner/production/.env
+    - echo "export WEATHER_API_URL=${WEATHER_API_URL}" >> /home/gitlab-runner/production/.env
     - echo "export GEOAPIFY_API_KEY=${GEOAPIFY_API_KEY}" >> /home/gitlab-runner/production/.env
     - echo "export SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}" >> /home/gitlab-runner/production/.env
     - echo "export SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}" >> /home/gitlab-runner/production/.env

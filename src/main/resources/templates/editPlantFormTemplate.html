@@ -39,10 +39,10 @@
                 <br/>
                 <!--                todo maxlength will need to be update along with plant validator and plant class sql string length for the defined limit from Fabian-->
                 <input type="text" class="form-control" id="plantName"
-                       maxlength="254" th:value="*{name}" th:field="*{name}"
+                       maxlength="1028" th:value="*{name}" th:field="*{name}"
                        th:classappend="${nameError} ? 'error' : 'form-control'">
             </div>
-            <div th:if="${nameError}" class="error-message" th:text="${nameError}"></div>
+            <div id="nameError" class="error-message" th:text="${nameError}" ></div>
             <br/>
             <div>
                 <label for="plantCount"> Count: </label>
