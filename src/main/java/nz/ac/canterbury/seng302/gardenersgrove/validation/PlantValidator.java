@@ -51,7 +51,6 @@ public class PlantValidator {
      * @return FieldError if the description is longer than 512 characters
      */
     public static FieldError validatePlantDescription(String description) {
-        boolean a = description.length() > 512;
         if (description.length() > 512) {
             return new FieldError("plant", "description", "Plant description must be less than 512 characters");
         }
