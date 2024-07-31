@@ -369,8 +369,6 @@ h2 {
     align-items: center;
 }
 
-
-
 .suggestions {
     padding: 0;
 }
@@ -402,23 +400,20 @@ p {
     margin: 0
 }
 
-.garden-details-button-row {
-    display: flex;
-    flex-direction: row;
+.tag-input, .tag-input:hover, .tag-input:focus {
+    font-size: 100%;
+    background-color: #E2F1CA;
+    border: 2px solid #BEE186;
+    border-right: 5px #E2F1CA;
+    outline: 0;
+}
+.tag-x {
+    outline: 2px solid #BEE186;
 }
 
-.tag-input {
-    width: 300px;
-    display: flex;
-    position: relative;
-}
-
-.input-clear {
-    position: relative;
-}
-
-.input-clear input {
-    padding-right: 30px;
+.tag-input:disabled {
+    background-color: #DFDEDC;
+    border: 1px solid #C4C3C1;
 }
 
 .input-clear button {
@@ -478,12 +473,6 @@ p {
 hr {
     margin: 2px 0 2px 0;
 }
-
-.view-garden-plant-buttons {
-    display: flex;
-    justify-content: space-between; /* Optional: Adds space between the buttons */
-}
-
 
 @media only screen and (orientation: portrait) {
     h2 {

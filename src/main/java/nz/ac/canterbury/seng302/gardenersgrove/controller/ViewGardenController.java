@@ -136,7 +136,13 @@ public class ViewGardenController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
         // Add tag to the database and add the tag to the garden's list of tags
-        Tag addedTag = tagService.addTag(new Tag(tag));
+        List<Tag> allTags = tagService.getTags();
+        Tag addedTag;
+        if (!allTags.stream().anyMatch(existingTag -> existingTag.getName().equals(tag))) {
+            addedTag = tagService.addTag(new Tag(tag));
+        } else {
+            addedTag = tagService.getTagByName(tag);
+        }
         gardenService.addTagToGarden(gardenID, addedTag);
 
         return "redirect:/view-garden?gardenID=" + gardenID;

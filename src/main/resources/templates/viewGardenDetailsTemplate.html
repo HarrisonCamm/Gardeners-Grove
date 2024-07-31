@@ -42,20 +42,22 @@
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col garden-details-button-row">
-                        <div class="view-garden-plant-buttons">
-                            <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
-                                Edit
-                            </a>
-                            <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}" class="btn btn-primary button">
-                                Add new plant
-                            </a>
-                        </div>
+                    <div class="d-flex justify-content-end">
+                        <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
+                            Edit
+                        </a>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}" class="btn btn-primary button">
+                            Add new plant
+                        </a>
+                    </div>
+                    <div class="col d-flex justify-content-end pt-1">
                         <form class="tags" id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
-                            <div class="tag-input">
-                                <div class="input-group ms-2 input-clear">
-                                    <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput" name="tag" th:value="${tagInput}">
-                                    <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
+                            <div class="d-flex w-300">
+                                <div class="input-group">
+                                    <input type="text" class="tag-input w-350 p-1 rounded-start" placeholder="Enter tag" id="tagInput" name="tag" th:value="${tagInput}">
+                                    <button class="tag-input tag-x p-1 rounded-end text-black border-0" type="button" id="clearButton">x</button>
                                 </div>
                                 <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
                                 <div class="container mt-3" id="autocompleteList"></div>

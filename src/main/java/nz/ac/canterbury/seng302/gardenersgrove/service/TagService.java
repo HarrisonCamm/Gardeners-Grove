@@ -27,6 +27,9 @@ public class TagService {
     }
 
     public Optional<Tag> findTag(Long id) {
-        return tagRepository.getTag(id);
+        return tagRepository.getTagById(id);
+    }
+    public Tag getTagByName(String name) {
+        return tagRepository.getTagByName(name);
     }
 }
