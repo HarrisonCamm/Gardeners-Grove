@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
+import nz.ac.canterbury.seng302.gardenersgrove.validation.FieldErrorFactory;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ public class EditPlantController {
     private final GardenService gardenService;
     private final UserService userService;
     private final ImageService imageService;
+    private final FieldErrorFactory fieldErrorFactory = new FieldErrorFactory();
 
     @Autowired
     public EditPlantController(PlantService plantService, GardenService gardenService, UserService userService, ImageService imageService) {
@@ -91,20 +93,16 @@ public class EditPlantController {
 
         ArrayList<FieldError> errors = checkFields(newPlant.getName(), newPlant.getDescription(), newPlant.getCount(), formattedDate);
 
-        //Sets assigns the new values to the original plant object ready to be saved to the database
+        // Sets assigns the new values to the original plant object ready to be saved to the database
         plant.setDatePlanted(datePlanted);
         plant.setName(newPlant.getName());
         plant.setCount(newPlant.getCount());
         plant.setDescription(newPlant.getDescription());
 
         model.addAttribute("plantID", plantID); // Add gardenID to the model
-//        model.addAttribute("datePlanted", formattedDate);
         model.addAttribute("plant", plant);
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
-        //Ternary operator to assign null date or assign a formatted date
         model.addAttribute("datePlanted", datePlanted);
-
-//        Image.removeTemporaryImage(session, imageService);
 
         if (!errors.isEmpty()) {
             for (FieldError error : errors) {

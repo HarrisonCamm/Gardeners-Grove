@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.cucumber;
 
 import io.cucumber.junit.platform.engine.Constants;
 import nz.ac.canterbury.seng302.gardenersgrove.GardenersGroveApplication;
+import nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions.AddTagSteps;
 import org.junit.platform.suite.api.*;
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
