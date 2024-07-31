@@ -143,7 +143,7 @@ public class ViewGardenController {
 
             // Add attributes and return the same view
             addAttributes(currentUser, gardenID, model, plantService, gardenService);
-            return "viewGardenDetailsTemplate";
+            return "redirect:/view-garden?gardenID=\" + gardenID";
         } else {
             // Tag is ok, Add tag to the database and to the garden's list of tags
             Tag addedTag = tagService.addTag(new Tag(tag));
