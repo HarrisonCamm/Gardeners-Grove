@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class WeatherService {
+    static final int NUM_DAYS_FORECAST = 6;
 
     //Retrieved from application-dev.properties
     @Value("${weather.api.key:#{null}}")
@@ -135,7 +136,7 @@ public class WeatherService {
 
         //Attempts to retrieve a response from api, any cause of failure results in null return value
         try {
-            String url = String.format("%sforecast/daily?q=%s&appid=%s&cnt=5&units=metric", apiUrl, location, apiKey);
+            String url = String.format("%sforecast/daily?q=%s&appid=%s&cnt=" + NUM_DAYS_FORECAST + "&units=metric", apiUrl, location, apiKey);
             String response = restTemplate.getForObject(url, String.class);
             return parseForecastJson(response);
         } catch (Exception e) {
