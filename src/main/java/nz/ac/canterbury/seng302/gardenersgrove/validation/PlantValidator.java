@@ -15,6 +15,10 @@ public class PlantValidator {
      * @return FieldError if the plant name is empty or contains invalid characters
      */
     public static FieldError validatePlantName(String name) {
+        if (name.length() > 255){
+            return new FieldError("plant", "name",
+                    "Plant name must be under 255 characters");
+        }
         if (name.isEmpty() || !isValidPlantName(name)) {
             return new FieldError("plant", "name",
                     "Plant name cannot be empty and must only include letters, numbers, spaces, dots, " +
@@ -29,6 +33,10 @@ public class PlantValidator {
      * @return FieldError if the count is not a positive number
      */
     public static FieldError validatePlantCount(String count) {
+        if(count.length() > 255){
+            return new FieldError("plant", "count", "Plant count must be a less than 255 characters");
+
+        }
         if (!isPositiveNumber(count)) {
             return new FieldError("plant", "count", "Plant count must be a positive number");
         }
