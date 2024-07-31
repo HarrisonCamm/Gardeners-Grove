@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRelationshipRepository extends CrudRepository<UserRelationship, Long> {
+    List<UserRelationship> findAll();
     Optional<UserRelationship> findUserRelationshipByReceiverAndSender(User receiver, User sender);
     List<UserRelationship> findUserRelationshipBySender(User sender);
 
