@@ -75,6 +75,9 @@ public class CreatePlantTests {
     @MockBean
     private UserRelationshipService userRelationshipService;
 
+    @MockBean
+    private ModerationService moderationService;
+
     private Garden testGarden;
     private Location testLocation;
     private Plant testPlant;
