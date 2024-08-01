@@ -31,8 +31,9 @@
                     <!-- Weather Section -->
                     <div class="row p-3">
                         <div class="col">
-                            <div class="container bg-info bg-gradient shadow rounded-4 p-4 z-3 position-relative">
-                                <div th:if="${weatherResponse != null}">
+<!--                            <div class="container bg-info bg-gradient shadow rounded-4 p-4 z-3 position-relative">-->
+                            <div th:if="${weatherResponse != null}">
+                                <div class="container bg-info bg-gradient shadow rounded-4 p-4 z-3 position-relative">
 
                                     <h3><strong> <span th:text="${weatherResponse.dayOfWeek}"></span></strong></h3>
                                     <p><strong>Date:</strong> <span th:text="${weatherResponse.date}"></span></p>
@@ -44,10 +45,14 @@
                                         <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" class="img-fluid w-200" alt="Weather Icon" />
                                     </div>
                                 </div>
-                                <div th:if="${weatherResponse == null}" class="error-message">
+                            </div>
+                            <div th:if="${weatherResponse == null}" style="background-color: rgb(255, 31, 31, 0.5)" class="container bg-gradient shadow rounded-4 p-4 z-3 position-relative">
+<!--                                class="error-message">-->
+                                <div>
                                     <p>Location not found, please update your location to see the weather</p>
                                 </div>
                             </div>
+<!--                            </div>-->
                         </div>
                     </div>
 

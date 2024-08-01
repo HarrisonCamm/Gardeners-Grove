@@ -50,7 +50,7 @@ public class WeatherServiceTests {
         weatherService = new WeatherService(countryCodeService, restTemplate);
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "null/empty city test")
     @ValueSource(strings = {"", " "})
     @NullAndEmptySource
     public void NullEmptyCity_GetCurrentWeather_ReturnsNull(String city) {
@@ -65,7 +65,8 @@ public class WeatherServiceTests {
         Assertions.assertNull(weatherServiceResponse);
     }
 
-    @ParameterizedTest
+
+    @ParameterizedTest(name = "null/empty country test")
     @ValueSource(strings = {"", " "})
     @NullAndEmptySource    public void NullEmptyCountry_GetCurrentWeather_ReturnsWeatherResponse(String country) {
         WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather("Auckland", country);
