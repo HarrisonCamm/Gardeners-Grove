@@ -405,31 +405,18 @@ p {
     background-color: #E2F1CA;
     border: 2px solid #BEE186;
     border-right: 5px #E2F1CA;
+    z-index: 99;
     outline: 0;
 }
-.tag-x {
+.tag-x, .tag-x:hover {
     outline: 2px solid #BEE186;
 }
-
+.tag-error {
+    max-width: 400px;
+}
 .tag-input:disabled {
     background-color: #DFDEDC;
     border: 1px solid #C4C3C1;
-}
-
-.input-clear button {
-    position: absolute;
-    right: 10%;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: #000;
-    transition: background-color 0.3s ease;
-    border-radius: 50%;
-}
-
-.input-clear button:hover {
-    background-color: transparent !important;
-    color: #000 !important;
 }
 
 .tag-colour {

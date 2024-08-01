@@ -136,22 +136,32 @@ public class ViewGardenController {
 
         // Moderate the tag before adding
         String possibleTerms = moderationService.moderateText(tag);
-
+        List<Tag> allTags = tagService.getTags();
+        Tag addedTag;
         if (!possibleTerms.equals("null")) {
             // Show error
             model.addAttribute("tagError", "Profanity or inappropriate language detected");
-
             // Add attributes and return the same view
             addAttributes(currentUser, gardenID, model, plantService, gardenService);
             return "viewGardenDetailsTemplate";
         } else {
-            // Tag is ok, Add tag to the database and to the garden's list of tags
-            Tag addedTag = tagService.addTag(new Tag(tag));
-            gardenService.addTagToGarden(gardenID, addedTag);
-        }
+            if (!allTags.stream().anyMatch(existingTag -> existingTag.getName().equals(tag))) {
+                addedTag = tagService.addTag(new Tag(tag));
+            } else {
+                addedTag = tagService.getTagByName(tag);
+            }
 
-        // Add attributes
-        addAttributes(currentUser, gardenID, model, plantService, gardenService);
+        }
+        List<Tag> gardenTags = gardenService.getTags(gardenID);
+        Tag finalAddedTag = addedTag;
+        if (!gardenTags.stream().anyMatch(existingTag -> existingTag.equals(finalAddedTag))) {
+            gardenService.addTagToGarden(gardenID, addedTag);
+        } else {
+            model.addAttribute("duplicateTagError", "Tag is already defined");
+            addAttributes(currentUser, gardenID, model, plantService, gardenService);
+            return "viewGardenDetailsTemplate";
+        }
+        // Add tag to the database and add the tag to the garden's list of tags
 
         // Return user to page
         return "redirect:/view-garden?gardenID=" + gardenID;

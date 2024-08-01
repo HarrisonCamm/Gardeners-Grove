@@ -143,7 +143,7 @@ public class AddTagSteps {
     public void iShouldSeeAutocompleteOptionsForTagsThatAlreadyExistInTheSystem() throws Exception {
         // Get the latest result from the /view-garden endpoint
         resultActions = mockMvc.perform(get("/view-garden")
-                        .param("gardenID", ownedGarden.getId().toString())
+                        .param("gardenID", ownedGarden2.getId().toString())
                         .with(csrf()))
                 .andExpect(status().isOk());
 
