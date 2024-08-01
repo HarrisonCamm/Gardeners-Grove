@@ -91,7 +91,6 @@ public class UserService {
      * @param user the User entity to be updated
      * @return the User entity
      */
-    // TODO refactor code to have singular updateUser
     public User updateUserFriends(User user) {
         return userRepository.save(user);
     }
