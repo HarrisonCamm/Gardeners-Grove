@@ -138,12 +138,17 @@ public class ViewGardenController {
         String possibleTerms = moderationService.moderateText(tag);
 
         if (!possibleTerms.equals("null")) {
+            // Add attributes and return the same view
+            addAttributes(currentUser, gardenID, model, plantService, gardenService);
+
+            // Get weather information
+            WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+            model.addAttribute("weatherResponse", weatherResponse);
+
             // Show error
             model.addAttribute("tagError", "Profanity or inappropriate language detected");
 
-            // Add attributes and return the same view
-            addAttributes(currentUser, gardenID, model, plantService, gardenService);
-            return "redirect:/view-garden?gardenID=" + gardenID;
+            return "viewGardenDetailsTemplate";
         } else {
             // Tag is ok, Add tag to the database and to the garden's list of tags
             Tag addedTag = tagService.addTag(new Tag(tag));
