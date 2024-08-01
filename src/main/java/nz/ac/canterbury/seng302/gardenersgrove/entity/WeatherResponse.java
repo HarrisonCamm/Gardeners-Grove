@@ -39,14 +39,23 @@ public class WeatherResponse {
     @JsonProperty("humidity")
     public int humidity;
 
-    //Ternary statement will either return current weather temp or forecast temp
     public double getTemperature() {
         return mainInfo != null ? mainInfo.temperature : forecastTemp != null ? (forecastTemp.temp) : 0;
+        if (mainInfo != null) {
+            return mainInfo.temperature;
+        } else if (forecastTemp != null) {
+            return forecastTemp.temp;
+        } else {
+            return -273.15;     //Absolute zero should be convincing enough
+        }
     }
 
-    //Ternary statement will either return current weather humidity or forecast humidity
     public int getHumidity() {
-        return mainInfo != null ? mainInfo.humidity : humidity;
+        if (mainInfo != null) {
+            return mainInfo.humidity;
+        } else {
+            return humidity;
+        }
     }
 
     public String getWeatherDescription() {

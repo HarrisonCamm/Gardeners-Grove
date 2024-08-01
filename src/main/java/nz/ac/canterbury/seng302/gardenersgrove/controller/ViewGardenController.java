@@ -69,14 +69,7 @@ public class ViewGardenController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
 
-        //New Code Added to get weather
-        String gardenCity = garden.get().getLocation().getCity();
-        String gardenCountry = garden.get().getLocation().getCountry();
 
-        ForecastResponse forecastResponse = weatherService.getForecastWeather(gardenCity, gardenCountry);       //Get forecast
-        WeatherResponse currentWeather = weatherService.getCurrentWeather(gardenCity, gardenCountry);       //Get current weather
-        if (currentWeather != null) forecastResponse.addWeatherResponse(currentWeather);                    //Add current weather to forecast
-        model.addAttribute("forecastResponse", forecastResponse);
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService);
         return "viewGardenDetailsTemplate";
@@ -178,6 +171,15 @@ public class ViewGardenController {
             model.addAttribute("gardenSize", garden.get().getSize());
             model.addAttribute("gardenTags", gardenService.getTags(gardenID));
             model.addAttribute("allTags", tagService.getTags());
+
+
+            //New Code Added to get weather
+            String gardenCity = garden.get().getLocation().getCity();
+            String gardenCountry = garden.get().getLocation().getCountry();
+            ForecastResponse forecastResponse = weatherService.getForecastWeather(gardenCity, gardenCountry);       //Get forecast
+            WeatherResponse currentWeather = weatherService.getCurrentWeather(gardenCity, gardenCountry);       //Get current weather
+            if (currentWeather != null) forecastResponse.addWeatherResponse(currentWeather);                    //Add current weather to forecast
+            model.addAttribute("forecastResponse", forecastResponse);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " does not exist");
         }
