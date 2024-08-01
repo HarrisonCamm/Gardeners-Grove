@@ -118,7 +118,7 @@ public class ViewGardenController {
         }
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService);
-        return "redirect:/view-garden?gardenID=" + gardenID; // Decide the view to return here
+        return "redirect:/view-garden?gardenID=" + gardenID;
     }
 
     @PostMapping("/add-tag")
@@ -143,7 +143,7 @@ public class ViewGardenController {
 
             // Add attributes and return the same view
             addAttributes(currentUser, gardenID, model, plantService, gardenService);
-            return "redirect:/view-garden?gardenID=\" + gardenID";
+            return "redirect:/view-garden?gardenID=" + gardenID;
         } else {
             // Tag is ok, Add tag to the database and to the garden's list of tags
             Tag addedTag = tagService.addTag(new Tag(tag));
