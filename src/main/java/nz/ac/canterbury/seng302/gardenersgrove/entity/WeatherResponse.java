@@ -40,7 +40,6 @@ public class WeatherResponse {
     public int humidity;
 
     public double getTemperature() {
-        return mainInfo != null ? mainInfo.temperature : forecastTemp != null ? (forecastTemp.temp) : 0;
         if (mainInfo != null) {
             return mainInfo.temperature;
         } else if (forecastTemp != null) {
