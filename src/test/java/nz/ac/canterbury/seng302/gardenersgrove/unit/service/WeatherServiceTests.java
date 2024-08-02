@@ -112,8 +112,7 @@ public class WeatherServiceTests {
     @ValueSource(strings = {"", " "})
     @NullAndEmptySource
     public void NullEmptyCountry_HasRained_ReturnsBoolean(String country) {
-        String rainResponse = "{\"weather\": [{\"main\": \"Rain\"}]}";
-        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(rainResponse);
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(historicWeatherJsonString);
 
         Boolean hasRained = weatherService.hasRained("Auckland", country);
         Assertions.assertTrue(hasRained); // Assume true based on response
