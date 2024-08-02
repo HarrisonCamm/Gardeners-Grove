@@ -20,7 +20,14 @@ public class TagService {
     private ModerationService moderationService; // Perform Moderation
     private UserService userService; // Increment users inappropriate tag count
 
+    // Original constructor
     @Autowired
+    public TagService(TagRepository tagRepository) {
+        this(tagRepository, null, null, null);
+    }
+
+    // Secondary constructor without @Autowired
+    // Constructor Chaining
     public TagService(TagRepository tagRepository, GardenService gardenService, ModerationService moderationService, UserService userService) {
         this.tagRepository = tagRepository;
         this.gardenService = gardenService;
