@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <style>
-        .highlight {
-            border: 2px solid red;
-            padding: 10px;
-            background-color: #ffdddd;
-        }
-    </style>
-
-
 </head>
 <body>
 <div th:fragment="alert(message, id)" class="weather-alert">
@@ -23,8 +14,6 @@
 </div>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 </body>
-
-
 </html>
 
 

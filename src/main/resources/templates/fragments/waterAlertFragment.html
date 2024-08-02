@@ -1,14 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <style>
-        .highlight {
-            border: 2px solid red;
-            padding: 10px;
-            background-color: #ffdddd;
-        }
-    </style>
-</head>
 <body>
 <div th:fragment="alert(message, id)" class="water-alert">
     <div id="${id}" class="alert alert-warning alert-dismissible fade show element" role="alert">
