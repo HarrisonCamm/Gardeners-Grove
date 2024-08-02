@@ -109,7 +109,7 @@ public class ResetPasswordSteps {
         when(verificationTokenRepository.findByToken(any(String.class))).thenReturn(verificationToken);
 
         // Mock the user service
-        when(userService.getAuthenicatedUser()).thenReturn(loggedInUser);
+        when(userService.getAuthenticatedUser()).thenReturn(loggedInUser);
         when(userService.getUserByEmail(any(String.class))).thenReturn(loggedInUser);
         when(userService.emailExists(any(String.class))).thenReturn(true);
         when(userService.updateUserPassword(any(User.class), any(String.class))).thenReturn(loggedInUser);

@@ -87,13 +87,16 @@ public class EditGardenTests {
     @MockBean
     private UserRelationshipService userRelationshipService;
 
+    @MockBean
+    private ModerationService moderationService;
+
     private User mockUser;
 
     @BeforeEach
     public void setup() {
         mockUser = new User("user@email.com", "User", "Name", "password");
 //        mockUser.setUserId(1L);
-        Mockito.when(userService.getAuthenicatedUser()).thenReturn(mockUser);
+        Mockito.when(userService.getAuthenticatedUser()).thenReturn(mockUser);
     }
 
     @Test

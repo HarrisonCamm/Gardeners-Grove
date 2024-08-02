@@ -55,6 +55,9 @@ public class EditGardenPlantsSteps {
     @MockBean
     private static WeatherService weatherService;
 
+    @MockBean
+    private static ModerationService moderationService;
+
     private static Map<Long, Plant> mockPlantDB;
 
     private static Garden testGarden;
@@ -73,13 +76,14 @@ public class EditGardenPlantsSteps {
         imageService = Mockito.mock(ImageService.class);
         tagService = Mockito.mock(TagService.class);
         weatherService = Mockito.mock(WeatherService.class);
+        moderationService = Mockito.mock(ModerationService.class);
 
 
         if (mockPlantDB != null) {mockPlantDB.clear();} //Clear pseudo plant database in between examples
 
         //Logged in user handling code taken from RequestPasswordSteps.java credit OCL28
         User loggedInUser = new User("user@gmail.com", "Test", "User", "p@ssw0rd123");
-        when(userService.getAuthenicatedUser()).thenReturn(loggedInUser);
+        when(userService.getAuthenticatedUser()).thenReturn(loggedInUser);
         when(userService.getUserByEmail(any(String.class))).thenReturn(loggedInUser);
         when(userService.emailExists(any(String.class))).thenReturn(true);
         when(userService.updateUserPassword(any(User.class), any(String.class))).thenReturn(loggedInUser);
@@ -115,7 +119,7 @@ public class EditGardenPlantsSteps {
 
         //Create Controller objects for MockMVC pages
         EditPlantController EditPlantController = new EditPlantController(plantService, gardenService, userService, imageService);
-        ViewGardenController ViewGardenController = new ViewGardenController(gardenService, plantService, userService, imageService, tagService, weatherService);
+        ViewGardenController ViewGardenController = new ViewGardenController(gardenService, plantService, userService, imageService, tagService, weatherService, moderationService);
 
         //Build MockMVC page
         mockMvcEditPlant = MockMvcBuilders.standaloneSetup(EditPlantController).build();

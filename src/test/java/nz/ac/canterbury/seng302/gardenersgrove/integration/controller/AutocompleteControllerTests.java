@@ -83,6 +83,9 @@ public class AutocompleteControllerTests {
     @MockBean
     private UserRelationshipService userRelationshipService;
 
+    @MockBean
+    private ModerationService moderationService;
+
     @Mock
     Authentication authentication;
 
