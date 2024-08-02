@@ -137,6 +137,9 @@ public class ViewGardenController {
         String possibleTerms = moderationService.moderateText(tag);
         List<Tag> allTags = tagService.getTags();
         Tag addedTag;
+        if (tag.isEmpty()) {
+            return "redirect:/view-garden?gardenID=" + gardenID;
+        }
         if (!possibleTerms.equals("null")) {
             // Add attributes and return the same view
             addAttributes(currentUser, gardenID, model, plantService, gardenService);
@@ -150,14 +153,13 @@ public class ViewGardenController {
             // Add attributes and return the same view
             addAttributes(currentUser, gardenID, model, plantService, gardenService);
             return "viewGardenDetailsTemplate";
-        } else {
-            if (!allTags.stream().anyMatch(existingTag -> existingTag.getName().equals(tag))) {
-                addedTag = tagService.addTag(new Tag(tag));
-            } else {
-                addedTag = tagService.getTagByName(tag);
-            }
-
         }
+        if (!allTags.stream().anyMatch(existingTag -> existingTag.getName().equals(tag))) {
+            addedTag = tagService.addTag(new Tag(tag));
+        } else {
+            addedTag = tagService.getTagByName(tag);
+        }
+
         List<Tag> gardenTags = gardenService.getTags(gardenID);
         Tag finalAddedTag = addedTag;
         if (!gardenTags.stream().anyMatch(existingTag -> existingTag.equals(finalAddedTag))) {
@@ -195,8 +197,8 @@ public class ViewGardenController {
             String gardenCountry = garden.get().getLocation().getCountry();
             ForecastResponse forecastResponse = weatherService.getForecastWeather(gardenCity, gardenCountry);       //Get forecast
             WeatherResponse currentWeather = weatherService.getCurrentWeather(gardenCity, gardenCountry);       //Get current weather
-            if (currentWeather != null) forecastResponse.addWeatherResponse(currentWeather);                    //Add current weather to forecast
-            model.addAttribute("forecastResponse", forecastResponse);
+            if (currentWeather != null && forecastResponse != null) forecastResponse.addWeatherResponse(currentWeather);                    //Add current weather to forecast
+            model.addAttribute( "forecastResponse", forecastResponse);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " does not exist");
         }

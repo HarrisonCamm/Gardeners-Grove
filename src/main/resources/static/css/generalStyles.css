@@ -431,7 +431,7 @@ p {
 #autocompleteList {
     position: absolute;
     border: 1px solid black;
-    background-color: rgba(190, 225, 134); /* Adjust the alpha value to control transparency */
+    background-color: #E2F1CA; /* Adjust the alpha value to control transparency */
     display: none; /* Initially hidden, display when needed */
     z-index: 99;
     margin-top: 15% !important;
