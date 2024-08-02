@@ -54,13 +54,13 @@
                 <div class="row mb-3 ps-5">
                     <div class="col d-flex flex-end">
                         <form class="tags" id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
-                            <div class="d-flex w-300">
+                            <div class="d-flex w-300 tag-error">
                                 <div class="input-group">
-                                    <input type="text" class="tag-input w-350 p-1 rounded-start" placeholder="Enter tag" id="tagInput" name="tag" th:value="${tagInput}">
+                                    <input type="text" class="tag-input border-end-0 w-350 p-1 rounded-start" placeholder="Enter tag" id="tagInput" name="tag" th:value="${tagInput}">
                                     <button class="tag-input tag-x p-1 rounded-end text-black border-0" type="button" id="clearButton">x</button>
                                 </div>
                                 <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
-                                <div class="container mt-3 tag-input" id="autocompleteList"></div>
+                                <div class="container tag-input rounded-bottom" id="autocompleteList"></div>
                             </div>
                         </form>
                     </div>

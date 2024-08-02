@@ -404,8 +404,6 @@ p {
     font-size: 100%;
     background-color: #E2F1CA;
     border: 2px solid #BEE186;
-    border-right: 5px #E2F1CA;
-    z-index: 99;
     outline: 0;
 }
 .tag-x, .tag-x:hover {
@@ -436,14 +434,13 @@ p {
 
 #autocompleteList {
     position: absolute;
-    border: 1px solid black;
-    background-color: #E2F1CA; /* Adjust the alpha value to control transparency */
+    background-color: #E2F1CA;
     display: none; /* Initially hidden, display when needed */
-    z-index: 99;
-    margin-top: 15% !important;
+    margin-top: 35px !important;
     max-height: 400px;
     overflow: auto;
     overflow-x: hidden;
+    max-width: 248px;
 }
 
 
