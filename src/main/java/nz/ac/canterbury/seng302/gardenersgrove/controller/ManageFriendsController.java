@@ -77,7 +77,7 @@ public class ManageFriendsController {
             case "search" -> handleSearchRequest(searchQuery, model);
             case "invite" -> handleInviteRequest(email, model);
             case "cancel" -> handleCancelRequest(email, model);
-            case "accept" -> handleAcceptRequest(email, model);
+            case "accept" -> handleAcceptRequest(email);
             case "delete" -> handleRejectRequest(email, model);
             case "remove" -> handleRemoveRequest(email, model);
             default -> "manageFriendsTemplate"; // Should never reach this
@@ -159,6 +159,7 @@ public class ManageFriendsController {
         User canceledUser = userService.getUserByEmail(email);
 
         friendRequestService.cancelRequest(currentUser, canceledUser);
+        friendRequestService.cancelRequest(canceledUser, currentUser);
 
         return "redirect:/manage-friends";
 
@@ -187,11 +188,16 @@ public class ManageFriendsController {
     /**
      * Handles the accept request
      * @param email the email of the user to be accepted
-     * @param model the model to add attributes to
      * @return the template to be rendered
      */
-    private String handleAcceptRequest(String email, Model model) {
+    private String handleAcceptRequest(String email) {
         logger.info("POST /manage-friends (accept)");
+
+        // Check if the friend request is there first
+
+        if (!friendRequestService.hasReceivedRequest(userService.getAuthenicatedUser(), userService.getUserByEmail(email))) {
+            return "redirect:/manage-friends";
+        }
 
         User currentUser = userService.getAuthenicatedUser();
         User acceptedFriend = userService.getUserByEmail(email);

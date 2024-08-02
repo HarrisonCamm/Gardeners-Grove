@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -94,7 +95,6 @@ public class ManageFriendsTests {
                     .param("email", testUser.getEmail()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/manage-friends"));
-
     }
 
     @WithMockUser
@@ -136,5 +136,25 @@ public class ManageFriendsTests {
                         .param("email", testUser.getEmail()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/manage-friends"));
+    }
+
+    @WithMockUser
+    @Test
+    public void CanceledRequest_AcceptRequest_DoesNotSave() throws Exception {
+        friendRequestService.save(new FriendRequest(testUser, loggedUser));
+
+        // Immediately cancel the request
+        friendRequestService.cancelRequest(testUser, loggedUser);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
+                        .with(csrf())
+                        .param("action", "accept")
+                        .param("email", testUser.getEmail()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/manage-friends"));
+
+
+        assertTrue(userService.getAuthenicatedUser().getFriends().isEmpty());
+
     }
 }

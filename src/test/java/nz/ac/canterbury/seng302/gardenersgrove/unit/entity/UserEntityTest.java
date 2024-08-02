@@ -14,13 +14,4 @@ public class UserEntityTest {
         String expected = "User[id=1, firstName='John', lastName='Doe', email='john.doe@example.com', password='Password1!', dateOfBirth='01/01/1990']";
         assertEquals(expected, user.toString());
     }
-
-//    @Test
-//    public void grantAuthority_AddsRoleToUserAuthorities() {
-//        User user = new User("John", "Doe", false, "john.doe@example.com", "password123", "1990-01-01");
-//        String authority = "ROLE_USER";
-//        user.grantAuthority(authority);
-//
-//        assertTrue(user.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals(authority)));
-//    }
 }
