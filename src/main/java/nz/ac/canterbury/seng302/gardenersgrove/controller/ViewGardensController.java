@@ -41,11 +41,15 @@ public class ViewGardensController {
         logger.info("GET /view-gardens");
         RedirectService.addEndpoint("/view-gardens");
 
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
 
         if (friendId != null) {
-            boolean isFriend = currentUser.getFriends().stream()
-                    .anyMatch(friend -> friend.getUserId().equals(friendId));
+            boolean isFriend;
+            if (currentUser.getFriends() == null) {
+                isFriend = false;
+            } else {
+                isFriend = currentUser.getFriends().stream().anyMatch(friend -> friend.getUserId().equals(friendId));
+            }
             if (!isFriend) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view gardens of a user who is not your friend.");
             }

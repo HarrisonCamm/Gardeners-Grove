@@ -68,7 +68,7 @@ public class CreatePlantController {
         logger.info("GET /create-plant");
         RedirectService.addEndpoint("/create-plant?gardenID=" + gardenID);
         session.setAttribute("gardenID", gardenID);
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
         if (foundGarden.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");
@@ -136,7 +136,7 @@ public class CreatePlantController {
             Model model) throws Exception {
         logger.info("POST /create-plant");
 
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
         if (foundGarden.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not found");

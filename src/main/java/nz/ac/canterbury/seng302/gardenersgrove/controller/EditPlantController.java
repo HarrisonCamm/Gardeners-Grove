@@ -49,7 +49,7 @@ public class EditPlantController {
                        HttpSession session,
                        Model model) {
         logger.info("GET /edit-plant");
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         // Attempt to retrieve plant or throw ResponseStatusException
         Plant plant = retrievePlant(plantID, plantService);
         if (!plant.getGarden().getOwner().equals(currentUser))
@@ -82,7 +82,7 @@ public class EditPlantController {
 
         //Attempt to retrieve plant or throw ResponseStatusException
         Plant plant = retrievePlant(plantID, plantService);
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         if (!plant.getGarden().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this plant.");
 
