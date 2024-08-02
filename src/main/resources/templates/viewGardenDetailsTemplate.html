@@ -78,7 +78,7 @@
                         <div id="imageError" class="text-danger"></div>
                     </div>
                 </div>
-                <div class="plantContainer table-responsive bg-light" style="max-height: calc(97px * 6); overflow-y: auto;">
+                <div class="plantContainer table-responsive bg-white" style="max-height: calc(97px * 6); overflow-y: auto;">
                     <table class="table">
                         <thead>
                         <tr class="garden-table">
@@ -90,9 +90,9 @@
                             <th>Edit Plant</th>
                         </tr>
                         </thead>
-                        <tbody>
-                            <tr th:each="plant : ${plants}" class="plant-row">
-                                <td>
+                        <tbody class="table-bordered">
+                            <tr th:each="plant : ${plants}" class="plant-row border-0">
+                                <td class="border-0" >
                                     <div class="image-icon-div-small">
                                         <div class="image-upload">
                                             <img class="image-small"
@@ -103,11 +103,11 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td th:text="${#strings.abbreviate(plant.name, 30)}"></td>
-                                <td th:text="${plant.count}"></td>
-                                <td th:text="${plant.description}" class="text-wrap"></td>
-                                <td th:text="${plant.datePlanted}"></td>
-                                <td>
+                                <td class="border-0" th:text="${#strings.abbreviate(plant.name, 30)}"></td>
+                                <td class="border-0" th:text="${plant.count}"></td>
+                                <td class="plant-description-width" th:text="${plant.description}"></td>
+                                <td class="border-0" th:text="${plant.datePlanted}"></td>
+                                <td class="border-0" >
                                     <a th:href="@{'/edit-plant?plantID=' + ${plant.id}}">
                                         <button type="button" class="btn btn-primary button">Edit</button>
                                     </a>

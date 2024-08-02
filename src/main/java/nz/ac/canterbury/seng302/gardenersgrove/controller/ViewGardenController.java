@@ -153,6 +153,7 @@ public class ViewGardenController {
         List<Tag> allTags = tagService.getTags();
         Tag addedTag;
         if (!allTags.stream().anyMatch(existingTag -> existingTag.getName().equals(tag))) {
+//            Add tag to the database
             addedTag = tagService.addTag(new Tag(tag));
         } else {
             addedTag = tagService.getTagByName(tag);
@@ -161,7 +162,7 @@ public class ViewGardenController {
         List<Tag> gardenTags = gardenService.getTags(gardenID);
         Tag finalAddedTag = addedTag;
         if (!gardenTags.stream().anyMatch(existingTag -> existingTag.equals(finalAddedTag))) {
-            // Add tag to the database and add the tag to the garden's list of tags
+            //add the tag to the garden's list of tags
             gardenService.addTagToGarden(gardenID, addedTag);
         } else {
             model.addAttribute("duplicateTagError", "Tag is already defined");

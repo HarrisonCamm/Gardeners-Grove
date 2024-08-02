@@ -414,6 +414,12 @@ p {
 .tag-error {
     max-width: 400px;
 }
+.plant-description-width {
+    max-width: 300px;
+    display: block;
+    overflow-x: auto;
+    border: 0;
+}
 .tag-input:disabled {
     background-color: #DFDEDC;
     border: 1px solid #C4C3C1;
