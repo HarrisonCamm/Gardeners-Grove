@@ -49,12 +49,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div th:if="${weatherResponse == null}" style="background-color: rgb(255, 31, 31, 0.5)" class="container bg-gradient shadow rounded-4 p-4 z-3 position-relative">
-                                    <div>
-                                        <p>Location not found, please update your location to see the weather</p>
-                                    </div>
-                                </div>
                             </div>
+                        </div>
+                    </div>
+                    <div th:if="${weatherResponse == null and forecastResponse == null}" style="background-color: rgb(255, 31, 31, 0.5)" class="container bg-gradient shadow rounded-4 p-4 z-3 position-relative">
+                        <div>
+                            <p>Location not found, please update your location to see the weather</p>
                         </div>
                     </div>
 
