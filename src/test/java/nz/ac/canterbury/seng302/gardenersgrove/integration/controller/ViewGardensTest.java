@@ -76,7 +76,7 @@ public class ViewGardensTest {
     public void setup() {
         testUser = new User("user@email.com", "User", "Name", "password");
 //        testUser.setUserId(1L);
-        Mockito.when(userService.getAuthenicatedUser()).thenReturn(testUser);
+        Mockito.when(userService.getAuthenticatedUser()).thenReturn(testUser);
     }
 
     @Test

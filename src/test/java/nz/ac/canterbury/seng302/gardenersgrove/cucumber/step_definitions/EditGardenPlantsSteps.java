@@ -83,7 +83,7 @@ public class EditGardenPlantsSteps {
 
         //Logged in user handling code taken from RequestPasswordSteps.java credit OCL28
         User loggedInUser = new User("user@gmail.com", "Test", "User", "p@ssw0rd123");
-        when(userService.getAuthenicatedUser()).thenReturn(loggedInUser);
+        when(userService.getAuthenticatedUser()).thenReturn(loggedInUser);
         when(userService.getUserByEmail(any(String.class))).thenReturn(loggedInUser);
         when(userService.emailExists(any(String.class))).thenReturn(true);
         when(userService.updateUserPassword(any(User.class), any(String.class))).thenReturn(loggedInUser);

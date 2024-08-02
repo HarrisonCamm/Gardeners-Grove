@@ -127,7 +127,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getAuthenicatedUser_ShouldReturnAuthenticatedUser() {
+    public void getAuthenticatedUser_ShouldReturnAuthenticatedUser() {
         User testUser = new User("Aroha", "Greenwood", false, "aroha@gmail.com", "1!Password", "2000-11-03");
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
@@ -136,7 +136,7 @@ public class UserServiceTest {
         when(userRepository.findByEmail("aroha@gmail.com")).thenReturn(Optional.of(testUser));
         SecurityContextHolder.setContext(securityContext);
 
-        User result = userService.getAuthenicatedUser();
+        User result = userService.getAuthenticatedUser();
         assertEquals(testUser, result);
     }
 

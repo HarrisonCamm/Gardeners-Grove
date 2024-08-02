@@ -50,7 +50,7 @@ public class ManageFriendsController {
 
         RedirectService.addEndpoint("/manage-friends");
 
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
 
         model.addAttribute("removeFriendButton", true);
 
@@ -94,7 +94,7 @@ public class ManageFriendsController {
     private String handleSearchRequest(String searchQuery, Model model) {
         logger.info("POST /manage-friends (search)");
 
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
 
         List<User> searchedUsers = new ArrayList<>(userService.searchForUsers(searchQuery.toLowerCase(), currentUser));
 
@@ -136,7 +136,7 @@ public class ManageFriendsController {
     private String handleInviteRequest(String email, Model model) {
         logger.info("POST /manage-friends (invite)");
 
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         User invitedUser = userService.getUserByEmail(email);
 
         FriendRequest friendRequest = new FriendRequest(currentUser, invitedUser);
@@ -155,11 +155,10 @@ public class ManageFriendsController {
     public String handleCancelRequest(String email, Model model) {
         logger.info("POST /manage-friends (cancel)");
 
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         User canceledUser = userService.getUserByEmail(email);
 
         friendRequestService.cancelRequest(currentUser, canceledUser);
-        friendRequestService.cancelRequest(canceledUser, currentUser);
 
         return "redirect:/manage-friends";
 
@@ -174,7 +173,7 @@ public class ManageFriendsController {
     private String handleRejectRequest(String email, Model model) {
         logger.info("POST /manage-friends (reject)");
 
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         User rejectedUser = userService.getUserByEmail(email);
 
         friendRequestService.rejectRequest(currentUser, rejectedUser);
@@ -199,7 +198,7 @@ public class ManageFriendsController {
             return "redirect:/manage-friends";
         }
 
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         User acceptedFriend = userService.getUserByEmail(email);
 
         // Remove the request from the database, notice the order of the params
@@ -238,7 +237,7 @@ public class ManageFriendsController {
     private String handleRemoveRequest(String email, Model model) {
         logger.info("POST /manage-friends (remove)");
 
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         User friendToRemove = userService.getUserByEmail(email);
         UserRelationship relationship;
         if (userRelationshipService.getRelationship(currentUser, friendToRemove) != null) {

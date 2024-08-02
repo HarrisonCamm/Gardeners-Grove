@@ -47,6 +47,12 @@
                                                         <button type="button" th:attr="onclick=|toggleRemoveFriend('${stat.index}')|">Cancel</button>
                                                     </div>
                                                 </div>
+
+                                                <div class="buttons-right">
+                                                    <a th:href="@{'/view-gardens?id=' + ${friend.userId}}">
+                                                        <button type="button">View Gardens</button>
+                                                    </a>
+                                                </div>
                                             </div>
                                             <br/>
                                         </li>

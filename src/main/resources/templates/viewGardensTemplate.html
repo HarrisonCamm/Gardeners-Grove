@@ -20,7 +20,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="garden : ${gardens}">
+                        <tr th:each="garden : ${myGardens}">
                             <td>
                                 <a class="gardenLink" th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
                                     <span th:text="${#strings.abbreviate(garden.name,10)}"> Name </span>

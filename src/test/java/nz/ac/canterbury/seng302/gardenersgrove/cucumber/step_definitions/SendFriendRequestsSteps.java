@@ -59,7 +59,7 @@ public class SendFriendRequestsSteps {
     }
     @Given("I have no friends")
     public void i_have_no_friends() {
-        currentUser = userService.getAuthenicatedUser();
+        currentUser = userService.getAuthenticatedUser();
         currentUser.removeAllFriends();
         userService.updateUserFriends(currentUser);
         userRelationshipService.removeAll();
@@ -252,7 +252,7 @@ public class SendFriendRequestsSteps {
     @And("I have pending invites from {string}")
     public void i_have_pending_invites_from(String email) {
         friend = userService.getUserByEmail(email);
-        currentUser = userService.getAuthenicatedUser();
+        currentUser = userService.getAuthenticatedUser();
         FriendRequest friendRequest = new FriendRequest(friend, currentUser);
         friendRequestService.save(friendRequest);
 
@@ -273,7 +273,7 @@ public class SendFriendRequestsSteps {
 //    AC 8
     @Then("that person is added to my list of friends")
     public void that_person_is_added_to_my_list_of_friends() {
-        currentUser = userService.getAuthenicatedUser();
+        currentUser = userService.getAuthenticatedUser();
         List<User> friends = currentUser.getFriends();
         Assertions.assertTrue(friends.stream().anyMatch(friendCheck -> userService.areUsersEqual(friendCheck, friend)));
     }
@@ -293,7 +293,7 @@ public class SendFriendRequestsSteps {
 //    AC 8
     @And("I am added to that person’s friends list")
     public void i_am_added_to_that_persons_friends_list() {
-        currentUser = userService.getAuthenicatedUser();
+        currentUser = userService.getAuthenticatedUser();
         friend = userService.getUserByEmail(friend.getEmail());
         List<User> friends = friend.getFriends();
         Assertions.assertTrue(friends.stream().anyMatch(friendCheck -> userService.areUsersEqual(friendCheck, currentUser)));
@@ -330,7 +330,7 @@ public class SendFriendRequestsSteps {
 //    AC 9
     @Then("that person is not added to my list of friends")
     public void that_person_is_not_added_to_my_list_of_friends() {
-        currentUser = userService.getAuthenicatedUser();
+        currentUser = userService.getAuthenticatedUser();
         List<User> friends = currentUser.getFriends();
         Assertions.assertFalse(friends.stream().anyMatch(friendCheck -> userService.areUsersEqual(friendCheck, friend)));
     }
