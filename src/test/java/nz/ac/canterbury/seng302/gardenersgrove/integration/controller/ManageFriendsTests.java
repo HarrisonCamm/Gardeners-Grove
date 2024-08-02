@@ -154,7 +154,7 @@ public class ManageFriendsTests {
                 .andExpect(view().name("redirect:/manage-friends"));
 
 
-        assertTrue(userService.getAuthenicatedUser().getFriends().isEmpty());
+        assertTrue(userService.getAuthenticatedUser().getFriends().isEmpty());
 
     }
 }
