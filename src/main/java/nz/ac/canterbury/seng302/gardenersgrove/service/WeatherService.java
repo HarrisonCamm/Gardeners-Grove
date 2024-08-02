@@ -92,7 +92,7 @@ public class WeatherService {
         String location = buildLocationString(city, country);
         String url = String.format(HISTORIC_WEATHER_URL, location, startEpoch, apiKey);     //No api url value used here as historic weather has diff url: https://history.openweathermap.org/data/2.5/
 
-        return queryHasrained(url);
+        return queryHasRained(url);
     }
 
     private long getStartOfDayTwoDaysAgoEpoch() {
@@ -102,7 +102,7 @@ public class WeatherService {
         return startOfDayTwoDaysAgo.toEpochSecond();
     }
 
-    private Boolean queryHasrained(String url) {
+    private Boolean queryHasRained(String url) {
         try {
             String response = restTemplate.getForObject(url, String.class);
             logger.info("API Response: " + response);
