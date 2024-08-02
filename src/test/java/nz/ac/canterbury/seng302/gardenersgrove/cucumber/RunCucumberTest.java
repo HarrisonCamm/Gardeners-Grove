@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.gardenersgrove.cucumber;
 
 import io.cucumber.junit.platform.engine.Constants;
 import nz.ac.canterbury.seng302.gardenersgrove.GardenersGroveApplication;
-import nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions.AddTagSteps;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ModerationService;
 import org.junit.platform.suite.api.*;
 import io.cucumber.spring.CucumberContextConfiguration;
@@ -22,9 +21,11 @@ import static org.mockito.Mockito.when;
 @SelectClasspathResource("nz/ac/canterbury/seng302/gardenersgrove/cucumber")
 @ConfigurationParameters({
         @ConfigurationParameter(key = Constants.GLUE_PROPERTY_NAME, value = "nz.ac.canterbury.seng302.gardenersgrove.cucumber"),
-        @ConfigurationParameter(key = Constants.PLUGIN_PROPERTY_NAME, value = "pretty, html:target/cucumber-report/cucumber.html")
+        @ConfigurationParameter(key = Constants.PLUGIN_PROPERTY_NAME, value = "pretty, html:target/cucumber-report/cucumber.html"),
+        @ConfigurationParameter(key = Constants.PLUGIN_PUBLISH_QUIET_PROPERTY_NAME, value = "true")
 })
-@ContextConfiguration(classes = CucumberSpringConfiguration.class)
+@ContextConfiguration(classes = GardenersGroveApplication.class)
+@CucumberContextConfiguration
 @SpringBootTest
 @ActiveProfiles("cucumber")
 @AutoConfigureMockMvc
@@ -32,10 +33,10 @@ import static org.mockito.Mockito.when;
 // Permanent moderation api mock
 @MockBean(ModerationService.class)
 
-public class RunCucumberIntegrationTest {
+public class RunCucumberTest {
 
     @Autowired
-    public RunCucumberIntegrationTest(ModerationService moderationService)  {
+    public RunCucumberTest(ModerationService moderationService)  {
         /*
          This constructor is run before every FEATURE, use it to set up mocks with their default behaviour.
          While the behaviour of the mocks can be adapted per test (see MockConfigurationSteps), creating the mocks

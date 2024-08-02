@@ -13,10 +13,10 @@ import com.microsoft.azure.cognitiveservices.vision.contentmoderator.models.*;
 
 @Service
 public class ModerationService {
-    @Value("${azure.api.key}")
+    @Value("${azure.api.key:#{null}}")
     private String moderatorApiKey;
 
-    @Value("${azure.api.url}")
+    @Value("${azure.api.url:#{null}}")
     private String moderatorApiUrl;
 
     private static final Logger logger = LoggerFactory.getLogger(ModerationService.class);
@@ -38,8 +38,6 @@ public class ModerationService {
      * @return JSON string containing detected terms if any inappropriate content is found, "null" otherwise.
      */
     public String moderateText(String line) {
-        logger.info("MODERATE TEXT");
-
         try {
             // Re-authenticate the client
             client = ContentModeratorManager.authenticate(AzureRegionBaseUrl.fromString(moderatorApiUrl), moderatorApiKey);
@@ -51,21 +49,12 @@ public class ModerationService {
 
             if (!line.isEmpty()) {
                 textResults = client.textModerations().screenText("text/plain", line.getBytes(), null);
-                // Uncomment below line to print in console
-                logger.info(objectMapper.writeValueAsString(textResults));
             }
 
             // Check for evaluation error AC3
             if (textResults.status().code().equals("3000")) {
                 return "evaluation_error";
             }
-
-            // Log moderation status and terms
-            logger.info("Text moderation status: " + textResults.status().description());
-            // todo fix this to retrieve the classification
-//            logger.info(textResults.classification().toString());
-            logger.info("Text moderation terms: " + objectMapper.writeValueAsString(textResults.terms()));
-
             return objectMapper.writeValueAsString(textResults.terms());
 
         } catch (Exception e) {

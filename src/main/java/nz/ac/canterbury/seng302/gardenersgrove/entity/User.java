@@ -36,7 +36,7 @@ public class User {
     @Column(name = "dateOfBirth")
     private String dateOfBirth;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "User_Friends",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -215,6 +215,10 @@ public class User {
 
         friends.removeIf(friend -> friend.equals(friendToRemove));
 
+    }
+
+    public void removeAllFriends() {
+        friends.clear();
     }
 
     public List<User> getFriends() {

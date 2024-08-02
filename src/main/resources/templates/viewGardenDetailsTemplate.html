@@ -3,10 +3,11 @@
     <!-- Head fragment holding all the style sheets-->
     <head th:replace="fragments/head :: head(title='View Garden')"> </head>
     <body>
+        <!-- NavBar Fragment -->
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 
         <div class="wrapper">
-            <!-- Garden Side Navigation Bar Fragment -->
+            <!-- SideNav Fragment -->
             <div th:insert="~{fragments/sideBar.html :: sideBar}"></div>
 
             <!-- View Garden Page Content -->
@@ -17,7 +18,7 @@
                             <h3 th:text="${gardenName}">  </h3>
                         </div>
                     </div>
-                    <div class="row mb-3">
+                    <div class="row p-5">
                         <div class="col">
                             <h3 th:text="${gardenLocation}">  </h3>
                         </div>
@@ -27,6 +28,35 @@
                             <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
                         </div>
                     </div>
+            </div>
+                    <!-- Weather Section -->
+                    <div class="container-fluid " th:if="${forecastResponse != null}">
+                        <div class="row p-5 overflow-scroll">
+                            <div class="col py-2" th:each="weatherResponse, iterStat: ${forecastResponse.weatherResponses}">
+                                <div class="container bg-success bg-gradient shadow rounded-4 p-4 z-3 position-relative">
+                                    <div th:if="${weatherResponse != null}">
+                                          <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-secondary" th:if="${iterStat.first}">
+                                            Today
+                                          </span>
+                                        <h4><strong> <span th:text="${weatherResponse.dayOfWeek}"></span></strong></h4>
+                                        <p><span th:text="${weatherResponse.date}"></span></p>
+                                        <p><span th:text="${weatherResponse.description}"></span></p>
+                                        <p><span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
+                                        <p>Humidity: <span th:text="${weatherResponse.humidity}"></span>%</p>
+
+                                        <div class="z-2 position-absolute top-0 end-0">
+                                            <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" class="img-fluid w-200" alt="Weather Icon" />
+                                        </div>
+                                    </div>
+                                    <div th:if="${weatherResponse == null}" class="error-message">
+                                        <p>Location not found, please update your location to see the weather</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                <div class="gardenContainer">
                     <div class="row mb-3" th:if="${gardenTags != null and gardenTags.size() > 0}">
                         <div class="col d-flex flex-wrap">
                             <th:block th:each="tag : ${gardenTags}">
@@ -92,7 +122,7 @@
                                         <div class="image-upload">
                                             <img class="image-small"
                                                  th:id="${plant.id}" th:data-plant-id="${plant.id}"
-                                                 th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
+                                                 th:src="@{/get-image?view-garden=true(plantID = ${plant.id})}" alt="">
                                             <input th:value="imagePath" class="file-input" type="file" name="file" id="file">
                                             <button class="image-picker-small" th:image-button-id="${plant.id}">+</button>
                                         </div>
@@ -111,27 +141,9 @@
                         </tbody>
                     </table>
                 </div>
-
-                <!-- Weather Section -->
-                <div class="wrapper">
-                    <div class="weatherResponse-info">
-                        <div th:if="${weatherResponse != null}">
-                        <h2>Current Weather</h2>
-                            <p><strong>Day of Week:</strong> <span th:text="${weatherResponse.dayOfWeek}"></span></p>
-                            <p><strong>Date:</strong> <span th:text="${weatherResponse.date}"></span></p>
-                            <p><strong>Description:</strong> <span th:text="${weatherResponse.description}"></span></p>
-                            <p><strong>Temperature:</strong> <span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
-                            <p><strong>Humidity:</strong> <span th:text="${weatherResponse.humidity}"></span>%</p>
-                            <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" alt="Weather Icon"/>
-                        </div>
-                        <div th:if="${weatherResponse == null}">
-                            <p>Weather data is not available.</p>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
+        <!-- Scripts fragment, contains bootstrap scripts -->
         <div th:replace="~{fragments/scripts :: scripts}"></div>
     </body>
 </html>
