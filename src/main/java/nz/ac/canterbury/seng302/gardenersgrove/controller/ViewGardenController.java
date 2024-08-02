@@ -185,7 +185,14 @@ public class ViewGardenController {
                 // Location present, get weather
                 ForecastResponse forecastResponse = weatherService.getForecastWeather(gardenCity, gardenCountry); // Get forecast
                 WeatherResponse currentWeather = weatherService.getCurrentWeather(gardenCity, gardenCountry); // Get current weather
+                Boolean hasRained = weatherService.hasRained(gardenCity, gardenCountry); // Get hasRained
 
+                // Check if hasRained check was successful
+                if (hasRained == null) {
+                    model.addAttribute("weatherErrorMessage", "Historic weather data not available, no watering reminder available");
+                } else {
+                    model.addAttribute("hasRained", hasRained);
+                }
                 // If forecastResponse is null, because API does not find weather at that location
                 if (forecastResponse == null) {
                     model.addAttribute("weatherErrorMessage", "Weather data not available, please update your location to see the weather");

@@ -22,10 +22,12 @@ public class WeatherServiceTests {
     private WeatherService weatherService;
     private static String curWeatherJsonString;
     private static String forecastWeatherJsonString;
+    private static String historicWeatherJsonString;
+    private static String historicWeatherNoRainJsonString;
+    private static String jsonNullCityResponse;
 
     private static final RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
 
-    private static String jsonNullCityResponse;
 
 
 
@@ -35,6 +37,8 @@ public class WeatherServiceTests {
         curWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/currentWeather.json"));
         forecastWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/forecast.json"));
         jsonNullCityResponse = Files.readString(Paths.get("src/test/resources/json/invalidCityWeatherResponse.json"));
+        historicWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/historicWeather.json"));
+        historicWeatherNoRainJsonString = Files.readString(Paths.get("src/test/resources/json/historicWeatherNoRain.json"));
 
     }
 
@@ -70,6 +74,58 @@ public class WeatherServiceTests {
     public void NullEmptyCountry_GetCurrentWeather_ReturnsWeatherResponse(String country) {
         WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather("Auckland", country);
         Assertions.assertNotNull(weatherServiceResponse);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", " "})
+    @NullAndEmptySource
+    public void NullEmptyCity_HasRained_ReturnsNull(String city) {
+        Boolean hasRained = weatherService.hasRained(city, "New Zealand");
+        Assertions.assertNull(hasRained);
+    }
+
+    @Test
+    public void ValidCity_NoRainDetected_ReturnsFalse() {
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(historicWeatherNoRainJsonString);
+
+        Boolean hasRained = weatherService.hasRained("Auckland", "New Zealand");
+        Assertions.assertFalse(hasRained);
+    }
+
+    @Test
+    public void ValidCity_RainDetected_ReturnsTrie() {
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(historicWeatherJsonString);
+
+        Boolean hasRained = weatherService.hasRained("Auckland", "New Zealand");
+        Assertions.assertTrue(hasRained);
+    }
+
+    @Test
+    public void InvalidCity_HasRained_ReturnsNull() {
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(jsonNullCityResponse);
+
+        Boolean hasRained = weatherService.hasRained("InvalidCity", "New Zealand");
+        Assertions.assertNull(hasRained);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", " "})
+    @NullAndEmptySource
+    public void NullEmptyCountry_HasRained_ReturnsBoolean(String country) {
+        String rainResponse = "{\"weather\": [{\"main\": \"Rain\"}]}";
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(rainResponse);
+
+        Boolean hasRained = weatherService.hasRained("Auckland", country);
+        Assertions.assertTrue(hasRained); // Assume true based on response
+    }
+
+    @Test
+    public void ApiCallFailure_HasRained_ReturnsNull() {
+        Mockito.when(restTemplate.getForObject(any(String.class), any()))
+                .thenThrow(new RuntimeException("API call failed"));
+
+        Boolean hasRained = weatherService.hasRained("Auckland", "New Zealand");
+        Assertions.assertNull(hasRained);
     }
 
     @Test
