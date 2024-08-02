@@ -19,6 +19,10 @@ public class WeatherResponse {
     private MainInfo mainInfo;
 
     @JsonDeserialize
+    @JsonProperty("temp")
+    private ForecastTemp forecastTemp;
+
+    @JsonDeserialize
     @JsonProperty("dt")
     private Long date;
 
@@ -30,12 +34,27 @@ public class WeatherResponse {
     @JsonProperty("cod")
     private int cod;
 
+    //Used for forecast json as it doesn't have humidity nested
+    @JsonDeserialize
+    @JsonProperty("humidity")
+    public int humidity;
+
     public double getTemperature() {
-        return mainInfo != null ? mainInfo.temperature : 0.0;
+        if (mainInfo != null) {
+            return mainInfo.temperature;
+        } else if (forecastTemp != null) {
+            return forecastTemp.temp;
+        } else {
+            return -273.15;     //Absolute zero should be convincing enough
+        }
     }
 
     public int getHumidity() {
-        return mainInfo != null ? mainInfo.humidity : 0;
+        if (mainInfo != null) {
+            return mainInfo.humidity;
+        } else {
+            return humidity;
+        }
     }
 
     public String getWeatherDescription() {
@@ -105,4 +124,19 @@ public class WeatherResponse {
             // no-args jackson constructor
         }
     }
+
+    //Used for forecast json as it has temp nested
+    @JsonDeserialize
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class ForecastTemp {
+
+        @JsonProperty("day")
+        public double temp;
+
+        public ForecastTemp() {
+            // no-args jackson constructor
+        }
+    }
+
+
 }

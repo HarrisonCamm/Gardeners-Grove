@@ -197,7 +197,9 @@ public class ManageFriendsController {
         User acceptedFriend = userService.getUserByEmail(email);
 
         // Remove the request from the database, notice the order of the params
+        // Removes duplicate requests.
         friendRequestService.cancelRequest(acceptedFriend, currentUser);
+        friendRequestService.cancelRequest(currentUser, acceptedFriend);
 
 
         UserRelationship relationship = userRelationshipService.getRelationship(acceptedFriend, currentUser);

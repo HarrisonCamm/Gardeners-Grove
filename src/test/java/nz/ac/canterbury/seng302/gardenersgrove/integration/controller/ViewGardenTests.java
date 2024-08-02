@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,12 +26,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 @WebMvcTest
 public class ViewGardenTests {
@@ -80,15 +81,24 @@ public class ViewGardenTests {
     @MockBean
     private UserRelationshipService userRelationshipService;
 
-    private static User testUser;
     @MockBean
     private WeatherService weatherService;
+
+    @MockBean
+    private ModerationService moderationService;
+
+    private User testUser;
 
     @BeforeEach
     public void setUp() {
         testUser = new User("user@email.com", "User", "Name", "password");
-//        testUser.setUserId(1L);
         when(userService.getAuthenicatedUser()).thenReturn(testUser);
+
+        // Mock successful moderation
+        when(moderationService.moderateText(anyString())).thenReturn("null");
+
+        // Mock unsuccessful moderation (profanity detected)
+        when(moderationService.moderateText(eq("InappropriateTag"))).thenReturn("[{\"term\":\"InappropriateTerm\"}]");
     }
 
 
@@ -147,7 +157,9 @@ public class ViewGardenTests {
                         .with(csrf())
                         .param("gardenID", "1")
                         .param("tag", tag))
-                .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
+                        .andExpect(status().is3xxRedirection())
+                        // Check that page redirects to a view garden of ANY number
+                        .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
 
         verify(tagService).addTag(any(Tag.class));
     }
