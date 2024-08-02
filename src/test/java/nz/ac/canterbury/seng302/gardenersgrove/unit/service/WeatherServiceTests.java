@@ -25,12 +25,17 @@ public class WeatherServiceTests {
 
     private static final RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
 
+    private static String jsonNullCityResponse;
+
+
 
     @BeforeAll
     static public void  jsonSetup() throws Exception {
         //read json example file
         curWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/currentWeather.json"));
         forecastWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/forecast.json"));
+        jsonNullCityResponse = Files.readString(Paths.get("src/test/resources/json/invalidCityWeatherResponse.json"));
+
     }
 
     @BeforeEach
@@ -46,6 +51,14 @@ public class WeatherServiceTests {
     @ValueSource(strings = {"", " "})
     @NullAndEmptySource
     public void NullEmptyCity_GetCurrentWeather_ReturnsNull(String city) {
+        WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather(city, "New Zealand");
+        Assertions.assertNull(weatherServiceResponse);
+    }
+
+    @ParameterizedTest()
+    @ValueSource(strings = {"chch", "Welly", "Akl", "'", "otautahi"})
+    public void InvalidCity_GetCurrentWeather_ReturnsNull(String city) {
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(jsonNullCityResponse);
         WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather(city, "New Zealand");
         Assertions.assertNull(weatherServiceResponse);
     }

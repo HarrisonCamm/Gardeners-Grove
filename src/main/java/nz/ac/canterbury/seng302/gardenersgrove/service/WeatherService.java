@@ -77,6 +77,10 @@ public class WeatherService {
     private <T> T fetchData(String url, Class<T> responseType) {
         try {
             String response = restTemplate.getForObject(url, String.class);
+            logger.info("API Response: " + response);
+            if (response.contains("not found")) {
+                return null;
+            }
             return parseJson(response, responseType);
         } catch (Exception e) {
             logger.error("Failed to fetch data from {}. Cause: {}", url, e.getMessage());

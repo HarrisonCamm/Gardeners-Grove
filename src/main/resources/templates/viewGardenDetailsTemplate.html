@@ -41,8 +41,8 @@
                     <div class="container-fluid " th:if="${forecastResponse != null}">
                         <div class="row p-5 overflow-scroll">
                             <div class="col py-2" th:each="weatherResponse, iterStat: ${forecastResponse.weatherResponses}">
-                                <div class="container bg-success bg-gradient shadow rounded-4 p-4 z-3 position-relative">
-                                    <div th:if="${weatherResponse != null}">
+                                <div th:if="${weatherResponse != null}">
+                                    <div class="container bg-success bg-gradient shadow rounded-4 p-4 z-3 position-relative">
                                           <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-secondary" th:if="${iterStat.first}">
                                             Today
                                           </span>
@@ -56,11 +56,14 @@
                                             <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" class="img-fluid w-200" alt="Weather Icon" />
                                         </div>
                                     </div>
-                                    <div th:if="${weatherResponse == null}" class="error-message">
-                                        <p>Location not found, please update your location to see the weather</p>
-                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <!-- Weather Location message -->
+                    <div th:if="${weatherErrorMessage}" style="background-color: rgb(255, 31, 31, 0.5)" class="container bg-gradient shadow rounded-4 p-4 z-3 position-relative">
+                        <div>
+                            <p th:text="${weatherErrorMessage}"></p>
                         </div>
                     </div>
 
