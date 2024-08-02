@@ -52,7 +52,7 @@ public class UserProfileController {
     @GetMapping("/view-user-profile")
     public String getTemplate(HttpSession session, Model model) {
         RedirectService.addEndpoint("/view-user-profile");
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
 
         logger.info("User retrieved from session: " + currentUser);
 

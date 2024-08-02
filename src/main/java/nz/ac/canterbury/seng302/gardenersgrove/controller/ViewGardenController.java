@@ -62,7 +62,7 @@ public class ViewGardenController {
         session.removeAttribute("imageFile");
 
         Optional<Garden> garden = gardenService.findGarden(gardenID);
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         if (garden.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!garden.get().getOwner().equals(currentUser))
@@ -91,7 +91,7 @@ public class ViewGardenController {
         logger.info("POST /view-garden");
 
         Optional<Garden> garden = gardenService.findGarden(gardenID);
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         if (garden.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!garden.get().getOwner().equals(currentUser))
@@ -127,7 +127,7 @@ public class ViewGardenController {
         logger.info("POST /add-tag");
 
         Optional<Garden> garden = gardenService.findGarden(gardenID);
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         if (garden.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!garden.get().getOwner().equals(currentUser))
