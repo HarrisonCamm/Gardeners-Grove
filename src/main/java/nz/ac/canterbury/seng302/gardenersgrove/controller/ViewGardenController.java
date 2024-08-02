@@ -159,8 +159,7 @@ public class ViewGardenController {
             addAttributes(currentUser, gardenID, model, plantService, gardenService);
 
             // Get weather information
-            WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
-            model.addAttribute("weatherResponse", weatherResponse);
+            // UPDATE now is done in the add attributes method
 
             // Show error
             model.addAttribute("tagError", "Profanity or inappropriate language detected");
@@ -176,12 +175,13 @@ public class ViewGardenController {
 
             // Add tag to garden
             gardenService.addTagToGarden(gardenID, addedTag);
-    }
+        }
         // Add attributes
         addAttributes(currentUser, gardenID, model, plantService, gardenService);
 
         // Return user to page
         return "redirect:/view-garden?gardenID=" + gardenID;
+    }
 
     private void addAttributes(User owner, Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
         List<Plant> plants = plantService.getGardenPlant(gardenID);
