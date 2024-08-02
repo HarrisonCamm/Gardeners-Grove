@@ -68,9 +68,8 @@ public class ViewGardenController {
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
-        // New Code Added to get weather
-        WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
-        model.addAttribute("weatherResponse", weatherResponse);
+
+
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService);
         return "viewGardenDetailsTemplate";
@@ -118,7 +117,7 @@ public class ViewGardenController {
         }
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService);
-        return "redirect:/view-garden?gardenID=" + gardenID; // Decide the view to return here
+        return "redirect:/view-garden?gardenID=" + gardenID;
     }
 
     @PostMapping("/add-tag")
@@ -139,6 +138,13 @@ public class ViewGardenController {
         List<Tag> allTags = tagService.getTags();
         Tag addedTag;
         if (!possibleTerms.equals("null")) {
+            // Add attributes and return the same view
+            addAttributes(currentUser, gardenID, model, plantService, gardenService);
+
+            // Get weather information
+            WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+            model.addAttribute("weatherResponse", weatherResponse);
+
             // Show error
             model.addAttribute("tagError", "Profanity or inappropriate language detected");
             // Add attributes and return the same view
@@ -182,6 +188,15 @@ public class ViewGardenController {
             model.addAttribute("gardenSize", garden.get().getSize());
             model.addAttribute("gardenTags", gardenService.getTags(gardenID));
             model.addAttribute("allTags", tagService.getTags());
+
+
+            //New Code Added to get weather
+            String gardenCity = garden.get().getLocation().getCity();
+            String gardenCountry = garden.get().getLocation().getCountry();
+            ForecastResponse forecastResponse = weatherService.getForecastWeather(gardenCity, gardenCountry);       //Get forecast
+            WeatherResponse currentWeather = weatherService.getCurrentWeather(gardenCity, gardenCountry);       //Get current weather
+            if (currentWeather != null) forecastResponse.addWeatherResponse(currentWeather);                    //Add current weather to forecast
+            model.addAttribute("forecastResponse", forecastResponse);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " does not exist");
         }

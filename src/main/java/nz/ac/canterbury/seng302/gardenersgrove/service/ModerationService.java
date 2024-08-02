@@ -13,10 +13,10 @@ import com.microsoft.azure.cognitiveservices.vision.contentmoderator.models.*;
 
 @Service
 public class ModerationService {
-    @Value("${azure.api.key}")
+    @Value("${azure.api.key:#{null}}")
     private String moderatorApiKey;
 
-    @Value("${azure.api.url}")
+    @Value("${azure.api.url:#{null}}")
     private String moderatorApiUrl;
 
     private static final Logger logger = LoggerFactory.getLogger(ModerationService.class);
