@@ -11,12 +11,3 @@ function toggleWaterAlert() {
 //TODO: Find a way to pass an id to an alertFragment so we can reuse it
 // and not have to use two copies of essentially the same fragment
 
-
-
-// function toggleAlert(id) {
-//     console.log(`ID is ${id}`);
-//     const alertElement = document.getElementById(id);
-//     if (alertElement) {
-//         alertElement.hidden = !alertElement.hidden;
-//     }
-// }
