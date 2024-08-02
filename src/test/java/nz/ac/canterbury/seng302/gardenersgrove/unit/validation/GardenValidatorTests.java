@@ -105,5 +105,15 @@ public class GardenValidatorTests {
         assertNotNull(objectError);
     }
 
+    @ParameterizedTest
+    @CsvSource({"sfcrtrbunrjqdpqsqdcfnunpzmatzvqwlhmouukyjzymuydxkmqzflupmqtypiupgupetidvkicweljpzlkufqgerlapwkuhl" +
+            "uvsmbptsdyvdgpoxvkrbaaelpfnmdgtlwkyuigtqnciuzzviobgeisyeqgtdiumxwumgtuhwlnkdtgpfvbpzugncscningysdlauvf" +
+            "vdrbhgwwhbstpabjddabjibvsrjkrgbjeyqvzlrzyxvcinjyglesyucft"})
+    public void ValidatingGardenLocation_CountryLength_Invalid(String country) {
+        ObjectError objectError = LocationValidator.validateCity(country);
+        assertNotNull(objectError);
+    }
+
+
 
 }
