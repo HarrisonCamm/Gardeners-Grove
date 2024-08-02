@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import static nz.ac.canterbury.seng302.gardenersgrove.validation.TagValidator.*;
 
 @Controller
 public class ViewGardenController {
@@ -132,28 +133,25 @@ public class ViewGardenController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
-
-        // Moderate the tag before adding
-        String possibleTerms = moderationService.moderateText(tag);
-        List<Tag> allTags = tagService.getTags();
-        Tag addedTag;
+        // Get weather information
+        WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+        model.addAttribute("weatherResponse", weatherResponse);
         if (tag.isEmpty()) {
             return "redirect:/view-garden?gardenID=" + gardenID;
         }
-        if (!possibleTerms.equals("null")) {
-            // Add attributes and return the same view
-            addAttributes(currentUser, gardenID, model, plantService, gardenService);
 
-            // Get weather information
-            WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
-            model.addAttribute("weatherResponse", weatherResponse);
+        // Moderate the tag before adding
+        String possibleTerms = moderationService.moderateText(tag);
+        doTagValidations(model, tag, possibleTerms);
 
-            // Show error
-            model.addAttribute("tagError", "Profanity or inappropriate language detected");
-            // Add attributes and return the same view
+        if (model.containsAttribute("tagTextError") || model.containsAttribute("tagLengthError")
+                || model.containsAttribute("profanityTagError") ) {
             addAttributes(currentUser, gardenID, model, plantService, gardenService);
             return "viewGardenDetailsTemplate";
         }
+
+        List<Tag> allTags = tagService.getTags();
+        Tag addedTag;
         if (!allTags.stream().anyMatch(existingTag -> existingTag.getName().equals(tag))) {
             addedTag = tagService.addTag(new Tag(tag));
         } else {
@@ -163,13 +161,14 @@ public class ViewGardenController {
         List<Tag> gardenTags = gardenService.getTags(gardenID);
         Tag finalAddedTag = addedTag;
         if (!gardenTags.stream().anyMatch(existingTag -> existingTag.equals(finalAddedTag))) {
+            // Add tag to the database and add the tag to the garden's list of tags
             gardenService.addTagToGarden(gardenID, addedTag);
         } else {
             model.addAttribute("duplicateTagError", "Tag is already defined");
             addAttributes(currentUser, gardenID, model, plantService, gardenService);
             return "viewGardenDetailsTemplate";
         }
-        // Add tag to the database and add the tag to the garden's list of tags
+
 
         // Return user to page
         return "redirect:/view-garden?gardenID=" + gardenID;
