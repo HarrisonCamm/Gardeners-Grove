@@ -82,7 +82,7 @@ public class AddTagSteps {
                 .param("size", "10")
                 .with(csrf())); // Add CSRF token
 
-        ArrayList<Garden> gardens = (ArrayList<Garden>) gardenService.getOwnedGardens(userService.getAuthenicatedUser().getUserId());
+        ArrayList<Garden> gardens = (ArrayList<Garden>) gardenService.getOwnedGardens(userService.getAuthenticatedUser().getUserId());
         ownedGarden1 = gardens.get(gardens.size() - 2);
         ownedGarden2 = gardens.get(gardens.size() - 1);
         assertNotNull(gardens);
