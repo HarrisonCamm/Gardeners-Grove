@@ -183,16 +183,31 @@ public class ViewGardenController {
             // Entered Location empty or null checks
             if (gardenCity != null && !gardenCity.isEmpty() && gardenCountry != null && !gardenCountry.isEmpty()) {
                 // Location present, get weather
-                ForecastResponse forecastResponse = weatherService.getForecastWeather(gardenCity, gardenCountry); // Get forecast
-                WeatherResponse currentWeather = weatherService.getCurrentWeather(gardenCity, gardenCountry); // Get current weather
-                Boolean hasRained = weatherService.hasRained(gardenCity, gardenCountry); // Get hasRained
+                // Get forecasted weather for current location
+                ForecastResponse forecastResponse = weatherService.getForecastWeather(gardenCity, gardenCountry);
+                // Get current weather for this location
+                WeatherResponse currentWeather = weatherService.getCurrentWeather(gardenCity, gardenCountry);
+                // Check if there has been rain in the past two days
+                Boolean hasRained = weatherService.hasRained(gardenCity, gardenCountry);
+                // Check if it is currently raining
+                Boolean isRaining = weatherService.isRaining(gardenCity, gardenCountry);
 
-                // Check if hasRained check was successful
+                // Check that hasRained is successful
                 if (hasRained == null) {
                     model.addAttribute("weatherErrorMessage", "Historic weather data not available, no watering reminder available");
-                } else {
-                    model.addAttribute("hasRained", hasRained);
-                }
+                } else if (!hasRained) {
+                    // It hasn't rained in the past two days
+                    model.addAttribute("hasNotRainedAlert", "There hasn’t been any rain recently, make sure to water your plants if they need it");
+                } // Otherwise, it has rained in the past two days, no need to display anything
+
+                // Check that isRaining is successful
+                if (isRaining == null) {
+                    model.addAttribute("weatherErrorMessage", "Historic weather data not available, no watering reminder available");
+                } else if (isRaining) {
+                    // It is currently raining
+                    model.addAttribute("isRainingAlert", "Outdoor plants don’t need any water today");
+                } // Otherwise, it is not raining, no need to display anything
+
                 // If forecastResponse is null, because API does not find weather at that location
                 if (forecastResponse == null) {
                     model.addAttribute("weatherErrorMessage", "Weather data not available, please update your location to see the weather");

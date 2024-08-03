@@ -78,10 +78,26 @@ public class WeatherService {
     }
 
     /**
+     * Returns true if it is currently raining for the current location
+     * @param city  String if the city name to check must be valid
+     * @param country   String of the country name to check (must be full name)
+     *                  Will default to Openweathermap.com default country if invalid
+     * @return  Boolean of true if it is currently raining, false if it is not raining
+     */
+    public Boolean isRaining(String city, String country) {
+        if (city == null || city.isBlank()) return null;
+
+        String location = buildLocationString(city, country);
+        String url = String.format(CUR_WEATHER_URL, apiUrl, location, apiKey);
+
+        return queryHasRained(url);
+    }
+
+    /**
      * Returns true if it has rained in the last 2 days
      * @param city  String if the city name to check must be valid
      * @param country   String of the country name to check (must be full name)
- *                      Will default to Openweathermap.com default country if invalid
+     *                  Will default to Openweathermap.com default country if invalid
      * @return  Boolean of false if it has not rained in the last 2 days, true if it has rained
      */
     public Boolean hasRained(String city, String country) {

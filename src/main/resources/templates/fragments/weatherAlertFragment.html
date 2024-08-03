@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-</head>
 <body>
 <div th:fragment="alert(message, id)" class="weather-alert">
-    <div id="${id}" class="alert alert-danger alert-dismissible fade show element" role="alert">
+    <div th:id="${id}" class="alert alert-danger alert-dismissible fade show element" role="alert">
         <strong>Warning!</strong>
         <span th:text="${message}"></span>
         <button type="button" class="button" data-dismiss="alert" aria-label="Close" onclick="toggleWeatherAlert()">
@@ -12,8 +10,5 @@
         </button>
     </div>
 </div>
-<div th:replace="~{fragments/scripts :: scripts}"></div>
 </body>
 </html>
-
-

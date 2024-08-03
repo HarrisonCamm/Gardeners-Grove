@@ -12,12 +12,15 @@
 
             <!-- View Garden Page Content -->
             <div class="gardenContainer">
-                <!-- Include the alert fragments -->
-                <div th:if="${hasRained == false}">
-                    <div th:replace="~{fragments/weatherAlertFragment :: alert('There hasn\'t been any rain recently, make sure to water your plants if they need it.', 'alert1')}"></div>
+
+                <!-- Hasn't rained in past two-day, show a water plants alert message -->
+                <div th:if="${hasNotRainedAlert}">
+                    <div th:replace="~{fragments/weatherAlertFragment :: alert(message=${hasNotRainedAlert}, id='alert1')}"></div>
                 </div>
 
-                <div th:replace="~{fragments/waterAlertFragment :: alert('Outdoor plants don’t need any water today.', 'alert2')}">
+                <!-- Is currently raining, show a don't water plants alert message -->
+                <div th:if="${isRainingAlert}">
+                    <div th:replace="~{fragments/waterAlertFragment :: alert(message=${isRainingAlert}, id='alert2')}"></div>
                 </div>
 
 
