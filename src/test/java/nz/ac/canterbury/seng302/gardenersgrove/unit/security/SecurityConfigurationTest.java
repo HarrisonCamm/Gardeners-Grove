@@ -98,6 +98,9 @@ public class SecurityConfigurationTest {
     @MockBean
     private ModerationService moderationService;
 
+    @MockBean
+    private AlertService alertService;
+
     @BeforeEach
     void setUp() {
         // Create new user

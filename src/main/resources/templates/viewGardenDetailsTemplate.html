@@ -13,14 +13,14 @@
             <!-- View Garden Page Content -->
             <div class="gardenContainer">
 
-                <!-- Hasn't rained in past two-day, show a water plants alert message -->
+                <!-- Hasn't rained in past two-day, show water plants alert message -->
                 <div th:if="${hasNotRainedAlert}">
-                    <div th:replace="~{fragments/alertFragment :: alert(message=${hasNotRainedAlert}, id='alert1', type='warning', title='Alert!')}"></div>
+                    <div th:replace="~{fragments/alertFragment :: alert(message=${hasNotRainedAlert}, id='hasNotRained', type='warning', title='Alert!', gardenID=${gardenID}, alertType='hasNotRained')}"></div>
                 </div>
 
-                <!-- Is currently raining, show a don't water plants alert message -->
+                <!-- Is currently raining, show a don't water plants warning message -->
                 <div th:if="${isRainingAlert}">
-                    <div th:replace="~{fragments/alertFragment :: alert(message=${isRainingAlert}, id='alert2', type='danger', title='Warning!')}"></div>
+                    <div th:replace="~{fragments/alertFragment :: alert(message=${isRainingAlert}, id='isRaining', type='danger', title='Warning!', gardenID=${gardenID}, alertType='isRaining')}"></div>
                 </div>
 
                 <div class="gardenDetails container">

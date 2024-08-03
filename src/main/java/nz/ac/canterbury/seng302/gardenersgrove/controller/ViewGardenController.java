@@ -30,12 +30,13 @@ public class ViewGardenController {
     private final WeatherService weatherService;
     private final TagService tagService;
     private final ModerationService moderationService;
+    private final AlertService alertService;
 
     @Autowired
     public ViewGardenController(GardenService gardenService, PlantService plantService,
                                 UserService userService, ImageService imageService,
                                 TagService tagService, WeatherService weatherService,
-                                ModerationService moderationService) {
+                                ModerationService moderationService, AlertService alertService) {
         this.gardenService = gardenService;
         this.plantService = plantService;
         this.userService = userService;
@@ -43,6 +44,7 @@ public class ViewGardenController {
         this.tagService = tagService;
         this.weatherService = weatherService;
         this.moderationService = moderationService;
+        this.alertService = alertService;
     }
 
     @GetMapping("/view-garden")
@@ -159,6 +161,22 @@ public class ViewGardenController {
         return "redirect:/view-garden?gardenID=" + gardenID;
     }
 
+    @PostMapping("/dismiss-alert")
+    public String dismissAlert(@RequestParam("alertType") String alertType,
+                               @RequestParam("gardenID") Long gardenID,
+                               HttpSession session) {
+        User currentUser = userService.getAuthenticatedUser();
+
+        Optional<Garden> garden = gardenService.findGarden(gardenID);
+        if (garden.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
+        }
+
+        alertService.dismissAlert(currentUser, garden.get(), alertType);
+
+        return "redirect:/view-garden?gardenID=" + gardenID;
+    }
+
     private void addAttributes(User owner, Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
         List<Plant> plants = plantService.getGardenPlant(gardenID);
         List<Garden> gardens = gardenService.getOwnedGardens(owner.getUserId());
@@ -174,7 +192,6 @@ public class ViewGardenController {
             model.addAttribute("gardenSize", garden.get().getSize());
             model.addAttribute("gardenTags", gardenService.getTags(gardenID));
             model.addAttribute("allTags", tagService.getTags());
-
 
             // New Code Added to get weather
             String gardenCity = garden.get().getLocation().getCity();
@@ -194,32 +211,36 @@ public class ViewGardenController {
 //                Boolean isRaining = weatherService.isRaining(gardenCity, gardenCountry);
                 Boolean isRaining = true;
 
-                // Check that hasRained is successful
-                if (hasRained == null) {
-                    model.addAttribute("weatherErrorMessage", "Historic weather data not available, no watering reminder available");
-                } else if (!hasRained) {
-                    // It hasn't rained in the past two days
-                    model.addAttribute("hasNotRainedAlert", "There hasn’t been any rain recently, make sure to water your plants if they need it");
-                } // Otherwise, it has rained in the past two days, no need to display anything
-
-                // Check that isRaining is successful
-                if (isRaining == null) {
-                    model.addAttribute("weatherErrorMessage", "Historic weather data not available, no watering reminder available");
-                } else if (isRaining) {
-                    // It is currently raining
-                    model.addAttribute("isRainingAlert", "Outdoor plants don’t need any water today");
-                } // Otherwise, it is not raining, no need to display anything
+                // Use the AlertService to determine if alerts should be displayed
+                boolean hasNotRainedDismissed = alertService.isAlertDismissed(owner, garden.get(), "hasNotRained");
+                boolean isRainingDismissed = alertService.isAlertDismissed(owner, garden.get(), "isRaining");
 
                 // If forecastResponse is null, because API does not find weather at that location
                 if (forecastResponse == null) {
                     model.addAttribute("weatherErrorMessage", "Weather data not available, please update your location to see the weather");
                 } else {
-                    // Null weather checks (for tests)
+                    // Null current weather check (for tests)
                     if (currentWeather != null) {
                         forecastResponse.addWeatherResponse(currentWeather);
                     }
-                    // Add both current and forecast weather
+                    // Add forecast weather which has the current weather added to it
                     model.addAttribute("forecastResponse", forecastResponse);
+
+                    // Check that hasRained is successful
+                    if (hasRained == null) {
+                        model.addAttribute("weatherErrorMessage", "Historic weather data not available, no watering reminder available");
+                    } else if (!hasRained && !hasNotRainedDismissed) {
+                        // It hasn't rained in the past two days, alert hasn't been dismissed, display water plants alert
+                        model.addAttribute("hasNotRainedAlert", "There hasn’t been any rain recently, make sure to water your plants if they need it");
+                    } // Otherwise, it has rained in the past two days, no need to display anything
+
+                    // Check that isRaining is successful
+                    if (isRaining == null) {
+                        model.addAttribute("weatherErrorMessage", "Current weather data not available, no watering reminder available");
+                    } else if (isRaining && !isRainingDismissed) {
+                        // It is currently raining, alert hasn't been dismissed, display water plants warning
+                        model.addAttribute("isRainingAlert", "Outdoor plants don’t need any water today");
+                    } // Otherwise, it is not raining, no need to display anything
                 }
             } else {
                 // Entered Location is empty or null

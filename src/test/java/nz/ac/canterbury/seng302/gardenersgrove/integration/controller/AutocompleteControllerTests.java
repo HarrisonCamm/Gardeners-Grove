@@ -89,6 +89,9 @@ public class AutocompleteControllerTests {
     @Mock
     Authentication authentication;
 
+    @MockBean
+    private AlertService alertService;
+
     AutocompleteController autocompleteController;
 
     @BeforeEach

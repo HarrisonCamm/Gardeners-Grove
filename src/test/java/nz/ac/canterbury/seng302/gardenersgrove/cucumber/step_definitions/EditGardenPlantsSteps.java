@@ -58,6 +58,9 @@ public class EditGardenPlantsSteps {
     @MockBean
     private static ModerationService moderationService;
 
+    @MockBean
+    private static AlertService alertService;
+
     private static Map<Long, Plant> mockPlantDB;
 
     private static Garden testGarden;
@@ -77,6 +80,7 @@ public class EditGardenPlantsSteps {
         tagService = Mockito.mock(TagService.class);
         weatherService = Mockito.mock(WeatherService.class);
         moderationService = Mockito.mock(ModerationService.class);
+        alertService = Mockito.mock(AlertService.class);
 
 
         if (mockPlantDB != null) {mockPlantDB.clear();} //Clear pseudo plant database in between examples
@@ -119,7 +123,7 @@ public class EditGardenPlantsSteps {
 
         //Create Controller objects for MockMVC pages
         EditPlantController EditPlantController = new EditPlantController(plantService, gardenService, userService, imageService);
-        ViewGardenController ViewGardenController = new ViewGardenController(gardenService, plantService, userService, imageService, tagService, weatherService, moderationService);
+        ViewGardenController ViewGardenController = new ViewGardenController(gardenService, plantService, userService, imageService, tagService, weatherService, moderationService, alertService);
 
         //Build MockMVC page
         mockMvcEditPlant = MockMvcBuilders.standaloneSetup(EditPlantController).build();
