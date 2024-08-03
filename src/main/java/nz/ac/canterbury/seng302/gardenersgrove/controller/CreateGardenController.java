@@ -58,7 +58,7 @@ public class CreateGardenController {
                        Model model) {
         logger.info("GET /create-garden");
 
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
 
         Location gardenLocation = new Location("", "", "", "", ""); //Bad code warning
         garden.setLocation(gardenLocation); //avoiding NullPointException
@@ -94,7 +94,7 @@ public class CreateGardenController {
                              Model model) {
         logger.info("POST /create-garden");
 
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         if (currentUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in");
         }
