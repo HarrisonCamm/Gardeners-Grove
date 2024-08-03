@@ -205,11 +205,9 @@ public class ViewGardenController {
                 // Get current weather for this location
                 WeatherResponse currentWeather = weatherService.getCurrentWeather(gardenCity, gardenCountry);
                 // Check if there has been rain in the past two days
-//                Boolean hasRained = weatherService.hasRained(gardenCity, gardenCountry);
-                Boolean hasRained = false;
+                Boolean hasRained = weatherService.hasRained(gardenCity, gardenCountry);
                 // Check if it is currently raining
-//                Boolean isRaining = weatherService.isRaining(gardenCity, gardenCountry);
-                Boolean isRaining = true;
+                Boolean isRaining = weatherService.isRaining(gardenCity, gardenCountry);
 
                 // Use the AlertService to determine if alerts should be displayed
                 boolean hasNotRainedDismissed = alertService.isAlertDismissed(owner, garden.get(), "hasNotRained");
