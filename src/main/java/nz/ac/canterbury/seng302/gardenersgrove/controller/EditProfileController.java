@@ -62,7 +62,7 @@ public class EditProfileController {
     public String form(HttpSession session, HttpServletRequest request, Model model) {
         logger.info("GET /edit-user-profile");
         RedirectService.addEndpoint("/edit-user-profile");
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
 
         addModelAttributes(model, currentUser, currentUser.getFirstName(), currentUser.getLastName(), currentUser.getNoLastName(),
                 currentUser.getEmail(), currentUser.getDateOfBirth(), false, true,
@@ -112,7 +112,7 @@ public class EditProfileController {
         firstName = formatName(firstName);
         lastName = formatName(lastName);
 
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
 
         logger.info("User retrieved from session: " + currentUser);
         // Format and convert the data of birth
@@ -182,7 +182,7 @@ public class EditProfileController {
         firstName = formatName(firstName);
         lastName = formatName(lastName);
 
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
 
         // Pre-populate the model with submitted values to persist them in case of an error
         addModelAttributes(model, currentUser, firstName, lastName, noLastName, email, dateOfBirth,
