@@ -127,7 +127,6 @@ button:hover, .button:hover {
     cursor: pointer;
 }
 
-
 .buttons-centre {
     display: flex;
     justify-content: flex-end;
@@ -590,6 +589,4 @@ hr {
         border-radius: 50%;
         font-size: 200%;
     }
-
 }
-
