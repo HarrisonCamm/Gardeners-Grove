@@ -15,7 +15,7 @@ public class TagValidator {
         return tag.length()<=25;
     }
 
-    private static boolean isAppropriateName(String possibleTerms) {
+    public static boolean isAppropriateName(String possibleTerms) {
         return possibleTerms.equals("null");
 
     }
