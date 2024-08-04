@@ -20,11 +20,11 @@ import static org.mockito.ArgumentMatchers.any;
 
 public class WeatherServiceTests {
     private WeatherService weatherService;
-    private static String curWeatherJsonString;
-    private static String forecastWeatherJsonString;
-    private static String historicWeatherJsonString;
-    private static String historicWeatherNoRainJsonString;
-    private static String jsonNullCityResponse;
+    private static String validCurWeatherJsonString;
+    private static String validForecastWeatherJsonString;
+    private static String validHistoricForcastWeatherJsonString;
+    private static String validHistoricForcastWeatherNoRainJsonString;
+    private static String invalidJsonNullCityResponse;
 
     private static final RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
 
@@ -34,12 +34,11 @@ public class WeatherServiceTests {
     @BeforeAll
     static public void  jsonSetup() throws Exception {
         //read json example file
-        curWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/currentWeather.json"));
-        forecastWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/forecast.json"));
-        jsonNullCityResponse = Files.readString(Paths.get("src/test/resources/json/invalidCityWeatherResponse.json"));
-        historicWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/historicWeather.json"));
-        historicWeatherNoRainJsonString = Files.readString(Paths.get("src/test/resources/json/historicWeatherNoRain.json"));
-
+        validCurWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/validCurrentWeather.json"));
+        validForecastWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/validForecast.json"));
+        invalidJsonNullCityResponse = Files.readString(Paths.get("src/test/resources/json/invalidCityForcastWeatherResponse.json"));
+        validHistoricForcastWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/validHistoricForcastWeather.json"));
+        validHistoricForcastWeatherNoRainJsonString = Files.readString(Paths.get("src/test/resources/json/validHistoricWeatherForcastNoRain.json"));
     }
 
     @BeforeEach
@@ -62,7 +61,7 @@ public class WeatherServiceTests {
     @ParameterizedTest()
     @ValueSource(strings = {"chch", "Welly", "Akl", "'", "otautahi"})
     public void InvalidCity_GetCurrentWeather_ReturnsNull(String city) {
-        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(jsonNullCityResponse);
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(invalidJsonNullCityResponse);
         WeatherResponse weatherServiceResponse = weatherService.getCurrentWeather(city, "New Zealand");
         Assertions.assertNull(weatherServiceResponse);
     }
@@ -86,7 +85,7 @@ public class WeatherServiceTests {
 
     @Test
     public void ValidCity_NoRainDetected_ReturnsFalse() {
-        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(historicWeatherNoRainJsonString);
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(validHistoricForcastWeatherNoRainJsonString);
 
         Boolean hasRained = weatherService.hasRained("Auckland", "New Zealand");
         Assertions.assertFalse(hasRained);
@@ -94,7 +93,7 @@ public class WeatherServiceTests {
 
     @Test
     public void ValidCity_RainDetected_ReturnsTrie() {
-        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(historicWeatherJsonString);
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(validHistoricForcastWeatherJsonString);
 
         Boolean hasRained = weatherService.hasRained("Auckland", "New Zealand");
         Assertions.assertTrue(hasRained);
@@ -102,7 +101,7 @@ public class WeatherServiceTests {
 
     @Test
     public void InvalidCity_HasRained_ReturnsNull() {
-        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(jsonNullCityResponse);
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(invalidJsonNullCityResponse);
 
         Boolean hasRained = weatherService.hasRained("InvalidCity", "New Zealand");
         Assertions.assertNull(hasRained);
@@ -112,7 +111,7 @@ public class WeatherServiceTests {
     @ValueSource(strings = {"", " "})
     @NullAndEmptySource
     public void NullEmptyCountry_HasRained_ReturnsBoolean(String country) {
-        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(historicWeatherJsonString);
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(validHistoricForcastWeatherJsonString);
 
         Boolean hasRained = weatherService.hasRained("Auckland", country);
         Assertions.assertTrue(hasRained); // Assume true based on response
@@ -130,7 +129,7 @@ public class WeatherServiceTests {
     @Test
     public void ValidJson_GetCurrentWeather_ReturnsWeatherResponse() {
         //Set which json to use
-        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(curWeatherJsonString);
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(validCurWeatherJsonString);
 
         //Expected values from json
         String expectedDayOfWeek = "Saturday";
@@ -154,7 +153,7 @@ public class WeatherServiceTests {
     @Test
     public void ValidJson_GetForecast_ReturnsWeatherResponse() {
         //Set which json to use
-        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(forecastWeatherJsonString);
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(validForecastWeatherJsonString);
 
 
         List<String> expectedDaysOfWeek = Arrays.asList("Friday", "Saturday", "Sunday", "Monday", "Tuesday");
