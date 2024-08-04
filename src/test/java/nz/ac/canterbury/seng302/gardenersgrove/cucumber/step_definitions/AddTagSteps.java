@@ -15,6 +15,7 @@ import org.hamcrest.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -104,12 +105,12 @@ public class AddTagSteps {
 
     @Given("I am on the garden details page for a public garden")
     public void iAmOnTheGardenDetailsPageForAPublicGarden() {
-        // TODO: Implement this step
+        // TODO: Implement this step once the garden details page is implemented
     }
 
     @Then("I can see a list of tags that the garden has been marked with by its owner")
     public void iCanSeeAListOfTagsThatTheGardenHasBeenMarkedWithByItsOwner() {
-        // TODO: Implement this step
+        // TODO: Implement this step once the garden details page is implemented
     }
 
     @Given("I have already created a tag for a garden I own")
@@ -189,17 +190,26 @@ public class AddTagSteps {
 
     @Given("I have entered invalid text")
     public void iHaveEnteredInvalidText() {
-        // TODO: Implement this step
+        typedTag = "Test Tag!@#$%^";
     }
 
     @When("I click the \"+\" button or press enter")
-    public void iClickThePlusButtonOrPressEnter() {
-        // TODO: Implement this step
+    public void iClickThePlusButtonOrPressEnter() throws Exception{
+        resultActions = mockMvc.perform(post("/add-tag")
+                        .param("gardenID", ownedGarden1.getId().toString())
+                        .param("tag", typedTag)
+                        .with(csrf()))
+                .andExpect(status().isOk());
     }
 
     @Then("an error message tells me \"The tag name must only contain alphanumeric characters, spaces, -, _, ', or ” , and no tag is added to my garden and no tag is added to the user defined tags the system knows")
-    public void anErrorMessageTellsMe() {
-        // TODO: Implement this step
+    public void anErrorMessageTellsMe() throws Exception {
+        resultActions.andExpect(status().isOk())
+                .andExpect(model().attribute("tagTextError", "The tag name must only contain alphanumeric characters, spaces, -, _, or '"));
+
+        // Verify that no tag is added to the garden
+        List<Tag> gardenTags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("gardenTags");
+        assertTrue(gardenTags.isEmpty(), "No tag should be added to the garden");
     }
 
     @Given("I have entered a tag that is more than 25 characters long")
@@ -207,21 +217,27 @@ public class AddTagSteps {
         typedTag = "This is a very long tag that is over 25 characters long";
     }
 
-    @Then("an error message tells me \"The tag name must be less than 25 characters long\", and no tag is added to my garden and no tag is added to the user defined tags the system knows")
-    public void anErrorMessageTellsMeTagTooLong() throws Exception {
-        // Get the latest result from the /view-garden endpoint
-        resultActions = mockMvc.perform(get("/view-garden")
-                        .param("gardenID", ownedGarden2.getId().toString())
+    @When("I click the \"+\" button or press enterd")
+    public void iClickThePlusOrPressEnter() throws Exception {
+        resultActions = mockMvc.perform(post("/add-tag")
+                        .param("gardenID", ownedGarden1.getId().toString())
+                        .param("tag", typedTag)
                         .with(csrf()))
                 .andExpect(status().isOk());
+    }
 
-        // Get all tags from the model
-        List<Tag> allTags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("allTags");
-        assertNotNull(allTags, "allTags should not be null");
+    @WithMockUser
+    @Then("an error message tells me \"The tag name must be less than 25 characters long\", and no tag is added to my garden and no tag is added to the user defined tags the system knows")
+    public void anErrorMessageTellsMeTagTooLong() throws Exception {
+        resultActions.andExpect(status().isOk())
+                .andExpect(model().attribute("tagLengthError", "A tag cannot exceed 25 characters"));
 
-        // Iterate through all tags and check if the typed tag is at the start
-        for (Tag tag : allTags) {
-            assertFalse(tag.getName().startsWith(typedTag));
-        }
+        // Verify that no tag is added to the garden
+        List<Tag> gardenTags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("gardenTags");
+        assertTrue(gardenTags.isEmpty(), "No tag should be added to the garden");
+
+        // Verify that no tag is added to the user-defined tags
+        List<Tag> userTags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("allTags");
+        assertTrue(userTags.stream().noneMatch(tag -> tag.getName().length() > 25), "No tag should be added to the user-defined tags");
     }
 }

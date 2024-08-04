@@ -27,7 +27,7 @@ Feature: U21 Add tags to garden
     When I click the "+" button or press enter
     Then an error message tells me "The tag name must only contain alphanumeric characters, spaces, -, _, ', or ” , and no tag is added to my garden and no tag is added to the user defined tags the system knows
 
-  Scenario: AC7 - Add tag from autocomplete options
+  Scenario: AC7 - Error message for tag that is too long
     Given I have entered a tag that is more than 25 characters long
-    When I click the "+" button or press enter
+    When I click the "+" button or press enterd
     Then an error message tells me "The tag name must be less than 25 characters long", and no tag is added to my garden and no tag is added to the user defined tags the system knows
