@@ -15,7 +15,8 @@ basic project using ```gradle```, ```Spring Boot```, ```Thymeleaf```, and ```Git
 geoapify.api.key=YOUR_API_KEY
 weather.api.key=YOUR_OPENWEATHERMAP_API_KEY
 weather.api.url=https://api.openweathermap.org/data/2.5/
-
+azure.api.key=YOUR_AZURE_API_KEY
+azure.api.url=https://gardeners-grove-600.cognitiveservices.azure.com/
 ```
 See below for instructions for getting an API key
 
@@ -35,6 +36,13 @@ See below for instructions for getting an API key
 - Create an account.
 - Navigate to the API keys section.
 - Generate an API key.
+- Copy and paste the API key into the application-dev.properties file (see above).
+
+## Azure API Key
+
+- Sign in to the Azure Portal (https://portal.azure.com/).
+- Navigate to your Cognitive Services resource.
+- Copy the API key and the endpoint URL provided for your service.
 - Copy and paste the API key into the application-dev.properties file (see above).
 
 
