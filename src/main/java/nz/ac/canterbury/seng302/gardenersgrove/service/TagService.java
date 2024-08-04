@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
+import jakarta.transaction.Transactional;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.GardenRepository;
@@ -21,13 +22,13 @@ public class TagService {
     private UserService userService; // Increment users inappropriate tag count
 
     // Original constructor
-    @Autowired
     public TagService(TagRepository tagRepository) {
         this(tagRepository, null, null, null);
     }
 
     // Secondary constructor without @Autowired
     // Constructor Chaining
+    @Autowired
     public TagService(TagRepository tagRepository, GardenService gardenService, ModerationService moderationService, UserService userService) {
         this.tagRepository = tagRepository;
         this.gardenService = gardenService;
@@ -51,36 +52,36 @@ public class TagService {
         tagRepository.delete(tag);
     }
 
-    @Scheduled(fixedRate = 60000) // Evaluate every 60 seconds
+    /**
+     * Evaluate the next unmoderated tag, called automatically every 5 seconds,
+     * the free tier of Azure moderation allows only 1 transaction per second
+     */
+    @Transactional
+    @Scheduled(fixedRate = 5000)
     public void evaluateWaitingTags() {
         // Get all tags that need to be evaluated
         List<Tag> waitingTags = tagRepository.findWaitingTags();
 
-        // Loop through each tag
-        for (Tag tag : waitingTags) {
-            // Run tag name through moderation service
-            if (moderationService.isContentAppropriate(tag.getName())) {
-                // Tag is appropriate
-                tag.setEvaluated(true);
-                tag.setAppropriate(true);
+        if (waitingTags.isEmpty() || moderationService.isBusy()) {
+            return;
+        }
+        Tag tag = waitingTags.get(0);
 
-                // Add tag to garden
-                gardenService.addTagToGarden(tag.getGardenId(), tag);
+        tag.setEvaluated(true);
 
-                // Remove tag from the waiting list
-                removeTagFromWaitingList(tag);
-            } else {
-                // Tag is not appropriate
-                tag.setEvaluated(true);
-                tag.setAppropriate(false);
+        // Run tag name through moderation service
+        if (moderationService.isContentAppropriate(tag.getName())) {
+            // Tag is appropriate
+            tag.setAppropriate(true);
+            addTag(tag);    // Save tag's new details
 
+            // Add tag to garden
+            gardenService.addTagToGarden(tag.getGardenId(), tag);
+        } else {
+            removeTagFromWaitingList(tag);   // Remove tag from the waiting list
 
-                // Increment users inappropriate tag count
-                userService.incrementInappropriateTagCount(tag.getUserID());
-
-                // Remove tag from the waiting list
-                removeTagFromWaitingList(tag);
-            }
+            // Increment users inappropriate tag count
+            userService.incrementInappropriateTagCount(tag.getUserID());
         }
     }
 }
