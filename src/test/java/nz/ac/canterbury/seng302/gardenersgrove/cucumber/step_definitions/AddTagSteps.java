@@ -201,4 +201,27 @@ public class AddTagSteps {
     public void anErrorMessageTellsMe() {
         // TODO: Implement this step
     }
+
+    @Given("I have entered a tag that is more than 25 characters long")
+    public void iHaveEnteredLongTag(){
+        typedTag = "This is a very long tag that is over 25 characters long";
+    }
+
+    @Then("an error message tells me \"The tag name must be less than 25 characters long\", and no tag is added to my garden and no tag is added to the user defined tags the system knows")
+    public void anErrorMessageTellsMeTagTooLong() throws Exception {
+        // Get the latest result from the /view-garden endpoint
+        resultActions = mockMvc.perform(get("/view-garden")
+                        .param("gardenID", ownedGarden2.getId().toString())
+                        .with(csrf()))
+                .andExpect(status().isOk());
+
+        // Get all tags from the model
+        List<Tag> allTags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("allTags");
+        assertNotNull(allTags, "allTags should not be null");
+
+        // Iterate through all tags and check if the typed tag is at the start
+        for (Tag tag : allTags) {
+            assertFalse(tag.getName().startsWith(typedTag));
+        }
+    }
 }
