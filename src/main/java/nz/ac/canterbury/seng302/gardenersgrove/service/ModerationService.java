@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.microsoft.azure.cognitiveservices.vision.contentmoderator.*;
 import com.microsoft.azure.cognitiveservices.vision.contentmoderator.models.*;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 @Service
 public class ModerationService {
     @Value("${azure.api.key:#{null}}")
@@ -22,6 +24,8 @@ public class ModerationService {
     private static final Logger logger = LoggerFactory.getLogger(ModerationService.class);
 
     private ContentModeratorClient client;
+
+    private AtomicBoolean isBusy = new AtomicBoolean(false);
 
     @Autowired
     public ModerationService(@Value("${azure.api.url}") String moderatorApiUrl,
@@ -39,20 +43,25 @@ public class ModerationService {
      */
     public String moderateText(String line) {
         try {
-            // Re-authenticate the client
-            client = ContentModeratorManager.authenticate(AzureRegionBaseUrl.fromString(moderatorApiUrl), moderatorApiKey);
+            waitUntilNotBusy();
 
-            Screen textResults = null;
             // For formatting the printed results
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-            if (!line.isEmpty()) {
-                textResults = client.textModerations().screenText("text/plain", line.getBytes(), null);
+            if (line.isEmpty())  {
+                return "null";
             }
 
+
+            // Re-authenticate the client
+            client = ContentModeratorManager.authenticate(AzureRegionBaseUrl.fromString(moderatorApiUrl), moderatorApiKey);
+            Screen textResults = client.textModerations().screenText("text/plain", line.getBytes(), null);
+
+            Status status = textResults.status();
+
             // Check for evaluation error AC3
-            if (textResults.status().code().equals("3000")) {
+            if (!status.code().equals(3000) || !status.description().equals("OK")) {
                 return "evaluation_error";
             }
             return objectMapper.writeValueAsString(textResults.terms());
@@ -60,13 +69,26 @@ public class ModerationService {
         } catch (Exception e) {
             logger.error("Error during text moderation: ", e);
             return "evaluation_error";
+        } finally {
+            isBusy.set(false);
+        }
+    }
+
+    private void waitUntilNotBusy() {
+        while (!isBusy.compareAndSet(false, true)) {
+            // Busy-wait
         }
     }
 
     // If the tag is appropriate returns true, otherwise false
     public boolean isContentAppropriate(String content) {
-        Screen textResults = client.textModerations().screenText("text/plain", content.getBytes(), null);
+        String moderatedContent = moderateText(content);
+
         // Return true if no terms are found, indicating the content is appropriate
-        return textResults.terms().isEmpty();
+        return moderatedContent == null || moderatedContent.equals("null");
+    }
+
+    public boolean isBusy() {
+        return isBusy.get();
     }
 }
