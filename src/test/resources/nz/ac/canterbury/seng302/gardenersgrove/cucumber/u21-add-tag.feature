@@ -22,12 +22,43 @@ Feature: U21 Add tags to garden
     When I click on one suggestion
     Then that tag should be added to my garden and the text box cleared
 
-  Scenario: AC5 - Error message for invalid tag input
-    Given I have entered invalid text
-    When I click the "+" button or press enter
-    Then an error message tells me "The tag name must only contain alphanumeric characters, spaces, -, _, ', or ” , and no tag is added to my garden and no tag is added to the user defined tags the system knows
+  Scenario Outline: AC6 - Error message for invalid tag input
+    Given I have entered invalid text <tag>
+    When I click the + button or press enter
+    Then a tag error message <error type> tells me "The tag name must only contain alphanumeric characters, spaces, -, _, or '"
+    And no tag is added to my garden
+    And no tag is added to the user defined tags the system knows
+
+    Examples:
+      | tag            | error type     |
+      | "!@#$%^&as"    | "tagTextError" |
+      | "           "  | "tagTextError" |
+      | "tag?"         | "tagTextError" |
+      | "tag!"         | "tagTextError" |
+      | "tag$"         | "tagTextError" |
+      | "tag#"         | "tagTextError" |
+      | "tag@"         | "tagTextError" |
+      | "tag%"         | "tagTextError" |
+      | "tag^"         | "tagTextError" |
+      | "tag&"         | "tagTextError" |
+      | "tag*"         | "tagTextError" |
+      | "tag("         | "tagTextError" |
+      | "tag)"         | "tagTextError" |
+      | "tag+"         | "tagTextError" |
+      | "tag="         | "tagTextError" |
+      | "tag{"         | "tagTextError" |
+      | "tag}"         | "tagTextError" |
+      | "tag["         | "tagTextError" |
+      | "tag]"         | "tagTextError" |
+      | "tag/"         | "tagTextError" |
+      | "tag<"         | "tagTextError" |
+      | "tag>"         | "tagTextError" |
+      | "tag."         | "tagTextError" |
+      | "tag,"         | "tagTextError" |
 
   Scenario: AC7 - Error message for tag that is too long
     Given I have entered a tag that is more than 25 characters long
-    When I click the "+" button or press enterd
-    Then an error message tells me "The tag name must be less than 25 characters long", and no tag is added to my garden and no tag is added to the user defined tags the system knows
+    When I click the + button or press enter
+    Then a tag error message "tagLengthError" tells me "A tag cannot exceed 25 characters"
+    And no tag is added to my garden
+    And no tag is added to the user defined tags the system knows

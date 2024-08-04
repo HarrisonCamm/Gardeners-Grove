@@ -10,8 +10,10 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.TagService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,6 +44,9 @@ public class AddTagSteps {
     @Autowired
     private GardenService gardenService;
 
+    @Autowired
+    private TagService tagService;
+
     private MockMvc mockMvc;
 
     private static Location location;
@@ -51,6 +56,8 @@ public class AddTagSteps {
     private static Garden ownedGarden2;
 
     private static String typedTag;
+
+    private static List<Tag> tagList;
 
     private ResultActions resultActions;
 
@@ -86,6 +93,7 @@ public class AddTagSteps {
         ArrayList<Garden> gardens = (ArrayList<Garden>) gardenService.getOwnedGardens(userService.getAuthenticatedUser().getUserId());
         ownedGarden1 = gardens.get(gardens.size() - 2);
         ownedGarden2 = gardens.get(gardens.size() - 1);
+        tagList = tagService.getTags();
         assertNotNull(gardens);
     }
 
@@ -188,12 +196,12 @@ public class AddTagSteps {
         assertTrue(tagInput.isEmpty());
     }
 
-    @Given("I have entered invalid text")
-    public void iHaveEnteredInvalidText() {
-        typedTag = "Test Tag!@#$%^";
+    @Given("I have entered invalid text {string}")
+    public void iHaveEnteredInvalidText(String invalidTag) {
+        typedTag = invalidTag;
     }
 
-    @When("I click the \"+\" button or press enter")
+    @When("I click the + button or press enter")
     public void iClickThePlusButtonOrPressEnter() throws Exception{
         resultActions = mockMvc.perform(post("/add-tag")
                         .param("gardenID", ownedGarden1.getId().toString())
@@ -202,14 +210,11 @@ public class AddTagSteps {
                 .andExpect(status().isOk());
     }
 
-    @Then("an error message tells me \"The tag name must only contain alphanumeric characters, spaces, -, _, ', or ” , and no tag is added to my garden and no tag is added to the user defined tags the system knows")
-    public void anErrorMessageTellsMe() throws Exception {
+    @Then("a tag error message {string} tells me {string}")
+    public void aTagErrorMessageTellsMe(String errorType, String message) throws Exception {
         resultActions.andExpect(status().isOk())
-                .andExpect(model().attribute("tagTextError", "The tag name must only contain alphanumeric characters, spaces, -, _, or '"));
+                .andExpect(model().attribute(errorType, message));
 
-        // Verify that no tag is added to the garden
-        List<Tag> gardenTags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("gardenTags");
-        assertTrue(gardenTags.isEmpty(), "No tag should be added to the garden");
     }
 
     @Given("I have entered a tag that is more than 25 characters long")
@@ -217,27 +222,20 @@ public class AddTagSteps {
         typedTag = "This is a very long tag that is over 25 characters long";
     }
 
-    @When("I click the \"+\" button or press enterd")
-    public void iClickThePlusOrPressEnter() throws Exception {
-        resultActions = mockMvc.perform(post("/add-tag")
-                        .param("gardenID", ownedGarden1.getId().toString())
-                        .param("tag", typedTag)
-                        .with(csrf()))
-                .andExpect(status().isOk());
-    }
 
-    @WithMockUser
-    @Then("an error message tells me \"The tag name must be less than 25 characters long\", and no tag is added to my garden and no tag is added to the user defined tags the system knows")
-    public void anErrorMessageTellsMeTagTooLong() throws Exception {
-        resultActions.andExpect(status().isOk())
-                .andExpect(model().attribute("tagLengthError", "A tag cannot exceed 25 characters"));
+    @And("no tag is added to my garden")
+    public void noTagIsAddedToMyGarden() {
 
         // Verify that no tag is added to the garden
         List<Tag> gardenTags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("gardenTags");
-        assertTrue(gardenTags.isEmpty(), "No tag should be added to the garden");
+        Assertions.assertFalse(gardenTags.stream().anyMatch(gardenTag -> typedTag.equals(gardenTag.getName())));
+    }
 
+    @And("no tag is added to the user defined tags the system knows")
+    public void noTagIsAddedToTheUserDefinedTagsTheSystemKnows() {
         // Verify that no tag is added to the user-defined tags
         List<Tag> userTags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("allTags");
-        assertTrue(userTags.stream().noneMatch(tag -> tag.getName().length() > 25), "No tag should be added to the user-defined tags");
+        Assertions.assertFalse(userTags.stream().anyMatch(userTag -> typedTag.equals(userTag.getName())));
+
     }
 }

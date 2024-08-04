@@ -6,7 +6,10 @@ import java.util.regex.Pattern;
 public class TagValidator {
 
     public static boolean isValidTag(String tag) {
-        // Regular expression to match alphanumeric characters, spaces, dots, commas, hyphens, and apostrophes
+        if (tag.trim().isEmpty()){
+            return false;
+        }
+        // Regular expression to match alphanumeric characters, spaces, dashes, underscores, and apostrophes
         String regex = "^[\\p{L}0-9\\s_'-]+$";
         return Pattern.matches(regex, tag);
     }
