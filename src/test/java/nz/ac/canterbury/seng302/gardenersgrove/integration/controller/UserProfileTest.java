@@ -47,7 +47,7 @@ public class UserProfileTest {
         User mockUser = new User("user@email.com", "User", "Name", "password");
         mockUser.setDateOfBirth("01/01/1990");
 
-        when(userService.getAuthenicatedUser()).thenReturn(mockUser);
+        when(userService.getAuthenticatedUser()).thenReturn(mockUser);
 
         mockMvc.perform(get("/view-user-profile"))
                 .andExpect(status().isOk())

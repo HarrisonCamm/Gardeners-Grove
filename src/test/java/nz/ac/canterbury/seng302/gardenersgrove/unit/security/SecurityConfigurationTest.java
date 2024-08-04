@@ -102,7 +102,7 @@ public class SecurityConfigurationTest {
     void setUp() {
         // Create new user
         User mockUser = new User("user@email.com", "User", "Name", "password");
-        Mockito.when(userService.getAuthenicatedUser()).thenReturn(mockUser);
+        Mockito.when(userService.getAuthenticatedUser()).thenReturn(mockUser);
 
         // Create new garden
         Garden mockGarden = Mockito.mock(Garden.class);

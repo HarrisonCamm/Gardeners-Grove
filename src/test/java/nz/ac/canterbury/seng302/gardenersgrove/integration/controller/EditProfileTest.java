@@ -49,7 +49,7 @@ public class EditProfileTest {
         User mockUser = new User("user@email.com", "User", "Name", "password");
         mockUser.grantAuthority("ROLE_USER");
 //        mockUser.setUserId(1L);
-        Mockito.when(userService.getAuthenicatedUser()).thenReturn(mockUser);
+        Mockito.when(userService.getAuthenticatedUser()).thenReturn(mockUser);
         Mockito.when(userService.updateUser(any(User.class), anyString(), anyString(), anyBoolean(), anyString(), anyString()))
                 .thenAnswer(i -> ((User)i.getArgument(0)).setValues(i.getArgument(1), i.getArgument(2),
                         i.getArgument(3), i.getArgument(4), i.getArgument(5)));
