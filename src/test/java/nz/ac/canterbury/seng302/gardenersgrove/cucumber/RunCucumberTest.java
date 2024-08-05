@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber;
 
-import io.cucumber.core.internal.com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.junit.platform.engine.Constants;
 import nz.ac.canterbury.seng302.gardenersgrove.GardenersGroveApplication;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ForecastResponse;
@@ -15,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.fasterxml.jackson.databind.ObjectMapper; // Weather service one
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -51,10 +52,15 @@ public class RunCucumberTest {
     private static String Raining;
     private static String NotRaining;
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+
+
     // Loads static variables when the class is first loaded
     static {
         try {
             // Read and parse JSON files
+            // SUGGESTION
             String currentWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/validCurrentWeather.json"));
             String forecastWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/validForecast.json"));
 
@@ -65,7 +71,7 @@ public class RunCucumberTest {
 //
 //            String currentWeatherRainJsonString = Files.readString(Paths.get("src/test/resources/json/validCurrentWeatherRain.json"));
 
-            ObjectMapper objectMapper = new ObjectMapper();
+
 
             Rained = "Rained";
             NotRained = "NotRained";
