@@ -20,7 +20,26 @@ Feature: U21 Add tags to garden
   Scenario: AC4 - Add tag from autocomplete options
     Given I have typed a tag into the text box that matches the tag I created
     When I click on one suggestion
-    Then that tag should be added to my garden and the text box cleared
+    Then the tag is added to my garden
+    And the text box is cleared
+
+  Scenario Outline: AC5 - Valid tag is added to garden
+    Given I have entered valid text for a tag <tag> that does not exist
+    When I click the + button or press enter
+    Then the tag is added to my garden
+    And the text box is cleared
+    And the tag becomes a new user-defined tag on the system showing up in future auto-complete suggestions
+    Examples:
+      | tag            |
+      | "tag"          |
+      | "tag123"       |
+      | "123"          |
+      | "tag-tag"      |
+      | "tag_tag1"     |
+      | "tag tag"      |
+      | "tag'1"        |
+      | "tag -_- tag"  |
+
 
   Scenario Outline: AC6 - Error message for invalid tag input
     Given I have entered invalid text <tag>
@@ -28,7 +47,6 @@ Feature: U21 Add tags to garden
     Then a tag error message <error type> tells me "The tag name must only contain alphanumeric characters, spaces, -, _, or '"
     And no tag is added to my garden
     And no tag is added to the user defined tags the system knows
-
     Examples:
       | tag            | error type     |
       | "!@#$%^&as"    | "tagTextError" |

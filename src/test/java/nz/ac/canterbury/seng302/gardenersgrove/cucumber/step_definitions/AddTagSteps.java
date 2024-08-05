@@ -173,27 +173,44 @@ public class AddTagSteps {
                         .param("tag", "Test Tag")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection());
-
+        typedTag = "Test Tag";
+    }
+    @Then("the tag is added to my garden")
+    public void thatTagIsAddedToMyGarden() throws Exception {
         // MockMvc doesn't do the redirect, so we need to get the garden again
         resultActions = mockMvc.perform(get("/view-garden")
                         .param("gardenID", ownedGarden2.getId().toString())
                         .with(csrf())) // Add CSRF token
                 .andExpect(status().isOk());
+        // Get all tags from the model
+        List<Tag> gardenTags = (List <Tag>) resultActions.andReturn().getModelAndView().getModel().get("gardenTags");
+
+        // Assert garden contains tag
+        Assertions.assertTrue(gardenTags.stream().anyMatch(gardenTag -> typedTag.equals(gardenTag.getName())));
     }
 
-    @Then("that tag should be added to my garden and the text box cleared")
-    public void thatTagShouldBeAddedToMyGardenAndTheTextBoxCleared() throws Exception {
-        // Get all tags from the model
-        List<Tag> allTags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("allTags");
-
-        // Assert that the size of allTags is 1
-        assertEquals(1, allTags.size());
-
+    @And("the text box is cleared")
+    public void theTextBoxIsCleared() {
         // Get the tagInput field from the model
         String tagInput = (String) resultActions.andReturn().getModelAndView().getModel().get("tagInput");
 
         // Assert that the tagInput field is empty
         assertTrue(tagInput.isEmpty());
+    }
+
+    @Given("I have entered valid text for a tag {string} that does not exist")
+    public void iHaveEnteredValidTextForATagTagThatDoesNotExist(String validTag) {
+        List<Tag> existingTags = tagService.getTags();
+        Assertions.assertFalse(existingTags.stream().anyMatch(existingTag -> validTag.equals(existingTag.getName())));
+        typedTag = validTag;
+
+    }
+
+    @And("the tag becomes a new user-defined tag on the system showing up in future auto-complete suggestions")
+    public void theTagBecomesANewUserDefinedTagOnTheSystemShowingUpInFutureAutoCompleteSuggestions() {
+        List<Tag> existingTags = tagService.getTags();
+        Assertions.assertTrue(existingTags.stream().anyMatch(existingTag -> typedTag.equals(existingTag.getName())));
+
     }
 
     @Given("I have entered invalid text {string}")
@@ -204,10 +221,9 @@ public class AddTagSteps {
     @When("I click the + button or press enter")
     public void iClickThePlusButtonOrPressEnter() throws Exception{
         resultActions = mockMvc.perform(post("/add-tag")
-                        .param("gardenID", ownedGarden1.getId().toString())
+                        .param("gardenID", ownedGarden2.getId().toString())
                         .param("tag", typedTag)
-                        .with(csrf()))
-                .andExpect(status().isOk());
+                        .with(csrf()));
     }
 
     @Then("a tag error message {string} tells me {string}")
@@ -238,4 +254,5 @@ public class AddTagSteps {
         Assertions.assertFalse(userTags.stream().anyMatch(userTag -> typedTag.equals(userTag.getName())));
 
     }
+
 }
