@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <body>
-    <div th:fragment="sideBar" class="d-flex flex-column flex-shrink-0 p-3 sideBarColour">
-        <h3 class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none text-white">Gardens</h3>
-        <div class="list-group">
-            <!-- Links to user created gardens -->
-            <th:block th:each="garden : ${myGardens}">
-                <a class="list-group-item list-group-item-action" th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
-                    <span th:text="${#strings.abbreviate(garden.name,20)}"> Name </span>
-                </a>
-            </th:block>
-        </div>
+<body>
+<div th:fragment="sideBar" class="d-flex flex-column flex-shrink-0 p-3 sideBarColour">
+    <h3 class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none text-white">Gardens</h3>
+    <div class="list-group">
+        <!-- Links to user created gardens -->
+        <th:block th:each="garden : ${gardens}">
+            <a class="list-group-item list-group-item-action" th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
+                <span th:text="${#strings.abbreviate(garden.name,20)}"> Name </span>
+            </a>
+        </th:block>
     </div>
-    </body>
+</div>
+</body>
 </html>
+
