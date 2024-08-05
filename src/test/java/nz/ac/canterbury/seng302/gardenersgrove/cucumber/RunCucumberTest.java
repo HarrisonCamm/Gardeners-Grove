@@ -130,9 +130,9 @@ public class RunCucumberTest {
         when(weatherService.getForecastWeather(anyString(), anyString())).thenReturn(mockedValidForecast);
 
         // Mock unsuccessful location current weather service response
-        when(weatherService.getCurrentWeather(eq("InvalidCity"), anyString())).thenReturn(mockedNullCityWeather);
+        when(weatherService.getCurrentWeather(eq("InvalidCity"), anyString())).thenReturn(null);
         // Mock unsuccessful location weather forecast service response
-        when(weatherService.getForecastWeather(eq("InvalidCity"), anyString())).thenReturn(mockedNullCityForecast);
+        when(weatherService.getForecastWeather(eq("InvalidCity"), anyString())).thenReturn(null);
 
         // Mock successful has rained in the last 2 days
         when(weatherService.hasRained(eq(Rained), anyString())).thenReturn(true);

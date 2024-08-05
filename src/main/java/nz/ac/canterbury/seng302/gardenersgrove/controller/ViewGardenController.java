@@ -216,7 +216,7 @@ public class ViewGardenController {
 
                 // If forecastResponse is null, because API does not find weather at that location
                 if (forecastResponse == null) {
-                    model.addAttribute("weatherErrorMessage", "Weather data not available, please update your location to see the weather");
+                    model.addAttribute("weatherErrorMessage", "Location not found, please update your location to see the weather");
                 } else {
                     // Null current weather check (for tests)
                     if (currentWeather != null) {
