@@ -91,6 +91,7 @@ public class WeatherResponse {
         return weatherInfo != null && weatherInfo.length > 0 ? weatherInfo[0].icon : "";
     }
 
+
     // Inner classes for nested objects
     @JsonDeserialize
     @JsonIgnoreProperties(ignoreUnknown = true)

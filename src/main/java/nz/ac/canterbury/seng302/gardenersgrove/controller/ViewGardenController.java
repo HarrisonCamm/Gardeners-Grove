@@ -142,6 +142,7 @@ public class ViewGardenController {
 
             // Get weather information
             WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+            logger.info("Weather response: " + weatherResponse.toString());
             model.addAttribute("weatherResponse", weatherResponse);
 
             // Show error
