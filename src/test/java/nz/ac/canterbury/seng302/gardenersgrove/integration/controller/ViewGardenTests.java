@@ -92,7 +92,7 @@ public class ViewGardenTests {
     @BeforeEach
     public void setUp() {
         testUser = new User("user@email.com", "User", "Name", "password");
-        when(userService.getAuthenicatedUser()).thenReturn(testUser);
+        when(userService.getAuthenticatedUser()).thenReturn(testUser);
 
         // Mock successful moderation
         when(moderationService.moderateText(anyString())).thenReturn("null");

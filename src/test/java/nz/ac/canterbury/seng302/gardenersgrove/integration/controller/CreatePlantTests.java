@@ -87,7 +87,7 @@ public class CreatePlantTests {
     public void setUp() {
         testUser = new User("user@email.com", "User", "Name", "password");
 //        testUser.setUserId(1L);
-        Mockito.when(userService.getAuthenicatedUser()).thenReturn(testUser);
+        Mockito.when(userService.getAuthenticatedUser()).thenReturn(testUser);
 
         testLocation = new Location("123 Test Street", "Test Suburb", "Test City", "1234", "Test Country");
         testGarden = new Garden("Test Garden", testLocation, "1", testUser);

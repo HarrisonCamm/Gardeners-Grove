@@ -127,7 +127,7 @@ public class UserService {
      * Gets the currently logged-in user
      * @return The user
      */
-    public User getAuthenicatedUser() {
+    public User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication == null ? null : this.getUserByEmail(authentication.getName());
     }

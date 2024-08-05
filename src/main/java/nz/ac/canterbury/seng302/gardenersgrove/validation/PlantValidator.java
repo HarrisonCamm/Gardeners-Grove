@@ -61,7 +61,7 @@ public class PlantValidator {
             return fieldErrorFactory.createFieldError("plant", "count", "Plant count must be a positive number");
         }
         if (count.length() > MAX_PLANT_COUNT) {
-            return fieldErrorFactory.createFieldError("plant", "count", "Plant count must be less than 255 chars");
+            return fieldErrorFactory.createFieldError("plant", "count", "Plant count must be less than 255 characters");
         }
         return null;
     }

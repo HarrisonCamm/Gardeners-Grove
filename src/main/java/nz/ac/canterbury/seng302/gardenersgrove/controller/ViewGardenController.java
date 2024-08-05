@@ -62,7 +62,7 @@ public class ViewGardenController {
         session.removeAttribute("imageFile");
 
         Optional<Garden> garden = gardenService.findGarden(gardenID);
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         if (garden.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!garden.get().getOwner().equals(currentUser))
@@ -91,7 +91,7 @@ public class ViewGardenController {
         logger.info("POST /view-garden");
 
         Optional<Garden> garden = gardenService.findGarden(gardenID);
-        User currentUser = userService.getAuthenicatedUser();
+        User currentUser = userService.getAuthenticatedUser();
         if (garden.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!garden.get().getOwner().equals(currentUser))
@@ -127,8 +127,7 @@ public class ViewGardenController {
         logger.info("POST /add-tag");
 
         Optional<Garden> garden = gardenService.findGarden(gardenID);
-        User currentUser = userService.getAuthenicatedUser();
-
+        User currentUser = userService.getAuthenticatedUser();
         if (garden.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!garden.get().getOwner().equals(currentUser))
@@ -136,9 +135,6 @@ public class ViewGardenController {
 
         // Moderate the tag before adding
         String possibleTerms = moderationService.moderateText(tag);
-
-        // TODO: HARD CODE IN EVALUATION ERROR TO TEST NEW CODE
-
 
         if (possibleTerms.equals("evaluation_error")) {
             // Add tag to a waiting list for later evaluation
@@ -159,7 +155,8 @@ public class ViewGardenController {
             addAttributes(currentUser, gardenID, model, plantService, gardenService);
 
             // Get weather information
-            // UPDATE now is done in the add attributes method
+            WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+            model.addAttribute("weatherResponse", weatherResponse);
 
             // Show error
             model.addAttribute("tagError", "Profanity or inappropriate language detected");
@@ -176,6 +173,7 @@ public class ViewGardenController {
             // Add tag to garden
             gardenService.addTagToGarden(gardenID, addedTag);
         }
+
         // Add attributes
         addAttributes(currentUser, gardenID, model, plantService, gardenService);
 
