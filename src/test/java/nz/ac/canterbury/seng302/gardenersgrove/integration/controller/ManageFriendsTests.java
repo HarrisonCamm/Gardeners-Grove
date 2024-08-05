@@ -48,14 +48,12 @@ public class ManageFriendsTests {
     private static User loggedUser;
     private static User testUser;
 
-    private static FriendRequest friendRequest;
-
     @BeforeEach
     public void setUp() {
         loggedUser = new User("logged@email.com", "foo", "bar", "password");
         testUser = new User("test@email.com", "test", "user", "password");
 
-        friendRequest = new FriendRequest(loggedUser, testUser);
+        FriendRequest friendRequest = new FriendRequest(loggedUser, testUser);
 
         when(userService.getAuthenticatedUser()).thenReturn(loggedUser);
         when(userService.searchForUsers(any(String.class), any(User.class))).thenReturn(List.of(testUser));
@@ -115,8 +113,6 @@ public class ManageFriendsTests {
     @WithMockUser
     @Test
     public void OnManageFriends_AcceptFriendRequest_IsOkay() throws Exception {
-        List<User> friends = List.of(testUser);
-
         mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
                         .with(csrf())
                         .param("action", "accept")
@@ -128,8 +124,6 @@ public class ManageFriendsTests {
     @WithMockUser
     @Test
     public void OnManageFriends_DenyFriendRequest_IsOkay() throws Exception {
-        List<User> friends = List.of();
-
         mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
                         .with(csrf())
                         .param("action", "delete")
