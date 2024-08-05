@@ -140,8 +140,8 @@ public class RunCucumberTest {
         when(weatherService.hasRained(eq(NotRained), anyString())).thenReturn(false);
 
         // Mock successful is currently raining
-        when(weatherService.isRaining(Raining, anyString())).thenReturn(true);
+        when(weatherService.isRaining(eq(Raining), anyString())).thenReturn(true);
         // Mock unsuccessful is not currently raining
-        when(weatherService.isRaining(NotRaining, anyString())).thenReturn(false);
+        when(weatherService.isRaining(eq(NotRaining), anyString())).thenReturn(false);
     }
 }

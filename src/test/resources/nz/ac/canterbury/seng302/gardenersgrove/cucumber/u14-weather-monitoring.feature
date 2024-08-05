@@ -5,7 +5,7 @@ Feature: Display Current Weather on Garden Details Page
     And I am a garden owner with in "Kerikeri" in "New Zealand"
 
   Scenario: AC1 - Owner views current weather on garden details page
-    Given I am on the garden details page for a garden I own
+    Given I am on the garden details page for a garden I own to check the weather
     When I look at the weather section
     Then the current day of the week is shown
     And the current date is shown

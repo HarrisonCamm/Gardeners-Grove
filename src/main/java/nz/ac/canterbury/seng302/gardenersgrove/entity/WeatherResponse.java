@@ -70,6 +70,10 @@ public class WeatherResponse {
         return dateDateFormat.format(date * 1000);
     }
 
+    public Long getRawDate() {
+        return date;
+    }
+
     public String getDayOfWeek() {
         SimpleDateFormat dayDateFormat = new SimpleDateFormat("EEEE", Locale.ENGLISH);
         return dayDateFormat.format(date * 1000);
