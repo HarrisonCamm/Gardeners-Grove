@@ -27,10 +27,10 @@ Feature: Display Current Weather on Garden Details Page
 
   Scenario: AC4 - Display watering reminder when there hasn't been any rain recently
     Given I am on the garden details page for a garden that hasn't had rain in the past two days
-    Then a highlighted element tells me "There hasn’t been any rain recently, make sure to water your plants if they need it"
+    Then a highlighted element "Rain reminder" message tells me "There hasn’t been any rain recently, make sure to water your plants if they need it"
 
   Scenario: AC5 - Display rainy day reminder on garden details page
     Given I am on the garden details page for a garden that is in a location where it is currently raining
-    Then a highlighted element tells me "Outdoor plants don’t need any water today"
+    Then a highlighted element "No rain reminder" message tells me "Outdoor plants don’t need any water today"
 
 

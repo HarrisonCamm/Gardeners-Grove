@@ -257,12 +257,17 @@ public class WeatherMonitoringSteps {
     }
 
     @Then("an error message is displayed saying {string}")
-    public void anErrorMessageIsDisplayedSaying(String errorMessage) throws UnsupportedEncodingException {
-        assertTrue(resultActions.andReturn().getResponse().getContentAsString().contains(errorMessage));
+    public void anErrorMessageIsDisplayedSaying(String errorMessage) {
+        assertEquals(Objects.requireNonNull(resultActions.andReturn().getModelAndView()).getModel().get("weatherErrorMessage"), errorMessage);
     }
 
-    @Then("a highlighted element tells me {string}")
-    public void aHighlightedElementTellsMe(String errorMessage) throws UnsupportedEncodingException {
-        assertTrue(resultActions.andReturn().getResponse().getContentAsString().contains(errorMessage));
+    @Then("a highlighted element {string} message tells me {string}")
+    public void aHighlightedElementTellsMe(String type, String errorMessage) {
+
+        if (Objects.equals(type, "Rain reminder")) {
+            assertEquals(Objects.requireNonNull(resultActions.andReturn().getModelAndView()).getModel().get("hasNotRainedAlert"), errorMessage);
+        } else {
+            assertEquals(Objects.requireNonNull(resultActions.andReturn().getModelAndView()).getModel().get("isRainingAlert"), errorMessage);
+        }
     }
 }
