@@ -38,6 +38,7 @@ public class TagModerationSteps {
     @Autowired
     private GardenService gardenService;
 
+    @Autowired
     private ModerationService moderationService;
 
     private MockMvc mockMvc;
@@ -55,6 +56,7 @@ public class TagModerationSteps {
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+
     }
 
     @Given("RAR")
@@ -85,6 +87,7 @@ public class TagModerationSteps {
     @Given("the submitted tag is evaluated for appropriateness")
     public void the_submitted_tag_is_evaluated_for_appropriateness() {
         // Write code here that turns the phrase above into concrete actions
+        // Zack knows about this. Ask him later.
         throw new io.cucumber.java.PendingException();
     }
 
