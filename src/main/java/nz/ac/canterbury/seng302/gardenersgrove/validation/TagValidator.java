@@ -26,16 +26,12 @@ public class TagValidator {
     }
 
 
-    public static void doTagValidations(Model model, String tag, String possibleTerms) {
+    public static void doTagValidations(Model model, String tag) {
         if (!isValidTag(tag)) {
             model.addAttribute("tagTextError", "The tag name must only contain alphanumeric characters, spaces, -, _, or '");
         }
         if (!isValidLength(tag)) {
             model.addAttribute("tagLengthError", "A tag cannot exceed " + MAX_TAG_LENGTH + " characters");
         }
-        if (!isAppropriateName(possibleTerms)) {
-            model.addAttribute("profanityTagError", "Profanity or inappropriate language detected");
-        }
-
     }
 }

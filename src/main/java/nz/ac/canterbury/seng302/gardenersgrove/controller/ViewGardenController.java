@@ -133,6 +133,7 @@ public class ViewGardenController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
+
         // Get weather information
         WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
         model.addAttribute("weatherResponse", weatherResponse);
@@ -140,9 +141,24 @@ public class ViewGardenController {
             return "redirect:/view-garden?gardenID=" + gardenID;
         }
 
-        // Moderate the tag before adding
-        String possibleTerms = moderationService.moderateText(tag);
-        doTagValidations(model, tag, possibleTerms);
+        // Check if this is a duplicate tag before moderation
+        List<Tag> allTags = tagService.getTags();
+        Tag addedTag;
+        boolean tagExists = allTags.stream().anyMatch(existingTag -> existingTag.getName().equals(tag));
+        if (tagExists) {
+            addedTag = tagService.getTagByName(tag);
+        } else {
+            doTagValidations(model, tag);
+            if (model.containsAttribute("tagTextError") || model.containsAttribute("tagLengthError")) {
+                addAttributes(currentUser, gardenID, model, plantService, gardenService);
+                return "viewGardenDetailsTemplate";
+            }
+
+            // Add tag to the database
+            addedTag = new Tag(tag, false);
+
+            // Moderate the tag before adding
+            String possibleTerms = moderationService.moderateText(tag);
 
         if (model.containsAttribute("tagTextError") || model.containsAttribute("tagLengthError")
                 || model.containsAttribute("profanityTagError") ) {
@@ -156,28 +172,35 @@ public class ViewGardenController {
 
             return "viewGardenDetailsTemplate";
         }
+            if (possibleTerms.equals("evaluation_error")) {
+                // Add tag to a waiting list for later evaluation
 
-        List<Tag> allTags = tagService.getTags();
-        Tag addedTag;
-        if (!allTags.stream().anyMatch(existingTag -> existingTag.getName().equals(tag))) {
-//            Add tag to the database
-            addedTag = tagService.addTag(new Tag(tag));
-        } else {
-            addedTag = tagService.getTagByName(tag);
+                // Show evaluation error
+                model.addAttribute("tagError", "Tag could not be evaluated at this time and will be reviewed shortly.");
+            } else  {
+                if (!isAppropriateName(possibleTerms)) {
+                    model.addAttribute("profanityTagError", "Profanity or inappropriate language detected");
+                    addAttributes(currentUser, gardenID, model, plantService, gardenService);
+                    return "viewGardenDetailsTemplate";
+                }
+
+                addedTag.setEvaluated(true);
+            }
+
+            // Add tag to database
+            tagService.addTag(addedTag);
         }
 
-        //TODO merge this with tag moderation stuff and then potentially refactor out to somewhere else
         List<Tag> gardenTags = gardenService.getTags(gardenID);
         Tag finalAddedTag = addedTag;
         if (!gardenTags.stream().anyMatch(existingTag -> existingTag.equals(finalAddedTag))) {
-            //add the tag to the garden's list of tags
+            // add the tag to the garden's list of tags
             gardenService.addTagToGarden(gardenID, addedTag);
         } else {
             model.addAttribute("duplicateTagError", "Tag is already defined");
             addAttributes(currentUser, gardenID, model, plantService, gardenService);
             return "viewGardenDetailsTemplate";
         }
-
 
         // Return user to page
         return "redirect:/view-garden?gardenID=" + gardenID;
@@ -212,8 +235,8 @@ public class ViewGardenController {
             model.addAttribute("gardenName", garden.get().getName());
             model.addAttribute("gardenLocation", garden.get().getLocation().toString());
             model.addAttribute("gardenSize", garden.get().getSize());
-            model.addAttribute("gardenTags", gardenService.getTags(gardenID));
-            model.addAttribute("allTags", tagService.getTags());
+            model.addAttribute("gardenTags", gardenService.getEvaluatedTags(gardenID));
+            model.addAttribute("allTags", tagService.getTagsByEvaluated(true));
 
             // New Code Added to get weather
             String gardenCity = garden.get().getLocation().getCity();
