@@ -13,8 +13,7 @@ Feature: U18 As Liam, I want to cancel friends on Gardener’s Grove so that we 
       | user              | password     |
       | "kaia@email.com"  | "Password1!" |
       | "inaya@email.com" | "Password1!" |
-      | "lei@email.com"   | "Password1!" |
-      | "sarah@email.com" | "Password1!" |
+      | "startup@user.com"   | "Password1!" |
 
     Scenario Outline: AC2 - Remove a friend from my list
       Given I am on the manage friends page
