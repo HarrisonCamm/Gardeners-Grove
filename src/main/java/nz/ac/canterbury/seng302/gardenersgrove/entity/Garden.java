@@ -61,7 +61,12 @@ public class Garden {
         this.size = size;
         this.owner = owner;
     }
-
+    public Garden setValues(String name, Location location, String size) {
+        this.name = name;
+        this.location = location;
+        this.size = size;
+        return this;
+    }
     // Getter for id
     public Long getId() {
         return id;
