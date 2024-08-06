@@ -7,132 +7,107 @@
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 
         <div class="wrapper">
-            <!-- SideNav Fragment -->
+            <!-- Garden Side Navigation Bar Fragment -->
             <div th:insert="~{fragments/sideBar.html :: sideBar}"></div>
 
             <!-- View Garden Page Content -->
-            <div class="gardenContainer">
-                <div class="gardenDetails container">
-                    <div class="row mb-3">
-                        <div class="col">
-                            <h3 th:text="${gardenName}">  </h3>
-                        </div>
+            <div class="row">
+            <div class="col gardenDetails container">
+                <div class="row mb-3 ps-5">
+                    <div class="col">
+                        <br/>
+                        <h3 th:text="${gardenName}">  </h3>
                     </div>
-                    <div class="row p-5">
-                        <div class="col">
-                            <h3 th:text="${gardenLocation}">  </h3>
-                        </div>
-                    </div>
-                    <div class="row mb-3" th:classappend="${gardenSize == '' ? 'disabled' : ''}">
-                        <div class="col">
-                            <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
-                        </div>
-                    </div>
-            </div>
-                    <!-- Weather Section -->
-                    <div class="container-fluid " th:if="${forecastResponse != null}">
-                        <div class="row p-5 overflow-scroll">
-                            <div class="col py-2" th:each="weatherResponse, iterStat: ${forecastResponse.weatherResponses}">
-                                <div class="container bg-success bg-gradient shadow rounded-4 p-4 z-3 position-relative">
-                                    <div th:if="${weatherResponse != null}">
-                                          <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-secondary" th:if="${iterStat.first}">
-                                            Today
-                                          </span>
-                                        <h4><strong> <span th:text="${weatherResponse.dayOfWeek}"></span></strong></h4>
-                                        <p><span th:text="${weatherResponse.date}"></span></p>
-                                        <p><span th:text="${weatherResponse.description}"></span></p>
-                                        <p><span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
-                                        <p>Humidity: <span th:text="${weatherResponse.humidity}"></span>%</p>
-
-                                        <div class="z-2 position-absolute top-0 end-0">
-                                            <img th:src="@{'http://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}" class="img-fluid w-200" alt="Weather Icon" />
-                                        </div>
-                                    </div>
-                                    <div th:if="${weatherResponse == null}" class="error-message">
-                                        <p>Location not found, please update your location to see the weather</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                <div class="gardenContainer">
-                    <div class="row mb-3" th:if="${gardenTags != null and gardenTags.size() > 0}">
-                        <div class="col d-flex flex-wrap">
-                            <th:block th:each="tag : ${gardenTags}">
-                                <span class="badge me-2 mb-2 tag-colour" th:text="${#strings.abbreviate(tag.name,20)}"></span>
-                            </th:block>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col garden-details-button-row">
-                            <!-- Edit, Add Sections -->
-                            <div>
-                                <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
-                                    Edit
-                                </a>
-                                <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}" class="btn btn-primary ms-2 button">
-                                    Add new plant
-                                </a>
-                            </div>
-
-                            <!-- tag section -->
-                            <form class="tags" id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
-                                <div class="tag-input">
-                                    <div class="input-group ms-2 input-clear">
-                                        <input type="text" class="form-control form-control-sm" placeholder="Enter tag" id="tagInput" name="tag" th:value="${tagInput}">                                        <button class="btn btn-secondary button" type="button" id="clearButton">x</button>
-                                    </div>
-                                    <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- tag error message -->
-                        <div th:if="${tagError}" class="alert alert-danger">
-                            <p th:text="${tagError}"></p>
-                        </div>
-
-                        <!-- Moving the autocomplete list below the input form -->
-                        <div class="container mt-3" id="autocompleteList"></div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col">
-                            <div id="imageError" class="error-message"></div>
-                        </div>
-                    </div>
-
                 </div>
-                <div class="plantContainer table-responsive bg-light" style="max-height: calc(97px * 6); overflow-y: auto;">
+                <div class="row mb-3 ps-5">
+                    <div class="col">
+                        <h3 th:text="${gardenLocation}">  </h3>
+                    </div>
+                </div>
+                <div th:if="${gardenSize!=''}" class="row mb-3 ps-5" th:classappend="${gardenSize == '' ? 'disabled' : ''}">
+                    <div class="col">
+                        <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
+                    </div>
+                </div>
+                <div class="row mb-3 ps-5">
+                    <div class="col">
+                        <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
+                            Edit Garden
+                        </a>
+                    </div>
+                </div>
+                <div class="row mb-3 ps-5" th:if="${gardenTags != null and gardenTags.size() > 0}">
+                    <div class="col d-flex flex-wrap">
+                        <th:block th:each="tag : ${gardenTags}">
+                            <span class="badge me-2 mb-2 tag-colour" th:text="${tag.name}"></span>
+                        </th:block>
+                    </div>
+                </div>
+                <div class="row mb-3 ps-5">
+                    <div class="col tag-error">
+                        <div th:if="${duplicateTagError}" class="text-danger" th:text="${duplicateTagError}"></div>
+                        <div th:if="${profanityTagError}" class="text-danger" th:text="${profanityTagError}"></div>
+                        <div th:if="${tagTextError}" class="text-danger" th:text="${tagTextError}"></div>
+                        <div th:if="${tagLengthError}" class="text-danger" th:text="${tagLengthError}"></div>
+                    </div>
+                </div>
+                <div class="row mb-3 ps-5">
+                    <div class="col d-flex flex-end">
+                        <form class="tags" id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
+                            <div class="d-flex w-300 tag-error">
+                                <div class="input-group">
+                                    <input type="text" class="tag-input border-end-0 w-350 p-1 rounded-start" placeholder="Enter tag" id="tagInput" name="tag" th:value="${tagInput}">
+                                    <button class="tag-input tag-x p-1 rounded-end text-black border-0" type="button" id="clearButton">x</button>
+                                </div>
+                                <button class="btn btn-primary button ms-2" type="submit" id="addTagButton">+</button>
+                                <div class="container tag-input rounded-bottom" id="autocompleteList"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col container pt-5">
+                <div class="d-flex flex-end align-content-end">
+                    <a th:href="@{'/create-plant?gardenID=' + ${gardenID}}" class="btn btn-primary button">
+                        Add new plant
+                    </a>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div id="imageError" class="text-danger"></div>
+                    </div>
+                </div>
+                <div class="plantContainer table-responsive bg-white" style="max-height: calc(97px * 6); overflow-y: auto;">
                     <table class="table">
                         <thead>
                         <tr class="garden-table">
-                            <th>Picture &nbsp;</th>
-                            <th>Plant Name &nbsp;</th>
-                            <th>Count &nbsp;</th>
-                            <th>Description &nbsp;</th>
+                            <th>Picture</th>
+                            <th>Plant Name</th>
+                            <th>Count</th>
+                            <th>Description</th>
                             <th>Date Planted</th>
                             <th>Edit Plant</th>
                         </tr>
                         </thead>
-                        <tbody>
-                            <tr th:each="plant : ${plants}" class="plant-row">
-                                <td>
+                        <tbody class="table-bordered">
+                            <tr th:each="plant : ${plants}" class="plant-row border-0">
+                                <td class="border-0" >
                                     <div class="image-icon-div-small">
                                         <div class="image-upload">
                                             <img class="image-small"
                                                  th:id="${plant.id}" th:data-plant-id="${plant.id}"
-                                                 th:src="@{/get-image?view-garden=true(plantID = ${plant.id})}" alt="">
+                                                 th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
                                             <input th:value="imagePath" class="file-input" type="file" name="file" id="file">
                                             <button class="image-picker-small" th:image-button-id="${plant.id}">+</button>
                                         </div>
                                     </div>
                                 </td>
-                                <td th:text="${#strings.abbreviate(plant.name, 30)}"></td>
-                                <td th:text="${plant.count}"></td>
-                                <td th:text="${plant.description}" class="text-wrap"></td>
-                                <td th:text="${plant.datePlanted}"></td>
-                                <td>
+                                <td class="p-2 plant-name-width" th:text="${plant.name}"></td>
+                                <td class="p-2 border-0" th:text="${plant.count}"></td>
+                                <td class="p-2 plant-description-width" th:text="${plant.description}"></td>
+                                <td class="p-2 border-0" th:text="${plant.datePlanted}"></td>
+                                <td class="p-2 border-0" >
                                     <a th:href="@{'/edit-plant?plantID=' + ${plant.id}}">
                                         <button type="button" class="btn btn-primary button">Edit</button>
                                     </a>
@@ -142,6 +117,48 @@
                     </table>
                 </div>
             </div>
+            <!-- Weather Section -->
+            <div class="col container-fluid" th:if="${forecastResponse != null}">
+                <div class="row p-5 overflow-scroll">
+                    <div class="col py-2" th:each="weatherResponse, iterStat: ${forecastResponse.weatherResponses}"
+                         th:classappend="${iterStat.first ? 'col-12' : 'col-6'}">
+                        <div class="container bg-success bg-gradient shadow rounded-4 p-4 z-3 position-relative"
+                             th:classappend="${iterStat.first ? '' : 'pb-0'}">
+                            <div th:if="${weatherResponse != null}">
+                                          <span th:if="${iterStat.first}"
+                                                class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-secondary">
+                                              Today
+                                          </span>
+                                <h4>
+                                    <strong>
+                                        <span th:text="${weatherResponse.dayOfWeek.substring(0,3)}"></span>
+                                    </strong>
+                                    <img th:if="${iterStat.first}"
+                                         th:src="@{'https://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@4x.png'}"
+                                         class="position-absolute top-0 end-0 img-fluid w-200" alt="Weather Icon" />
+                                </h4>
+                                <p><span th:text="${weatherResponse.date}"></span></p>
+                                <p><span th:text="${weatherResponse.description}"></span></p>
+                                <p><span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
+                                <p>Humidity: <span th:text="${weatherResponse.humidity}"></span>%</p>
+
+                                <img th:if="!${iterStat.first}"
+                                     th:src="@{'https://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}"
+                                     class="img-fluid w-200" alt="Weather Icon" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${forecastResponse == null}" class="col container-fluid pt-5">
+                <div class="row p-5 overflow-scroll">
+                    <div class="container bg-danger bg-opacity-75 bg-gradient shadow rounded-4 p-4 z-3 position-relative">
+                        <p>Location not found,</p>
+                        <p>please update your location to see the weather</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
         <!-- Scripts fragment, contains bootstrap scripts -->
         <div th:replace="~{fragments/scripts :: scripts}"></div>
@@ -199,7 +216,7 @@
                     let item = document.createElement('button');
                     item.className = 'dropdown-item autocomplete-tag-item'; // Bootstrap class
                     //Abbreviate the tag name if it is too long to fit within a reasonable width (20 characters)
-                    item.textContent = tag.name.length > 20 ? tag.name.substring(0, 20) + '...' : tag.name;
+                    item.textContent = tag.name;
                     item.addEventListener('click', function() {
                         // Set the input value to the clicked item's text
                         tagInput.value = this.textContent;

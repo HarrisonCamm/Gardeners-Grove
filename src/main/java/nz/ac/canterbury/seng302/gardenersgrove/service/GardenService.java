@@ -1,8 +1,10 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.GardenRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +18,7 @@ import java.util.Optional;
 public class GardenService {
     private GardenRepository gardenRepository;
 
-//    @Autowired
+    @Autowired
     public GardenService(GardenRepository gardenRepository) {
         this.gardenRepository = gardenRepository;
     }
@@ -33,7 +35,15 @@ public class GardenService {
         return gardenRepository.findByOwnerUserId(ownerId);
     }
 
+    public List<Garden> getGardensByTag(Tag tag) {
+        return gardenRepository.findGardensByTagId(tag.getId());
+    }
+
     public Garden addGarden(Garden garden) {
+        return gardenRepository.save(garden);
+    }
+    public Garden updateGarden(Garden garden, String name, Location location, String size) {
+        garden.setValues(name, location, size);
         return gardenRepository.save(garden);
     }
 
@@ -48,11 +58,28 @@ public class GardenService {
         }
     }
 
+    public List<Tag> getEvaluatedTags(Long gardenId) {
+        List<Tag> tags = getTags(gardenId);
+        tags.removeIf(tag -> !tag.getEvaluated());
+        return tags;
+    }
+
     public Garden addTagToGarden(Long gardenId, Tag tag) {
         Optional<Garden> optionalGarden = gardenRepository.findById(gardenId);
         if (optionalGarden.isPresent()) {
             Garden garden = optionalGarden.get();
             garden.getTags().add(tag);
+            return gardenRepository.save(garden);
+        } else {
+            throw new RuntimeException("Garden not found with id: " + gardenId);
+        }
+    }
+
+    public Garden removeTagFromGarden(Long gardenId, Tag tag) {
+        Optional<Garden> optionalGarden = gardenRepository.findById(gardenId);
+        if (optionalGarden.isPresent()) {
+            Garden garden = optionalGarden.get();
+            garden.getTags().remove(tag);
             return gardenRepository.save(garden);
         } else {
             throw new RuntimeException("Garden not found with id: " + gardenId);

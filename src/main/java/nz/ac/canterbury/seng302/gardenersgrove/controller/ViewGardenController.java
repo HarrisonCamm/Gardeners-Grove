@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import static nz.ac.canterbury.seng302.gardenersgrove.validation.TagValidator.*;
 
 @Controller
 public class ViewGardenController {
@@ -67,9 +68,6 @@ public class ViewGardenController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
-
-
-
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService);
         return "viewGardenDetailsTemplate";
@@ -133,52 +131,65 @@ public class ViewGardenController {
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
-        // Moderate the tag before adding
-        String possibleTerms = moderationService.moderateText(tag);
+        // Get weather information
+        WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+        model.addAttribute("weatherResponse", weatherResponse);
+        if (tag.isEmpty()) {
+            return "redirect:/view-garden?gardenID=" + gardenID;
+        }
 
-        if (possibleTerms.equals("evaluation_error")) {
-            // Add tag to a waiting list for later evaluation
-
-            // The tag is initialized as not appropriate and not evaluated yet
-            Tag waitingTag = new Tag(tag, gardenID, currentUser.getUserId(), false, false);
-
-            // Add tag to database
-            tagService.addTag(waitingTag);
-
-            // Show evaluation error
-            model.addAttribute("tagError", "Tag could not be evaluated at this time and will be reviewed shortly.");
-
-        } else if (!possibleTerms.equals("null")) {
-            // If the possible terms are not empty, then it contains profanity
-
-            // Add attributes and return the same view
-            addAttributes(currentUser, gardenID, model, plantService, gardenService);
-
-            // Get weather information
-            WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
-            model.addAttribute("weatherResponse", weatherResponse);
-
-            // Show error
-            model.addAttribute("tagError", "Profanity or inappropriate language detected");
-
-            return "viewGardenDetailsTemplate";
+        // Check if this is a duplicate tag before moderation
+        List<Tag> allTags = tagService.getTags();
+        Tag addedTag;
+        boolean tagExists = allTags.stream().anyMatch(existingTag -> existingTag.getName().equals(tag));
+        if (tagExists) {
+            addedTag = tagService.getTagByName(tag);
         } else {
-            // Tag is ok
-            // Create tag
-            Tag addedTag = new Tag(tag, gardenID, currentUser.getUserId(), true, true);
+            doTagValidations(model, tag);
+            if (model.containsAttribute("tagTextError") || model.containsAttribute("tagLengthError")) {
+                addAttributes(currentUser, gardenID, model, plantService, gardenService);
+                return "viewGardenDetailsTemplate";
+            }
+
+            // Add tag to the database
+            addedTag = new Tag(tag, false);
+
+            // Moderate the tag before adding
+            String possibleTerms = moderationService.moderateText(tag);
+
+            if (possibleTerms.equals("evaluation_error")) {
+                // Add tag to a waiting list for later evaluation
+
+                // Show evaluation error
+                model.addAttribute("tagError", "Tag could not be evaluated at this time and will be reviewed shortly.");
+            } else  {
+                if (!isAppropriateName(possibleTerms)) {
+                    model.addAttribute("profanityTagError", "Profanity or inappropriate language detected");
+                    addAttributes(currentUser, gardenID, model, plantService, gardenService);
+                    return "viewGardenDetailsTemplate";
+                }
+
+                addedTag.setEvaluated(true);
+            }
 
             // Add tag to database
             tagService.addTag(addedTag);
-
-            // Add tag to garden
-            gardenService.addTagToGarden(gardenID, addedTag);
         }
 
-        // Add attributes
-        addAttributes(currentUser, gardenID, model, plantService, gardenService);
+        List<Tag> gardenTags = gardenService.getTags(gardenID);
+        Tag finalAddedTag = addedTag;
+        if (!gardenTags.stream().anyMatch(existingTag -> existingTag.equals(finalAddedTag))) {
+            // add the tag to the garden's list of tags
+            gardenService.addTagToGarden(gardenID, addedTag);
+        } else {
+            model.addAttribute("duplicateTagError", "Tag is already defined");
+            addAttributes(currentUser, gardenID, model, plantService, gardenService);
+            return "viewGardenDetailsTemplate";
+        }
 
         // Return user to page
         return "redirect:/view-garden?gardenID=" + gardenID;
+
     }
 
     private void addAttributes(User owner, Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
@@ -194,8 +205,8 @@ public class ViewGardenController {
             model.addAttribute("gardenName", garden.get().getName());
             model.addAttribute("gardenLocation", garden.get().getLocation().toString());
             model.addAttribute("gardenSize", garden.get().getSize());
-            model.addAttribute("gardenTags", gardenService.getTags(gardenID));
-            model.addAttribute("allTags", tagService.getTags());
+            model.addAttribute("gardenTags", gardenService.getEvaluatedTags(gardenID));
+            model.addAttribute("allTags", tagService.getTagsByEvaluated(true));
 
 
             //New Code Added to get weather

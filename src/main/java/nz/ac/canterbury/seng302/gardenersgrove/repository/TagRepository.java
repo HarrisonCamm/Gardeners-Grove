@@ -14,13 +14,13 @@ import java.util.Optional;
 @Repository
 public interface TagRepository extends CrudRepository<Tag, Long> {
 
-    @Query("SELECT DISTINCT t FROM Tag t")
     List<Tag> findAll();
 
-    Tag save(Tag tag);
+    List<Tag> findTagsByEvaluated(boolean evaluated);
 
-    @Query("SELECT t FROM Tag t WHERE t.id = ?1")
-    Optional<Tag> getTag(@Param("id") Long id);
+    Optional<Tag> getTagById(Long id);
+
+    Tag getTagByName(String name);
 
     @Query("SELECT t FROM Tag t WHERE t.evaluated = false")
     List<Tag> findWaitingTags();
