@@ -4,13 +4,16 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import jakarta.transaction.Transactional;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ModerationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Assertions;
+import org.junit.platform.suite.api.ExcludePackages;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -111,9 +114,12 @@ public class TagModerationSteps {
     }
 
     @Then("the tag is not added to the list of user-defined tags")
-    public void the_tag_is_not_added_to_the_list_of_user_defined_tags() {
-        // Write code here that turns the phrase above into concrete actions
-        List<Tag> tags = ownedGarden.getTags();
+    @Transactional
+    public void the_tag_is_not_added_to_the_list_of_user_defined_tags() throws Exception {
+        resultActions = mockMvc.perform(get("/view-garden")
+                .param("gardenID", ownedGarden.getId().toString())
+                .with(csrf())); // Add CSRF token)
+        List<Tag> tags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("allTags");
         boolean hasInappropriateTag = tags.stream()
                 .anyMatch(tag -> "InappropriateTag".equals(tag.getName()));
         Assertions.assertFalse(hasInappropriateTag);
@@ -139,8 +145,9 @@ public class TagModerationSteps {
                         .with(csrf())); // Add CSRF token)
         List<Tag> tags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("allTags");
         boolean hasInappropriateTag = tags.stream()
-                .anyMatch(tag -> "InappropriateTag".equals(tag.getName()));
-        Assertions.assertFalse(hasInappropriateTag);    }
+                .anyMatch(tag -> "NotEvaluated".equals(tag.getName()));
+        Assertions.assertFalse(hasInappropriateTag);
+    }
 
     @Then("it is added to a waiting list that will be evaluated as soon as possible")
     public void it_is_added_to_a_waiting_list_that_will_be_evaluated_as_soon_as_possible() {
