@@ -18,15 +18,22 @@ public class TagService {
         this.tagRepository = tagRepository;
     }
 
+    //Get all tags from database
     public List<Tag> getTags() {
         return tagRepository.findAll();
     }
 
+    //Add tag to database
     public Tag addTag(Tag tag) {
         return tagRepository.save(tag);
     }
 
+    //Get tag by tag id
     public Optional<Tag> findTag(Long id) {
-        return tagRepository.getTag(id);
+        return tagRepository.getTagById(id);
+    }
+    //Get tag by tag name
+    public Tag getTagByName(String name) {
+        return tagRepository.getTagByName(name);
     }
 }

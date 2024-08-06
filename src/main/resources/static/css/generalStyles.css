@@ -369,8 +369,6 @@ h2 {
     align-items: center;
 }
 
-
-
 .suggestions {
     padding: 0;
 }
@@ -402,39 +400,33 @@ p {
     margin: 0
 }
 
-.garden-details-button-row {
-    display: flex;
-    flex-direction: row;
+.tag-input, .tag-input:hover, .tag-input:focus {
+    font-size: 100%;
+    background-color: #E2F1CA;
+    border: 2px solid #BEE186;
+    outline: 0;
 }
-
-.tag-input {
-    width: 300px;
-    display: flex;
-    position: relative;
+.tag-x, .tag-x:hover {
+    outline: 2px solid #BEE186;
 }
-
-.input-clear {
-    position: relative;
+.tag-error {
+    max-width: 400px;
 }
-
-.input-clear input {
-    padding-right: 30px;
+.plant-name-width {
+    max-width: 150px;
+    display: block;
+    overflow-x: auto;
+    border: 0;
 }
-
-.input-clear button {
-    position: absolute;
-    right: 10%;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: #000;
-    transition: background-color 0.3s ease;
-    border-radius: 50%;
+.plant-description-width {
+    max-width: 250px;
+    display: block;
+    overflow-x: auto;
+    border: 0;
 }
-
-.input-clear button:hover {
-    background-color: transparent !important;
-    color: #000 !important;
+.tag-input:disabled {
+    background-color: #DFDEDC;
+    border: 1px solid #C4C3C1;
 }
 
 .tag-colour {
@@ -448,14 +440,13 @@ p {
 
 #autocompleteList {
     position: absolute;
-    border: 1px solid black;
-    background-color: rgba(190, 225, 134); /* Adjust the alpha value to control transparency */
+    background-color: #E2F1CA;
     display: none; /* Initially hidden, display when needed */
-    z-index: 99;
-    margin-top: 15% !important;
+    margin-top: 35px !important;
     max-height: 400px;
     overflow: auto;
     overflow-x: hidden;
+    max-width: 248px;
 }
 
 
@@ -478,12 +469,6 @@ p {
 hr {
     margin: 2px 0 2px 0;
 }
-
-.view-garden-plant-buttons {
-    display: flex;
-    justify-content: space-between; /* Optional: Adds space between the buttons */
-}
-
 
 @media only screen and (orientation: portrait) {
     h2 {

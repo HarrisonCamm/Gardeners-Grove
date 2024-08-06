@@ -50,8 +50,8 @@ public class TagServiceTests {
         when(tagRepository.findAll()).thenReturn(Arrays.asList(tag1, tag2)); // Mock the findAll method
         when(tagRepository.save(tag1)).thenReturn(tag1);
         when(tagRepository.save(tag2)).thenReturn(tag2);
-        when(tagRepository.getTag(1L)).thenReturn(Optional.of(tag1));
-        when(tagRepository.getTag(2L)).thenReturn(Optional.of(tag2));
+        when(tagRepository.getTagById(1L)).thenReturn(Optional.of(tag1));
+        when(tagRepository.getTagById(2L)).thenReturn(Optional.of(tag2));
 
 
         when(gardenRepository.findById(1L)).thenReturn(Optional.of(testGarden));

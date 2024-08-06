@@ -8,7 +8,6 @@
         <script th:src="@{javascript/enter-date.js}"></script>
         <script th:src="@{javascript/prevent-enter-submit.js}"></script>
         <script th:src="@{/javascript/image-handling.js}"></script>
-        <script th:src="@{/javascript/description-length.js}"></script>
     </head>
     <body>
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
@@ -43,10 +42,10 @@
                     <label for="plantCount"> Count: </label>
                     <br/>
                     <input type="text" class="form-control" id="plantCount"
-                           th:name="count" th:value="${count}"
+                           th:name="count" th:value="${count} "
                            th:classappend="${countError} ? 'error' : 'form-control'" autofocus>
                     <br/>
-                    <div th:if="${countError}" class="error-message" th:text="${countError}"></div>
+                    <div id="plantCountValidation" th:if="${countError}" class="error-message" th:text="${countError}"></div>
                     <br/>
                     <label for="plantDescription"> Description: </label>
                     <br/>
@@ -54,7 +53,7 @@
                               th:name="description"
                               th:text="${description}"
                               th:classappend="${descriptionError} ? 'error' : ''"
-                              oninput="descriptionLength(this)">
+                              >
                             </textarea>
                     <br/>
                     <div id="descriptionLengthValidation" class="error-message" th:text="${descriptionError}"></div>
