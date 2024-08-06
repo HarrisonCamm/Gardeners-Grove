@@ -54,8 +54,13 @@ public class CancelFriendRequestsSteps {
     }
 
     @Then("{string} cannot see the friend request")
-    public void userCannotSeeTheFriendRequest(String userEmail) {
-        throw new io.cucumber.java.PendingException();
+    public void userCannotSeeTheFriendRequest(String otherUserEmail) {
+        otherUser = userService.getUserByEmail(otherUserEmail);
+        currentUser = userService.getAuthenticatedUser();
+
+        List<FriendRequest> otherUserFriendRequests = userService.getPendingFriendRequests(otherUser);
+        Assertions.assertNotNull(otherUserFriendRequests);
+        Assertions.assertFalse(otherUserFriendRequests.stream().anyMatch(request -> request.getSender().equals(currentUser)));
     }
 
     @And("{string} cannot accept the friend request")
