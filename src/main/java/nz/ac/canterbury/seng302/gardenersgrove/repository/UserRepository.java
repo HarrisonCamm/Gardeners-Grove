@@ -39,4 +39,9 @@ public interface UserRepository extends CrudRepository<User, Long>{
 
     @Query("SELECT r from FriendRequest r WHERE r.receiver.userId = :userId and r.status = 'Pending'")
     List<FriendRequest> getPendingFriendRequests(Long userId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE User u SET u.inappropriateTagCount = u.inappropriateTagCount + 1 WHERE u.userId = :userId")
+    void incrementInappropriateTagCount(@Param("userId") Long userId);
 }

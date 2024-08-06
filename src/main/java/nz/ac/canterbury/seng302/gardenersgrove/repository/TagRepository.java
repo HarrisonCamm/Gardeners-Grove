@@ -16,7 +16,12 @@ public interface TagRepository extends CrudRepository<Tag, Long> {
 
     List<Tag> findAll();
 
+    List<Tag> findTagsByEvaluated(boolean evaluated);
+
     Optional<Tag> getTagById(Long id);
 
     Tag getTagByName(String name);
+
+    @Query("SELECT t FROM Tag t WHERE t.evaluated = false")
+    List<Tag> findWaitingTags();
 }
