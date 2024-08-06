@@ -44,8 +44,8 @@ public class TagServiceTests {
                 new Location("test", "test", "test", "test", "test"),
                 "1");
 
-        Tag tag1 = new Tag("tag1");
-        Tag tag2 = new Tag("tag2");
+        Tag tag1 = new Tag("tag1", true);
+        Tag tag2 = new Tag("tag2", true);
 
         when(tagRepository.findAll()).thenReturn(Arrays.asList(tag1, tag2)); // Mock the findAll method
         when(tagRepository.save(tag1)).thenReturn(tag1);

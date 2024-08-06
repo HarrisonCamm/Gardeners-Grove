@@ -150,8 +150,8 @@ public class ViewGardenTests {
         Garden testGarden = new Garden("Test", location, "1", testUser);
 
         when(gardenService.findGarden(1L)).thenReturn(Optional.of(testGarden));
-        when(tagService.addTag(any())).thenReturn(new Tag(tag));
-        when(gardenService.addTagToGarden(1L, new Tag(tag))).thenReturn(testGarden);
+        when(tagService.addTag(any())).thenReturn(new Tag(tag, true));
+        when(gardenService.addTagToGarden(1L, new Tag(tag, true))).thenReturn(testGarden);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/add-tag")
                         .with(csrf())
