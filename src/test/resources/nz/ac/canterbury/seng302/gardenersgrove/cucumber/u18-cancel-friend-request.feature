@@ -7,13 +7,14 @@ Feature: U18 As Liam, I want to cancel friends on Gardener’s Grove so that we 
 
   Scenario Outline: AC1 - Cancelling a pending friend request
     Given I have sent an invite to <user>
-    And <user> has not yet accepted the invite
+    And they log into their account with <user> and <password>
+    And <user> has not yet accepted or declined the invite
     When I cancel my friend request
     Then <user> cannot see the friend request
     And <user> cannot accept the friend request
     Examples:
-      | user              |
-      | "kaia@email.com"  |
-      | "inaya@email.com" |
-      | "lei@email.com"   |
-      | "sarah@email.com" |
+      | user              | password     |
+      | "kaia@email.com"  | "Password1!" |
+      | "inaya@email.com" | "Password1!" |
+      | "lei@email.com"   | "Password1!" |
+      | "sarah@email.com" | "Password1!" |
