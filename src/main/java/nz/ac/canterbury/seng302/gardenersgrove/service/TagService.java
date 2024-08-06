@@ -21,13 +21,21 @@ public class TagService {
     private ModerationService moderationService; // Perform Moderation
     private UserService userService; // Increment users inappropriate tag count
 
-    // Original constructor
+    /**
+     * More primitive constructor for TagService
+     * @param tagRepository The tag repository
+     */
     public TagService(TagRepository tagRepository) {
         this(tagRepository, null, null, null);
     }
 
-    // Secondary constructor without @Autowired
-    // Constructor Chaining
+    /**
+     * Constructor for TagService
+     * @param tagRepository The tag repository
+     * @param gardenService The garden service
+     * @param moderationService The moderation service
+     * @param userService The user service
+     */
     @Autowired
     public TagService(TagRepository tagRepository, GardenService gardenService, ModerationService moderationService, UserService userService) {
         this.tagRepository = tagRepository;
@@ -59,9 +67,8 @@ public class TagService {
     @Transactional
     @Scheduled(fixedRate = 5000)
     public void evaluateWaitingTags() {
-        // Get all tags that need to be evaluated
+        // Get the list of all tags that need to be evaluated, check if it's empty first, then get the first tag
         List<Tag> waitingTags = tagRepository.findWaitingTags();
-
         if (waitingTags.isEmpty() || moderationService.isBusy()) {
             return;
         }

@@ -25,6 +25,8 @@ public class ModerationService {
 
     private ContentModeratorClient client;
 
+    // Allows only atomic operations, i.e. only 1 thread can edit this variable at a time without conflicts
+    // to prevent race conditions. New threads may be spawned by client requests.
     private AtomicBoolean isBusy = new AtomicBoolean(false);
 
     @Autowired
@@ -60,7 +62,7 @@ public class ModerationService {
 
             Status status = textResults.status();
 
-            // Check for evaluation error AC3
+            // Check for evaluation error AC3; status code 3000 means OK, or successful evaluation
             if (!status.code().equals(3000) || !status.description().equals("OK")) {
                 return "evaluation_error";
             }
@@ -74,6 +76,9 @@ public class ModerationService {
         }
     }
 
+    /**
+     * Waits in a loop until the azure API isn't being called (in this running instance), to prevent concurrent calls.
+     */
     private void waitUntilNotBusy() {
         while (!isBusy.compareAndSet(false, true)) {
             // Busy-wait
