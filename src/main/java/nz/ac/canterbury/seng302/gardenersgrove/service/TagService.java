@@ -2,10 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import jakarta.transaction.Transactional;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.repository.GardenRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.TagRepository;
-import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -44,12 +41,17 @@ public class TagService {
         this.userService = userService;
     }
 
+    //Get all tags from database
     public List<Tag> getTags() {
         return tagRepository.findAll();
     }
 
     public Optional<Tag> findTag(Long id) {
-        return tagRepository.getTag(id);
+        return tagRepository.getTagById(id);
+    }
+    //Get tag by tag name
+    public Tag getTagByName(String name) {
+        return tagRepository.getTagByName(name);
     }
 
     public Tag addTag(Tag tag) {

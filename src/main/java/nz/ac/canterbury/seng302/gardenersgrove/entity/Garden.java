@@ -24,7 +24,7 @@ public class Garden {
     @JoinColumn(nullable = false)
     private User owner;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "garden_tag",
             joinColumns = @JoinColumn(name = "garden_id"),
@@ -61,7 +61,12 @@ public class Garden {
         this.size = size;
         this.owner = owner;
     }
-
+    public Garden setValues(String name, Location location, String size) {
+        this.name = name;
+        this.location = location;
+        this.size = size;
+        return this;
+    }
     // Getter for id
     public Long getId() {
         return id;

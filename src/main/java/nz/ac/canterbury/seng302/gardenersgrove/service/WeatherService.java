@@ -22,7 +22,7 @@ public class WeatherService {
     @Value("${weather.api.url:#{null}}")
     private String apiUrl;
 
-    private static final int FORECAST_LEN = 6;
+    private static final int FORECAST_LEN = 5;
     private static final String  CUR_WEATHER_URL = "%sweather?q=%s&appid=%s&units=metric";
     private static final String  FORECAST_URL = "%sforecast/daily?q=%s&cnt=" + FORECAST_LEN + "&appid=%s&units=metric";
 
