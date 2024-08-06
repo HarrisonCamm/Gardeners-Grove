@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import jakarta.transaction.Transactional;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,10 @@ public class TagService {
         return tagRepository.findAll();
     }
 
+    public List<Tag> getTagsByEvaluated(boolean evaluated) {
+        return tagRepository.findTagsByEvaluated(evaluated);
+    }
+
     public Optional<Tag> findTag(Long id) {
         return tagRepository.getTagById(id);
     }
@@ -70,27 +75,26 @@ public class TagService {
     @Scheduled(fixedRate = 5000)
     public void evaluateWaitingTags() {
         // Get the list of all tags that need to be evaluated, check if it's empty first, then get the first tag
-        List<Tag> waitingTags = tagRepository.findWaitingTags();
+        List<Tag> waitingTags = tagRepository.findTagsByEvaluated(false);
         if (waitingTags.isEmpty() || moderationService.isBusy()) {
             return;
         }
-        Tag tag = waitingTags.get(0);
 
+        Tag tag = waitingTags.get(0);
         tag.setEvaluated(true);
 
         // Run tag name through moderation service
         if (moderationService.isContentAppropriate(tag.getName())) {
-            // Tag is appropriate
-            tag.setAppropriate(true);
             addTag(tag);    // Save tag's new details
-
-            // Add tag to garden
-            gardenService.addTagToGarden(tag.getGardenId(), tag);
         } else {
             removeTagFromWaitingList(tag);   // Remove tag from the waiting list
 
-            // Increment users inappropriate tag count
-            userService.incrementInappropriateTagCount(tag.getUserID());
+            List<Garden> gardens = gardenService.getGardensByTag(tag);
+            for (Garden garden : gardens) {
+                // Increment users inappropriate tag count
+                userService.incrementInappropriateTagCount(garden.getOwner().getUserId());
+                gardenService.removeTagFromGarden(garden.getId(), tag);
+            }
         }
     }
 }
