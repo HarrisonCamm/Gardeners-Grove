@@ -29,11 +29,7 @@ public class ModerationService {
     // to prevent race conditions. New threads may be spawned by client requests.
     private AtomicBoolean isBusy = new AtomicBoolean(false);
 
-    @Autowired
-    public ModerationService(@Value("${azure.api.url}") String moderatorApiUrl,
-                             @Value("${azure.api.key}") String moderatorApiKey) {
-        this.moderatorApiUrl = moderatorApiUrl;
-        this.moderatorApiKey = moderatorApiKey;
+    public ModerationService() {
         this.client = ContentModeratorManager.authenticate(AzureRegionBaseUrl.fromString(moderatorApiUrl), moderatorApiKey);
     }
 
