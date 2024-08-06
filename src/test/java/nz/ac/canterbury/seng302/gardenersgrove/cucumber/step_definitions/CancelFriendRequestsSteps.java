@@ -1,34 +1,53 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
+import io.cucumber.java.en.Given;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.platform.commons.logging.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 
+
 public class CancelFriendRequestsSteps {
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     @Autowired
     UserService userService;
 
+    @Autowired
+    GardenService gardenService;
+
     private MockMvc mockMvc;
     private User otherUser;
+
+    private User friendToCancel;
+
+    private MvcResult mvcResult;
+
     private User currentUser;
 
     @Before
@@ -63,8 +82,65 @@ public class CancelFriendRequestsSteps {
         Assertions.assertFalse(otherUserFriendRequests.stream().anyMatch(request -> request.getSender().equals(currentUser)));
     }
 
-    @And("{string} cannot accept the friend request")
-    public void userCannotAcceptTheFriendRequest(String userEmail) {
+    @Given("I see my friends list has {string}")
+    public void i_see_my_friends_list_has(String friendEmail) {
+        currentUser = userService.getAuthenticatedUser();
+        System.out.println(currentUser);
+        List<User> friends = currentUser.getFriends();
+        System.out.println(friends);
+        friendToCancel = userService.getUserByEmail(friendEmail);
+        Assertions.assertNotNull(friends);
+        Assertions.assertTrue(friends.stream().anyMatch(friend -> userService.areUsersEqual(friendToCancel, friend)));
+    }
+
+    @When("I click on a UI element that allows me to remove a {string} from my list")
+    public void i_click_on_a_ui_element_that_allows_me_to_remove_a_from_my_list(String friendEmail) throws Exception{
+        mvcResult = mockMvc.perform(get("/manage-friends"))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+
+    @When("I confirm that I want to remove {string}")
+    public void i_confirm_that_i_want_to_remove(String friendToCancelEmail) throws Exception {
+        mockMvc.perform(post("/manage-friends")
+                .param("action", "remove")
+                .param("email", friendToCancelEmail))
+                .andExpect(status().isFound());
+    }
+
+    @Then("{string} is removed from my list of friends")
+    public void is_removed_from_my_list_of_friends(String canceledFriendEmail) {
+        currentUser = userService.getAuthenticatedUser();
+        friendToCancel = userService.getUserByEmail(canceledFriendEmail);
+        List<User> myFriends = currentUser.getFriends();
+        Assertions.assertFalse(myFriends.stream().anyMatch(friend -> userService.areUsersEqual(friendToCancel, friend)));
+    }
+
+    @Then("I cannot see {string}'s gardens")
+    public void i_cannot_see_s_gardens(String canceledFriendEmail) throws Exception {
+        currentUser = userService.getAuthenticatedUser();
+        friendToCancel = userService.getUserByEmail(canceledFriendEmail);
+        Location canceledFriendLocation = new Location("123 Test Street", "Test Suburb", "Test City", "1234", "Test Country");
+        Garden canceledFriendGarden = new Garden("Hello", canceledFriendLocation, "1", friendToCancel);
+        gardenService.addGarden(canceledFriendGarden);
+        Long canceledId = canceledFriendGarden.getId();
+//        String url = "/view-gardens?id=" + canceledId.toString();
+
+//        mvcResult = mockMvc.perform(get(url)).andExpect(status().is4xxClientError());
+        mvcResult = mockMvc.perform(get("/view-gardens")
+                .queryParam("id", canceledId.toString())).andExpect(status().is4xxClientError()).andReturn();
+    }
+
+    @Then("{string} cannot see my gardens")
+    public void cannot_see_my_gardens(String string) {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+
+    @Then("I am removed from the list of friends of {string}")
+    public void i_am_removed_from_the_list_of_friends_of(String string) {
+        // Write code here that turns the phrase above into concrete actions
         throw new io.cucumber.java.PendingException();
     }
 }
