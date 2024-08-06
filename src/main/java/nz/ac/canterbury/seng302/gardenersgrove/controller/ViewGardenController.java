@@ -136,7 +136,21 @@ public class ViewGardenController {
         // Moderate the tag before adding
         String possibleTerms = moderationService.moderateText(tag);
 
-        if (!possibleTerms.equals("null")) {
+        if (possibleTerms.equals("evaluation_error")) {
+            // Add tag to a waiting list for later evaluation
+
+            // The tag is initialized as not appropriate and not evaluated yet
+            Tag waitingTag = new Tag(tag, gardenID, currentUser.getUserId(), false, false);
+
+            // Add tag to database
+            tagService.addTag(waitingTag);
+
+            // Show evaluation error
+            model.addAttribute("tagError", "Tag could not be evaluated at this time and will be reviewed shortly.");
+
+        } else if (!possibleTerms.equals("null")) {
+            // If the possible terms are not empty, then it contains profanity
+
             // Add attributes and return the same view
             addAttributes(currentUser, gardenID, model, plantService, gardenService);
 
@@ -149,8 +163,14 @@ public class ViewGardenController {
 
             return "viewGardenDetailsTemplate";
         } else {
-            // Tag is ok, Add tag to the database and to the garden's list of tags
-            Tag addedTag = tagService.addTag(new Tag(tag));
+            // Tag is ok
+            // Create tag
+            Tag addedTag = new Tag(tag, gardenID, currentUser.getUserId(), true, true);
+
+            // Add tag to database
+            tagService.addTag(addedTag);
+
+            // Add tag to garden
             gardenService.addTagToGarden(gardenID, addedTag);
         }
 
@@ -190,4 +210,3 @@ public class ViewGardenController {
         }
     }
 }
-

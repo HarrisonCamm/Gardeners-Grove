@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -47,14 +48,12 @@ public class ManageFriendsTests {
     private static User loggedUser;
     private static User testUser;
 
-    private static FriendRequest friendRequest;
-
     @BeforeEach
     public void setUp() {
         loggedUser = new User("logged@email.com", "foo", "bar", "password");
         testUser = new User("test@email.com", "test", "user", "password");
 
-        friendRequest = new FriendRequest(loggedUser, testUser);
+        FriendRequest friendRequest = new FriendRequest(loggedUser, testUser);
 
         when(userService.getAuthenticatedUser()).thenReturn(loggedUser);
         when(userService.searchForUsers(any(String.class), any(User.class))).thenReturn(List.of(testUser));
@@ -94,7 +93,6 @@ public class ManageFriendsTests {
                     .param("email", testUser.getEmail()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/manage-friends"));
-
     }
 
     @WithMockUser
@@ -115,8 +113,6 @@ public class ManageFriendsTests {
     @WithMockUser
     @Test
     public void OnManageFriends_AcceptFriendRequest_IsOkay() throws Exception {
-        List<User> friends = List.of(testUser);
-
         mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
                         .with(csrf())
                         .param("action", "accept")
@@ -128,13 +124,31 @@ public class ManageFriendsTests {
     @WithMockUser
     @Test
     public void OnManageFriends_DenyFriendRequest_IsOkay() throws Exception {
-        List<User> friends = List.of();
-
         mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
                         .with(csrf())
                         .param("action", "delete")
                         .param("email", testUser.getEmail()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/manage-friends"));
+    }
+
+    @WithMockUser
+    @Test
+    public void CanceledRequest_AcceptRequest_DoesNotSave() throws Exception {
+        friendRequestService.save(new FriendRequest(testUser, loggedUser));
+
+        // Immediately cancel the request
+        friendRequestService.cancelRequest(testUser, loggedUser);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/manage-friends")
+                        .with(csrf())
+                        .param("action", "accept")
+                        .param("email", testUser.getEmail()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/manage-friends"));
+
+
+        assertTrue(userService.getAuthenticatedUser().getFriends().isEmpty());
+
     }
 }

@@ -177,4 +177,9 @@ public class UserService {
                 user1.getPassword().equals(user2.getPassword()) &&
                 user1.getDateOfBirth().equals(user2.getDateOfBirth());
     }
+
+    // Used to increment the number of delayed tags that were deemed inappropriate
+    public void incrementInappropriateTagCount(Long userId) {
+        userRepository.incrementInappropriateTagCount(userId);
+    }
 }

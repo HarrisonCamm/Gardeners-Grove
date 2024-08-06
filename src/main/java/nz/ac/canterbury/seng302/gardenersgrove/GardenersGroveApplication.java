@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +24,7 @@ import java.nio.file.Paths;
  * Note @link{SpringBootApplication} annotation
  */
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
+@EnableScheduling
 public class GardenersGroveApplication {
 	@Autowired
 	private ResourceLoader resourceLoader;
