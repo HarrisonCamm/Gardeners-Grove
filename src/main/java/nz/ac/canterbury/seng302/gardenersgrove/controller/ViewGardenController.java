@@ -160,18 +160,6 @@ public class ViewGardenController {
             // Moderate the tag before adding
             String possibleTerms = moderationService.moderateText(tag);
 
-            if (model.containsAttribute("tagTextError") || model.containsAttribute("tagLengthError")
-                    || model.containsAttribute("profanityTagError") ) {
-                addAttributes(currentUser, gardenID, model, plantService, gardenService);
-
-                logger.info("Weather response: " + weatherResponse.toString());
-                model.addAttribute("weatherResponse", weatherResponse);
-
-                // Show error
-                model.addAttribute("tagError", "Profanity or inappropriate language detected");
-
-                return "viewGardenDetailsTemplate";
-            }
             if (possibleTerms.equals("evaluation_error")) {
                 // Add tag to a waiting list for later evaluation
 
@@ -287,7 +275,7 @@ public class ViewGardenController {
                 }
             } else {
                 // Entered Location is empty or null
-                model.addAttribute("weatherErrorMessage", "Location not found, please update your location to see the weather");
+                model.addAttribute("weatherErrorMessage", "Location not found, \nplease update your location to see the weather");
             }
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " does not exist");
