@@ -412,8 +412,14 @@ p {
 .tag-error {
     max-width: 400px;
 }
+.plant-name-width {
+    max-width: 150px;
+    display: block;
+    overflow-x: auto;
+    border: 0;
+}
 .plant-description-width {
-    max-width: 300px;
+    max-width: 250px;
     display: block;
     overflow-x: auto;
     border: 0;

@@ -24,7 +24,7 @@ public class Garden {
     @JoinColumn(nullable = false)
     private User owner;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "garden_tag",
             joinColumns = @JoinColumn(name = "garden_id"),

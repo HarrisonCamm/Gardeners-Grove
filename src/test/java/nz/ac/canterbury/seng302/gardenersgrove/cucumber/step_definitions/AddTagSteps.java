@@ -183,9 +183,12 @@ public class AddTagSteps {
                         .with(csrf())) // Add CSRF token
                 .andExpect(status().isOk());
         // Get all tags from the model
-        List<Tag> gardenTags = (List <Tag>) resultActions.andReturn().getModelAndView().getModel().get("gardenTags");
+        List<Tag> gardenTagsShown = (List <Tag>) resultActions.andReturn().getModelAndView().getModel().get("gardenTags");
 
         // Assert garden contains tag
+        Assertions.assertTrue(gardenTagsShown.stream().anyMatch(gardenTag -> typedTag.equals(gardenTag.getName())));
+
+        List<Tag> gardenTags = gardenService.getTags(ownedGarden2.getId());
         Assertions.assertTrue(gardenTags.stream().anyMatch(gardenTag -> typedTag.equals(gardenTag.getName())));
     }
 

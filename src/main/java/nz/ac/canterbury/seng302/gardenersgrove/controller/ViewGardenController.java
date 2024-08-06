@@ -159,6 +159,7 @@ public class ViewGardenController {
             addedTag = tagService.getTagByName(tag);
         }
 
+        //TODO merge this with tag moderation stuff and then potentially refactor out to somewhere else
         List<Tag> gardenTags = gardenService.getTags(gardenID);
         Tag finalAddedTag = addedTag;
         if (!gardenTags.stream().anyMatch(existingTag -> existingTag.equals(finalAddedTag))) {
@@ -197,7 +198,7 @@ public class ViewGardenController {
             String gardenCountry = garden.get().getLocation().getCountry();
             ForecastResponse forecastResponse = weatherService.getForecastWeather(gardenCity, gardenCountry);       //Get forecast
             WeatherResponse currentWeather = weatherService.getCurrentWeather(gardenCity, gardenCountry);       //Get current weather
-            if (currentWeather != null && forecastResponse != null) forecastResponse.addWeatherResponse(currentWeather);                    //Add current weather to forecast
+            if (currentWeather != null) forecastResponse.addWeatherResponse(currentWeather);                    //Add current weather to forecast
             model.addAttribute( "forecastResponse", forecastResponse);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " does not exist");
