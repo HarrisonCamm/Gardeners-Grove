@@ -160,18 +160,18 @@ public class ViewGardenController {
             // Moderate the tag before adding
             String possibleTerms = moderationService.moderateText(tag);
 
-        if (model.containsAttribute("tagTextError") || model.containsAttribute("tagLengthError")
-                || model.containsAttribute("profanityTagError") ) {
-            addAttributes(currentUser, gardenID, model, plantService, gardenService);
+            if (model.containsAttribute("tagTextError") || model.containsAttribute("tagLengthError")
+                    || model.containsAttribute("profanityTagError") ) {
+                addAttributes(currentUser, gardenID, model, plantService, gardenService);
 
-            logger.info("Weather response: " + weatherResponse.toString());
-            model.addAttribute("weatherResponse", weatherResponse);
+                logger.info("Weather response: " + weatherResponse.toString());
+                model.addAttribute("weatherResponse", weatherResponse);
 
-            // Show error
-            model.addAttribute("tagError", "Profanity or inappropriate language detected");
+                // Show error
+                model.addAttribute("tagError", "Profanity or inappropriate language detected");
 
-            return "viewGardenDetailsTemplate";
-        }
+                return "viewGardenDetailsTemplate";
+            }
             if (possibleTerms.equals("evaluation_error")) {
                 // Add tag to a waiting list for later evaluation
 
