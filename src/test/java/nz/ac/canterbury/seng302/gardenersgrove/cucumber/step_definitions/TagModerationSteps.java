@@ -6,12 +6,14 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ModerationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -19,12 +21,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import static org.mockito.Mockito.times;
+
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 
 public class TagModerationSteps {
@@ -67,16 +71,24 @@ public class TagModerationSteps {
 
     @Given("I am adding a valid tag")
     public void i_am_adding_a_valid_tag() {
-        typedTag = "timtams 4 toby";
+        typedTag = "tim tams fr";
     }
+
+    @Given("I am adding a innapropriate tag")
+    public void i_am_adding_a_innapropriate_tag() {
+        // Write code here that turns the phrase above into concrete actions
+        typedTag = "InappropriateTag";
+    }
+
 
     @When("I confirm the tag")
     public void i_confirm_the_tag() throws Exception {
         // Assuming confirm means clicking the button
-        resultActions = mockMvc.perform(post("/add-tag")
+        mvcResult = mockMvc.perform(post("/add-tag")
                 .param("tag", typedTag)
                 .param("gardenID", ownedGarden.getId().toString())
-                .with(csrf())).andExpect(status().is3xxRedirection()); // Add CSRF token
+                .with(csrf()))
+                .andReturn(); // Add CSRF token
     }
 
     @Then("the tag is checked for offensive or inappropriate words")
@@ -84,42 +96,51 @@ public class TagModerationSteps {
         verify(moderationService).moderateText(Mockito.any(String.class));
     }
 
-    @Given("the submitted tag is evaluated for appropriateness")
-    public void the_submitted_tag_is_evaluated_for_appropriateness() {
-        // Write code here that turns the phrase above into concrete actions
-        // Zack knows about this. Ask him later.
-        throw new io.cucumber.java.PendingException();
-    }
+//    @Given("the submitted tag is evaluated for appropriateness")
+//    public void the_submitted_tag_is_evaluated_for_appropriateness() {
+//        // Write code here that turns the phrase above into concrete actions
+//        // Zack knows about this. Ask him later.
+//        throw new io.cucumber.java.PendingException();
+//    }
 
-    @When("it is flagged as inappropriate")
-    public void it_is_flagged_as_inappropriate() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
-    }
 
     @Then("an error message tells me that the submitted word is not appropriate")
     public void an_error_message_tells_me_that_the_submitted_word_is_not_appropriate() {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        Assertions.assertEquals("Profanity or inappropriate language detected", mvcResult.getModelAndView().getModel().get("tagError"));
     }
 
     @Then("the tag is not added to the list of user-defined tags")
     public void the_tag_is_not_added_to_the_list_of_user_defined_tags() {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        List<Tag> tags = ownedGarden.getTags();
+        boolean hasInappropriateTag = tags.stream()
+                .anyMatch(tag -> "InappropriateTag".equals(tag.getName()));
+        Assertions.assertFalse(hasInappropriateTag);
+
     }
 
     @Given("the submitted tag cannot be evaluated for appropriateness")
-    public void the_submitted_tag_cannot_be_evaluated_for_appropriateness() {
+    public void the_submitted_tag_cannot_be_evaluated_for_appropriateness() throws Exception {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        typedTag = "NotEvaluated";
+        mvcResult = mockMvc.perform(post("/add-tag")
+                        .param("tag", typedTag)
+                        .param("gardenID", ownedGarden.getId().toString())
+                        .with(csrf()))
+                .andReturn(); // Add CSRF token
     }
 
     @Then("the tag is not visible publicly")
-    public void the_tag_is_not_visible_publicly() {
+    public void the_tag_is_not_visible_publicly() throws Exception{
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
-    }
+        resultActions = mockMvc.perform(get("/view-garden")
+                        .param("gardenID", ownedGarden.getId().toString())
+                        .with(csrf())); // Add CSRF token)
+        List<Tag> tags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("allTags");
+        boolean hasInappropriateTag = tags.stream()
+                .anyMatch(tag -> "InappropriateTag".equals(tag.getName()));
+        Assertions.assertFalse(hasInappropriateTag);    }
 
     @Then("it is added to a waiting list that will be evaluated as soon as possible")
     public void it_is_added_to_a_waiting_list_that_will_be_evaluated_as_soon_as_possible() {

@@ -12,9 +12,10 @@ Feature: U22 - Tag moderation
     Then the tag is checked for offensive or inappropriate words
 
   Scenario: AC2 - Handling inappropriate tags
-    Given the submitted tag is evaluated for appropriateness
-    When it is flagged as inappropriate
-    Then an error message tells me that the submitted word is not appropriate
+    Given I am adding a innapropriate tag
+    When I confirm the tag
+    Then the tag is checked for offensive or inappropriate words
+    And an error message tells me that the submitted word is not appropriate
     And the tag is not added to the list of user-defined tags
 
   Scenario: AC3 - Handling tags that cannot be evaluated immediately
