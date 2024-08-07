@@ -9,15 +9,21 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.security.CustomAuthenticationProvider;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import java.util.List;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,9 +86,7 @@ public class CancelFriendRequestsSteps {
     @Given("I see my friends list has {string}")
     public void i_see_my_friends_list_has(String friendEmail) {
         currentUser = userService.getAuthenticatedUser();
-        System.out.println(currentUser);
         List<User> friends = currentUser.getFriends();
-        System.out.println(friends);
         friendToCancel = userService.getUserByEmail(friendEmail);
         Assertions.assertNotNull(friends);
         Assertions.assertTrue(friends.stream().anyMatch(friend -> userService.areUsersEqual(friendToCancel, friend)));
@@ -128,10 +132,19 @@ public class CancelFriendRequestsSteps {
     public void cannot_see_my_gardens(String canceledFriendEmail) throws Exception {
         currentUser = userService.getAuthenticatedUser();
         friendToCancel = userService.getUserByEmail(canceledFriendEmail);
-        Location myLocation = new Location("123 My Street", "My Suburb", "Test City", "1234", "Test Country");
-        Garden myGarden = new Garden("My Garden", myLocation, "1", currentUser);
-        gardenService.addGarden(myGarden);
-        Long myId = myGarden.getId();
+        ResultActions resultActions = mockMvc.perform(post("/create-garden")
+                .param("name", "Kaia's Garden")
+                .param("location.streetAddress", "")
+                .param("location.suburb", "")
+                .param("location.city", "Christchurch")
+                .param("location.postcode", "")
+                .param("location.country", "NZ")
+                .param("size", "10")
+                .with(csrf())); // Add CSRF token
+
+        List<Garden> myGardens = gardenService.getOwnedGardens(currentUser.getUserId());
+
+        Long myId = myGardens.get(0).getId();
         mvcResult = mockMvc.perform(get("/view-gardens")
                 .queryParam("id", myId.toString())).andExpect(status().is4xxClientError()).andReturn();
     }
