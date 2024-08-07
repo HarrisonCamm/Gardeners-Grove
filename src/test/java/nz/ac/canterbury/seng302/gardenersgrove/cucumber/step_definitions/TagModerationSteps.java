@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 
-
+@SuppressWarnings({"unchecked", "SpringJavaInjectionPointsAutowiringInspection"})
 public class TagModerationSteps {
 
     @Autowired
@@ -77,8 +77,8 @@ public class TagModerationSteps {
         typedTag = "tim tams fr";
     }
 
-    @Given("I am adding a innapropriate tag")
-    public void i_am_adding_a_innapropriate_tag() {
+    @Given("I am adding a inappropriate tag")
+    public void i_am_adding_a_inappropriate_tag() {
         // Write code here that turns the phrase above into concrete actions
         typedTag = "InappropriateTag";
     }
