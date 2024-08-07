@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.Mockito.when;
@@ -61,6 +62,9 @@ public class RecordGardenPlantsSteps {
     @MockBean
     private static ModerationService moderationService;
 
+    @MockBean
+    private static AlertService alertService;
+
     private static Map<Long, Plant> mockPlantDB;
     private static Plant testPlant;
     private static Garden testGarden;
@@ -89,6 +93,7 @@ public class RecordGardenPlantsSteps {
         tagService = Mockito.mock(TagService.class);
         weatherService = Mockito.mock(WeatherService.class);
         moderationService = Mockito.mock(ModerationService.class);
+        alertService = Mockito.mock(AlertService.class);
 
 
         if (mockPlantDB != null) {mockPlantDB.clear();} //Clear pseudo plant database in between examples
@@ -131,7 +136,7 @@ public class RecordGardenPlantsSteps {
 
         //Create Controller objects for MockMVC pages
         CreatePlantController CreatePlantController = new CreatePlantController(plantService, gardenService, userService, imageService);
-        ViewGardenController ViewGardenController = new ViewGardenController(gardenService, plantService, userService, imageService, tagService, weatherService, moderationService);
+        ViewGardenController ViewGardenController = new ViewGardenController(gardenService, plantService, userService, imageService, tagService, weatherService, moderationService, alertService);
 
         //Build MockMVC page
         mockMvcCreatePlant = MockMvcBuilders.standaloneSetup(CreatePlantController).build();

@@ -50,7 +50,7 @@ public class ResetPasswordSteps {
     private static VerificationTokenService verificationTokenService;
 
     @MockBean
-    private static AuthenticationManager authenticationManager;
+    static AuthenticationManager authenticationManager;
 
     @MockBean
     private static UserService userService;
