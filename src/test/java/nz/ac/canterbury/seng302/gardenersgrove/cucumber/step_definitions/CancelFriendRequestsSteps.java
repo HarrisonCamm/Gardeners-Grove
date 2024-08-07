@@ -15,7 +15,10 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -23,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import java.util.List;
 
+import static nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions.ResetPasswordSteps.authenticationManager;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,6 +45,10 @@ public class CancelFriendRequestsSteps {
 
     @Autowired
     GardenService gardenService;
+
+    @Autowired
+    CustomAuthenticationProvider authenticationManager;
+
 
     private MockMvc mockMvc;
     private User otherUser;
@@ -118,12 +126,34 @@ public class CancelFriendRequestsSteps {
 
     @Then("I cannot see {string}'s gardens")
     public void i_cannot_see_s_gardens(String canceledFriendEmail) throws Exception {
-        currentUser = userService.getAuthenticatedUser();
         friendToCancel = userService.getUserByEmail(canceledFriendEmail);
-        Location canceledFriendLocation = new Location("123 Test Street", "Test Suburb", "Test City", "1234", "Test Country");
-        Garden canceledFriendGarden = new Garden("Hello", canceledFriendLocation, "1", friendToCancel);
-        gardenService.addGarden(canceledFriendGarden);
-        Long canceledId = canceledFriendGarden.getId();
+
+        //logging in as friendToCancel to create a garden to test that current user cannot see the created garden
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(canceledFriendEmail, friendToCancel.getPassword());
+        var authentication = authenticationManager.authenticate(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        //creating the garden for friendToCancel
+        ResultActions resultActions = mockMvc.perform(post("/create-garden")
+                .param("name", "Kaia's Garden")
+                .param("location.streetAddress", "")
+                .param("location.suburb", "")
+                .param("location.city", "Christchurch")
+                .param("location.postcode", "")
+                .param("location.country", "NZ")
+                .param("size", "10")
+                .with(csrf())); // Add CSRF token
+
+        List<Garden> theirGardens = gardenService.getOwnedGardens(friendToCancel.getUserId());
+
+        Long canceledId = theirGardens.get(0).getId();
+
+        //logging back in as Liam
+        UsernamePasswordAuthenticationToken myToken = new UsernamePasswordAuthenticationToken(currentUser.getEmail(), currentUser.getPassword());
+        var myAuthentication = authenticationManager.authenticate(myToken);
+        SecurityContextHolder.getContext().setAuthentication(myAuthentication);
+
+        //checking that liam cannot see the cancelled friend's garden
         mvcResult = mockMvc.perform(get("/view-gardens")
                 .queryParam("id", canceledId.toString())).andExpect(status().is4xxClientError()).andReturn();
     }
