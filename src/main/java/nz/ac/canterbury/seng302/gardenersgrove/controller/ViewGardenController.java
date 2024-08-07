@@ -58,6 +58,8 @@ public class ViewGardenController {
         response.setHeader("Pragma", "no-cache"); // HTTP 1.0
         response.setDateHeader("Expires", 0); // Proxies
 
+
+
         logger.info("GET /view-garden");
         RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
 
@@ -71,8 +73,8 @@ public class ViewGardenController {
         else if (!garden.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
-
-        addAttributes(currentUser, gardenID, model, plantService, gardenService);
+        addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
+        session.removeAttribute("tagEvaluationError");
         return "viewGardenDetailsTemplate";
     }
 
@@ -117,14 +119,15 @@ public class ViewGardenController {
             logger.error("Failed to upload new plant image", e);
         }
 
-        addAttributes(currentUser, gardenID, model, plantService, gardenService);
+        addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
         return "redirect:/view-garden?gardenID=" + gardenID;
     }
 
     @PostMapping("/add-tag")
     public String addTag(@RequestParam("gardenID") Long gardenID,
                          @RequestParam("tag") String tag,
-                         Model model) {
+                         Model model,
+                         HttpSession session) {
         logger.info("POST /add-tag");
 
         Optional<Garden> garden = gardenService.findGarden(gardenID);
@@ -150,7 +153,7 @@ public class ViewGardenController {
         } else {
             doTagValidations(model, tag);
             if (model.containsAttribute("tagTextError") || model.containsAttribute("tagLengthError")) {
-                addAttributes(currentUser, gardenID, model, plantService, gardenService);
+                addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
                 return "viewGardenDetailsTemplate";
             }
 
@@ -164,11 +167,11 @@ public class ViewGardenController {
                 // Add tag to a waiting list for later evaluation
 
                 // Show evaluation error
-                model.addAttribute("tagError", "Tag could not be evaluated at this time and will be reviewed shortly.");
+                session.setAttribute("tagEvaluationError", "Tag could not be evaluated at this time and will be reviewed shortly.");
             } else  {
                 if (!isAppropriateName(possibleTerms)) {
                     model.addAttribute("profanityTagError", "Profanity or inappropriate language detected");
-                    addAttributes(currentUser, gardenID, model, plantService, gardenService);
+                    addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
                     return "viewGardenDetailsTemplate";
                 }
 
@@ -186,7 +189,7 @@ public class ViewGardenController {
             gardenService.addTagToGarden(gardenID, addedTag);
         } else {
             model.addAttribute("duplicateTagError", "Tag is already defined");
-            addAttributes(currentUser, gardenID, model, plantService, gardenService);
+            addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
             return "viewGardenDetailsTemplate";
         }
 
@@ -210,7 +213,7 @@ public class ViewGardenController {
         return "redirect:/view-garden?gardenID=" + gardenID;
     }
 
-    private void addAttributes(User owner, Long gardenID, Model model, PlantService plantService, GardenService gardenService) {
+    private void addAttributes(User owner, Long gardenID, Model model, PlantService plantService, GardenService gardenService, HttpSession session) {
         List<Plant> plants = plantService.getGardenPlant(gardenID);
         List<Garden> gardens = gardenService.getOwnedGardens(owner.getUserId());
         model.addAttribute("gardens", gardens);
@@ -225,6 +228,7 @@ public class ViewGardenController {
             model.addAttribute("gardenSize", garden.get().getSize());
             model.addAttribute("gardenTags", gardenService.getEvaluatedTags(gardenID));
             model.addAttribute("allTags", tagService.getTagsByEvaluated(true));
+            model.addAttribute("tagError", session.getAttribute("tagEvaluationError"));
 
             // New Code Added to get weather
             String gardenCity = garden.get().getLocation().getCity();

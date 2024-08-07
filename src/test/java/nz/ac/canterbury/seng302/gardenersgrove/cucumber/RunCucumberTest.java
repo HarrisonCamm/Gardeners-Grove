@@ -119,6 +119,9 @@ public class RunCucumberTest {
         // Moderation Service API mocks
         // Mock successful moderation
         when(moderationService.moderateText(anyString())).thenReturn("null");
+
+        when(moderationService.moderateText(eq("NotEvaluated"))).thenReturn("evaluation_error");
+
         // Mock unsuccessful moderation (profanity detected)
         when(moderationService.moderateText(eq("InappropriateTag"))).thenReturn("[{\"term\":\"InappropriateTerm\"}]");
 
@@ -143,5 +146,9 @@ public class RunCucumberTest {
         when(weatherService.isRaining(eq(Raining), anyString())).thenReturn(true);
         // Mock unsuccessful is not currently raining
         when(weatherService.isRaining(eq(NotRaining), anyString())).thenReturn(false);
+
+        when(moderationService.isBusy()).thenReturn(false);
+        when(moderationService.isContentAppropriate("DelayedEvaluated")).thenReturn(true);
+        when(moderationService.isContentAppropriate("InappropriateEvaluated")).thenReturn(false);
     }
 }
