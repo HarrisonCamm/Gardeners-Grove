@@ -22,7 +22,7 @@
                  th:data-plant-id="${plant.id}"
                  th:src="@{/get-image?edit-plant=true(plantID=${plant.id})}" alt="">
             <input th:value="imagePath" class="file-input" type="file" name="file" id="file">
-            <button class="image-picker" th:image-button-id="${plant.id}">+</button>
+            <button class="image-picker" th:image-button-id="${plant}">+</button>
         </div>
     </div>
     <div class="formContainer">
@@ -81,7 +81,7 @@
             <div class="buttons-centre">
                 <button type="submit" class="submitButton">Save</button>
                 &nbsp;
-                <a th:href="@{${lastEndpoint}}" id="cancel">
+                <a th:href="@{/view-garden?(gardenID=${gardenID})}" id="cancel">
                     <button type="button">Cancel</button>
                 </a>
             </div>
