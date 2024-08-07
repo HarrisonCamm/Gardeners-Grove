@@ -389,7 +389,6 @@ public class SendFriendRequestsSteps {
         ModelAndView modelAndView = mvcResult.getModelAndView();
         assert modelAndView != null;
         List<FriendRequest> friendRequests = (List<FriendRequest>) modelAndView.getModel().get("sentRequests");
-        System.out.println(friendRequests);
         Assertions.assertTrue(friendRequests
                 .stream().anyMatch(request ->
                         (request.getStatus().equals(pending) || request.getStatus().equals(declined))));

@@ -24,13 +24,13 @@ Feature: U22 - Tag moderation
     And it is added to a waiting list that will be evaluated as soon as possible
 
   Scenario: AC4 - Making delayed evaluated tags visible
-    Given the evaluation of a user-defined tag was delayed
+    Given the evaluation of a user-defined tag "DelayedEvaluated" was delayed
     When the tag has been evaluated as appropriate
     Then the tag is visible publicly on the garden it was assigned to
     And it is added to the list of user-defined tags
 
   Scenario: AC5 - Handling inappropriate tags after delayed evaluation
-    Given the evaluation of a user-defined tag was delayed
+    Given the evaluation of a user-defined tag "InappropriateEvaluated" was delayed
     When the tag has been evaluated as inappropriate
     Then the tag is removed from the garden it was assigned to
     And it is not added to the list of user-defined tags

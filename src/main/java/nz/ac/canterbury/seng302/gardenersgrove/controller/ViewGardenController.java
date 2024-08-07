@@ -165,7 +165,6 @@ public class ViewGardenController {
                 // Add tag to a waiting list for later evaluation
 
                 // Show evaluation error
-                logger.info("help");
                 session.setAttribute("tagEvaluationError", "Tag could not be evaluated at this time and will be reviewed shortly.");
             } else  {
                 if (!isAppropriateName(possibleTerms)) {

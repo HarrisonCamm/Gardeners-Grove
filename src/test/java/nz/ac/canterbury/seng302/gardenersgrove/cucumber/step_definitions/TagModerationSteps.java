@@ -64,6 +64,7 @@ public class TagModerationSteps {
     private static String typedTag;
 
     private ResultActions resultActions;
+    private int inappropriateTagCount;
 
     @Before
     public void setup() {
@@ -75,6 +76,7 @@ public class TagModerationSteps {
     public void RAR() {
         ArrayList<Garden> gardens = (ArrayList<Garden>) gardenService.getOwnedGardens(userService.getAuthenticatedUser().getUserId());
         ownedGarden = gardens.get(gardens.size() - 1);
+        tagService.evaluateWaitingTags();
     }
 
     @Given("I am adding a valid tag")
@@ -103,13 +105,6 @@ public class TagModerationSteps {
     public void the_tag_is_checked_for_offensive_or_inappropriate_words() {
         verify(moderationService).moderateText(Mockito.any(String.class));
     }
-
-//    @Given("the submitted tag is evaluated for appropriateness")
-//    public void the_submitted_tag_is_evaluated_for_appropriateness() {
-//        // Write code here that turns the phrase above into concrete actions
-//        // Zack knows about this. Ask him later.
-//        throw new io.cucumber.java.PendingException();
-//    }
 
 
     @Then("an error message tells me that the submitted word is not appropriate")
@@ -149,7 +144,7 @@ public class TagModerationSteps {
                         .param("gardenID", ownedGarden.getId().toString())
                         .with(csrf())); // Add CSRF token)
         List<Tag> tags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("gardenTags");
-        System.out.println(tags);
+
         boolean hasInappropriateTag = tags.stream()
                 .anyMatch(tag -> typedTag.equals(tag.getName()));
         Assertions.assertFalse(hasInappropriateTag);
@@ -164,51 +159,79 @@ public class TagModerationSteps {
         Assertions.assertTrue(hasInappropriateTag);
     }
 
-    @Given("the evaluation of a user-defined tag was delayed")
-    public void the_evaluation_of_a_user_defined_tag_was_delayed() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    @Given("the evaluation of a user-defined tag {string} was delayed")
+    public void the_evaluation_of_a_user_defined_tag_was_delayed(String inputTag) throws Exception {
+        typedTag = inputTag;
+        inappropriateTagCount = userService.getAuthenticatedUser().getInappropriateTagCount();
+        resultActions = mockMvc.perform(post("/add-tag")
+                .param("tag", typedTag)
+                .param("gardenID", ownedGarden.getId().toString())
+                .with(csrf())) ;
+        Tag delayedTag = tagService.getTagByName(typedTag);
+        delayedTag.setEvaluated(false);
+        tagService.addTag(delayedTag);
+        List<Tag> waitingTags = tagService.getTagsByEvaluated(false);
+        boolean hasDelayedTag = waitingTags.stream()
+                .anyMatch(tag -> typedTag.equals(tag.getName()));
+        Assertions.assertTrue(hasDelayedTag);
     }
 
     @When("the tag has been evaluated as appropriate")
     public void the_tag_has_been_evaluated_as_appropriate() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        tagService.evaluateWaitingTags();
+        List<Tag> tags = tagService.getTagsByEvaluated(true);
+        boolean hasTag = tags.stream()
+                .anyMatch(tag -> typedTag.equals(tag.getName()));
+        Assertions.assertTrue(hasTag);
     }
 
     @Then("the tag is visible publicly on the garden it was assigned to")
-    public void the_tag_is_visible_publicly_on_the_garden_it_was_assigned_to() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    public void the_tag_is_visible_publicly_on_the_garden_it_was_assigned_to() throws Exception {
+        resultActions = mockMvc.perform(get("/view-garden")
+                .param("gardenID", ownedGarden.getId().toString())
+                .with(csrf()));
+        List<Tag> tags = (List<Tag>) resultActions.andReturn().getModelAndView().getModel().get("gardenTags");
+        boolean hasTag = tags.stream()
+                .anyMatch(tag -> typedTag.equals(tag.getName()));
+        Assertions.assertTrue(hasTag);
     }
 
     @Then("it is added to the list of user-defined tags")
     public void it_is_added_to_the_list_of_user_defined_tags() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        List<Tag> tags = tagService.getTagsByEvaluated(true);
+        boolean hasTag = tags.stream()
+                .anyMatch(tag -> typedTag.equals(tag.getName()));
+        Assertions.assertTrue(hasTag);
     }
 
     @When("the tag has been evaluated as inappropriate")
     public void the_tag_has_been_evaluated_as_inappropriate() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        tagService.evaluateWaitingTags();
+        List<Tag> tags = tagService.getTags();
+        boolean hasTag = tags.stream()
+                .anyMatch(tag -> typedTag.equals(tag.getName()));
+        Assertions.assertFalse(hasTag);
     }
 
     @Then("the tag is removed from the garden it was assigned to")
     public void the_tag_is_removed_from_the_garden_it_was_assigned_to() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        List<Tag> gardenTags = gardenService.getTags(ownedGarden.getId());
+        boolean hasTag = gardenTags.stream()
+                .anyMatch(tag -> typedTag.equals(tag.getName()));
+        Assertions.assertFalse(hasTag);
     }
 
     @Then("it is not added to the list of user-defined tags")
     public void it_is_not_added_to_the_list_of_user_defined_tags() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        List<Tag> tags = tagService.getTags();
+        boolean hasTag = tags.stream()
+                .anyMatch(tag -> typedTag.equals(tag.getName()));
+        Assertions.assertFalse(hasTag);
     }
 
-    @Then("the user’s count of inappropriate tags is increased by {int}")
-    public void the_user_s_count_of_inappropriate_tags_is_increased_by(Integer int1) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    @Then("the user’s count of inappropriate tags is increased by 1")
+    public void the_user_s_count_of_inappropriate_tags_is_increased_by() {
+        int updatedCount = userService.getAuthenticatedUser().getInappropriateTagCount();
+        Assertions.assertEquals(inappropriateTagCount+ 1, updatedCount);
     }
 }
