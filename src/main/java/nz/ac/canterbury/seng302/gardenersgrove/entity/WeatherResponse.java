@@ -70,6 +70,10 @@ public class WeatherResponse {
         return dateDateFormat.format(date * 1000);
     }
 
+    public Long getRawDate() {
+        return date;
+    }
+
     public String getDayOfWeek() {
         SimpleDateFormat dayDateFormat = new SimpleDateFormat("EEEE", Locale.ENGLISH);
         return dayDateFormat.format(date * 1000);
@@ -90,6 +94,7 @@ public class WeatherResponse {
     public String getIcon() {
         return weatherInfo != null && weatherInfo.length > 0 ? weatherInfo[0].icon : "";
     }
+
 
     // Inner classes for nested objects
     @JsonDeserialize
