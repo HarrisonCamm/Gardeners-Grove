@@ -59,6 +59,7 @@ public class EditPlantController {
         model.addAttribute("plant", plant);
         model.addAttribute("datePlanted", plant.getDatePlanted());
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+        model.addAttribute("gardenID", plant.getGarden().getId());
         RedirectService.addEndpoint("/edit-plant?plantID=" + plantID);
 
         Image.removeTemporaryImage(session, imageService);
@@ -108,6 +109,7 @@ public class EditPlantController {
             for (FieldError error : errors) {
                 model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());}
             model.addAttribute("plant", plant);             // I don't understand why but if I remove this line all fields EXCEPT name are cleared if they have errors
+            model.addAttribute("gardenID", plant.getGarden().getId());
             return "editPlantFormTemplate";
         } else {
             plantService.addPlant(plant);
