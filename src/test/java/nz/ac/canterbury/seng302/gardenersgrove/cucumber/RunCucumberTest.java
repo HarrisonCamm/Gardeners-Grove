@@ -51,6 +51,8 @@ public class RunCucumberTest {
         // Mock successful moderation
         when(moderationService.moderateText(anyString())).thenReturn("null");
 
+        when(moderationService.moderateText(eq("NotEvaluated"))).thenReturn("evaluation_error");
+
         // Mock unsuccessful moderation (profanity detected)
         when(moderationService.moderateText(eq("InappropriateTag"))).thenReturn("[{\"term\":\"InappropriateTerm\"}]");
     }
