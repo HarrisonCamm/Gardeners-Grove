@@ -55,8 +55,10 @@ public class ViewGardenTests {
 
     @MockBean
     private UserService userService;
+
     @MockBean
     private UserRepository userRepository;
+
     @MockBean
     private AuthenticationManager authenticationManager;
 
@@ -86,6 +88,9 @@ public class ViewGardenTests {
 
     @MockBean
     private ModerationService moderationService;
+
+    @MockBean
+    private AlertService alertService;
 
     private User testUser;
 

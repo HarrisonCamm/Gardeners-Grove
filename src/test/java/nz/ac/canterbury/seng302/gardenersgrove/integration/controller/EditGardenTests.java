@@ -90,6 +90,9 @@ public class EditGardenTests {
     @MockBean
     private ModerationService moderationService;
 
+    @MockBean
+    private AlertService alertService;
+
     private User mockUser;
 
     @BeforeEach

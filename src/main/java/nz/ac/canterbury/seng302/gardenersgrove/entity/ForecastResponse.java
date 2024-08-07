@@ -30,6 +30,14 @@ public class ForecastResponse {
     }
 
     /**
+     * Returns the WeatherResponse array starting from the first item (index 0) onwards.
+     * @return a new WeatherResponse array starting from the first item.
+     */
+    public WeatherResponse[] getAllWeatherResponses() {
+        return weatherResponses;
+    }
+
+    /**
      * DO NOT USE THIS METHOD UNLESS YOU KNOW WHAT YOU ARE DOING
      * Used to add cur weather to forecast object
      * @param weatherResponse The WeatherResponse to be added.
