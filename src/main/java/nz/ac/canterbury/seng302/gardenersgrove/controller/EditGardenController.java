@@ -91,10 +91,13 @@ public class EditGardenController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!result.get().getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this garden.");
+
         Garden currentGarden = result.get();
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
         Location gardenLocation = garden.getLocation();
+        gardenLocation.setId(currentGarden.getLocation().getId());
+
         // Perform validation
         ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize);
         session.setAttribute("gardenID", gardenID);
@@ -109,7 +112,7 @@ public class EditGardenController {
             model.addAttribute("garden", currentGarden);
             return "editGardenTemplate";
         } else {
-            gardenService.updateGarden(currentGarden, gardenName, gardenLocation, gardenSize);
+            gardenService.updateGarden(currentGarden, gardenName, gardenLocation, gardenSize, garden.getIsPublic());
             return "redirect:/view-garden?gardenID=" + currentGarden.getId();
         }
     }

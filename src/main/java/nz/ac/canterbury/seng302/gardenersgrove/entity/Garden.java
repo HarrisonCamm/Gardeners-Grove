@@ -32,6 +32,9 @@ public class Garden {
     )
     private List<Tag> tags = new ArrayList<>();
 
+    @Column
+    private Boolean isPublic;
+
 
     /**
      * Required constructor
@@ -60,13 +63,9 @@ public class Garden {
         this.location = location;
         this.size = size;
         this.owner = owner;
+        this.isPublic = false;
     }
-    public Garden setValues(String name, Location location, String size) {
-        this.name = name;
-        this.location = location;
-        this.size = size;
-        return this;
-    }
+
     // Getter for id
     public Long getId() {
         return id;
@@ -114,5 +113,15 @@ public class Garden {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    public boolean getIsPublic() {
+        if (isPublic == null)
+            return false;
+        return isPublic;
+    }
+
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
     }
 }

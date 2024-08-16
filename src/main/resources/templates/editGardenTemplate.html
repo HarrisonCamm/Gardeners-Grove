@@ -33,12 +33,15 @@
     </div>
 
     <br/>
+
     <div class="form">
 
         <h2>Edit Garden</h2>
+
         <div class="formContainer">
             <form th:action="@{'/edit-garden?gardenID=' + ${id}}" method="post" th:object="${garden}">
                 <input type="hidden" name="_method" value="PUT">
+
                 <div>
                     <label for="name"> Garden Name:
                         <span class="required-input"> * </span>
@@ -118,6 +121,12 @@
                     </div>
                 </div>
                 <br/>
+
+                <input type="checkbox" id="isPublic" th:name="isPublic" th:checked="*{isPublic}">
+                <label for="isPublic">Make my garden public</label>
+                <br />
+                <br />
+
                 <div class="buttons-centre">
                     <button type="submit">Save</button>
                     &nbsp;
