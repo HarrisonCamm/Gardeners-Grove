@@ -17,7 +17,7 @@ import java.util.List;
 @Table(name = "USERS") //revise later, ask tutor about style
 public class User {
 
-    public static final int DEFAULT_BALANCE = 500;
+    public static final Integer DEFAULT_BALANCE = 500;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //research how this works
@@ -41,7 +41,7 @@ public class User {
     private String dateOfBirth;
 
     @Column(name = "bloomBalance")
-    private int bloomBalance;
+    private Integer bloomBalance;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -103,6 +103,7 @@ public class User {
         this.noLastName = noLastName;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
+        this.bloomBalance = DEFAULT_BALANCE;
         return this;
     }
 
@@ -174,9 +175,9 @@ public class User {
         return dateOfBirth;
     }
 
-    public int getBloomBalance() { return bloomBalance; }
+    public Integer getBloomBalance() { return bloomBalance; }
 
-    public void setBloomBalance(int bloomBalance) { this.bloomBalance = bloomBalance; }
+    public void setBloomBalance(Integer bloomBalance) { this.bloomBalance = bloomBalance; }
 
     public String setPassword(String newPassword) {
         return this.password = newPassword;

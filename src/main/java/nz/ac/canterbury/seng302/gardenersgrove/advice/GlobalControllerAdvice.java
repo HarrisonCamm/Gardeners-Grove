@@ -1,21 +1,25 @@
 package nz.ac.canterbury.seng302.gardenersgrove.advice;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-@ControllerAdvice(assignableTypes = {UserController.class})
+@ControllerAdvice
 public class GlobalControllerAdvice {
 
-    private final BalanceService balanceService;
-
     @Autowired
-    public GlobalControllerAdvice(BalanceService balanceService) {
-        this.balanceService = balanceService;
-    }
+    private UserService userService;
 
-    @ModelAttribute("balance")
-    public Integer getBalance() {
-        return balanceService.getUserBalance();
+    @ModelAttribute("bloomBalance")
+    public Integer getBloomBalance() {
+        User authenticatedUser = userService.getAuthenticatedUser();
+        if (authenticatedUser != null) {
+            return authenticatedUser.getBloomBalance();
+        }
+        else {
+            return 0;
+        }
     }
 }

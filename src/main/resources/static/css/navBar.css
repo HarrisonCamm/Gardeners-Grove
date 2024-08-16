@@ -49,6 +49,10 @@ li {
     flex-grow: 1;
 }
 
+.navBar-bloom-display {
+    color: #FFFFFF;
+    width: 100%;
+}
 
 .navBar-logout-button {
     background-color: #0A3407;
