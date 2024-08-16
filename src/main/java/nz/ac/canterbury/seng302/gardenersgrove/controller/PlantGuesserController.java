@@ -1,18 +1,15 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
-import jakarta.servlet.ServletException;
+
 import jakarta.servlet.http.HttpServletRequest;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserItem;
+import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Controller for viewing the plant guesser page
@@ -22,9 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class PlantGuesserController {
 
     Logger logger = LoggerFactory.getLogger(PlantGuesserController.class);
+    private final PlantGuesserService plantGuesserService;
 
-    public PlantGuesserController() {
-
+    public PlantGuesserController(PlantGuesserService plantGuesserService) {
+        this.plantGuesserService = plantGuesserService;
     }
 
     /**
@@ -35,6 +33,11 @@ public class PlantGuesserController {
                               Model model) {
         logger.info("GET /plant-guesser");
         RedirectService.addEndpoint("/plant-guesser");
+
+        PlantGuesserItem plant = plantGuesserService.getPlantById(238331);
+
+        logger.info(plant.getCommonName());
+        logger.info(plant.getScientificName());
 
         return "plantGuesserTemplate";
     }
