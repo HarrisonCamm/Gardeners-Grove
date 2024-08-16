@@ -74,6 +74,15 @@ dependencies {
 	testImplementation 'io.cucumber:cucumber-spring:7.15.0'
 	testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.15.0'
 	testImplementation 'org.junit.platform:junit-platform-suite:1.10.2'
+
+	// Spring websockets
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	//WebJars fro SockJS and STOMP
+	// WebJars for SockJS and STOMP
+	implementation 'org.webjars:sockjs-client:1.5.1'
+	implementation 'org.webjars:stomp-websocket:2.3.4'
+
 }
 
 tasks.named("check") {

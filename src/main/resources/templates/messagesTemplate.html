@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/head :: head(title='Messages')"> </head>
+<body>
+  <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Messages</h1>
+        <input id="message-input" type="text" class="form-control" placeholder="Enter your message here">
+        <button id="send-button" class="btn btn-primary">Send</button>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:src="@{/webjars/sockjs-client/1.5.1/sockjs.min.js}"></script>
+    <script th:src="@{/webjars/stomp-websocket/2.3.4/stomp.min.js}"></script>
+<!--    AI GENERATED-->
+    <script type="text/javascript">
+      let stompClient = null;
+
+      function connect() {
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+          console.log('Connected: ' + frame);
+
+          stompClient.subscribe('/topic/public', function (messageOutput) {
+            showMessage(JSON.parse(messageOutput.body));
+          });
+        });
+      }
+
+      function sendMessage() {
+        var messageContent = document.getElementById('message-input').value.trim();
+        if(messageContent && stompClient) {
+          var chatMessage = {
+            sender: "User",  // Replace with actual sender
+            content: messageContent,
+          };
+          stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
+          document.getElementById('message-input').value = '';
+        }
+      }
+
+      function showMessage(message) {
+        var messageElement = document.createElement('div');
+        messageElement.innerHTML = `<strong>${message.sender}:</strong> ${message.content}`;
+        document.getElementById('messages').appendChild(messageElement);
+      }
+
+      document.getElementById('send-button').addEventListener('click', sendMessage);
+      connect();
+    </script>
+  <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>
