@@ -11,9 +11,13 @@ import java.util.List;
  * User class that contains all the values a user should have
  */
 
+
+
 @Entity
 @Table(name = "USERS") //revise later, ask tutor about style
 public class User {
+
+    public static final int DEFAULT_BALANCE = 500;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //research how this works
@@ -35,6 +39,9 @@ public class User {
 
     @Column(name = "dateOfBirth")
     private String dateOfBirth;
+
+    @Column(name = "bloomBalance")
+    private int bloomBalance;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -75,6 +82,7 @@ public class User {
     public User(Long id, String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth) {
         this.userId = id;
         this.password = password;
+        this.bloomBalance = DEFAULT_BALANCE;
         this.setValues(firstName, lastName, noLastName, email, dateOfBirth);
     }
 
@@ -86,6 +94,7 @@ public class User {
         this.password = password;
         this.dateOfBirth = dateOfBirth;
         this.image = image;
+        this.bloomBalance = DEFAULT_BALANCE;
     }
 
     public User setValues(String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
@@ -164,6 +173,10 @@ public class User {
     public String getDateOfBirth() {
         return dateOfBirth;
     }
+
+    public int getBloomBalance() { return bloomBalance; }
+
+    public void setBloomBalance(int bloomBalance) { this.bloomBalance = bloomBalance; }
 
     public String setPassword(String newPassword) {
         return this.password = newPassword;
