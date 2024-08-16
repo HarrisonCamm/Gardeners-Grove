@@ -9,6 +9,7 @@
         <h1>Messages</h1>
         <input id="message-input" type="text" class="form-control" placeholder="Enter your message here">
         <button id="send-button" class="btn btn-primary">Send</button>
+        <div id="messages"></div>
       </div>
     </div>
 
@@ -22,24 +23,23 @@
       function connect() {
         const socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
-
         stompClient.connect({}, function (frame) {
           console.log('Connected: ' + frame);
 
-          stompClient.subscribe('/topic/public', function (messageOutput) {
+          stompClient.subscribe('/user/queue/reply', function (messageOutput) {
             showMessage(JSON.parse(messageOutput.body));
           });
         });
       }
 
       function sendMessage() {
-        var messageContent = document.getElementById('message-input').value.trim();
+        const messageContent = document.getElementById('message-input').value.trim();
         if(messageContent && stompClient) {
-          var chatMessage = {
-            sender: "User",  // Replace with actual sender
+          const chatMessage = {
+            sender: "startup@user.com",  // Replace with actual sender
             content: messageContent,
           };
-          stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
+          stompClient.send("/app/chat.send/" + "sarah@email.com", {}, JSON.stringify(chatMessage));
           document.getElementById('message-input').value = '';
         }
       }
