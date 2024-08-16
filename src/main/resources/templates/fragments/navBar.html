@@ -10,11 +10,11 @@
                 <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
                 <li><a class="navLink" th:href="@{manage-friends}">Manage Friends</a></li>
             </div>
-            <div>
-                <!-- Include the SVG Icon-->
-                <div th:replace="::svgFragment"></div>
-                <span class="navBar-bloom-display" th:text="${bloomBalance}">0</span>
 
+            <div class="balanceDisplay">
+                <div th:replace="~{fragments/iconFragment.html :: iconFragment}"></div>
+                <!-- Include the SVG Icon-->
+                <span class="navBar-bloom-display" th:text="${bloomBalance}">0</span>
             </div>
             <!-- Logout form button -->
             <li class="navBar-logout">
