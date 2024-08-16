@@ -92,7 +92,7 @@ public class SecurityConfiguration {
                     .hasRole("UNVERIFIED")
 
                     // Increase access to authenticated users to reach the "/main", "/view-user-profile", "/edit-user-profile" pages
-                    .requestMatchers("/main", "/view-user-profile", "/edit-user-profile", "/create-garden", "/view-garden", "/view-gardens", "/create-plant", "/edit-plant", "/upload-image", "/manage-friends", "/add-tag")
+                    .requestMatchers("/main", "/view-user-profile", "/edit-user-profile", "/create-garden", "/view-garden", "/view-gardens", "/create-plant", "/edit-plant", "/upload-image", "/manage-friends", "/add-tag", "/plant-guesser")
                     .hasRole("USER")
 
                     // Any other request requires authentication
