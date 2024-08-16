@@ -41,6 +41,7 @@ public class SlotsService {
 
     /**
      * Selects a random number between 1 and 5 weighted by the global constants
+     * 💧☀️🍄🌶️🌾
      * @return The chosen number as an int
      */
     private static int getRandomWeighted() {
@@ -85,7 +86,7 @@ public class SlotsService {
     /**
      * Calculates the amount won by the player
      * @param slots The slots returned from generateSlots() function
-     * @return The amount won by the player as a number
+     * @return The amount won by the player as a number 😊
      */
     public static int amountWon(List<int[]> slots) {
         int amountWon = 0;
