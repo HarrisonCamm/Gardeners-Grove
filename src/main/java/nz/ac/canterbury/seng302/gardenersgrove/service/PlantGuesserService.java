@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserItem;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserList;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,14 +18,13 @@ public class PlantGuesserService {
 
     private final RestTemplate restTemplate;
 
-    private final String urlAllPlants = apiUrl + "?token=" + apiKey;
-
     public PlantGuesserService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    public PlantGuesserItem getPlantsForGame() {
-        return restTemplate.getForObject(urlAllPlants, PlantGuesserItem.class);
+    public PlantGuesserList getPlantsForGame() {
+        String url = apiUrl + "?token=" + apiKey;
+        return restTemplate.getForObject(url, PlantGuesserList.class);
     }
 
     public PlantGuesserItem getPlantById(int id) {
