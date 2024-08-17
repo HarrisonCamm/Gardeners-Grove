@@ -19,6 +19,18 @@
                     <h3 th:text="${gardenName}">  </h3>
                 </div>
             </div>
+            <div class="row mb-3 ps-5" >
+                <div class="col" th:if="${gardenIsPublic}">
+                    <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
+                        Public Garden
+                    </a>
+                </div>
+                <div class="col" th:if="${!gardenIsPublic}">
+                    <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-outline-warning button">
+                        Private Garden
+                    </a>
+                </div>
+            </div>
             <div class="row mb-3 ps-5">
                 <div class="col">
                     <h3 th:text="${gardenLocation}">  </h3>

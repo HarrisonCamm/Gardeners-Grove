@@ -227,6 +227,7 @@ public class ViewGardenController {
             model.addAttribute("gardenLocation", garden.get().getLocation().toString());
             model.addAttribute("gardenSize", garden.get().getSize());
             model.addAttribute("gardenTags", gardenService.getEvaluatedTags(gardenID));
+            model.addAttribute("gardenIsPublic", garden.get().getIsPublic());
             model.addAttribute("allTags", tagService.getTagsByEvaluated(true));
             model.addAttribute("tagError", session.getAttribute("tagEvaluationError"));
 
