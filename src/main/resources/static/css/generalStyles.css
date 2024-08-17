@@ -438,6 +438,23 @@ p {
     font-weight: normal;
 }
 
+.public-tag-colour {
+    background-color: #008c03;
+    color: #ffffff;
+    border-radius: 10px;
+    padding: 5px 10px 5px 10px;
+    margin: 5px;
+    font-weight: normal;
+}
+.private-tag-colour {
+    background-color: #c1c1c1;
+    color: #000000;
+    border-radius: 10px;
+    padding: 5px 10px 5px 10px;
+    margin: 5px;
+    font-weight: normal;
+}
+
 #autocompleteList {
     position: absolute;
     background-color: #E2F1CA;

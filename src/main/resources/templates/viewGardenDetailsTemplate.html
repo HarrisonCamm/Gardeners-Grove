@@ -12,23 +12,19 @@
 
     <!-- View Garden Page Content -->
     <div class="row">
+        <div>
+            <div class="col" th:if="${gardenIsPublic}">
+                <span class="badge me-2 mb-2 public-tag-colour">Public Garden</span>
+            </div>
+            <div class="col" th:if="${!gardenIsPublic}">
+                <span class="badge me-2 mb-2 private-tag-colour">Private Garden</span>
+            </div>
+        </div>
         <div class="col gardenDetails container">
             <div class="row mb-3 ps-5">
                 <div class="col">
                     <br/>
-                    <h3 th:text="${gardenName}">  </h3>
-                </div>
-            </div>
-            <div class="row mb-3 ps-5" >
-                <div class="col" th:if="${gardenIsPublic}">
-                    <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-primary button">
-                        Public Garden
-                    </a>
-                </div>
-                <div class="col" th:if="${!gardenIsPublic}">
-                    <a th:href="@{'/edit-garden?gardenID=' + ${gardenID}}" class="btn btn-outline-warning button">
-                        Private Garden
-                    </a>
+                    <h3 th:text="${gardenName}"></h3>
                 </div>
             </div>
             <div class="row mb-3 ps-5">
