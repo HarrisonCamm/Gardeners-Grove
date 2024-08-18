@@ -582,16 +582,7 @@ hr {
 }
 
 /* Messages Template Test Code*/
-.sideBarColour {
+.chat-side-bar {
+    height: 100vh;
     background-color: #f8f9fa; /* Matches Bootstrap's light background */
-}
-
-.text-center h2 {
-    color: #0A3407; /* Matches the existing h2 color in your styles */
-}
-
-.form-control {
-    background-color: #E2F1CA; /* Maintain the custom background */
-    border: 1px solid #BEE186; /* Maintain the custom border */
-    border-radius: 4px; /* Matches existing styles */
 }
