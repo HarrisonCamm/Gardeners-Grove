@@ -29,31 +29,15 @@
                 <div class="reel-container"></div>
                 <div class="reel-container"></div>
                 <div class="reel-container"></div>
+                <div class="reel-container"></div>
+                <div class="reel-container"></div>
             </div>
 
-            <div class="info">
-                <div class="instructions">
-                    Press anywhere to spin the reels.<br/> Each spin costs 1 💰<br/> Match at least two on the middle row to win!<br/> See prizes below.</div>
-
-                <div class="prize-table">
-                    <div class="doubles">
-                    </div>
-                    <div class="triples">
-
-                    </div>
-                </div>
-            </div>
         </div>
     </body>
 </html>
 
 <script th:inline="javascript">
-    // const slots = [
-    //     [0, 1, 2, 3, 4], // Reel 1: Each number corresponds to an index in reelContents
-    //     [4, 3, 2, 1, 0], // Reel 2: Reversed order for variety
-    //     [2, 3, 4, 0, 1]  // Reel 3: Random order
-    // ];
-
     var slots = /*[[${slots}]]*/ [[]];
 
 
@@ -65,8 +49,8 @@
     let spinningReels = [];
     let spinning = false;
     let reelDelay = 100;
-    let money = 100;
-    let moneyToAdd = 0;
+    let money = 100;            //Todo set to blooms amount
+    let moneyToAdd = 0;     //Ensure this is updated to be model attribute "amountWon" at appropriate time
     let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let masterVolume = audioCtx.createGain();
     masterVolume.gain.setValueAtTime(0.05, audioCtx.currentTime);
@@ -90,15 +74,9 @@
             });
             updateMoney(-1);
             setChange(-1);
-            spinningReels.push(0);
-            setTimeout(() => {
-                spinningReels.push(1);
-            }, reelDelay);
-            setTimeout(() => {
-                spinningReels.push(2);
-            }, reelDelay * 2);
+            spinningReels = [0, 1, 2, 3, 4];  // Include all reels at once
             spinning = true;
-            spinUpdate(7);
+            spinUpdate(11);     //This works out as working through the 15 increments of the reel
         }
     };
     let spinUpdate = spinsLeft => {
@@ -110,16 +88,8 @@
                 spinUpdate(spinsLeft - 1);
             }, reelDelay);
         } else {
-            if (spinningReels.length > 0) {
-                spinningReels.shift();
-                setTimeout(() => {
-                    spinUpdate(0);
-                }, reelDelay);
-                playNote(160 - (30 - spinningReels.length * 10), 0.1);
-            } else {
-                spinning = false;
-                findWins();
-            }
+            spinning = false;
+            findWins();
         }
     };
     let moveReel = (reelIndex) => {
