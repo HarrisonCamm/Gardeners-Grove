@@ -6,10 +6,16 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <h1>Messages</h1>
-        <input id="message-input" type="text" class="form-control" placeholder="Enter your message here">
-        <button id="send-button" class="btn btn-primary">Send</button>
-        <div id="messages"></div>
+        <h1>Conversations</h1>
+        <div th:each="friend : ${friends}">
+          <div class="d-flex flex-row">
+            <img class="image-small"
+                 th:data-user-id="${friend.userId}"
+                 th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
+            <p class="center-text friend-name" th:text="${friend.firstName + ' ' + friend.lastName}"></p>
+            <hr>
+          </div>
+        </div>
       </div>
     </div>
 
