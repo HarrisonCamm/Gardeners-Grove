@@ -25,14 +25,16 @@
                 <div th:if="${!#lists.isEmpty(friends)}">
                     <ul class="list-unstyled">
                         <li th:each="friend : ${friends}">
-                            <div class="background p-2 mb-2">
-                                <div class="d-flex align-items-center">
-                                    <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
-                                    <div class="ms-3">
-                                        <h6 class="mb-0" th:text="${friend.firstName + ' ' + friend.lastName}"></h6>
+                            <a href="javascript:void(0);" th:attr="onclick=|showChatUI('${friend.userId}', '${friend.firstName}', '${friend.lastName}')|" class="text-decoration-none">
+                                <div class="background p-2 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
+                                        <div class="ms-3">
+                                            <h6 class="mb-0" th:text="${friend.firstName + ' ' + friend.lastName}"></h6>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -40,9 +42,36 @@
         </div>
 
         <!-- Main Chat Area -->
-        <div class="col-md-9 col-sm-8 d-flex align-items-center justify-content-center bg-white">
-            <div>
+        <div class="col-md-9 col-sm-8 bg-white" id="mainChatArea">
+            <!-- Initially, the welcome message is shown -->
+            <div id="welcomeMessage" class="d-flex align-items-center justify-content-center h-100" style="display:flex !important;">
                 <h2 class="text-dark">Welcome to Sprout</h2>
+            </div>
+
+            <!-- Chat UI, initially hidden -->
+            <div id="chatUI" class="d-flex flex-column h-100" style="display:none !important;">
+                <div class="p-3 border-bottom">
+                    <div class="d-flex align-items-center">
+                        <img id="friendImage" class="image-small me-3" src="" alt="">
+                        <div>
+                            <h5 id="friendName" class="mb-0"></h5>
+                            <small class="text-muted">Verified</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-grow-1 p-3 d-flex flex-column" id="chatArea">
+                    <p class="text-muted text-center">Today</p>
+                    <!-- Messages will be here -->
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                        <p class="text-muted">No messages yet. Start the conversation!</p>
+                    </div>
+                </div>
+                <div class="border-top p-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Message" aria-label="Message">
+                        <button class="btn btn-primary" type="button">Send</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -50,5 +79,24 @@
 
 <!-- Scripts fragment, contains bootstrap scripts -->
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    function showChatUI(userId, firstName, lastName) {
+
+        // Hide the welcome message
+        var element = document.getElementById('welcomeMessage');
+        element.setAttribute('style', 'display: none !important;');
+
+        // Ensure that only one of the divs is visible
+        document.getElementById('chatUI').style.display = 'flex'; // Show the chat UI
+
+        // Update the chat UI with the selected friend's information
+        document.getElementById('friendName').innerText = firstName + ' ' + lastName;
+        document.getElementById('friendImage').src = '/get-image?view-user-profile=true&userID=' + userId;
+
+        // Focus on the message input box
+        document.querySelector('#chatUI .form-control').focus();
+    }
+</script>
 </body>
 </html>
