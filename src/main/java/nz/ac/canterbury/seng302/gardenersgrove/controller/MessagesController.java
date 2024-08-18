@@ -35,6 +35,7 @@ public class MessagesController {
         logger.info("/GET messages");
 
         model.addAttribute("from", userService.getAuthenticatedUser().getEmail());
+        model.addAttribute("friends", userService.getAuthenticatedUser().getFriends());
 
         return "messagesTemplate";
     }

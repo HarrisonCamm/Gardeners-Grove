@@ -470,6 +470,11 @@ hr {
     margin: 2px 0 2px 0;
 }
 
+.friend-name {
+    font-size: 120%;
+    text-align: center;
+}
+
 @media only screen and (orientation: portrait) {
     h2 {
         font-size: 300%;
