@@ -36,7 +36,7 @@ public class MessagesController {
 
         model.addAttribute("from", userService.getAuthenticatedUser().getEmail());
 
-        return "messagesTemplate";
+        return "messagesTemplateTest";
     }
 
     @MessageMapping("/chat.send/{username}")

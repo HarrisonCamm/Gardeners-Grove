@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Head fragment holding all the style sheets -->
+<head th:replace="fragments/head :: head(title='Messaging App')"> </head>
+<body>
+<!-- NavBar Fragment -->
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+
+<!-- Messaging App UI -->
+<div class="container-fluid chat-container">
+    <div class="row h-100">
+
+        <!-- Sidebar -->
+        <div class="col-md-3 col-sm-4 p-4 bg-light sideBarColour">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Chats</h4>
+            </div>
+            <input type="text" class="form-control" placeholder="Search">
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="col-md-9 col-sm-8 d-flex align-items-center justify-content-center bg-white">
+            <div class="text-center">
+                <h2 class="text-dark">Welcome to Sprout</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts fragment, contains bootstrap scripts -->
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>
