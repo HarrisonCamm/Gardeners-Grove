@@ -42,11 +42,12 @@ public class GardenService {
     public Garden addGarden(Garden garden) {
         return gardenRepository.save(garden);
     }
-    public Garden updateGarden(Garden garden, String name, Location location, String size, Boolean isPublic) {
+    public Garden updateGarden(Garden garden, String name, Location location, String size, Boolean isPublic, String description) {
         garden.setName(name);
         garden.setLocation(location);
         garden.setSize(size);
         garden.setIsPublic(isPublic);
+        garden.setDescription(description);
         return gardenRepository.save(garden);
     }
 

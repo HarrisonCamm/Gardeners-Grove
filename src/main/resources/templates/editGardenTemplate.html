@@ -54,6 +54,18 @@
                     <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
                 </div>
                 <br/>
+                <div>
+                    <label for="gardenDescription"> Description: </label>
+
+                    <br/>
+                    <textarea maxlength="1028" id="gardenDescription"
+                              th:value="*{description}"
+                              th:field="*{description}"
+                              th:classappend="${descriptionError} ? 'error' : ''"
+                              >
+                        </textarea>
+                </div>
+                <br/>
                 <div class="locationTable" id="locationContainer">
                     <div id="autocompleteContainer"></div>
                     <ul class="suggestions" id="suggestions"></ul>

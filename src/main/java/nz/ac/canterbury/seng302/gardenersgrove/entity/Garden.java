@@ -35,6 +35,9 @@ public class Garden {
     @Column
     private Boolean isPublic;
 
+    @Column
+    private String description;
+
 
     /**
      * Required constructor
@@ -64,6 +67,7 @@ public class Garden {
         this.size = size;
         this.owner = owner;
         this.isPublic = false;
+        this.description = description;
     }
 
     // Getter for id
@@ -74,6 +78,10 @@ public class Garden {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public String getDescription(){return description;}
+
+    public String setDescription(String description){return description;}
 
     public String getName() {
         return name;

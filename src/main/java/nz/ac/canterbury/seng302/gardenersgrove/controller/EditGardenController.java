@@ -112,7 +112,7 @@ public class EditGardenController {
             model.addAttribute("garden", currentGarden);
             return "editGardenTemplate";
         } else {
-            gardenService.updateGarden(currentGarden, gardenName, gardenLocation, gardenSize, garden.getIsPublic());
+            gardenService.updateGarden(currentGarden, gardenName, gardenLocation, gardenSize, garden.getIsPublic(), garden.getDescription());
             return "redirect:/view-garden?gardenID=" + currentGarden.getId();
         }
     }
