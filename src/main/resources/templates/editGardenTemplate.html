@@ -56,15 +56,15 @@
                 <br/>
                 <div>
                     <label for="gardenDescription"> Description: </label>
-
                     <br/>
-                    <textarea maxlength="1028" id="gardenDescription"
-                              th:value="*{description}"
+                    <textarea maxlength="512" id="gardenDescription"
                               th:field="*{description}"
                               th:classappend="${descriptionError} ? 'error' : ''"
-                              >
-                        </textarea>
+                              rows="4">
+                    </textarea>
+                    <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
                 </div>
+
                 <br/>
                 <div class="locationTable" id="locationContainer">
                     <div id="autocompleteContainer"></div>

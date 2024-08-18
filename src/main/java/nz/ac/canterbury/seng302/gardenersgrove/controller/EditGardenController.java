@@ -67,7 +67,7 @@ public class EditGardenController {
         Garden garden = result.get();
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         session.setAttribute("gardenID", gardenID);
-        addAttributes(model, session, garden, garden.getId(), garden.getName(), garden.getLocation(), garden.getSize());
+        addAttributes(model, session, garden, garden.getId(), garden.getName(), garden.getLocation(), garden.getSize(), garden.getDescription());
         return "editGardenTemplate";
     }
 
@@ -95,13 +95,14 @@ public class EditGardenController {
         Garden currentGarden = result.get();
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
+        String gardenDescription = garden.getDescription();
         Location gardenLocation = garden.getLocation();
         gardenLocation.setId(currentGarden.getLocation().getId());
 
         // Perform validation
         ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize);
         session.setAttribute("gardenID", gardenID);
-        addAttributes(model, session, currentGarden, currentGarden.getId(), gardenName, gardenLocation, gardenSize);
+        addAttributes(model, session, currentGarden, currentGarden.getId(), gardenName, gardenLocation, gardenSize, gardenDescription);
 
 
         if (!errors.isEmpty()) {
@@ -177,10 +178,12 @@ public class EditGardenController {
     }
 
 
-    public void addAttributes(Model model,HttpSession session,  Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize) {
+    public void addAttributes(Model model,HttpSession session,  Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
         model.addAttribute("id", gardenID);
 
         model.addAttribute("name", gardenName);
+        model.addAttribute("description", gardenDescription);
+
 
         model.addAttribute("garden", garden);
         model.addAttribute("gardenID", session.getAttribute("gardenID"));
