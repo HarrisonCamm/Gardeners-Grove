@@ -62,11 +62,11 @@ public class SlotsService {
      * @return  int[] of random numbers
      */
     private static int[] generateColumn() {
-        int[] row = new int[COL_LENGTH];
+        int[] col = new int[COL_LENGTH];
         for (int i = 0; i < COL_LENGTH; i++) {
-            row[i] = getRandomWeighted();
+            col[i] = getRandomWeighted();
         }
-        return row;
+        return col;
     }
 
     /**
