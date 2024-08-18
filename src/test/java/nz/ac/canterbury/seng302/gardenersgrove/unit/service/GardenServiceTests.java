@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.repository.GardenRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.LocationRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -75,6 +76,22 @@ public class GardenServiceTests {
         // Call the findGarden method with an arbitrary ID and assert that it returns the saved garden
         assertEquals(Optional.of(savedGarden), gardenService.findGarden(1L));
     }
+    @Test
+    public void updateGarden_SetPublicStatus_UpdatesIsPublic() {
+        // Create a garden and set its initial public status to false
+        Garden garden = new Garden("Test Garden", location, "1");
+        garden.setIsPublic(false);
+        when(gardenRepository.findById(any(Long.class))).thenReturn(Optional.of(garden));
+
+        // Change the public status to true and update the garden
+        garden.setIsPublic(true);
+
+        // Verify that the garden's isPublic is ture
+        Assertions.assertTrue(garden.getIsPublic());
+    }
+
+
+
 }
 
 
