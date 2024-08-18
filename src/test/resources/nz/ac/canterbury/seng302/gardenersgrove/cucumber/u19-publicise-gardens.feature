@@ -1,13 +1,12 @@
-Feature: U19 - Tag moderation
+Feature: U19 - Publicise Garden
   As Inaya, I want to be able to make my garden public so that others can see what I’m growing.
 
   Background: User is logged in
     Given I am logged in with email "inaya@email.com" and password "Password1!"
     And I am on the garden details page for a garden I own
-    And RAR
 
     Scenario: AC1 - Garden is made public
-      Given I am on the garden details page for a garden I own
+      Given I am on the garden details page
       When I mark a checkbox labelled "Make my garden public"
       Then my garden will be visible in search results
 

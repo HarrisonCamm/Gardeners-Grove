@@ -36,62 +36,52 @@ public class PubliciseGardenSteps {
 
     @When("I mark a checkbox labelled {string}")
     public void i_mark_a_checkbox_labelled(String string) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        //TODO
     }
 
     @Then("my garden will be visible in search results")
     public void my_garden_will_be_visible_in_search_results() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        //TODO
     }
 
     @Given("I am on the edit garden page for a garden that I own")
     public void i_am_on_the_edit_garden_page_for_a_garden_that_i_own() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        //TODO
     }
 
     @When("I delete the existing description")
     public void i_delete_the_existing_description() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        //TODO
     }
 
     @When("I click the submit button on the edit garden form")
     public void i_click_the_submit_button_on_the_edit_garden_form() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        //TODO
     }
 
     @Then("The description is removed")
     public void the_description_is_removed() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        //TODO
     }
 
     @Given("I am on the create garden form")
     public void i_am_on_the_create_garden_form() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        //TODO
     }
 
     @Given("I enter a description with description length")
     public void i_enter_a_description_with_description_length() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        //TODO
     }
 
     @When("I click the submit button on the create garden form")
     public void i_click_the_submit_button_on_the_create_garden_form() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        //TODO
     }
 
     @Then("A new garden is created on my account")
     public void a_new_garden_is_created_on_my_account() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        //TODO
     }
 
 
