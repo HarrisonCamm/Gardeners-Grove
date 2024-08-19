@@ -95,31 +95,85 @@
         }, 70);
     };
     let findWins = () => {
-        let symbols = {};
-        let highestAmountMatching = 2; //set to 2 so that it changes if there's 3 or more of the same emoji
-        let highestEmoji = '🌶️'; //arbitrary emoji to set starting value
+        let symbolsTopRow = {};
+        let symbolsMiddleRow = {};
+        let symbolsBottomRow = {};
+        let highestAmountMatchingTop = 2; //set to 2 so that it changes if there's 3 or more of the same emoji
+        let highestAmountMatchingMiddle = 2;
+        let highestAmountMatchingBottom = 2;
+        let highestEmojiTop = '🌶️'; //arbitrary emoji to set starting value
+        let highestEmojiMiddle = '🌶️';
+        let highestEmojiBottom = '🌶️';
+
+
         reelContainers.forEach(reel => {
-            let symbol = reel.children[1].innerText;
-            if (symbols[symbol]) {
-                symbols[symbol]++;
+            let symbolTop = reel.children[0].innerText;
+            if (symbolsTopRow[symbolTop]) {
+                symbolsTopRow[symbolTop]++;
             }
-            else symbols[symbol] = 1;
+            else symbolsTopRow[symbolTop] = 1;
+
+            let symbolMiddle = reel.children[1].innerText;
+            if (symbolsMiddleRow[symbolMiddle]) {
+                symbolsMiddleRow[symbolMiddle]++;
+            }
+            else symbolsMiddleRow[symbolMiddle] = 1;
+
+            let symbolBottom = reel.children[2].innerText;
+            if (symbolsBottomRow[symbolBottom]) {
+                symbolsBottomRow[symbolBottom]++;
+            }
+            else symbolsBottomRow[symbolBottom] = 1;
         });
-        for (emoji in symbols) {
-            let emojiAmount = symbols[emoji];
-            if (emojiAmount > highestAmountMatching) {
-                highestAmountMatching = emojiAmount;
-                highestEmoji = emoji;
+        for (emoji in symbolsTopRow) {
+            let emojiAmountTop = symbolsTopRow[emoji];
+            if (emojiAmountTop > highestAmountMatchingTop) {
+                highestAmountMatchingTop = emojiAmountTop;
+                highestEmojiTop = emoji;
             }
         }
+        for (emoji in symbolsMiddleRow) {
+            let emojiAmountMiddle = symbolsMiddleRow[emoji];
+            if (emojiAmountMiddle > highestAmountMatchingMiddle) {
+                highestAmountMatchingMiddle = emojiAmountMiddle;
+                highestEmojiMiddle = emoji;
+            }
+        }
+
+        for (emoji in symbolsBottomRow) {
+            let emojiAmountBottom = symbolsBottomRow[emoji];
+            if (emojiAmountBottom > highestAmountMatchingBottom) {
+                highestAmountMatchingBottom = emojiAmountBottom;
+                highestEmojiBottom = emoji;
+            }
+        }
+
+        let highestAmountMatching;
+        let highestEmoji;
+        let rowNumber;
+        if (highestAmountMatchingTop > highestAmountMatchingMiddle && highestAmountMatchingTop > highestAmountMatchingBottom) {
+            highestAmountMatching = highestAmountMatchingTop;
+            highestEmoji = highestEmojiTop;
+            rowNumber = 0;
+
+        } else if (highestAmountMatchingMiddle >= highestAmountMatchingTop && highestAmountMatchingMiddle >= highestAmountMatchingBottom) {
+            highestAmountMatching = highestAmountMatchingMiddle;
+            highestEmoji = highestEmojiMiddle;
+            rowNumber = 1;
+        } else {
+            highestAmountMatching = highestAmountMatchingBottom;
+            highestEmoji = highestEmojiBottom;
+            rowNumber = 2;
+        }
+
         if (highestAmountMatching > 2) {
-            win(highestAmountMatching, highestEmoji);
+            win(highestAmountMatching, highestEmoji, rowNumber);
         } //TODO add popup/ message for unsuccessful spin
 
     };
-    let win = (amountMatching, symbol) => {
+    let win = (amountMatching, symbol, rowNumber) => {
         reelContainers.forEach(reel => {
-            if (reel.children[1].innerText === symbol) reel.children[1].classList.add("win");
+            if (reel.children[rowNumber].innerText === symbol) reel.children[rowNumber].classList.add("win");
         });
         let winAmount = reelContents.indexOf(symbol);
         playWinChime(winAmount);
