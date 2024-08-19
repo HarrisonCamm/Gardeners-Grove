@@ -8,6 +8,7 @@
         <script th:src="@{/javascript/hover-enter.js}"></script>
         <script th:src="@{/javascript/autocomplete.js}"></script>
         <script th:src="@{/javascript/prevent-enter-submit.js}"></script>
+        <script th:src="@{/javascript/description-length.js}"></script>
     </head>
 
 <body>
@@ -57,11 +58,15 @@
                 <div>
                     <label for="gardenDescription"> Description: </label>
                     <br/>
-                    <textarea maxlength="512" id="gardenDescription"
+                    <textarea maxlength="1028" id="gardenDescription"
                               th:field="*{description}"
                               th:classappend="${descriptionError} ? 'error' : ''"
-                              rows="4">
+                              rows="4"
+                              oninput="descriptionLength(this)">
                     </textarea>
+                    <div class="buttons-centre">
+                        <span id="descriptionLengthCounter" th:text="*{description.length()} + '/512'"></span>
+                    </div>
                     <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
                 </div>
 
