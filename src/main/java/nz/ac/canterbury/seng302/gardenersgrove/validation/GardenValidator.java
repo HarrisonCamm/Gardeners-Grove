@@ -27,6 +27,15 @@ public class GardenValidator {
         return null;
     }
 
+    public static FieldError validateGardenDescription(String description) {
+        if (description.length() > 512) {
+            return new FieldError("garden", "description", "Description must be 512 characters or less and contain some text");
+        } else if (!validateWithRegex("^(?=.*[\\p{L}]).+$", description)) {
+            return new FieldError("garden", "description", "Description must be 512 characters or less and contain some text");
+        }
+        return null;
+    }
+
     /**
      * Validates a garden's size
      * @param size garden size
