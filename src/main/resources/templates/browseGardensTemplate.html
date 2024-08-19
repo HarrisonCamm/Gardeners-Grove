@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!-- Head fragment holding all the style sheets-->
+    <head th:replace="fragments/head :: head(title='Browse Gardens')">
+
+    </head>
+    <body>
+        <!-- NavBar Fragment -->
+        <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+
+        <div class="wrapper">
+            <!-- Garden Side Navigation Bar Fragment -->
+            <div th:insert="~{fragments/sideBar.html :: sideBar}"></div>
+
+            <div class="search-container">
+                <form th:action="@{/manage-friends}" method="post" novalidate th:hidden="${showSearch}">
+                    <div class="search-div">
+                        <label for="search"></label>
+                        <input th:name="searchQuery"
+                               th:value="${searchQuery}"
+                               class="search-field"
+                               id="search"
+                               type="text"
+                               placeholder="Search for a friend">
+                        &nbsp;&nbsp;&nbsp;
+                        <div class="search-button">
+                            <button type="submit" onclick="searchAndShowResults()">Search</button>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="action" th:id="search-action" th:value="invite" />
+                    <input type="hidden" name="email"  th:id="search-email" />
+
+                    <div class="search-friend" id="searchFriend">
+                        <br/>
+                        <p th:if="${searchResultMessage}" class="search-field-message" th:text="${searchResultMessage}"></p>
+                        <div>
+                            <div th:if="${matchedUsers}" class="results-container" id="results-container">
+                                <ul>
+                                    <li th:each="matchedUser : ${matchedUsers}">
+                                        <div class="friend-form">
+                                            <div class="align-left">
+                                                <h3 th:text="${matchedUser.firstName + ' - ' + matchedUser.email}"></h3>
+                                            </div>
+                                            <div class="empty-space"></div>
+                                            <div class="buttons-right">
+                                                <button type="submit" th:attr="onclick=|setActionAndEmail('search', null, '${matchedUser.email}')|">Invite as Friend</button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- Scripts fragment, contains bootstrap scripts -->
+        <div th:replace="~{fragments/scripts :: scripts}"></div>
+    </body>
+</html>

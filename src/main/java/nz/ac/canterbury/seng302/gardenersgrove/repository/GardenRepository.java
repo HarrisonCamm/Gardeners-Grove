@@ -17,4 +17,7 @@ public interface GardenRepository extends CrudRepository<Garden, Long> {
 
     @Query("SELECT g FROM Garden g WHERE :tagId IN (SELECT t.id FROM g.tags t)")
     List<Garden> findGardensByTagId(Long tagId);
+
+    @Query("SELECT g FROM Garden g WHERE g.isPublic = TRUE")
+    List<Garden> findPublicGardens();
 }

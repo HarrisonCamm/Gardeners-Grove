@@ -39,6 +39,10 @@ public class GardenService {
         return gardenRepository.findGardensByTagId(tag.getId());
     }
 
+    public List<Garden> getPublicGardens() {
+        return gardenRepository.findPublicGardens();
+    }
+
     public Garden addGarden(Garden garden) {
         return gardenRepository.save(garden);
     }
