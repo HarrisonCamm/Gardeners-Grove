@@ -1,10 +1,14 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserList;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
+import java.util.Random;
 
 @Service
 public class PlantGuesserService {
@@ -22,14 +26,33 @@ public class PlantGuesserService {
         this.restTemplate = restTemplate;
     }
 
-    public PlantGuesserList getPlantsForGame() {
-        String url = apiUrl + "?token=" + apiKey;
+    public PlantGuesserList getPlantPage(int pageNum) {
+        String url = apiUrl + "?page=" + pageNum + "&token=" + apiKey;
         return restTemplate.getForObject(url, PlantGuesserList.class);
     }
 
     public PlantGuesserItem getPlantById(int id) {
         String url = apiUrl + "/" + id + "?token=" + apiKey;
         return restTemplate.getForObject(url, PlantGuesserItem.class);
+    }
+
+    public PlantData[] getFilteredPlants() {
+        Random random = new Random();
+        boolean validList = false;
+        PlantData[] filteredList = new PlantData[0];
+        while (!validList) {
+            int num = random.nextInt(21863);
+            filteredList = getPlantPage(num).getPlantGuesserList();
+            if (filteredList.length>0) {
+                validList = true;
+            }
+        }
+        return filteredList;
+        
+    }
+    public PlantData getPlant() {
+        PlantData[] plantList = getFilteredPlants();
+        return Arrays.stream(plantList).toList().getFirst();
     }
 
 

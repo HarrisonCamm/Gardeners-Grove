@@ -8,19 +8,18 @@ import java.util.Arrays;
 public class PlantGuesserList {
 
     @JsonDeserialize
-    @JsonProperty("list")
-    private PlantGuesserItem[] plantGuesserItems;
+    @JsonProperty("data")
+    private PlantData[] plantGuesserItems;
 
     public PlantGuesserList() {
         // no-args jackson constructor
     }
 
-    public PlantGuesserItem[] getPlantGuesserList() {
-        return plantGuesserItems;
+    public PlantData[] getPlantGuesserList() {
+        return Arrays.stream(plantGuesserItems).toList()
+                .stream()
+                .filter(plant -> plant.common_name != null && plant.image_url != null)
+                .toArray(PlantData[]::new);
     }
 
-    public PlantGuesserItem getPlant() {
-        PlantGuesserItem[] plantList = getPlantGuesserList();
-        return Arrays.stream(plantList).toList().getFirst();
-    }
 }

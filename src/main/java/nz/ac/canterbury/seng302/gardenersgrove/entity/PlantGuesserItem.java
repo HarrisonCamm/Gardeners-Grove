@@ -27,24 +27,5 @@ public class PlantGuesserItem {
     public String getImageUrl() {
         return plantData.image_url;
     }
-    @JsonDeserialize
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class PlantData {
 
-        @JsonProperty("id")
-        private int id;
-
-        @JsonProperty("common_name")
-        private String common_name;
-
-        @JsonProperty("scientific_name")
-        private String scientific_name;
-
-        @JsonProperty("image_url")
-        private String image_url;
-
-        public PlantData() {
-            // no-args jackson constructor
-        }
-    }
 }
