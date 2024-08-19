@@ -105,13 +105,11 @@
         if (winline.filter(s => {
             return s === winline[0];
         }).length === 5) {
-            win(3, winline[0]);
-            document.querySelector(".triples").children[reelContents.indexOf(winline[0])].classList.add("active");
+            win(5, winline[0]);
         } else {
             for (s in symbols) {
                 if (symbols[s] == 2) {
                     win(2, s);
-                    document.querySelector(".doubles").children[reelContents.indexOf(s)].classList.add("active");
                 }
             }
         }
