@@ -95,24 +95,27 @@
         }, 70);
     };
     let findWins = () => {
-        let winline = [];
         let symbols = {};
+        let highestAmountMatching = 2; //set to 2 so that it changes if there's 3 or more of the same emoji
+        let highestEmoji = '🌶️'; //arbitrary emoji to set starting value
         reelContainers.forEach(reel => {
             let symbol = reel.children[1].innerText;
-            winline.push(symbol);
-            if (symbols[symbol]) symbols[symbol]++;else symbols[symbol] = 1;
+            if (symbols[symbol]) {
+                symbols[symbol]++;
+            }
+            else symbols[symbol] = 1;
         });
-        if (winline.filter(s => {
-            return s === winline[0];
-        }).length === 5) {
-            win(5, winline[0]);
-        } else {
-            for (s in symbols) {
-                if (symbols[s] == 2) {
-                    win(2, s);
-                }
+        for (emoji in symbols) {
+            let emojiAmount = symbols[emoji];
+            if (emojiAmount > highestAmountMatching) {
+                highestAmountMatching = emojiAmount;
+                highestEmoji = emoji;
             }
         }
+        if (highestAmountMatching > 2) {
+            win(highestAmountMatching, highestEmoji);
+        } //TODO add popup/ message for unsuccessful spin
+
     };
     let win = (amountMatching, symbol) => {
         reelContainers.forEach(reel => {
@@ -167,7 +170,7 @@
 
     //fill prize table
     reelContents.forEach((symbol, index) => {
-        addToPrizeTable(`${symbol}-${symbol}-❔`, index + 1, "doubles");
+        addToPrizeTable(`${symbol}-${symbol}-❔`, index + 1, "doubles"); //TODO change target to triples and above
     });
     reelContents.forEach((symbol, index) => {
         addToPrizeTable(`${symbol}-${symbol}-${symbol}`, (index + 1) * 100, "triples");
