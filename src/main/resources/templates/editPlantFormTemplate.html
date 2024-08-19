@@ -8,7 +8,6 @@
     <script th:src="@{javascript/enter-date.js}"></script>
     <script th:src="@{javascript/prevent-enter-submit.js}"></script>
     <script th:src="@{/javascript/image-handling.js}"></script>
-    <script th:src="@{/javascript/description-length.js}"></script>
 </head>
 <body>
 <!-- Navigation Bar Fragment -->
@@ -62,7 +61,7 @@
                           th:field="*{description}"
                           th:classappend="${descriptionError} ? 'error' : ''"
                           oninput="descriptionLength(this)">
-                        </textarea>
+                </textarea>
             </div>
             <div id="descriptionLengthValidation" class="error-message" th:text="${descriptionError}"></div>
             <br/>
