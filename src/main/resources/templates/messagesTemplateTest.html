@@ -25,7 +25,7 @@
                 <div th:if="${!#lists.isEmpty(friends)}">
                     <ul class="list-unstyled">
                         <li th:each="friend : ${friends}">
-                            <a href="javascript:void(0);" th:attr="onclick=|showChatUI('${friend.userId}', '${friend.firstName}', '${friend.lastName}')|" class="text-decoration-none">
+                            <a href="#" th:attr="onclick=|showChatUI('${friend.userId}', '${friend.firstName}', '${friend.lastName}')|" class="text-decoration-none">
                                 <div class="background p-2 mb-2">
                                     <div class="d-flex align-items-center">
                                         <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
