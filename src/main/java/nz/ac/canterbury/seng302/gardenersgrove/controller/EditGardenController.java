@@ -95,12 +95,12 @@ public class EditGardenController {
         Garden currentGarden = result.get();
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
-        String gardenDescription = garden.getDescription();
+        String gardenDescription = garden.getDescription().trim();
         Location gardenLocation = garden.getLocation();
         gardenLocation.setId(currentGarden.getLocation().getId());
 
         // Perform validation
-        ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize);
+        ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize, gardenDescription);
         session.setAttribute("gardenID", gardenID);
         addAttributes(model, session, currentGarden, currentGarden.getId(), gardenName, gardenLocation, gardenSize, gardenDescription);
 
@@ -125,7 +125,7 @@ public class EditGardenController {
      * @param gardenLocation Garden location
      * @param gardenSize     Garden size
      */
-    public ArrayList<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize) {
+    private ArrayList<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
 
         ArrayList<FieldError> errors = new ArrayList<>();
 
@@ -134,6 +134,10 @@ public class EditGardenController {
             errors.add(nameError);
         }
 
+        FieldError descriptionError = validateGardenDescription(gardenDescription);
+        if (descriptionError != null) {
+            errors.add(descriptionError);
+        }
 
         List<FieldError> locationErrors = validateGardenLocation(gardenLocation);
         errors.addAll(locationErrors);
