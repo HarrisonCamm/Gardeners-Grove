@@ -94,81 +94,51 @@
             playWinChime(amount);
         }, 70);
     };
-    let findWins = () => {
-        let symbolsTopRow = {};
-        let symbolsMiddleRow = {};
-        let symbolsBottomRow = {};
-        let highestAmountMatchingTop = 2; //set to 2 so that it changes if there's 3 or more of the same emoji
-        let highestAmountMatchingMiddle = 2;
-        let highestAmountMatchingBottom = 2;
-        let highestEmojiTop = '🌶️'; //arbitrary emoji to set starting value
-        let highestEmojiMiddle = '🌶️';
-        let highestEmojiBottom = '🌶️';
 
+    let updateSymbolCounts = (symbols, reel) => {
+        let symbolTop = reel.children[0].innerText;
+        symbols.top[symbolTop] = (symbols.top[symbolTop] || 0) + 1; //increment count of this symbol in top row
 
-        reelContainers.forEach(reel => {
-            let symbolTop = reel.children[0].innerText;
-            if (symbolsTopRow[symbolTop]) {
-                symbolsTopRow[symbolTop]++;
-            }
-            else symbolsTopRow[symbolTop] = 1;
+        let symbolMiddle = reel.children[1].innerText;
+        symbols.middle[symbolMiddle] = (symbols.middle[symbolMiddle] || 0) + 1;
 
-            let symbolMiddle = reel.children[1].innerText;
-            if (symbolsMiddleRow[symbolMiddle]) {
-                symbolsMiddleRow[symbolMiddle]++;
-            }
-            else symbolsMiddleRow[symbolMiddle] = 1;
+        let symbolBottom = reel.children[2].innerText;
+        symbols.bottom[symbolBottom] = (symbols.bottom[symbolBottom] || 0) + 1;
+    };
 
-            let symbolBottom = reel.children[2].innerText;
-            if (symbolsBottomRow[symbolBottom]) {
-                symbolsBottomRow[symbolBottom]++;
-            }
-            else symbolsBottomRow[symbolBottom] = 1;
-        });
-        for (emoji in symbolsTopRow) {
-            let emojiAmountTop = symbolsTopRow[emoji];
-            if (emojiAmountTop > highestAmountMatchingTop) {
-                highestAmountMatchingTop = emojiAmountTop;
-                highestEmojiTop = emoji;
+    let getHighestMatch = (symbols) => {
+        let highest = { count: 2, emoji: '🌶️' };
+        for (let emoji in symbols) {
+            if (symbols[emoji] > highest.count) {
+                highest.count = symbols[emoji];
+                highest.emoji = emoji;
             }
         }
-        for (emoji in symbolsMiddleRow) {
-            let emojiAmountMiddle = symbolsMiddleRow[emoji];
-            if (emojiAmountMiddle > highestAmountMatchingMiddle) {
-                highestAmountMatchingMiddle = emojiAmountMiddle;
-                highestEmojiMiddle = emoji;
-            }
-        }
+        return highest;
+    };
 
-        for (emoji in symbolsBottomRow) {
-            let emojiAmountBottom = symbolsBottomRow[emoji];
-            if (emojiAmountBottom > highestAmountMatchingBottom) {
-                highestAmountMatchingBottom = emojiAmountBottom;
-                highestEmojiBottom = emoji;
-            }
-        }
+    let findHighestMatchingRow = (top, middle, bottom) => {
+        let highestTop = getHighestMatch(top);
+        let highestMiddle = getHighestMatch(middle);
+        let highestBottom = getHighestMatch(bottom);
 
-        let highestAmountMatching;
-        let highestEmoji;
-        let rowNumber;
-        if (highestAmountMatchingTop > highestAmountMatchingMiddle && highestAmountMatchingTop > highestAmountMatchingBottom) {
-            highestAmountMatching = highestAmountMatchingTop;
-            highestEmoji = highestEmojiTop;
-            rowNumber = 0;
-
-        } else if (highestAmountMatchingMiddle >= highestAmountMatchingTop && highestAmountMatchingMiddle >= highestAmountMatchingBottom) {
-            highestAmountMatching = highestAmountMatchingMiddle;
-            highestEmoji = highestEmojiMiddle;
-            rowNumber = 1;
+        if (highestTop.count > highestMiddle.count && highestTop.count > highestBottom.count) {
+            return { count: highestTop.count, emoji: highestTop.emoji, row: 0 };
+        } else if (highestMiddle.count >= highestTop.count && highestMiddle.count >= highestBottom.count) {
+            return { count: highestMiddle.count, emoji: highestMiddle.emoji, row: 1 };
         } else {
-            highestAmountMatching = highestAmountMatchingBottom;
-            highestEmoji = highestEmojiBottom;
-            rowNumber = 2;
+            return { count: highestBottom.count, emoji: highestBottom.emoji, row: 2 };
+        }
+    };
+    let findWins = () => {
+        let symbols = { top: {}, middle: {}, bottom: {} };
+        reelContainers.forEach(reel => updateSymbolCounts(symbols, reel));
+        let { count, emoji, row } = findHighestMatchingRow(symbols.top, symbols.middle, symbols.bottom);
+        if (count > 2) {
+            win(count, emoji, row);
         }
 
-        if (highestAmountMatching > 2) {
-            win(highestAmountMatching, highestEmoji, rowNumber);
-        } //TODO add popup/ message for unsuccessful spin
+        //TODO add popup/ message for unsuccessful spin
 
     };
     let win = (amountMatching, symbol, rowNumber) => {
@@ -223,17 +193,23 @@
         pt.append(prize);
     };
 
+    let getComboType = (target) => {
+        switch (target) {
+            case "triples":
+                return "3 of a kind";
+            case "quadruples":
+                return "4 of a kind";
+            case "quintuples":
+                return "5 of a kind";
+            default:
+                return "";
+        }
+    };
+
     let setPrizeTableHeaders = (target) => {
         let pt = document.querySelector(`.prize-table .${target}`);
         let heading = document.createElement("div");
-        let comboType;
-        if (target === "triples") {
-            comboType = "3 of a kind";
-        } else if (target === "quadruples") {
-            comboType = "4 of a kind";
-        } else if (target === "quintuples") {
-            comboType = "5 of a kind";
-        }
+        let comboType = getComboType(target);
         heading.innerHTML = comboType;
         pt.append(heading);
     }
@@ -251,7 +227,3 @@
             addToPrizeTable(`${symbol}`, (index) * 100, "quintuples");
         }
     });
-    // reelContents.forEach((symbol, index) => {
-    //     addToPrizeTable(`${symbol}-${symbol}-${symbol}-${symbol}`, (index) * 10, "quadruples");
-    // });
-    //
