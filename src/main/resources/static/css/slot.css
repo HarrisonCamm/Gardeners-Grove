@@ -170,25 +170,25 @@ body {
 }
 
 .container .info .instructions {
-    color: #edfaf9; /* $textCol */
+    color: #3d7a36; /* $textCol */
     margin-bottom: 1rem;
     width: 500px;
     text-align: center;
-    font-family: "Fredoka One", cursive;
+    font-family: "Fredoka One", sans-serif;
 }
 
 .container .info .prize-table {
-    width: 320px;
+    width: 400px;
     margin-left: auto;
     margin-right: auto;
     display: flex;
     justify-content: space-between;
-    color: #edfaf9; /* $textCol */
+    color: #0a3407; /* $textCol */
     font-weight: bold;
-    font-family: "Roboto", sans-serif;
+    font-family: "Fredoka One", sans-serif;
     font-size: 1.3rem;
 }
-
+/*TODO delete this*/
 .container .info .prize-table .doubles {
     padding-right: 2rem;
 }

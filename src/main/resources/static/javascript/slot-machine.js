@@ -121,9 +121,10 @@
         reelContainers.forEach(reel => {
             if (reel.children[1].innerText === symbol) reel.children[1].classList.add("win");
         });
-        let winAmount = 1 + reelContents.indexOf(symbol);
+        let winAmount = reelContents.indexOf(symbol);
         playWinChime(winAmount);
-        if (amountMatching == 3) winAmount *= 100;
+        if (amountMatching === 4) winAmount *= 10;
+        if (amountMatching === 5) winAmount *= 100;
         setChange(winAmount);
         addToMoney(winAmount);
     };
@@ -162,16 +163,41 @@
     let addToPrizeTable = (combo, amount, target) => {
         let pt = document.querySelector(`.prize-table .${target}`);
         let prize = document.createElement("div");
-        prize.innerHTML = `${combo}: ${amount}`;
+        prize.innerHTML = `${combo}: ${amount}฿`;
         prize.classList.add("prize-item");
         prize.setAttribute("win-attr", combo.replace(/[-❔]/g, ""));
         pt.append(prize);
     };
 
+    let setPrizeTableHeaders = (target) => {
+        let pt = document.querySelector(`.prize-table .${target}`);
+        let heading = document.createElement("div");
+        let comboType;
+        if (target === "triples") {
+            comboType = "3 of a kind";
+        } else if (target === "quadruples") {
+            comboType = "4 of a kind";
+        } else if (target === "quintuples") {
+            comboType = "5 of a kind";
+        }
+        heading.innerHTML = comboType;
+        pt.append(heading);
+    }
+
     //fill prize table
+    setPrizeTableHeaders("triples");
+    setPrizeTableHeaders("quadruples");
+    setPrizeTableHeaders("quintuples");
+
+
     reelContents.forEach((symbol, index) => {
-        addToPrizeTable(`${symbol}-${symbol}-❔`, index + 1, "doubles"); //TODO change target to triples and above
+        if (index !== 0) {
+            addToPrizeTable(`${symbol}`, index, "triples");
+            addToPrizeTable(`${symbol}`, (index) * 10, "quadruples");
+            addToPrizeTable(`${symbol}`, (index) * 100, "quintuples");
+        }
     });
-    reelContents.forEach((symbol, index) => {
-        addToPrizeTable(`${symbol}-${symbol}-${symbol}`, (index + 1) * 100, "triples");
-    });
+    // reelContents.forEach((symbol, index) => {
+    //     addToPrizeTable(`${symbol}-${symbol}-${symbol}-${symbol}`, (index) * 10, "quadruples");
+    // });
+    //

@@ -10,7 +10,7 @@
         <!--        <link th:href="@{/css/test.scss}" rel="stylesheet"/>-->
     </head>
     <body>
-    <!-- Please like <3 and share if you enjoyed! -->
+
     <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
     <div class="content">
         <div>
@@ -35,6 +35,21 @@
                 <div class="reel-container"></div>
             </div>
             <button class="spin-button" onclick="startSpin()">SPIN</button>
+            <div class="info">
+                <div class="instructions">
+                    Press anywhere to spin the reels.<br/> Each spin costs 1 💰<br/> Match at least three on the middle row to win!<br/> See prizes below.</div>
+
+<!--                TODO have the below table appear in a popup on clicking the info button-->
+<!--                <div class="prize-table">-->
+<!--                    <div class="triples">-->
+<!--                    </div>-->
+<!--                    <div class="quadruples">-->
+<!--                    </div>-->
+<!--                    <div class="quintuples">-->
+<!--                    </div>-->
+<!--                </div>-->
+            </div>
+
         </div>
 
     <script th:src="@{/javascript/slot-machine.js}"></script>
