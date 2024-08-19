@@ -35,7 +35,7 @@ public class Garden {
     @Column
     private Boolean isPublic;
 
-    @Column
+    @Column(length = 512)
     private String description;
 
 
@@ -67,7 +67,6 @@ public class Garden {
         this.size = size;
         this.owner = owner;
         this.isPublic = false;
-        this.description = description;
     }
 
     // Getter for id
@@ -81,7 +80,9 @@ public class Garden {
 
     public String getDescription(){return description;}
 
-    public String setDescription(String description){return description;}
+    public void setDescription(String description){
+        this.description = description;
+    }
 
     public String getName() {
         return name;
