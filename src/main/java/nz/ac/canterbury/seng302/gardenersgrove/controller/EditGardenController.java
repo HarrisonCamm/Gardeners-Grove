@@ -113,9 +113,27 @@ public class EditGardenController {
             model.addAttribute("garden", currentGarden);
             return "editGardenTemplate";
         } else {
-            gardenService.updateGarden(currentGarden, gardenName, gardenLocation, gardenSize, garden.getIsPublic(), garden.getDescription());
+            gardenService.updateGarden(currentGarden, gardenName, gardenLocation, gardenSize, garden.getIsPublic(), gardenDescription);
             return "redirect:/view-garden?gardenID=" + currentGarden.getId();
         }
+    }
+
+    @PatchMapping("/edit-garden")
+    public void changePublicity(@RequestParam("gardenID") Long gardenID,
+                                  @RequestParam("isPublic") Boolean isPublic,
+                                  Model model,
+                                  HttpSession session){
+        Optional<Garden> garden = gardenService.findGarden(gardenID);
+
+        User currentUser = userService.getAuthenticatedUser();
+        if (garden.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
+        else if (!garden.get().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this garden.");
+
+        garden.get().setIsPublic(isPublic);
+        gardenService.addGarden(garden.get());
+
     }
 
     /**

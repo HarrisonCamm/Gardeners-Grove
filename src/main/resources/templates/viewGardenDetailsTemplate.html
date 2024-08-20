@@ -13,13 +13,16 @@
     <!-- View Garden Page Content -->
     <div class="row">
         <div>
-            <div class="col" th:if="${gardenIsPublic}">
+            <div id="publicBadge" class="col" th:hidden="${!gardenIsPublic}">
                 <span class="badge me-2 mb-2 public-tag-colour">Public Garden</span>
             </div>
-            <div class="col" th:if="${!gardenIsPublic}">
+            <div id="privateBadge" class="col" th:hidden="${gardenIsPublic}">
                 <span class="badge me-2 mb-2 private-tag-colour">Private Garden</span>
             </div>
+            <input type="checkbox" id="isPublic" onchange="publicityHandler(this)" th:name="isPublic" th:checked="*{gardenIsPublic}">
+            <label for="isPublic">Make my garden public</label>
         </div>
+
         <div class="col gardenDetails container">
             <div class="row mb-3 ps-5">
                 <div class="col">
@@ -275,4 +278,5 @@
             }
         });
     });
+
 </script>
