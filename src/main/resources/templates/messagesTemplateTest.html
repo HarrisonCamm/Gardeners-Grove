@@ -1,22 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Head fragment holding all the style sheets -->
 <head th:replace="fragments/head :: head(title='Messaging App')"> </head>
 <body>
-<!-- NavBar Fragment -->
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 
-<!-- Messaging App UI -->
 <div class="container-fluid chat-container">
     <div class="row h-100">
-        <!-- Sidebar -->
         <div class="col-md-3 col-sm-4 p-4 bg-light chat-side-bar">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4>Chats</h4>
             </div>
             <input type="text" class="form-control mb-4" placeholder="Search">
 
-            <!-- Friends Chats -->
             <div>
                 <div th:if="${#lists.isEmpty(friends)}">
                     <p>Your friends will be shown here</p>
@@ -24,13 +19,14 @@
 
                 <div th:if="${!#lists.isEmpty(friends)}">
                     <ul class="list-unstyled">
-                        <li th:each="friend : ${friends}">
+                        <li th:each="friend, iterStat : ${friends}">
                             <a href="#" th:attr="onclick=|showChatUI('${friend.userId}', '${friend.firstName}', '${friend.lastName}', '${friend.email}')|" class="text-decoration-none">
                                 <div class="background p-2 mb-2">
                                     <div class="d-flex align-items-center">
                                         <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
                                         <div class="ms-3">
                                             <h6 class="mb-0" th:text="${friend.firstName + ' ' + friend.lastName}"></h6>
+                                            <small th:id="'friend-last-message-' + ${friend.userId}" class="text-muted" th:text="${lastMessages[iterStat.index]}"></small>
                                         </div>
                                     </div>
                                 </div>
@@ -41,35 +37,31 @@
             </div>
         </div>
 
-        <!-- Main Chat Area -->
         <div class="col-md-9 col-sm-8 bg-white" id="mainChatArea">
-            <!-- Initially, the welcome message is shown -->
             <div id="welcomeMessage" class="d-flex align-items-center justify-content-center h-100" style="display:flex !important;">
                 <h2 class="text-dark">Welcome to Sprout</h2>
             </div>
 
-            <!-- Chat UI, initially hidden -->
-            <div id="chatUI" class="d-flex flex-column h-100" style="display:none !important;">
+            <div th:each="friend : ${friends}" th:id="'chatUI-' + ${friend.userId}" class="d-flex flex-column h-100" style="display:none !important;">
                 <div class="p-3 border-bottom">
                     <div class="d-flex align-items-center">
-                        <img id="friendImage" class="image-small me-3" src="" alt="">
+                        <img th:id="'friendImage-' + ${friend.userId}" class="image-small me-3" src="" alt="">
                         <div>
-                            <h5 id="friendName" class="mb-0"></h5>
+                            <h5 th:id="'friendName-' + ${friend.userId}" class="mb-0"></h5>
                             <small class="text-muted">Verified</small>
                         </div>
                     </div>
                 </div>
-                <div class="flex-grow-1 p-3 d-flex flex-column" id="chatArea">
+                <div th:id="'chatArea-' + ${friend.userId}" class="flex-grow-1 p-3 d-flex flex-column">
                     <p class="text-muted text-center">Today</p>
-                    <!-- Messages will be here -->
                     <div class="flex-grow-1 d-flex align-items-center justify-content-center">
                         <p class="text-muted">No messages yet. Start the conversation!</p>
                     </div>
                 </div>
                 <div class="border-top p-3">
                     <div class="input-group">
-                        <input id="message-input" type="text" class="form-control" placeholder="Message" aria-label="Message">
-                        <button id="send-button" class="btn btn-primary" type="button" onclick="sendMessage()">Send</button>
+                        <input th:id="'message-input-' + ${friend.userId}" type="text" class="form-control" placeholder="Message" aria-label="Message">
+                        <button th:id="'send-button-' + ${friend.userId}" class="btn btn-primary" type="button" th:onclick="'sendMessage(' + ${friend.userId} + ')'">Send</button>
                     </div>
                 </div>
             </div>
@@ -77,11 +69,9 @@
     </div>
 </div>
 
-<!-- Scripts fragment, contains bootstrap scripts -->
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 
 <script th:src="@{/webjars/stomp-websocket/2.3.4/stomp.min.js}"></script>
-<!--    AI GENERATED-->
 <script th:inline="javascript">
     const from = [[${from}]];
     let to;
@@ -100,181 +90,87 @@
         });
     }
 
-    function sendMessage() {
-        const messageContent = document.getElementById('message-input').value.trim();
-        if(messageContent && stompClient) {
+    function sendMessage(userId) {
+        const messageInput = document.getElementById('message-input-' + userId);
+        const messageContent = messageInput.value.trim();
+        if (messageContent && stompClient) {
             const chatMessage = {
-                sender: from,  // Replace with actual sender
-                // recipient: to,
+                sender: from,
+                recipient: to,
                 content: messageContent,
+                timestamp: new Date().toISOString()
             };
             stompClient.send("/app/chat.send/" + to, {}, JSON.stringify(chatMessage));
-            document.getElementById('message-input').value = '';
+            messageInput.value = '';
+            showMessage(chatMessage, userId);
         }
     }
 
-    // function showMessage(message) {
-    //     // Get the chatArea div
-    //     const chatArea = document.getElementById('chatArea');
-    //
-    //     // Create a new div for the message
-    //     const messageElement = document.createElement('div');
-    //
-    //     // Set the content of the message div
-    //     messageElement.innerHTML = `<strong>${message.sender}:</strong> ${message.content}`;
-    //
-    //     // Append the message div to the chatArea div
-    //     chatArea.appendChild(messageElement);
-    // }
-
     function showChatUI(userId, firstName, lastName, email) {
         to = email;
-        // Hide the welcome message
-        var element = document.getElementById('welcomeMessage');
-        element.setAttribute('style', 'display: none !important;');
+        const welcome = document.getElementById('welcomeMessage');
+        welcome.setAttribute('style', 'display: none !important;');
 
-        // Ensure that only one of the divs is visible
-        document.getElementById('chatUI').style.display = 'flex'; // Show the chat UI
+        document.querySelectorAll('[id^="chatUI-"]').forEach(chatUI =>
+            chatUI.setAttribute('style', 'display: none !important;'));
 
-        // Update the chat UI with the selected friend's information
-        document.getElementById('friendName').innerText = firstName + ' ' + lastName;
-        document.getElementById('friendImage').src = '/get-image?view-user-profile=true&userID=' + userId;
+        const currChat = document.getElementById('chatUI-' + userId);
+        currChat.setAttribute('style', 'display: flex !important;');
 
-        // Focus on the message input box
-        document.querySelector('#chatUI .form-control').focus();
+        document.getElementById('friendName-' + userId).innerText = firstName + ' ' + lastName;
+        document.getElementById('friendImage-' + userId).src = '/get-image?view-user-profile=true&userID=' + userId;
 
-        // Fetch and display the chat history with the selected friend
-        fetch('/chat/' + email)
+        document.getElementById('message-input-' + userId).focus();
+
+        fetch('/chat/' + to)
             .then(response => response.json())
             .then(messages => {
+                const chatArea = document.getElementById('chatArea-' + userId);
+                chatArea.innerHTML = '';
                 if (messages.length > 0) {
                     messages.forEach(message => {
-                        showMessage(message);
+                        showMessage(message, userId);
                     });
                 } else {
-                    // Display placeholder if no messages
                     chatArea.innerHTML = '<p class="text-muted">No messages yet. Start the conversation!</p>';
                 }
             });
     }
 
-    function showMessage(message) {
-        // Get the chatArea div
-        const chatArea = document.getElementById('chatArea');
-
-        // Create a new div for the message
+    function showMessage(message, userId) {
+        const chatArea = document.getElementById('chatArea-' + userId);
         const messageElement = document.createElement('div');
-        messageElement.classList.add('d-flex', 'align-items-center', 'mb-3');
+        messageElement.classList.add('d-flex', 'mb-3');
 
-        const isSender = message.sender === from; // Check if the message was sent by the current user
+        const isSender = message.sender === from;
+        const messageClass = isSender ? 'align-self-end text-end ms-auto' : 'align-self-start text-start me-auto';
 
-        // Add a CSS class to align the message based on whether it's sent or received
-        const messageClass = isSender ? 'align-self-end text-end' : 'align-self-start text-start';
-
-        // Set the content of the message div
         messageElement.innerHTML = `
-        <div class="${messageClass} bg-light p-3 rounded">
-            <strong>${message.sender}</strong>: ${message.content} <br>
-            <small class="text-muted">${new Date(message.timestamp).toLocaleTimeString()}</small>
-        </div>`;
+    <div class="${messageClass} bg-light p-3 rounded">
+        <strong>${message.sender}</strong>: ${message.content} <br>
+        <small class="text-muted">${new Date(message.timestamp).toLocaleTimeString()}</small>
+    </div>`;
 
-        // Append the message div to the chatArea div
         chatArea.appendChild(messageElement);
-
-        // Scroll to the bottom of the chat area to show the latest message
         chatArea.scrollTop = chatArea.scrollHeight;
+
+        // Update the last message sent
+        const lastMessageElement = document.getElementById('friend-last-message-' + userId);
+        let lastMessageContent = message.content;
+        if (lastMessageContent.length > 10) {
+            lastMessageContent = lastMessageContent.substring(0, 10) + '...';
+        }
+        lastMessageElement.textContent = lastMessageContent;
     }
 
-    document.getElementById('send-button').addEventListener('click', sendMessage);
-    connect();
+    document.querySelectorAll('[id^="send-button-"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.id.split('-')[2];
+            sendMessage(userId);
+        });
+    });
 
-    // // JavaScript for WebSocket connection
-    // const socket = new SockJS('/ws');
-    // const stompClient = Stomp.over(socket);
-    //
-    // stompClient.connect({}, function (frame) {
-    //     console.log('Connected: ' + frame);
-    //     stompClient.subscribe('/user/queue/reply', function (messageOutput) {
-    //         showMessage(JSON.parse(messageOutput.body));
-    //     });
-    // });
-    //
-    // function sendMessage() {
-    //     const messageContent = document.querySelector('#chatUI .form-control').value.trim();
-    //     if (messageContent) {
-    //         const message = {
-    //             content: messageContent,
-    //             sender: 'You',
-    //             timestamp: new Date().toISOString()
-    //         };
-    //         stompClient.send("/app/chat.send/" + targetUsername, {}, JSON.stringify(message));
-    //         document.querySelector('#chatUI .form-control').value = '';
-    //     }
-    // }
-    //
-    // function showChatUI(userId, firstName, lastName) {
-    //     // Hide the welcome message
-    //     var element = document.getElementById('welcomeMessage');
-    //     element.setAttribute('style', 'display: none !important;');
-    //
-    //     // Ensure that only one of the divs is visible
-    //     document.getElementById('chatUI').style.display = 'flex'; // Show the chat UI
-    //
-    //     // Update the chat UI with the selected friend's information
-    //     document.getElementById('friendName').innerText = firstName + ' ' + lastName;
-    //     document.getElementById('friendImage').src = '/get-image?view-user-profile=true&userID=' + userId;
-    //
-    //     // Focus on the message input box
-    //     document.querySelector('#chatUI .form-control').focus();
-    //
-    //     fetch('/chat/' + userId)
-    //         .then(response => response.json())
-    //         .then(messages => {
-    //             messages.forEach(message => showMessage(message));
-    //         });
-    // }
-    //
-    // // JavaScript for WebSocket connection
-    // const socket = new SockJS('/ws');
-    // const stompClient = Stomp.over(socket);
-    //
-    // stompClient.connect({}, function (frame) {
-    //     console.log('Connected: ' + frame);
-    //     stompClient.subscribe('/user/queue/reply', function (messageOutput) {
-    //         showMessage(JSON.parse(messageOutput.body));
-    //     });
-    // });
-    //
-    // function sendMessage() {
-    //     const messageContent = document.querySelector('#chatUI .form-control').value.trim();
-    //     if (messageContent) {
-    //         const message = {
-    //             content: messageContent,
-    //             sender: 'You',
-    //             timestamp: new Date().toISOString()
-    //         };
-    //         stompClient.send("/app/chat.send/" + targetUsername, {}, JSON.stringify(message));
-    //         document.querySelector('#chatUI .form-control').value = '';
-    //     }
-    // }
-    //
-    // function showMessage(message) {
-    //     const chatArea = document.getElementById('chatArea');
-    //     const messageElement = document.createElement('div');
-    //     messageElement.classList.add('d-flex', 'align-items-center', 'mb-3');
-    //
-    //     const messageContent = `
-    //     <div class="bg-light p-3 rounded">
-    //         <strong>${message.sender}</strong>: ${message.content} <br>
-    //         <small>${new Date(message.timestamp).toLocaleTimeString()}</small>
-    //     </div>`;
-    //
-    //     messageElement.innerHTML = messageContent;
-    //     chatArea.appendChild(messageElement);
-    //
-    //     // Scroll to the bottom of the chat area to show the latest message
-    //     chatArea.scrollTop = chatArea.scrollHeight;
-    // }
+    connect();
 </script>
 </body>
 </html>

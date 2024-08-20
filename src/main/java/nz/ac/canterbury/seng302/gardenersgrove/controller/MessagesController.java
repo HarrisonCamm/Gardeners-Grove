@@ -12,11 +12,14 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import rx.internal.util.unsafe.MessagePassingQueue;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class MessagesController {
@@ -38,24 +41,35 @@ public class MessagesController {
     public String getMessages(Model model) {
         logger.info("/GET messages");
 
-        model.addAttribute("from", userService.getAuthenticatedUser().getEmail());
+        String currentUserEmail = userService.getAuthenticatedUser().getEmail();
+        model.addAttribute("from", currentUserEmail);
         model.addAttribute("friends", userService.getAuthenticatedUser().getFriends());
+
+        List<String> lastMessages = new ArrayList<>();
+        userService.getAuthenticatedUser().getFriends().forEach(friend -> {
+            Optional<Message> lastMessage = messageService.getLastMessage(currentUserEmail, friend.getEmail());
+            String lastMessageContent = lastMessage.map(Message::getContent).orElse("Start a conversation!");
+            if (lastMessageContent.length() > 10) {
+                lastMessageContent = lastMessageContent.substring(0, 10) + "...";
+            }
+            lastMessages.add(lastMessageContent);
+        });
+        model.addAttribute("lastMessages", lastMessages);
 
         return "messagesTemplateTest";
     }
 
     @MessageMapping("/chat.send/{username}")
     public void sendMessage(@DestinationVariable String username, Message message) {
-        message.setTimestamp(new Date());
+        logger.info("Sending message to {}: {}", username, message.getContent());
         messageService.saveMessage(message.getSender(), username, message.getContent());
         messagingTemplate.convertAndSendToUser(username, "/queue/reply", message);
     }
 
     @GetMapping("/chat/{username}")
-    public @ResponseBody List<Message> getChat(@DestinationVariable String username) {
+    public @ResponseBody List<Message> getChat(@PathVariable String username) {
         String currentUser = userService.getAuthenticatedUser().getEmail();
-        List<Message> conversation = messageService.getConversation(currentUser, username);
-        return conversation; // Return the list of messages as JSON
+        return messageService.getConversation(currentUser, username); // Return the list of messages as JSON
     }
 
 }

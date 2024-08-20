@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface MessageRepository extends CrudRepository<Message, Long> {
-    List<Message> findBySenderAndRecipientOrderByTimestampAsc(String sender, String recipient);
+    List<Message> findMessageBySenderAndRecipientOrderByTimestampAsc(String sender, String recipient);
     List<Message> findByRecipientAndSenderOrderByTimestampAsc(String recipient, String sender);
 }
