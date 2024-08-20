@@ -7,8 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class PlantGuesserService {
@@ -30,6 +31,10 @@ public class PlantGuesserService {
         String url = apiUrl + "?page=" + pageNum + "&filter_not[common_name]=null&filter_not[image_url]=null&token=" + apiKey;
         return restTemplate.getForObject(url, PlantGuesserList.class);
     }
+    public PlantGuesserList getPlantFamily(String family) {
+        String url = apiUrl + "?filter[family_name]=" + family + "&filter_not[common_name]=null&token=" + apiKey;
+        return restTemplate.getForObject(url, PlantGuesserList.class);
+    }
 
     public PlantGuesserItem getPlantById(int id) {
         String url = apiUrl + "/" + id + "?token=" + apiKey;
@@ -47,5 +52,25 @@ public class PlantGuesserService {
         return Arrays.stream(plantList).toList().getFirst();
     }
 
+    public PlantData[] getFamilyPlants(String family, String plantName) {
+        PlantData[] plantList = getPlantFamily(family).getPlantGuesserList();
+        return Arrays.stream(plantList).toList()
+                .stream()
+                .filter(plant -> !Objects.equals(plant.common_name, plantName))
+                .toArray(PlantData[]::new);
+    }
+
+    public List<String> getMultichoicePlantNames(String family, String plantName) {
+        PlantData[] plantList = getFamilyPlants(family, plantName);
+        List<String> multichoicePlantNames = Arrays.stream(plantList).toList()
+                .stream()
+                .map(PlantData::getCommonName)
+                .toList();
+        List<String> plant = Collections.singletonList(plantName);
+        return Stream.concat(multichoicePlantNames.subList(0,3).stream(), plant.stream())
+                .collect(Collectors.toList());
+
+
+    }
 
 }

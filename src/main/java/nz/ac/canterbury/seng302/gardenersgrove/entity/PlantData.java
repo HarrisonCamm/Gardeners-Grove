@@ -20,8 +20,32 @@ public class PlantData {
     @JsonProperty("image_url")
     public String image_url;
 
+    @JsonProperty("family")
+    public String family;
+
+    @JsonProperty("family_common_name")
+    public String family_common_name;
+
     public PlantData() {
         // no-args jackson constructor
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getCommonName() {
+        return common_name;
+    }
+
+    public String getScientificName() {
+        return scientific_name;
+    }
+
+    public String getImageUrl() {
+        return image_url;
+    }
+
+
 }
 

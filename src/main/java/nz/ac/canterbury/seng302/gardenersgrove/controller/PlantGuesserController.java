@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -39,6 +40,9 @@ public class PlantGuesserController {
         PlantData plant = plantGuesserService.getPlant();
         String plantName = plant.common_name;
         String plantImage = plant.image_url;
+        String plantFamily = plant.family;
+        List<String> quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName);
+        logger.info(String.valueOf(quizOptions));
         model.addAttribute("commonName", plantName);
         model.addAttribute("plantImage", plantImage);
 
