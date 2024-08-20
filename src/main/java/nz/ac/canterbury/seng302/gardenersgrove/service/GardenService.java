@@ -43,6 +43,10 @@ public class GardenService {
         return gardenRepository.findPublicGardens();
     }
 
+    public List<Garden> searchPublicGardens(String search) {
+        return gardenRepository.findPublicGardensBySearch(search);
+    }
+
     public Garden addGarden(Garden garden) {
         return gardenRepository.save(garden);
     }

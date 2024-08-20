@@ -20,4 +20,8 @@ public interface GardenRepository extends CrudRepository<Garden, Long> {
 
     @Query("SELECT g FROM Garden g WHERE g.isPublic = TRUE")
     List<Garden> findPublicGardens();
+
+    @Query("SELECT g FROM Garden g WHERE g.isPublic = TRUE AND g.name LIKE %:search% or g.description LIKE %:search%")
+    List<Garden> findPublicGardensBySearch(String search);
+
 }
