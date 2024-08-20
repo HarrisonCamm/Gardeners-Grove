@@ -27,7 +27,7 @@ public class PlantGuesserService {
     }
 
     public PlantGuesserList getPlantPage(int pageNum) {
-        String url = apiUrl + "?page=" + pageNum + "&token=" + apiKey;
+        String url = apiUrl + "?page=" + pageNum + "&filter_not[common_name]=null&filter_not[image_url]=null&token=" + apiKey;
         return restTemplate.getForObject(url, PlantGuesserList.class);
     }
 
@@ -36,22 +36,14 @@ public class PlantGuesserService {
         return restTemplate.getForObject(url, PlantGuesserItem.class);
     }
 
-    public PlantData[] getFilteredPlants() {
+    public PlantData[] getPlants() {
         Random random = new Random();
-        boolean validList = false;
-        PlantData[] filteredList = new PlantData[0];
-        while (!validList) {
-            int num = random.nextInt(21863);
-            filteredList = getPlantPage(num).getPlantGuesserList();
-            if (filteredList.length>0) {
-                validList = true;
-            }
-        }
-        return filteredList;
+        int num = random.nextInt(747);
+        return getPlantPage(num).getPlantGuesserList();
         
     }
     public PlantData getPlant() {
-        PlantData[] plantList = getFilteredPlants();
+        PlantData[] plantList = getPlants();
         return Arrays.stream(plantList).toList().getFirst();
     }
 
