@@ -4,7 +4,10 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nz.ac.canterbury.seng302.gardenersgrove.controller.SlotsController;
 import org.junit.jupiter.api.Assertions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -53,20 +56,32 @@ public class DailySpinSteps {
     }
 
     @When("I click the Daily Spin button on the navbar,")
-    public void i_click_the_daily_spin_button_on_the_navbar() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    public void i_click_the_daily_spin_button_on_the_navbar() throws Exception {
+        mvcResult = mockMvc.perform(get("/daily-spin"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("dailySpinTemplate"))
+                .andReturn();
     }
 
     @Then("I am taken to the Daily Spin Page")
     public void i_am_taken_to_the_daily_spin_page() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        String viewName = mvcResult.getModelAndView().getViewName();
+        Assertions.assertEquals("dailySpinTemplate", viewName, "Expected to be on the Daily Spin Page, but was not.");
+
+        int status = mvcResult.getResponse().getStatus();
+        Assertions.assertEquals(200, status, "Expected status 200 (OK), but got: " + status);
     }
 
     @Then("A spin wheel animation appears with garden themed emojis")
-    public void a_spin_wheel_animation_appears_with_garden_themed_emojis() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    public void a_spin_wheel_animation_appears_with_garden_themed_emojis() throws UnsupportedEncodingException {
+        //verify that the HTML content includes the necessary elements for the
+        // spin wheel animation and the garden-themed emojis 💧☀️🍄🌶️🌾.
+        String content = mvcResult.getResponse().getContentAsString();
+
+        boolean hasSpinButton = content.contains("<button class=\"spin-button\"") && content.contains("SPIN");
+        boolean hasReelContainers = content.contains("<div class=\"reel-container\"");
+
+        Assertions.assertTrue(hasSpinButton, "Expected to find a spin button in the page.");
+        Assertions.assertTrue(hasReelContainers, "Expected to find reel containers for the spin wheel animation.");
     }
 }
