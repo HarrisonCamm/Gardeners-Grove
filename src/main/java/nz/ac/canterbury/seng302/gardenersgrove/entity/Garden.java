@@ -67,6 +67,7 @@ public class Garden {
         this.size = size;
         this.owner = owner;
         this.isPublic = false;
+        this.description = "";
     }
 
     // Getter for id

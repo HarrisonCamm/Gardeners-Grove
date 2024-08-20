@@ -225,6 +225,7 @@ public class ViewGardenController {
             model.addAttribute("tagInput", "");
             model.addAttribute("gardenName", garden.get().getName());
             model.addAttribute("gardenLocation", garden.get().getLocation().toString());
+            model.addAttribute("gardenDescription", garden.get().getDescription());
             model.addAttribute("gardenSize", garden.get().getSize());
             model.addAttribute("gardenTags", gardenService.getEvaluatedTags(gardenID));
             model.addAttribute("gardenIsPublic", garden.get().getIsPublic());
