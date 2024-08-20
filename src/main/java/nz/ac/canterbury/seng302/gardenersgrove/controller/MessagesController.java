@@ -30,6 +30,12 @@ public class MessagesController {
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageService messageService;
 
+    /**
+     * Constructor for the MessagesController
+     * @param userService The user service
+     * @param messagingTemplate The messaging template
+     * @param messageService The message service
+     */
     @Autowired
     public MessagesController(UserService userService, SimpMessagingTemplate messagingTemplate, MessageService messageService) {
         this.userService = userService;
@@ -37,14 +43,21 @@ public class MessagesController {
         this.messageService = messageService;
     }
 
+    /**
+     * Get the messages page and add the required attributes to the model
+     * @param model The model to add attributes to
+     * @return The name of the template to render
+     */
     @GetMapping("/messages")
     public String getMessages(Model model) {
         logger.info("/GET messages");
 
+        // Add the current user's email to the model and the list of the user's friends
         String currentUserEmail = userService.getAuthenticatedUser().getEmail();
         model.addAttribute("from", currentUserEmail);
         model.addAttribute("friends", userService.getAuthenticatedUser().getFriends());
 
+        // Add all the last messages sent
         List<String> lastMessages = new ArrayList<>();
         userService.getAuthenticatedUser().getFriends().forEach(friend -> {
             Optional<Message> lastMessage = messageService.getLastMessage(currentUserEmail, friend.getEmail());
@@ -59,6 +72,11 @@ public class MessagesController {
         return "messagesTemplateTest";
     }
 
+    /**
+     * Send a message to a user
+     * @param username The username of the recipient
+     * @param message The message to send
+     */
     @MessageMapping("/chat.send/{username}")
     public void sendMessage(@DestinationVariable String username, Message message) {
         logger.info("Sending message to {}: {}", username, message.getContent());
@@ -66,6 +84,11 @@ public class MessagesController {
         messagingTemplate.convertAndSendToUser(username, "/queue/reply", message);
     }
 
+    /**
+     * Get the chat between the current user and another user
+     * @param username The username of the other user
+     * @return The list of messages between the two users sorted by the date they were sent
+     */
     @GetMapping("/chat/{username}")
     public @ResponseBody List<Message> getChat(@PathVariable String username) {
         String currentUser = userService.getAuthenticatedUser().getEmail();

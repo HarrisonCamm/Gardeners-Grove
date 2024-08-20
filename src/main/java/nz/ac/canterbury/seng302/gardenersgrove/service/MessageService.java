@@ -19,11 +19,23 @@ public class MessageService {
         this.messageRepository = messageRepository;
     }
 
+    /**
+     * Save a message to the database
+     * @param sender The sender of the message
+     * @param recipient The recipient of the message
+     * @param content The content of the message
+     */
     public void saveMessage(String sender, String recipient, String content) {
         Message message = new Message(sender, recipient, content, new Date());
         messageRepository.save(message);
     }
 
+    /**
+     * Get all the messages between two users
+     * @param currUserEmail The current user's email
+     * @param fromUserEmail The email of the user to get messages from
+     * @return A list of messages between the two users
+     */
     public List<Message> getConversation(String currUserEmail, String fromUserEmail) {
         List<Message> messagesSent = messageRepository.findMessageBySenderAndRecipientOrderByTimestampAsc(currUserEmail, fromUserEmail);
         List<Message> messagesReceived = messageRepository.findByRecipientAndSenderOrderByTimestampAsc(currUserEmail, fromUserEmail);
@@ -35,6 +47,12 @@ public class MessageService {
         return messagesSent;
     }
 
+    /**
+     * Get the last message between two users for displaying in the view
+     * @param currUserEmail The current user's email
+     * @param fromUserEmail The email of the user to get the last message from
+     * @return The last message between the two users
+     */
     public Optional<Message> getLastMessage(String currUserEmail, String fromUserEmail) {
         List<Message> messagesSent = messageRepository.findMessageBySenderAndRecipientOrderByTimestampAsc(currUserEmail, fromUserEmail);
         List<Message> messagesReceived = messageRepository.findByRecipientAndSenderOrderByTimestampAsc(currUserEmail, fromUserEmail);
