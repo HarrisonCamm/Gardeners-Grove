@@ -36,19 +36,31 @@ public class BrowseGardenController {
     }
 
     @GetMapping("/browse-gardens")
-    public String viewGarden(@RequestParam("gardenID") Long gardenID,
-                             HttpSession session,
-                             Model model,
-                             HttpServletResponse response) {
-//        // Add cache control headers
-//        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
-//        response.setHeader("Pragma", "no-cache"); // HTTP 1.0
-//        response.setDateHeader("Expires", 0); // Proxies
+    public String browseGardens(HttpSession session,
+                         Model model,
+                         HttpServletResponse response) {
 
         logger.info("GET /browse-gardens");
         RedirectService.addEndpoint("/browse-gardens");
 
-        return "bro";
+        List<Garden> gardens = gardenService.getPublicGardens();
+        model.addAttribute("gardens", gardens);
+
+        return "browseGardensTemplate";
+    }
+
+    @PostMapping("/browse-gardens")
+    public String searchGardens(@RequestParam("search") String search,
+                         HttpSession session,
+                         Model model,
+                         HttpServletResponse response) {
+
+        logger.info("POST /browse-gardens");
+
+        List<Garden> gardens = gardenService.searchPublicGardens(search);
+        model.addAttribute("gardens", gardens);
+
+        return "browseGardensTemplate";
     }
 
 }
