@@ -26,7 +26,7 @@
                                         <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
                                         <div class="ms-3">
                                             <h6 class="mb-0" th:text="${friend.firstName + ' ' + friend.lastName}"></h6>
-                                            <small th:id="'friend-last-message-' + ${friend.userId}" class="text-muted" th:text="${lastMessages[iterStat.index]}"></small>
+                                            <small th:id="'friend-last-message-' + ${friend.email}" class="text-muted" th:text="${lastMessages[iterStat.index]}"></small>
                                         </div>
                                     </div>
                                 </div>
@@ -52,7 +52,7 @@
                         </div>
                     </div>
                 </div>
-                <div th:id="'chatArea-' + ${friend.userId}" class="flex-grow-1 p-3 d-flex flex-column">
+                <div th:id="'chatArea-' + ${friend.email}" class="flex-grow-1 p-3 d-flex flex-column">
                     <p class="text-muted text-center">Today</p>
                     <div class="flex-grow-1 d-flex align-items-center justify-content-center">
                         <p class="text-muted">No messages yet. Start the conversation!</p>
@@ -96,18 +96,18 @@
         if (messageContent && stompClient) {
             const chatMessage = {
                 sender: from,
-                recipient: to,
+                recipient: to.email,
                 content: messageContent,
                 timestamp: new Date().toISOString()
             };
-            stompClient.send("/app/chat.send/" + to, {}, JSON.stringify(chatMessage));
+            stompClient.send("/app/chat.send/" + to.email, {}, JSON.stringify(chatMessage));
             messageInput.value = '';
             showMessage(chatMessage, userId);
         }
     }
 
     function showChatUI(userId, firstName, lastName, email) {
-        to = email;
+        to = {id: userId, email: email};
         const welcome = document.getElementById('welcomeMessage');
         welcome.setAttribute('style', 'display: none !important;');
 
@@ -122,14 +122,14 @@
 
         document.getElementById('message-input-' + userId).focus();
 
-        fetch('/chat/' + to)
+        fetch('/chat/' + to.email)
             .then(response => response.json())
             .then(messages => {
-                const chatArea = document.getElementById('chatArea-' + userId);
+                const chatArea = document.getElementById('chatArea-' + to.email);
                 chatArea.innerHTML = '';
                 if (messages.length > 0) {
                     messages.forEach(message => {
-                        showMessage(message, userId);
+                        showMessage(message);
                     });
                 } else {
                     chatArea.innerHTML = '<p class="text-muted">No messages yet. Start the conversation!</p>';
@@ -137,8 +137,11 @@
             });
     }
 
-    function showMessage(message, userId) {
-        const chatArea = document.getElementById('chatArea-' + userId);
+    function showMessage(message) {
+
+        const chatEmail = from === message.sender ? message.recipient : message.sender;
+
+        const chatArea = document.getElementById('chatArea-' + chatEmail);
         const messageElement = document.createElement('div');
         messageElement.classList.add('d-flex', 'mb-3');
 
@@ -155,7 +158,7 @@
         chatArea.scrollTop = chatArea.scrollHeight;
 
         // Update the last message sent
-        const lastMessageElement = document.getElementById('friend-last-message-' + userId);
+        const lastMessageElement = document.getElementById('friend-last-message-' + chatEmail);
         let lastMessageContent = message.content;
         if (lastMessageContent.length > 10) {
             lastMessageContent = lastMessageContent.substring(0, 10) + '...';
