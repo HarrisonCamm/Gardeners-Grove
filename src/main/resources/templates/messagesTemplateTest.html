@@ -69,7 +69,7 @@
                 <div class="border-top p-3">
                     <div class="input-group">
                         <input id="message-input" type="text" class="form-control" placeholder="Message" aria-label="Message">
-                        <button id="send-button" class="btn btn-primary" type="button">Send</button>
+                        <button id="send-button" class="btn btn-primary" type="button" onclick="sendMessage()">Send</button>
                     </div>
                 </div>
             </div>
@@ -105,6 +105,7 @@
         if(messageContent && stompClient) {
             const chatMessage = {
                 sender: from,  // Replace with actual sender
+                // recipient: to,
                 content: messageContent,
             };
             stompClient.send("/app/chat.send/" + to, {}, JSON.stringify(chatMessage));
@@ -112,19 +113,19 @@
         }
     }
 
-    function showMessage(message) {
-        // Get the chatArea div
-        const chatArea = document.getElementById('chatArea');
-
-        // Create a new div for the message
-        const messageElement = document.createElement('div');
-
-        // Set the content of the message div
-        messageElement.innerHTML = `<strong>${message.sender}:</strong> ${message.content}`;
-
-        // Append the message div to the chatArea div
-        chatArea.appendChild(messageElement);
-    }
+    // function showMessage(message) {
+    //     // Get the chatArea div
+    //     const chatArea = document.getElementById('chatArea');
+    //
+    //     // Create a new div for the message
+    //     const messageElement = document.createElement('div');
+    //
+    //     // Set the content of the message div
+    //     messageElement.innerHTML = `<strong>${message.sender}:</strong> ${message.content}`;
+    //
+    //     // Append the message div to the chatArea div
+    //     chatArea.appendChild(messageElement);
+    // }
 
     function showChatUI(userId, firstName, lastName, email) {
         to = email;
@@ -141,11 +142,139 @@
 
         // Focus on the message input box
         document.querySelector('#chatUI .form-control').focus();
+
+        // Fetch and display the chat history with the selected friend
+        fetch('/chat/' + email)
+            .then(response => response.json())
+            .then(messages => {
+                if (messages.length > 0) {
+                    messages.forEach(message => {
+                        showMessage(message);
+                    });
+                } else {
+                    // Display placeholder if no messages
+                    chatArea.innerHTML = '<p class="text-muted">No messages yet. Start the conversation!</p>';
+                }
+            });
+    }
+
+    function showMessage(message) {
+        // Get the chatArea div
+        const chatArea = document.getElementById('chatArea');
+
+        // Create a new div for the message
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('d-flex', 'align-items-center', 'mb-3');
+
+        const isSender = message.sender === from; // Check if the message was sent by the current user
+
+        // Add a CSS class to align the message based on whether it's sent or received
+        const messageClass = isSender ? 'align-self-end text-end' : 'align-self-start text-start';
+
+        // Set the content of the message div
+        messageElement.innerHTML = `
+        <div class="${messageClass} bg-light p-3 rounded">
+            <strong>${message.sender}</strong>: ${message.content} <br>
+            <small class="text-muted">${new Date(message.timestamp).toLocaleTimeString()}</small>
+        </div>`;
+
+        // Append the message div to the chatArea div
+        chatArea.appendChild(messageElement);
+
+        // Scroll to the bottom of the chat area to show the latest message
+        chatArea.scrollTop = chatArea.scrollHeight;
     }
 
     document.getElementById('send-button').addEventListener('click', sendMessage);
     connect();
 
+    // // JavaScript for WebSocket connection
+    // const socket = new SockJS('/ws');
+    // const stompClient = Stomp.over(socket);
+    //
+    // stompClient.connect({}, function (frame) {
+    //     console.log('Connected: ' + frame);
+    //     stompClient.subscribe('/user/queue/reply', function (messageOutput) {
+    //         showMessage(JSON.parse(messageOutput.body));
+    //     });
+    // });
+    //
+    // function sendMessage() {
+    //     const messageContent = document.querySelector('#chatUI .form-control').value.trim();
+    //     if (messageContent) {
+    //         const message = {
+    //             content: messageContent,
+    //             sender: 'You',
+    //             timestamp: new Date().toISOString()
+    //         };
+    //         stompClient.send("/app/chat.send/" + targetUsername, {}, JSON.stringify(message));
+    //         document.querySelector('#chatUI .form-control').value = '';
+    //     }
+    // }
+    //
+    // function showChatUI(userId, firstName, lastName) {
+    //     // Hide the welcome message
+    //     var element = document.getElementById('welcomeMessage');
+    //     element.setAttribute('style', 'display: none !important;');
+    //
+    //     // Ensure that only one of the divs is visible
+    //     document.getElementById('chatUI').style.display = 'flex'; // Show the chat UI
+    //
+    //     // Update the chat UI with the selected friend's information
+    //     document.getElementById('friendName').innerText = firstName + ' ' + lastName;
+    //     document.getElementById('friendImage').src = '/get-image?view-user-profile=true&userID=' + userId;
+    //
+    //     // Focus on the message input box
+    //     document.querySelector('#chatUI .form-control').focus();
+    //
+    //     fetch('/chat/' + userId)
+    //         .then(response => response.json())
+    //         .then(messages => {
+    //             messages.forEach(message => showMessage(message));
+    //         });
+    // }
+    //
+    // // JavaScript for WebSocket connection
+    // const socket = new SockJS('/ws');
+    // const stompClient = Stomp.over(socket);
+    //
+    // stompClient.connect({}, function (frame) {
+    //     console.log('Connected: ' + frame);
+    //     stompClient.subscribe('/user/queue/reply', function (messageOutput) {
+    //         showMessage(JSON.parse(messageOutput.body));
+    //     });
+    // });
+    //
+    // function sendMessage() {
+    //     const messageContent = document.querySelector('#chatUI .form-control').value.trim();
+    //     if (messageContent) {
+    //         const message = {
+    //             content: messageContent,
+    //             sender: 'You',
+    //             timestamp: new Date().toISOString()
+    //         };
+    //         stompClient.send("/app/chat.send/" + targetUsername, {}, JSON.stringify(message));
+    //         document.querySelector('#chatUI .form-control').value = '';
+    //     }
+    // }
+    //
+    // function showMessage(message) {
+    //     const chatArea = document.getElementById('chatArea');
+    //     const messageElement = document.createElement('div');
+    //     messageElement.classList.add('d-flex', 'align-items-center', 'mb-3');
+    //
+    //     const messageContent = `
+    //     <div class="bg-light p-3 rounded">
+    //         <strong>${message.sender}</strong>: ${message.content} <br>
+    //         <small>${new Date(message.timestamp).toLocaleTimeString()}</small>
+    //     </div>`;
+    //
+    //     messageElement.innerHTML = messageContent;
+    //     chatArea.appendChild(messageElement);
+    //
+    //     // Scroll to the bottom of the chat area to show the latest message
+    //     chatArea.scrollTop = chatArea.scrollHeight;
+    // }
 </script>
 </body>
 </html>
