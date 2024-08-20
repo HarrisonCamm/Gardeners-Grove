@@ -25,7 +25,7 @@
                 <div th:if="${!#lists.isEmpty(friends)}">
                     <ul class="list-unstyled">
                         <li th:each="friend : ${friends}">
-                            <a href="#" th:attr="onclick=|showChatUI('${friend.userId}', '${friend.firstName}', '${friend.lastName}')|" class="text-decoration-none">
+                            <a href="#" th:attr="onclick=|showChatUI('${friend.userId}', '${friend.firstName}', '${friend.lastName}', '${friend.email}')|" class="text-decoration-none">
                                 <div class="background p-2 mb-2">
                                     <div class="d-flex align-items-center">
                                         <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
@@ -68,8 +68,8 @@
                 </div>
                 <div class="border-top p-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Message" aria-label="Message">
-                        <button class="btn btn-primary" type="button">Send</button>
+                        <input id="message-input" type="text" class="form-control" placeholder="Message" aria-label="Message">
+                        <button id="send-button" class="btn btn-primary" type="button">Send</button>
                     </div>
                 </div>
             </div>
@@ -80,9 +80,54 @@
 <!-- Scripts fragment, contains bootstrap scripts -->
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 
-<script>
-    function showChatUI(userId, firstName, lastName) {
+<script th:src="@{/webjars/stomp-websocket/2.3.4/stomp.min.js}"></script>
+<!--    AI GENERATED-->
+<script th:inline="javascript">
+    const from = [[${from}]];
+    let to;
 
+    let stompClient = null;
+
+    function connect() {
+        const socket = new WebSocket('/ws');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+
+            stompClient.subscribe('/user/queue/reply', function (messageOutput) {
+                showMessage(JSON.parse(messageOutput.body));
+            });
+        });
+    }
+
+    function sendMessage() {
+        const messageContent = document.getElementById('message-input').value.trim();
+        if(messageContent && stompClient) {
+            const chatMessage = {
+                sender: from,  // Replace with actual sender
+                content: messageContent,
+            };
+            stompClient.send("/app/chat.send/" + to, {}, JSON.stringify(chatMessage));
+            document.getElementById('message-input').value = '';
+        }
+    }
+
+    function showMessage(message) {
+        // Get the chatArea div
+        const chatArea = document.getElementById('chatArea');
+
+        // Create a new div for the message
+        const messageElement = document.createElement('div');
+
+        // Set the content of the message div
+        messageElement.innerHTML = `<strong>${message.sender}:</strong> ${message.content}`;
+
+        // Append the message div to the chatArea div
+        chatArea.appendChild(messageElement);
+    }
+
+    function showChatUI(userId, firstName, lastName, email) {
+        to = email;
         // Hide the welcome message
         var element = document.getElementById('welcomeMessage');
         element.setAttribute('style', 'display: none !important;');
@@ -97,6 +142,10 @@
         // Focus on the message input box
         document.querySelector('#chatUI .form-control').focus();
     }
+
+    document.getElementById('send-button').addEventListener('click', sendMessage);
+    connect();
+
 </script>
 </body>
 </html>
