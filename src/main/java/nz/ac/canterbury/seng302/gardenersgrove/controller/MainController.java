@@ -49,11 +49,6 @@ public class MainController {
         model.addAttribute("user", currentUser);
 
 
-        //Slots logic 💧☀️🍄🌶️🌾
-        List<int[]> slots = SlotsService.generateSlots();
-        model.addAttribute("slots", slots);
-        model.addAttribute("amountWon", SlotsService.amountWon(slots));
-
         return "mainTemplate";
     }
 }
