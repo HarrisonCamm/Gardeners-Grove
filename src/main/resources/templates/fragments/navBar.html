@@ -12,7 +12,9 @@
             </div>
 
             <div class="balanceDisplay">
-                <div th:replace="~{fragments/iconFragment.html :: iconFragment}"></div>
+                <div class="svg">
+                    <div class="svg-fragment" th:replace="~{fragments/iconFragment.html :: iconFragment}"></div>
+                </div>
                 <!-- Include the SVG Icon-->
                 <span class="navBar-bloom-display" th:text="${bloomBalance}">0</span>
             </div>
