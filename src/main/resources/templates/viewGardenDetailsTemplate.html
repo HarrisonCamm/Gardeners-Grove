@@ -19,9 +19,14 @@
             <div id="privateBadge" class="col" th:hidden="${gardenIsPublic}">
                 <span class="badge me-2 mb-2 private-tag-colour">Private Garden</span>
             </div>
-            <input type="checkbox" id="isPublic" onchange="publicityHandler(this)" th:name="isPublic" th:checked="*{gardenIsPublic}">
-            <label for="isPublic">Make my garden public</label>
+
+            <div style="display: inline-block; vertical-align: middle;">
+                &nbsp;
+                <input type="checkbox" id="isPublic" onchange="publicityHandler(this)" th:name="isPublic" th:checked="*{gardenIsPublic}">
+                <label for="isPublic" style="font-size: 12px;">Make my garden public</label>
+            </div>
         </div>
+
 
         <div class="col gardenDetails container">
             <div class="row mb-3 ps-5">
@@ -78,7 +83,7 @@
                 </div>
             </div>
             <div class="row mb-3 ps-5">
-                <div class="col">
+                <div class="col text-wrap text-break">
                     <br/>
                     <h5 th:text="${gardenDescription}"></h5>
                 </div>
