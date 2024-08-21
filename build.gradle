@@ -33,14 +33,14 @@ sonarqube {
 		//property "sonar.java.target", "17
 
 		// For pipelines run for a branch build only
-		if (System.env.CI_MERGE_IID == null ||System.env.CI_MERGE_REQUEST_IID.trim().isEmpty()) {
-			property "sonar.branch.name", "$System.env.CI_MERGE_REQUEST_IID"
+		if (System.env.CI_MERGE_REQUEST_IID == null || System.env.CI_MERGE_REQUEST_IID.trim().isEmpty()) {
+			property "sonar.branch.name", "${System.env.CI_COMMIT_REF_NAME}"
 		}
-		// For pipeline run as part of a merge request
+		// For pipelines run as part of a merge request
 		else {
-			property "sonar.pullrequest.key", "$System.env.CI_MERGE_REQUEST_IID"
-			property "sonar.pullrequest.branch", "$System.env.CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
-			property "sonar.pullrequest.base", "$System.env.CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+			property "sonar.pullrequest.key", "${System.env.CI_MERGE_REQUEST_IID}"
+			property "sonar.pullrequest.branch", "${System.env.CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+			property "sonar.pullrequest.base", "${System.env.CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
 		}
 	}
 }
