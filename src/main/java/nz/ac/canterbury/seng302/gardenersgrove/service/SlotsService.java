@@ -50,7 +50,7 @@ public class SlotsService {
      * Then the emoji is chosen based on which emojis range of the cumulative weighting the random int lands in
      * @return The chosen number (slot machine emoji) as an int, between 1 and 5.
      */
-    private static int getRandomWeighted() {
+    private static int chooseEmoji() {
         Random random = new Random();
         int randomValue = random.nextInt(TOTAL_WEIGHT) + 1;
 
@@ -62,7 +62,7 @@ public class SlotsService {
     }
 
     /**
-     * Generates a column of the slot machine, a list of numbers (emojis) selected by getRandomWeighted()
+     * Generates a column of the slot machine, a list of numbers (emojis) selected by chooseEmoji()
      * Size is defined by COL_LENGTH
      * The column is every number (emoji) that column of the slot machine will spin through
      * @return  int[] of random numbers
@@ -70,7 +70,7 @@ public class SlotsService {
     private static int[] generateColumn() {
         int[] col = new int[COL_LENGTH];
         for (int i = 0; i < COL_LENGTH; i++) {
-            col[i] = getRandomWeighted();
+            col[i] = chooseEmoji();
         }
         return col;
     }
