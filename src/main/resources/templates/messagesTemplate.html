@@ -6,12 +6,15 @@
 
 <div class="container-fluid chat-container">
     <div class="row h-100">
+
+        <!-- Friends Chat Area -->
         <div class="col-md-3 col-sm-4 p-4 bg-light chat-side-bar">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4>Chats</h4>
             </div>
             <input type="text" class="form-control mb-4" placeholder="Search">
 
+            <!-- Display Friends -->
             <div>
                 <div th:if="${#lists.isEmpty(friends)}">
                     <p>Your friends will be shown here</p>
@@ -26,7 +29,7 @@
                                         <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
                                         <div class="ms-3">
                                             <h6 class="mb-0" th:text="${friend.firstName + ' ' + friend.lastName}"></h6>
-<!--                                            Last message sent or received-->
+                                            <!-- Last message sent or received-->
                                             <small th:id="'friend-last-message-' + ${friend.email}" class="text-muted" th:text="${lastMessages[iterStat.index]}"></small>
                                         </div>
                                     </div>
@@ -38,11 +41,13 @@
             </div>
         </div>
 
+        <!-- Chat Area -->
         <div class="col-md-9 col-sm-8 bg-white" id="mainChatArea">
             <div id="welcomeMessage" class="d-flex align-items-center justify-content-center h-100" style="display:flex !important;">
                 <h2 class="text-dark">Welcome to Sprout</h2>
             </div>
 
+            <!-- Display actual conversation what friends clicked -->
             <div th:each="friend : ${friends}" th:id="'chatUI-' + ${friend.userId}" class="d-flex flex-column h-100" style="display:none !important;">
                 <div class="p-3 border-bottom">
                     <div class="d-flex align-items-center">
@@ -80,7 +85,7 @@
 
                     <!-- Input size counter -->
                     <div class="d-flex justify-content-end mt-1">
-                        <span th:id="messageLengthCounter" th:text="'0/512'"></span>
+                        <span th:id="messageLengthCounter" th:text="'0/255'"></span>
                     </div>
                 </div>
             </div>
@@ -191,8 +196,9 @@
 
         const backgroundColor = isSender ? 'background' : 'bg-light' // Green if sender or gray if received
 
+        // EACH MESSAGE HTML
         messageElement.innerHTML = `
-            <div class="${messageClass} ${backgroundColor} p-3 rounded w-20 text-wrap">
+            <div class="${messageClass} ${backgroundColor} p-3 rounded w-20 text-break">
                 <strong>${message.sender}</strong>: ${message.content} <br>
                 <small class="text-muted">${new Date(message.timestamp).toLocaleTimeString()}</small>
             </div>`;
