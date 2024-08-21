@@ -34,8 +34,6 @@ public class BloomTransactionSteps {
     private MvcResult mvcResult;
 
     private User currentUser;
-
-    Logger logger = LoggerFactory.getLogger(BloomTransactionSteps.class);
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -53,7 +51,6 @@ public class BloomTransactionSteps {
 
         currentUser = userService.getAuthenticatedUser();
         Integer balance = currentUser.getBloomBalance();
-        logger.info(String.valueOf(currentUser.getBloomBalance()));
 
         String content = mvcResult.getResponse().getContentAsString();
 
