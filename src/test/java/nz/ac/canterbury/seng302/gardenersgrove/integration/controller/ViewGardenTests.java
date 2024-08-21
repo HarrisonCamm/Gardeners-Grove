@@ -92,6 +92,10 @@ public class ViewGardenTests {
     @MockBean
     private AlertService alertService;
 
+    @MockBean
+    private PlantGuesserService plantGuesserService;
+
+
     private User testUser;
 
     @BeforeEach
