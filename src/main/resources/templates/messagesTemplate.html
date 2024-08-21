@@ -1,64 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
-<head th:replace="fragments/head :: head(title='Messages')"> </head>
+<head th:replace="fragments/head :: head(title='Messaging App')"> </head>
 <body>
-  <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <h1>Conversations</h1>
-        <div th:each="friend : ${friends}">
-          <div class="d-flex flex-row">
-            <img class="image-small"
-                 th:data-user-id="${friend.userId}"
-                 th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
-            <p class="center-text friend-name" th:text="${friend.firstName + ' ' + friend.lastName}"></p>
-            <hr>
-          </div>
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+
+<div class="container-fluid chat-container">
+    <div class="row h-100">
+        <div class="col-md-3 col-sm-4 p-4 bg-light chat-side-bar">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Chats</h4>
+            </div>
+            <input type="text" class="form-control mb-4" placeholder="Search">
+
+            <div>
+                <div th:if="${#lists.isEmpty(friends)}">
+                    <p>Your friends will be shown here</p>
+                </div>
+
+                <div th:if="${!#lists.isEmpty(friends)}">
+                    <ul class="list-unstyled">
+                        <li th:each="friend, iterStat : ${friends}">
+                            <a href="#" th:attr="onclick=|showChatUI('${friend.userId}', '${friend.firstName}', '${friend.lastName}', '${friend.email}')|" class="text-decoration-none">
+                                <div class="background p-2 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
+                                        <div class="ms-3">
+                                            <h6 class="mb-0" th:text="${friend.firstName + ' ' + friend.lastName}"></h6>
+<!--                                            Last message sent or received-->
+                                            <small th:id="'friend-last-message-' + ${friend.email}" class="text-muted" th:text="${lastMessages[iterStat.index]}"></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
-      </div>
+
+        <div class="col-md-9 col-sm-8 bg-white" id="mainChatArea">
+            <div id="welcomeMessage" class="d-flex align-items-center justify-content-center h-100" style="display:flex !important;">
+                <h2 class="text-dark">Welcome to Sprout</h2>
+            </div>
+
+            <div th:each="friend : ${friends}" th:id="'chatUI-' + ${friend.userId}" class="d-flex flex-column h-100" style="display:none !important;">
+                <div class="p-3 border-bottom">
+                    <div class="d-flex align-items-center">
+                        <img th:id="'friendImage-' + ${friend.userId}" class="image-small me-3" src="" alt="">
+                        <div>
+                            <h5 th:id="'friendName-' + ${friend.userId}" class="mb-0"></h5>
+                            <small class="text-muted">Verified</small>
+                        </div>
+                    </div>
+                </div>
+                <div th:id="'chatArea-' + ${friend.email}" class="flex-grow-1 p-3 d-flex flex-column">
+                    <p class="text-muted text-center">Today</p>
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                        <p class="text-muted">No messages yet. Start the conversation!</p>
+                    </div>
+                </div>
+                <div class="border-top p-3">
+                    <div class="input-group">
+                        <input th:id="'message-input-' + ${friend.userId}" type="text" class="form-control" placeholder="Message" aria-label="Message">
+                        <button th:id="'send-button-' + ${friend.userId}" class="btn btn-primary" type="button" th:onclick="'sendMessage(' + ${friend.userId} + ')'">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <script th:src="@{/webjars/stomp-websocket/2.3.4/stomp.min.js}"></script>
-<!--    AI GENERATED-->
-    <script type="text/javascript">
+<div th:replace="~{fragments/scripts :: scripts}"></div>
 
+<script th:src="@{/webjars/stomp-websocket/2.3.4/stomp.min.js}"></script>
+<script th:inline="javascript">
+    // From the model
+    const from = [[${from}]];
 
-      let stompClient = null;
+    // To send to, updated when a chat is opened
+    let to;
 
-      function connect() {
+    let stompClient = null;
+
+    function connect() {
+        //Create a WebSocket connection
         const socket = new WebSocket('/ws');
+
+        //Create a Stomp client to send and receive messages
         stompClient = Stomp.over(socket);
         stompClient.connect({}, function (frame) {
-          console.log('Connected: ' + frame);
+            console.log('Connected: ' + frame);
 
-          stompClient.subscribe('/user/queue/reply', function (messageOutput) {
-            showMessage(JSON.parse(messageOutput.body));
-          });
+            //Subscribe to the user's queue to receive messages
+            stompClient.subscribe('/user/queue/reply', function (messageOutput) {
+                // Show the message in the chat area
+                showMessage(JSON.parse(messageOutput.body));
+            });
         });
-      }
+    }
 
-      function sendMessage() {
-        const messageContent = document.getElementById('message-input').value.trim();
-        if(messageContent && stompClient) {
-          const chatMessage = {
-            sender: "startup@user.com",  // Replace with actual sender
-            content: messageContent,
-          };
-          stompClient.send("/app/chat.send/" + "sarah@email.com", {}, JSON.stringify(chatMessage));
-          document.getElementById('message-input').value = '';
+    function sendMessage(userId) {
+        const messageInput = document.getElementById('message-input-' + userId);
+        const messageContent = messageInput.value.trim();
+        if (messageContent && stompClient) {
+
+            // Serialize the message to send this will become an Entity in the backend
+            const chatMessage = {
+                sender: from,
+                recipient: to.email,
+                content: messageContent,
+                timestamp: new Date().toISOString()
+            };
+            // Send the message to the recipient's queue
+            stompClient.send("/app/chat.send/" + to.email, {}, JSON.stringify(chatMessage));
+            messageInput.value = '';
+
+            // Show the message in the chat area
+            showMessage(chatMessage, userId);
         }
-      }
+    }
 
-      function showMessage(message) {
-        var messageElement = document.createElement('div');
-        messageElement.innerHTML = `<strong>${message.sender}:</strong> ${message.content}`;
-        document.getElementById('messages').appendChild(messageElement);
-      }
+    function showChatUI(userId, firstName, lastName, email) {
+        to = {id: userId, email: email};
 
-      document.getElementById('send-button').addEventListener('click', sendMessage);
-      connect();
-    </script>
-  <div th:replace="~{fragments/scripts :: scripts}"></div>
+        // Hide the welcome message and other chat UIs
+        const welcome = document.getElementById('welcomeMessage');
+        welcome.setAttribute('style', 'display: none !important;');
+
+        // Hide all chat UIs
+        document.querySelectorAll('[id^="chatUI-"]').forEach(chatUI =>
+            chatUI.setAttribute('style', 'display: none !important;'));
+
+        //Show the current UI
+        const currChat = document.getElementById('chatUI-' + userId);
+        currChat.setAttribute('style', 'display: flex !important;');
+
+        document.getElementById('friendName-' + userId).innerText = firstName + ' ' + lastName;
+        document.getElementById('friendImage-' + userId).src = '/get-image?view-user-profile=true&userID=' + userId;
+
+        document.getElementById('message-input-' + userId).focus();
+
+        // Get all the past chats from the backend
+        fetch('/chat/' + to.email)
+            .then(response => response.json())
+            .then(messages => {
+                const chatArea = document.getElementById('chatArea-' + to.email);
+                chatArea.innerHTML = '';
+                if (messages.length > 0) {
+                    messages.forEach(message => {
+                        // Show all the messages
+                        showMessage(message);
+                    });
+                } else {
+                    chatArea.innerHTML = '<p class="text-muted">No messages yet. Start the conversation!</p>';
+                }
+            });
+    }
+
+    function showMessage(message) {
+
+        // Getting the email of the chat to append the message to that chat area
+        const chatEmail = from === message.sender ? message.recipient : message.sender;
+
+        const chatArea = document.getElementById('chatArea-' + chatEmail);
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('d-flex', 'mb-3');
+
+        // Show the message left or right using BootStrap classes
+        const isSender = message.sender === from;
+        const messageClass = isSender ? 'align-self-end text-end ms-auto' : 'align-self-start text-start me-auto';
+
+        const backgroundColor = isSender ? 'background' : 'bg-light' // Green if sender or gray if received
+
+        messageElement.innerHTML = `
+            <div class="${messageClass} ${backgroundColor} p-3 rounded w-20 text-wrap">
+                <strong>${message.sender}</strong>: ${message.content} <br>
+                <small class="text-muted">${new Date(message.timestamp).toLocaleTimeString()}</small>
+            </div>`;
+
+        // Append the message to the chat area
+        chatArea.appendChild(messageElement);
+        chatArea.scrollTop = chatArea.scrollHeight;
+
+        // Update the last message sent
+        const lastMessageElement = document.getElementById('friend-last-message-' + chatEmail);
+        let lastMessageContent = message.content;
+        if (lastMessageContent.length > 10) {
+            lastMessageContent = lastMessageContent.substring(0, 10) + '...';
+        }
+        lastMessageElement.textContent = lastMessageContent;
+    }
+
+    document.querySelectorAll('[id^="send-button-"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.id.split('-')[2];
+            sendMessage(userId);
+        });
+    });
+
+    // Connect to the WebSocket firstly
+    connect();
+</script>
 </body>
 </html>
