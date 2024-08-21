@@ -1,11 +1,15 @@
+/* Copyright (c) 2024 by Morgan (https://codepen.io/mog13/pen/VRBgNQ)*/
 
-/* Please like <3 and share if you enjoyed! */
+/*Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:*/
+
+/*     The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.*/
+
+/*    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*/
 
 body {
     margin: 0;
     background: #BEE186; /* $med */
     user-select: none;
-    cursor: pointer;
 }
 
 .container {
@@ -85,14 +89,14 @@ body {
     position: relative;
     display: flex;
     background-image: linear-gradient(
-            45deg,
+            0deg,
             #edfaf9 18.75%,
-            #b3d5eb 18.75%,
-            #b3d5eb 50%,
+            #d7fcd3 18.75%,
+            #d7fcd3 50%,
             #edfaf9 50%,
             #edfaf9 68.75%,
-            #b3d5eb 68.75%,
-            #b3d5eb 100%
+            #d7fcd3 68.75%,
+            #d7fcd3 100%
     );
     background-size: 56.57px 56.57px;
     min-height: 12.5rem;
@@ -113,10 +117,10 @@ body {
 }
 
 .container .play-area .reel-container:first-child {
-    border-right: solid #1e1e1e 3px; /* $borderCol */
+    border-left: solid #1e1e1e 0px; /* $borderCol set to 0 to avoid overthickness */
 }
 
-.container .play-area .reel-container:last-child {
+.container .play-area .reel-container{
     border-left: solid #1e1e1e 3px; /* $borderCol */
 }
 
@@ -166,25 +170,25 @@ body {
 }
 
 .container .info .instructions {
-    color: #edfaf9; /* $textCol */
+    color: #3d7a36; /* $textCol */
     margin-bottom: 1rem;
     width: 500px;
     text-align: center;
-    font-family: "Fredoka One", cursive;
+    font-family: "Fredoka One", sans-serif;
 }
 
 .container .info .prize-table {
-    width: 320px;
+    width: 400px;
     margin-left: auto;
     margin-right: auto;
     display: flex;
     justify-content: space-between;
-    color: #edfaf9; /* $textCol */
+    color: #0a3407; /* $textCol */
     font-weight: bold;
-    font-family: "Roboto", sans-serif;
+    font-family: "Fredoka One", sans-serif;
     font-size: 1.3rem;
 }
-
+/*TODO delete this*/
 .container .info .prize-table .doubles {
     padding-right: 2rem;
 }

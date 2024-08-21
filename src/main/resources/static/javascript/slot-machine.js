@@ -94,33 +94,61 @@
             playWinChime(amount);
         }, 70);
     };
-    let findWins = () => {
-        let winline = [];
-        let symbols = {};
-        reelContainers.forEach(reel => {
-            let symbol = reel.children[1].innerText;
-            winline.push(symbol);
-            if (symbols[symbol]) symbols[symbol]++;else symbols[symbol] = 1;
-        });
-        if (winline.filter(s => {
-            return s === winline[0];
-        }).length === 5) {
-            win(5, winline[0]);
-        } else {
-            for (s in symbols) {
-                if (symbols[s] == 2) {
-                    win(2, s);
-                }
+
+    let updateSymbolCounts = (symbols, reel) => {
+        let symbolTop = reel.children[0].innerText;
+        symbols.top[symbolTop] = (symbols.top[symbolTop] || 0) + 1; //increment count of this symbol in top row
+
+        let symbolMiddle = reel.children[1].innerText;
+        symbols.middle[symbolMiddle] = (symbols.middle[symbolMiddle] || 0) + 1;
+
+        let symbolBottom = reel.children[2].innerText;
+        symbols.bottom[symbolBottom] = (symbols.bottom[symbolBottom] || 0) + 1;
+    };
+
+    let getHighestMatch = (symbols) => {
+        let highest = { count: 2, emoji: '🌶️' };
+        for (let emoji in symbols) {
+            if (symbols[emoji] > highest.count) {
+                highest.count = symbols[emoji];
+                highest.emoji = emoji;
             }
         }
+        return highest;
     };
-    let win = (amountMatching, symbol) => {
+
+    let findHighestMatchingRow = (top, middle, bottom) => {
+        let highestTop = getHighestMatch(top);
+        let highestMiddle = getHighestMatch(middle);
+        let highestBottom = getHighestMatch(bottom);
+
+        if (highestTop.count > highestMiddle.count && highestTop.count > highestBottom.count) {
+            return { count: highestTop.count, emoji: highestTop.emoji, row: 0 };
+        } else if (highestMiddle.count >= highestTop.count && highestMiddle.count >= highestBottom.count) {
+            return { count: highestMiddle.count, emoji: highestMiddle.emoji, row: 1 };
+        } else {
+            return { count: highestBottom.count, emoji: highestBottom.emoji, row: 2 };
+        }
+    };
+    let findWins = () => {
+        let symbols = { top: {}, middle: {}, bottom: {} };
+        reelContainers.forEach(reel => updateSymbolCounts(symbols, reel));
+        let { count, emoji, row } = findHighestMatchingRow(symbols.top, symbols.middle, symbols.bottom);
+        if (count > 2) {
+            win(count, emoji, row);
+        }
+
+        //TODO add popup/ message for unsuccessful spin
+
+    };
+    let win = (amountMatching, symbol, rowNumber) => {
         reelContainers.forEach(reel => {
-            if (reel.children[1].innerText === symbol) reel.children[1].classList.add("win");
+            if (reel.children[rowNumber].innerText === symbol) reel.children[rowNumber].classList.add("win");
         });
-        let winAmount = 1 + reelContents.indexOf(symbol);
+        let winAmount = reelContents.indexOf(symbol);
         playWinChime(winAmount);
-        if (amountMatching == 3) winAmount *= 100;
+        if (amountMatching === 4) winAmount *= 10;
+        if (amountMatching === 5) winAmount *= 100;
         setChange(winAmount);
         addToMoney(winAmount);
     };
@@ -159,16 +187,43 @@
     let addToPrizeTable = (combo, amount, target) => {
         let pt = document.querySelector(`.prize-table .${target}`);
         let prize = document.createElement("div");
-        prize.innerHTML = `${combo}: ${amount}`;
+        prize.innerHTML = `${combo}: ${amount}฿`;
         prize.classList.add("prize-item");
         prize.setAttribute("win-attr", combo.replace(/[-❔]/g, ""));
         pt.append(prize);
     };
 
+    let getComboType = (target) => {
+        switch (target) {
+            case "triples":
+                return "3 of a kind";
+            case "quadruples":
+                return "4 of a kind";
+            case "quintuples":
+                return "5 of a kind";
+            default:
+                return "";
+        }
+    };
+
+    let setPrizeTableHeaders = (target) => {
+        let pt = document.querySelector(`.prize-table .${target}`);
+        let heading = document.createElement("div");
+        let comboType = getComboType(target);
+        heading.innerHTML = comboType;
+        pt.append(heading);
+    }
+
     //fill prize table
+    setPrizeTableHeaders("triples");
+    setPrizeTableHeaders("quadruples");
+    setPrizeTableHeaders("quintuples");
+
+
     reelContents.forEach((symbol, index) => {
-        addToPrizeTable(`${symbol}-${symbol}-❔`, index + 1, "doubles");
-    });
-    reelContents.forEach((symbol, index) => {
-        addToPrizeTable(`${symbol}-${symbol}-${symbol}`, (index + 1) * 100, "triples");
+        if (index !== 0) {
+            addToPrizeTable(`${symbol}`, index, "triples");
+            addToPrizeTable(`${symbol}`, (index) * 10, "quadruples");
+            addToPrizeTable(`${symbol}`, (index) * 100, "quintuples");
+        }
     });
