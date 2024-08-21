@@ -12,7 +12,7 @@ public class SlotsService {
 
     private final static int GAME_ROWS = 3;
 
-    // Define the win amounts for numbers 1 to 5
+    // Define how much will be one from combos for emojis 1 to 5
     private static final int WIN_1 = 20;
     private static final int WIN_2 = 50;
     private static final int WIN_3 = 100;
@@ -22,9 +22,10 @@ public class SlotsService {
     //IMPORTANT NOT 0 INDEXED
     private static final int[] WIN_AMOUNTS = {0, WIN_1, WIN_2, WIN_3, WIN_4, WIN_5};
 
-    // Define the weights for numbers 1 to 5
-    private static final int WEIGHT_1 = 20;
-    private static final int WEIGHT_2 = 5;
+    // Define the weights (odds) of each emoji appearing on the slot machine
+    // The higher the weight, the more likely the emoji will appear
+    private static final int WEIGHT_1 = 1;
+    private static final int WEIGHT_2 = 2;
     private static final int WEIGHT_3 = 3;
     private static final int WEIGHT_4 = 2;
     private static final int WEIGHT_5 = 1;
@@ -53,15 +54,15 @@ public class SlotsService {
         Random random = new Random();
         int randomValue = random.nextInt(TOTAL_WEIGHT) + 1;
 
-        if (randomValue <= cumulativeWeights[0]) return 1;
-        if (randomValue <= cumulativeWeights[1]) return 2;
-        if (randomValue <= cumulativeWeights[2]) return 3;
-        if (randomValue <= cumulativeWeights[3]) return 4;
-        return 5;
+        if (randomValue <= cumulativeWeights[0]) return 1;                          // Range of emoji 1, 💧
+        if (randomValue <= cumulativeWeights[1]) return 2;                          // Range of emoji 2, ☀️
+        if (randomValue <= cumulativeWeights[2]) return 3;                          // Range of emoji 3, 🍄
+        if (randomValue <= cumulativeWeights[3]) return 4;                          // Range of emoji 4, 🌶️
+        return 5;                                                                                                   // Range of emoji 5, 🌾      (anything greater than lower emoji bounds)
     }
 
     /**
-     * Generates a column of the slot machine, a list of numbers selected by getRandomWeighted()
+     * Generates a column of the slot machine, a list of numbers (emojis) selected by getRandomWeighted()
      * Size is defined by COL_LENGTH
      * The column is every number (emoji) that column of the slot machine will spin through
      * @return  int[] of random numbers
