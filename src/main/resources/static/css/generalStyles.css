@@ -54,7 +54,9 @@ body {
 .required-input {
     color: #DE2929;
 }
-textarea {
+
+/*Create Plant, Edit Plant Form*/
+.plantTextArea {
     min-width: 350px;
     max-width: 350px;
     font-size: 100%;
