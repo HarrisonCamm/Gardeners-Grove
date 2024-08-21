@@ -78,7 +78,7 @@ dependencies {
 	// Spring websockets
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
-	//WebJars fro SockJS and STOMP
+	//WebJars STOMP
 	implementation 'org.webjars:stomp-websocket:2.3.4'
 
 }

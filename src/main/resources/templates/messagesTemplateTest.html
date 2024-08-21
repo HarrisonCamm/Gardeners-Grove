@@ -170,11 +170,13 @@
         const isSender = message.sender === from;
         const messageClass = isSender ? 'align-self-end text-end ms-auto' : 'align-self-start text-start me-auto';
 
+        const backgroundColor = isSender ? 'background' : 'bg-light' // Green if sender or gray if received
+
         messageElement.innerHTML = `
-    <div class="${messageClass} bg-light p-3 rounded">
-        <strong>${message.sender}</strong>: ${message.content} <br>
-        <small class="text-muted">${new Date(message.timestamp).toLocaleTimeString()}</small>
-    </div>`;
+            <div class="${messageClass} ${backgroundColor} p-3 rounded w-20 text-wrap">
+                <strong>${message.sender}</strong>: ${message.content} <br>
+                <small class="text-muted">${new Date(message.timestamp).toLocaleTimeString()}</small>
+            </div>`;
 
         // Append the message to the chat area
         chatArea.appendChild(messageElement);
