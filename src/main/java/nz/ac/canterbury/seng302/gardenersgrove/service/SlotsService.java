@@ -40,9 +40,14 @@ public class SlotsService {
     };
 
     /**
-     * Selects a random number between 1 and 5 weighted by the global constants
-     * 💧☀️🍄🌶️🌾
-     * @return The chosen number as an int
+     * Randomly assigns which emoji will be added to the slot machine column
+     * (Chooses one of the 5 emojis randomly)
+     * Selects a random number between 1 and 5 based on predefined weights (odds).
+     * This number represents one of the 5 emojis used in the slot machine
+     * ["" ,"💧", "☀️", "🍄", "🌶️", "🌾"];
+     * The odds are calculated by adding all the weightings of each emoji together
+     * Then the emoji is chosen based on which emojis range of the cumulative weighting the random int lands in
+     * @return The chosen number (slot machine emoji) as an int, between 1 and 5.
      */
     private static int getRandomWeighted() {
         Random random = new Random();
