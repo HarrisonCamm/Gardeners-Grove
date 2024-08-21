@@ -17,10 +17,18 @@
         <br/>
     </div>
     <div class="centre">
+        <h3 th:text="'Family: ' + ${plantFamily}"> </h3>
+    </div>
+    <div class="centre">
         <h3 th:text="'Name: ' + ${commonName}"> </h3>
     </div>
     <div class="centre">
-        <img class="image" th:src="@{${plantImage}}" alt="picture"/>
+        <div>
+            <img class="image" th:src="@{${plantImage}}" alt="picture"/>
+        </div>
+        <div>
+            <label th:text="'Image source: ' + ${imageCredit}"></label>
+        </div>
     </div>
 </div>
 </body>

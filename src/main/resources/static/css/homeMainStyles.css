@@ -11,10 +11,12 @@ body {
 .centre {
     justify-content: center;
     display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .image {
-    max-width: 50%;
     max-height: 600px;
+    max-width: fit-content;
 }
 
 button {

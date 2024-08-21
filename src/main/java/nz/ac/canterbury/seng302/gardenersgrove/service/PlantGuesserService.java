@@ -11,6 +11,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.Math.min;
+
 @Service
 public class PlantGuesserService {
     //Retrieved from application-dev.properties
@@ -62,12 +64,13 @@ public class PlantGuesserService {
 
     public List<String> getMultichoicePlantNames(String family, String plantName) {
         PlantData[] plantList = getFamilyPlants(family, plantName);
-        List<String> multichoicePlantNames = Arrays.stream(plantList).toList()
+        List<String> multichoicePlantNames = new ArrayList<>(Arrays.stream(plantList).toList()
                 .stream()
                 .map(PlantData::getCommonName)
-                .toList();
+                .toList());
+        Collections.shuffle(multichoicePlantNames);
         List<String> plant = Collections.singletonList(plantName);
-        return Stream.concat(multichoicePlantNames.subList(0,3).stream(), plant.stream())
+        return Stream.concat(multichoicePlantNames.subList(0,min(3, multichoicePlantNames.size())).stream(), plant.stream())
                 .collect(Collectors.toList());
 
 
