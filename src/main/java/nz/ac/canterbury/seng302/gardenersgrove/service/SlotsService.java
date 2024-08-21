@@ -44,7 +44,7 @@ public class SlotsService {
      * 💧☀️🍄🌶️🌾
      * @return The chosen number as an int
      */
-    private static int getRandomWeighted() {
+    private static int choseEmoji() {
         Random random = new Random();
         int randomValue = random.nextInt(TOTAL_WEIGHT) + 1;
 
@@ -56,7 +56,7 @@ public class SlotsService {
     }
 
     /**
-     * Generates a column of the slot machine, a list of numbers selected by getRandomWeighted()
+     * Generates a column of the slot machine, a list of numbers selected by chooseEmoji()
      * Size is defined by COL_LENGTH
      * The column is every number (emoji) that column of the slot machine will spin through
      * @return  int[] of random numbers
@@ -64,7 +64,7 @@ public class SlotsService {
     private static int[] generateColumn() {
         int[] col = new int[COL_LENGTH];
         for (int i = 0; i < COL_LENGTH; i++) {
-            col[i] = getRandomWeighted();
+            col[i] = choseEmoji();
         }
         return col;
     }
