@@ -4,10 +4,18 @@ Feature: U6001 - Showing Blooms Balance and Bloom Transactions
   I want to be able to see my Bloom balance,
   So that I know what I can buy and tip.
 
-  Scenario: AC1 - Viewing Blooms
-    Given I am logged into the system
-    When I navigate to any page in the system
+  Scenario Outline: AC1 - Viewing Blooms
+    Given I am logged in with email "kaia@email.com" and password "Password1!"
+    When I navigate to any page <endpoint> in the system
     Then I can see my Bloom balance displayed prominently in the header or a dedicated section
+    Examples:
+      | endpoint          |
+      | "/main"           |
+      | "/view-gardens"   |
+      | "/view-user-profile"   |
+      | "/manage-friends" |
+      | "/create-garden"  |
+
 
 #  Scenario: AC2 - Viewing Blooms Balance and Transaction History on Profile Page
 #    Given I am logged into the system
