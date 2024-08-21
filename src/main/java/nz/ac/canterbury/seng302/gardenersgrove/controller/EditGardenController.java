@@ -5,12 +5,14 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ModerationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -38,11 +40,13 @@ public class EditGardenController {
 
     private final GardenService gardenService;
     private final UserService userService;
+    private final ModerationService moderationService;
 
-    //    @Autowired
-    public EditGardenController(GardenService gardenService, UserService userService) {
+    @Autowired
+    public EditGardenController(GardenService gardenService, UserService userService, ModerationService moderationService) {
         this.gardenService = gardenService;
         this.userService = userService;
+        this.moderationService = moderationService;
     }
 
     /**
@@ -104,6 +108,10 @@ public class EditGardenController {
         session.setAttribute("gardenID", gardenID);
         addAttributes(model, session, currentGarden, currentGarden.getId(), gardenName, gardenLocation, gardenSize, gardenDescription);
 
+        boolean isAppropriate = moderationService.isContentAppropriate(gardenDescription);
+        if (!isAppropriate) {
+            errors.add(new FieldError("garden", "description", "The description does not match the language standards of the app"));
+        }
 
         if (!errors.isEmpty()) {
             // If there are validation errors, return to the form page
@@ -119,10 +127,12 @@ public class EditGardenController {
     }
 
     @PatchMapping("/edit-garden")
-    public void changePublicity(@RequestParam("gardenID") Long gardenID,
-                                  @RequestParam("isPublic") Boolean isPublic,
-                                  Model model,
-                                  HttpSession session){
+    public ResponseEntity changePublicity(@RequestParam("gardenID") Long gardenID,
+                                          @RequestParam("isPublic") Boolean isPublic,
+                                          Model model,
+                                          HttpSession session){
+        logger.info("PATCH /edit-garden");
+
         Optional<Garden> garden = gardenService.findGarden(gardenID);
 
         User currentUser = userService.getAuthenticatedUser();
@@ -134,6 +144,7 @@ public class EditGardenController {
         garden.get().setIsPublic(isPublic);
         gardenService.addGarden(garden.get());
 
+        return ResponseEntity.ok().build();
     }
 
     /**
