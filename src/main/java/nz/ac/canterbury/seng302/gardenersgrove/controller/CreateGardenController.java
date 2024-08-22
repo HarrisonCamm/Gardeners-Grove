@@ -65,7 +65,7 @@ public class CreateGardenController {
 
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
-        addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize);
+        addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize, garden.getDescription());
 
         return "createGardenFormTemplate";
     }
@@ -90,6 +90,7 @@ public class CreateGardenController {
                             @RequestParam(name="location.city") String city,
                             @RequestParam(name="location.postcode", required = false) String postcode,
                             @RequestParam(name="location.country") String country,
+                            @RequestParam(name="description", required = false) String gardenDescription,
                             @RequestParam(name="size", required = false) String gardenSize,
                              Model model) {
         logger.info("POST /create-garden");
@@ -103,9 +104,9 @@ public class CreateGardenController {
         garden.setOwner(currentUser);
 
         // Perform validation, get back all errors
-        ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize);
+        ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize, gardenDescription);
 
-        addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize);
+        addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize, gardenDescription);
 
         if (!errors.isEmpty()) {
             // If there are validation errors, return to the form page
@@ -128,13 +129,18 @@ public class CreateGardenController {
      * @param gardenLocation Garden location
      * @param gardenSize     Garden size
      */
-    public ArrayList<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize) {
+    public ArrayList<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
 
         // List for all the errors
         ArrayList<FieldError> errors = new ArrayList<>();
 
         // Validates Garden Name
         FieldError nameError = validateGardenName(gardenName);
+
+        FieldError descriptionError = validateGardenDescription(gardenDescription);
+        if (descriptionError != null) {
+            errors.add(descriptionError);
+        }
 
         // Check for name error and display
         if (nameError != null) {
@@ -193,11 +199,12 @@ public class CreateGardenController {
      * @param gardenLocation garden location object
      * @param gardenSize garden size
      */
-    public void addAttributes(Model model, Long userId, String gardenName, Location gardenLocation, String gardenSize) {
+    public void addAttributes(Model model, Long userId, String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
 
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
 
         model.addAttribute("name", gardenName);
+        model.addAttribute("description", gardenDescription);
 
         model.addAttribute("location.streetAddress", gardenLocation.getStreetAddress());
         model.addAttribute("location.suburb", gardenLocation.getSuburb());

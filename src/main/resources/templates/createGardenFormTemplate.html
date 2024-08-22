@@ -8,6 +8,7 @@
         <script th:src="@{/javascript/hover-enter.js}"></script>
         <script th:src="@{/javascript/autocomplete.js}"></script>
         <script th:src="@{javascript/prevent-enter-submit.js}"></script>
+        <script th:src="@{javascript/description-length.js}"></script>
     </head>
     <body>
         <!-- Navigation Bar Fragment -->
@@ -51,6 +52,21 @@
                                        th:classappend="${nameError} ? 'error' : 'form-control'">
                                 <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
                             </div>
+                        </div>
+                        <br/>
+                        <div>
+                            <label for="gardenDescription"> Description: </label>
+                            <br/>
+                            <textarea maxlength="1028" id="gardenDescription"
+                                      th:field="*{description}"
+                                      th:classappend="${descriptionError} ? 'error' : ''"
+                                      rows="4"
+                                      oninput="descriptionLength(this)">
+                            </textarea>
+                            <div class="buttons-centre">
+                                <span id="descriptionLengthCounter" th:text="${description != null ? description.length() + '/512' : '0/512'}"></span>
+                            </div>
+                            <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
                         </div>
                         <div class="locationTable" id="locationContainer">
                             <div>
