@@ -15,11 +15,12 @@ body {
     align-items: center;
 }
 .image {
-    max-height: 600px;
+    max-height: 400px;
+    height: 400px;
     max-width: fit-content;
 }
 
-button {
+.button {
     font-size: 150%;
     background-color: #3D7B36;
     color: floralwhite;
@@ -28,8 +29,25 @@ button {
     padding: 5px 10px 5px 10px;
     margin: 2px;
 }
-button:hover {
+.button:hover {
     background-color: #72543C;
+    cursor: pointer;
+}
+.quiz-option-button {
+    height: 120px;
+    width: 300px;
+    border-radius: 5px;
+    border-width: 0;
+    background-color: #72543C;
+    color: floralwhite;
+    font-size: 120%;
+    font-weight: bold;
+    white-space: pre-wrap;
+
+}
+
+.quiz-option-button:hover {
+    background-color: #574536;
     cursor: pointer;
 }
 

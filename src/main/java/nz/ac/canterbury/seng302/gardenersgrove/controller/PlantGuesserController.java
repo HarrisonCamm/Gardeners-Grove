@@ -12,9 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Controller for viewing the plant guesser page
@@ -43,15 +41,23 @@ public class PlantGuesserController {
 
         PlantData plant = plantGuesserService.getPlant();
         String plantName = plant.common_name;
+        String plantScientificName = plant.scientific_name;
         String plantImage = plant.image_url;
         String imageCredit = (plantImage.split("//")[1]).split("/")[0];
         String plantFamily = plant.family;
         String familyCommonName = plant.family_common_name;
-        List<String> quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName);
+        String plantCommonAndScientificName = plantName + ",\n(" + plantScientificName + ")";
+        List<String> quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
         logger.info(plantName);
         Collections.shuffle(quizOptions);
+
+        List<String[]> splitQuizOptions = new ArrayList<>();
+        for (String option: quizOptions) {
+            String[] options = option.split(",");
+            splitQuizOptions.add(options);
+        }
         model.addAttribute("plantFamily", familyCommonName == null ? plantFamily : familyCommonName);
-        model.addAttribute("commonName", quizOptions);
+        model.addAttribute("quizOptions", splitQuizOptions);
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit + " via Trefle");
 

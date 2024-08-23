@@ -50,8 +50,9 @@ public class PlantGuesserService {
         
     }
     public PlantData getPlant() {
-        PlantData[] plantList = getPlants();
-        return Arrays.stream(plantList).toList().getFirst();
+        List<PlantData> plantList= new ArrayList<>(Arrays.stream(getPlants()).toList());
+        Collections.shuffle(plantList);
+        return plantList.get(0);
     }
 
     public PlantData[] getFamilyPlants(String family, String plantName) {
@@ -62,18 +63,16 @@ public class PlantGuesserService {
                 .toArray(PlantData[]::new);
     }
 
-    public List<String> getMultichoicePlantNames(String family, String plantName) {
+    public List<String> getMultichoicePlantNames(String family, String plantName, String commonAndScientificName) {
         PlantData[] plantList = getFamilyPlants(family, plantName);
         List<String> multichoicePlantNames = new ArrayList<>(Arrays.stream(plantList).toList()
                 .stream()
-                .map(PlantData::getCommonName)
+                .map(PlantData::getCommonAndScientificName)
                 .toList());
         Collections.shuffle(multichoicePlantNames);
-        List<String> plant = Collections.singletonList(plantName);
+        List<String> plant = Collections.singletonList(commonAndScientificName);
         return Stream.concat(multichoicePlantNames.subList(0,min(3, multichoicePlantNames.size())).stream(), plant.stream())
                 .collect(Collectors.toList());
-
-
     }
 
 }
