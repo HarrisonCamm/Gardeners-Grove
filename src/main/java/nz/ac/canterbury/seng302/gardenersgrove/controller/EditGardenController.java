@@ -82,7 +82,7 @@ public class EditGardenController {
      * @return Redirect object
      */
     @PutMapping("/edit-garden")
-    public String submitForm(@RequestParam("gardenID") Long gardenID,
+    public ResponseEntity<String> submitForm(@RequestParam("gardenID") Long gardenID,
                              @ModelAttribute Garden garden,
                              BindingResult bindingResult,
                              Model model,
@@ -99,7 +99,7 @@ public class EditGardenController {
         Garden currentGarden = result.get();
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
-        String gardenDescription = garden.getDescription().trim();
+        String gardenDescription = (garden.getDescription() != null ? garden.getDescription().trim() : "");
         Location gardenLocation = garden.getLocation();
         gardenLocation.setId(currentGarden.getLocation().getId());
 
@@ -119,10 +119,10 @@ public class EditGardenController {
                 model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());
             }
             model.addAttribute("garden", currentGarden);
-            return "editGardenTemplate";
+            return new ResponseEntity<>("editGardenTemplate" + currentGarden.getId(), HttpStatus.BAD_REQUEST);
         } else {
             gardenService.updateGarden(currentGarden, gardenName, gardenLocation, gardenSize, garden.getIsPublic(), gardenDescription);
-            return "redirect:/view-garden?gardenID=" + currentGarden.getId();
+            return new ResponseEntity<>("redirect:/view-garden?gardenID=" + currentGarden.getId(), HttpStatus.TEMPORARY_REDIRECT);
         }
     }
 

@@ -47,7 +47,7 @@ public class ModerationService {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-            if (line.isEmpty())  {
+            if (line == null || line.isEmpty())  {
                 return "null";
             }
 

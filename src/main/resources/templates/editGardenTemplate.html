@@ -65,7 +65,7 @@
                               oninput="descriptionLength(this)">
                     </textarea>
                     <div class="buttons-centre">
-                        <span id="descriptionLengthCounter" th:text="*{description.length()} + '/512'"></span>
+                        <span id="descriptionLengthCounter" th:text="${description != null ? description.length() + '/512' : '0/512'}"></span>
                     </div>
                     <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
                 </div>
