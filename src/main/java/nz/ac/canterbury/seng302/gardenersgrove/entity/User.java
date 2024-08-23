@@ -41,9 +41,8 @@ public class User {
     @Column(name = "dateOfBirth")
     private String dateOfBirth;
 
-    @Column(name = "bloomBalance")
-//    @NotNull
-    private Integer bloomBalance;
+    @Column(name = "bloomBalance", nullable = false, columnDefinition = "integer default 500")
+    private Integer bloomBalance = DEFAULT_BALANCE;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
