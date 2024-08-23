@@ -39,6 +39,12 @@ public class PlantGuesserController {
         logger.info("GET /plant-guesser");
         RedirectService.addEndpoint("/plant-guesser");
 
+        createPlantGameRound(model);
+
+        return "plantGuesserTemplate";
+    }
+
+    public void createPlantGameRound(Model model) {
         PlantData plant = plantGuesserService.getPlant();
         String plantName = plant.common_name;
         String plantScientificName = plant.scientific_name;
@@ -48,7 +54,7 @@ public class PlantGuesserController {
         String familyCommonName = plant.family_common_name;
         String plantCommonAndScientificName = plantName + ",\n(" + plantScientificName + ")";
         List<String> quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
-        logger.info(plantName);
+        logger.info(plantName); //for manual testing and playing, since functionality is not implemented yet
         Collections.shuffle(quizOptions);
 
         List<String[]> splitQuizOptions = new ArrayList<>();
@@ -60,7 +66,8 @@ public class PlantGuesserController {
         model.addAttribute("quizOptions", splitQuizOptions);
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit + " via Trefle");
+        model.addAttribute("roundNumber", 1);
+//        TODO change this number to be for each round, not to be done in this task
 
-        return "plantGuesserTemplate";
     }
 }
