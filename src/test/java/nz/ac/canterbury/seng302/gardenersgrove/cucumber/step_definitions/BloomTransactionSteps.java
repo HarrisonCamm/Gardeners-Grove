@@ -39,6 +39,7 @@ public class BloomTransactionSteps {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
+    //AC1
     @When("I navigate to any page {string} in the system")
     public void i_navigate_to_any_page_in_the_system(String endpoint) throws Exception {
         mvcResult = mockMvc.perform(get(endpoint))
@@ -46,6 +47,7 @@ public class BloomTransactionSteps {
                 .andReturn();
     }
 
+    //AC1
     @Then("I can see my Bloom balance displayed prominently in the header or a dedicated section")
     public void i_can_see_my_bloom_balance_displayed_prominently_in_the_header_or_a_dedicated_section() throws UnsupportedEncodingException {
 
@@ -57,7 +59,7 @@ public class BloomTransactionSteps {
         boolean hasBloomBalance = content.contains("<div class=\"balanceDisplay\"")
                 && content.contains("<span class=\"navBar-bloom-display\">" + balance.toString());
 
-        Assertions.assertNotNull(currentUser.getBloomBalance(), "Bloom balance is null, but expected number");
+        Assertions.assertNotNull(currentUser.getBloomBalance(), "Expected bloom balance to be a number, but it was null");
 
         Assertions.assertTrue(hasBloomBalance, "Expected to find a bloom balance icon and number on the page.");
 

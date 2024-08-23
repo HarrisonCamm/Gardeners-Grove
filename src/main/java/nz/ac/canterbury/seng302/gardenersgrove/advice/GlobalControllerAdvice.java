@@ -19,7 +19,7 @@ public class GlobalControllerAdvice {
             return authenticatedUser.getBloomBalance();
         }
         else {
-            return 0;
+            return null;
         }
     }
 }

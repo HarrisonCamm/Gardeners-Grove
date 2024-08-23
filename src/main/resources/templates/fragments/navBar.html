@@ -11,11 +11,13 @@
                 <li><a class="navLink" th:href="@{manage-friends}">Manage Friends</a></li>
             </div>
 
+            <!--            Displays user's Bloom currency -->
             <div class="balanceDisplay">
                 <div class="svg">
                     <div class="svg-fragment" th:replace="~{fragments/iconFragment.html :: iconFragment}"></div>
                 </div>
                 <!-- Include the SVG Icon-->
+                <!-- bloomBalance is from the global controller. -->
                 <span class="navBar-bloom-display" th:text="${bloomBalance}"></span>
             </div>
             <!-- Logout form button -->

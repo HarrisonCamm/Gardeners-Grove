@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -41,6 +42,7 @@ public class User {
     private String dateOfBirth;
 
     @Column(name = "bloomBalance")
+    @NotNull
     private Integer bloomBalance;
 
     @ManyToMany(fetch = FetchType.EAGER)
