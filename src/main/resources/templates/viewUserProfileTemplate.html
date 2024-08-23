@@ -48,5 +48,33 @@
                 </div>
             </div>
         </div>
+        <div class="transactions-display">
+            <table>
+                <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>Sender</th>
+                    <th>Receiver</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Plant</th>
+                    <th>Notes</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="transaction : ${transactions}">
+                    <td th:text="${transaction.transactionId}"></td>
+                    <td th:text="${transaction.sender.firstName != null ? transaction.sender.firstName : 'N/A'}"></td>
+                    <td th:text="${transaction.receiver.firstName}"></td>
+<!--                    <td th:text="${transaction.amount}"></td>-->
+<!--                    <td th:text="${#dates.format(transaction.transactionDate, 'yyyy-MM-dd HH:mm')}"></td>-->
+<!--                    <td th:text="${transaction.transactionType}"></td>-->
+<!--                    <td th:text="${transaction.plant != null ? transaction : 'N/A'}"></td>-->
+<!--                    <td th:text="${transaction.notes}"></td>-->
+                </tr>
+                </tbody>
+            </table>
+        <div>
     </body>
 </html>

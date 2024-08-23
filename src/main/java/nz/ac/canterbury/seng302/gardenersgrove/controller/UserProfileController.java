@@ -64,6 +64,7 @@ public class UserProfileController {
             model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
             model.addAttribute("email", currentUser.getEmail());
             model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
+            model.addAttribute("transactions", currentUser.getTransactions());
             return "viewUserProfileTemplate";
         } else {
             model.addAttribute("signInError", "Please sign in to view your profile");
