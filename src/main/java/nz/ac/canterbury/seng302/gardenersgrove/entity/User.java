@@ -61,6 +61,17 @@ public class User {
     @JoinColumn(name = "user_id")
     private List<Authority> userRoles;
 
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Transaction> transactions = new ArrayList<>();
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+
+
+
+
     @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer inappropriateTagCount = 0;
 
