@@ -42,7 +42,7 @@ public class User {
     private String dateOfBirth;
 
     @Column(name = "bloomBalance")
-    @NotNull
+//    @NotNull
     private Integer bloomBalance;
 
     @ManyToMany(fetch = FetchType.EAGER)
