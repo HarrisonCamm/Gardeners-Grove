@@ -3,10 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,12 +37,15 @@ public class CreateGardenController {
     private final GardenService gardenService;
     private final LocationService locationService;
     private final UserService userService;
+    private final ModerationService moderationService;
 
     @Autowired
-    public CreateGardenController(GardenService gardenService, LocationService locationService, UserService userService) {
+    public CreateGardenController(GardenService gardenService, LocationService locationService,
+                                  UserService userService, ModerationService moderationService) {
         this.gardenService = gardenService;
         this.locationService = locationService;
         this.userService = userService;
+        this.moderationService = moderationService;
     }
 
     /**
@@ -100,13 +100,17 @@ public class CreateGardenController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in");
         }
         Location gardenLocation = new Location(streetAddress, suburb, city, postcode, country);
-        Garden garden = new Garden(gardenName, gardenLocation, gardenSize);
-        garden.setOwner(currentUser);
+        Garden garden = new Garden(gardenName, gardenLocation, gardenSize, currentUser, gardenDescription);
 
         // Perform validation, get back all errors
         ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize, gardenDescription);
 
         addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize, gardenDescription);
+
+        boolean isAppropriate = moderationService.isContentAppropriate(gardenDescription);
+        if (!isAppropriate) {
+            errors.add(new FieldError("garden", "description", "The description does not match the language standards of the app"));
+        }
 
         if (!errors.isEmpty()) {
             // If there are validation errors, return to the form page
