@@ -47,12 +47,12 @@
         </div>
 
         <!-- Chat Area -->
-        <div id="chat-main-area" class="chat-main-area col-md-9 col-sm-8 bg-white" >
+        <div id="chat-main-area" class="chat-main-area col-md-9 col-sm-8 bg-white">
             <div id="welcomeMessage" class="d-flex align-items-center justify-content-center h-100">
                 <h2 class="text-dark">Welcome to Sprout</h2>
             </div>
 
-            <!-- Display actual conversation what friends clicked -->
+            <!-- Display actual conversation when friends clicked -->
             <div th:each="friend : ${friends}" th:id="'chatUI-' + ${friend.userId}" class="d-flex flex-column h-100" style="display:none !important;">
                 <div class="p-3 border-bottom">
                     <div class="d-flex align-items-center">
@@ -63,7 +63,7 @@
                         </div>
                     </div>
                 </div>
-                <div th:id="'chatArea-' + ${friend.email}" class="flex-grow-1 p-3 d-flex flex-column">
+                <div th:id="'chatArea-' + ${friend.email}" class="chat-content p-3 d-flex flex-column">
                     <p class="text-muted text-center">Today</p>
                     <div class="flex-grow-1 d-flex align-items-center justify-content-center">
                         <p id="no-messages-text" class="text-muted">No messages yet. Start the conversation!</p>
@@ -73,13 +73,13 @@
                 <!-- Message Input and Send Button -->
                 <div id="sending-area" class="border-top p-3 sending-area">
                     <div class="d-flex">
-                    <textarea th:id="'message-input-' + ${friend.userId}"
-                              class="rounded-pill flex-grow-1 me-2 form-control"
-                              placeholder="Aa"
-                              aria-label="Message"
-                              oninput="messageLength(this)"
-                              rows="1"
-                    ></textarea>
+                <textarea th:id="'message-input-' + ${friend.userId}"
+                          class="rounded-pill flex-grow-1 me-2 form-control"
+                          placeholder="Aa"
+                          aria-label="Message"
+                          oninput="messageLength(this)"
+                          rows="1"
+                ></textarea>
                         <button th:id="'send-button-' + ${friend.userId}"
                                 class="btn btn-primary rounded-pill"
                                 type="button"

@@ -81,7 +81,10 @@ document.addEventListener("DOMContentLoaded", function() {
         const currChat = document.getElementById('chatUI-' + userId);
         currChat.setAttribute('style', 'display: flex !important;');
 
+        lastName = lastName ? lastName : '';
         document.getElementById('friendName-' + userId).innerText = firstName + ' ' + lastName;
+
+
         document.getElementById('friendImage-' + userId).src = '/get-image?view-user-profile=true&userID=' + userId;
 
         document.getElementById('message-input-' + userId).focus();
