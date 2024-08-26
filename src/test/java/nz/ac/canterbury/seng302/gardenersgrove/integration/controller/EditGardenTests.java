@@ -99,6 +99,7 @@ public class EditGardenTests {
     public void setup() {
         mockUser = new User("user@email.com", "User", "Name", "password");
         Mockito.when(userService.getAuthenticatedUser()).thenReturn(mockUser);
+        when(moderationService.isContentAppropriate(null)).thenReturn(true);
     }
 
     @Test
