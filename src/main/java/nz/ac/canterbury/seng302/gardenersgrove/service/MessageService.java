@@ -14,7 +14,6 @@ import java.util.Optional;
 public class MessageService {
     private final MessageRepository messageRepository;
 
-    @Autowired
     public MessageService(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
     }
@@ -37,8 +36,8 @@ public class MessageService {
      * @return A list of messages between the two users
      */
     public List<Message> getConversation(String currUserEmail, String fromUserEmail) {
-        List<Message> messagesSent = messageRepository.findMessageBySenderAndRecipientOrderByTimestampAsc(currUserEmail, fromUserEmail);
-        List<Message> messagesReceived = messageRepository.findByRecipientAndSenderOrderByTimestampAsc(currUserEmail, fromUserEmail);
+        List<Message> messagesSent = messageRepository.findMessageBySenderAndRecipient(currUserEmail, fromUserEmail);
+        List<Message> messagesReceived = messageRepository.findMessageBySenderAndRecipient(fromUserEmail, currUserEmail);
 
         // Combine the lists and sort by timestamp
         messagesSent.addAll(messagesReceived);
@@ -54,8 +53,8 @@ public class MessageService {
      * @return The last message between the two users
      */
     public Optional<Message> getLastMessage(String currUserEmail, String fromUserEmail) {
-        List<Message> messagesSent = messageRepository.findMessageBySenderAndRecipientOrderByTimestampAsc(currUserEmail, fromUserEmail);
-        List<Message> messagesReceived = messageRepository.findByRecipientAndSenderOrderByTimestampAsc(currUserEmail, fromUserEmail);
+        List<Message> messagesSent = messageRepository.findMessageBySenderAndRecipient(currUserEmail, fromUserEmail);
+        List<Message> messagesReceived = messageRepository.findMessageBySenderAndRecipient(fromUserEmail, currUserEmail);
 
         // Combine the lists and sort by timestamp
         messagesSent.addAll(messagesReceived);

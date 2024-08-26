@@ -477,6 +477,21 @@ hr {
     text-align: center;
 }
 
+[id^="message-input-"] {
+    line-height: 2.5rem;
+    height: 2.5rem;
+    padding: 0 1rem;
+    box-sizing: border-box;
+    overflow: hidden;
+    resize: none;
+}
+
+.sending-area {
+    position: sticky !important;
+    bottom: 0 !important; /* Stick to the bottom of the container */
+    z-index: 10 !important; /* Ensure it stays above other content */
+}
+
 @media only screen and (orientation: portrait) {
     h2 {
         font-size: 300%;
@@ -581,10 +596,56 @@ hr {
         border-radius: 50%;
         font-size: 200%;
     }
+
+
 }
 
-/* Messages Template Test Code*/
+/* Ensure the main container uses Flexbox */
+.chat-container {
+    height: 100vh; /* Full height of the viewport */
+    width: 100vw; /* Full width of the viewport */
+    overflow: hidden; /* Prevent overflow */
+}
+
+/* Chat sidebar styles */
 .chat-side-bar {
-    height: 100vh;
     background-color: #f8f9fa; /* Matches Bootstrap's light background */
+    min-width: 400px; /* Minimum width for the sidebar */
+    max-width: 400px; /* Maximum width for the sidebar */
+    flex: 0 0 300px; /* Fixed width for the sidebar */
+    overflow-y: auto; /* Scroll if content overflows */
+}
+
+/* Main chat area styles */
+.chat-main-area {
+    flex: 1; /* Take the remaining space */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Scroll if content overflows */
+    width: 100%; /* Ensure it takes the full width */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    padding: 0; /* Remove any padding */
+    margin: 0; /* Remove any margin */
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    .chat-side-bar {
+        min-width: 400px;
+        max-width: 300px;
+        flex: 0 0 400px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chat-container {
+        flex-direction: column; /* Stack sidebar and main area vertically */
+    }
+    .chat-side-bar {
+        flex: 0 0 auto;
+        width: 100%; /* Full width for the sidebar */
+    }
+    .chat-main-area {
+        flex: 1;
+    }
 }

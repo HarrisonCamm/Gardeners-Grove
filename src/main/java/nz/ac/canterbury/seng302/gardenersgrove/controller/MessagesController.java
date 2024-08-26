@@ -34,7 +34,6 @@ public class MessagesController {
      * @param messagingTemplate The messaging template
      * @param messageService The message service
      */
-    @Autowired
     public MessagesController(UserService userService, SimpMessagingTemplate messagingTemplate, MessageService messageService) {
         this.userService = userService;
         this.messagingTemplate = messagingTemplate;
@@ -55,13 +54,15 @@ public class MessagesController {
         model.addAttribute("from", currentUserEmail);
         model.addAttribute("friends", userService.getAuthenticatedUser().getFriends());
 
+        String defaultMessage = "Start a conversation!";
+
         // Add all the last messages sent
         List<String> lastMessages = new ArrayList<>();
         userService.getAuthenticatedUser().getFriends().forEach(friend -> {
             Optional<Message> lastMessage = messageService.getLastMessage(currentUserEmail, friend.getEmail());
-            String lastMessageContent = lastMessage.map(Message::getContent).orElse("Start a conversation!");
-            if (lastMessageContent.length() > 10) {
-                lastMessageContent = lastMessageContent.substring(0, 10) + "...";
+            String lastMessageContent = lastMessage.map(Message::getContent).orElse(defaultMessage);
+            if (lastMessageContent.length() > defaultMessage.length()) {
+                lastMessageContent = lastMessageContent.substring(0, defaultMessage.length()) + "...";
             }
             lastMessages.add(lastMessageContent);
         });
@@ -77,7 +78,6 @@ public class MessagesController {
      */
     @MessageMapping("/chat.send/{username}")
     public void sendMessage(@DestinationVariable String username, Message message) {
-        logger.info("Sending message to {}: {}", username, message.getContent());
         messageService.saveMessage(message.getSender(), username, message.getContent());
         messagingTemplate.convertAndSendToUser(username, "/queue/reply", message);
     }
