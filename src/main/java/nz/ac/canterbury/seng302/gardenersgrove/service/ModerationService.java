@@ -86,7 +86,7 @@ public class ModerationService {
         String moderatedContent = moderateText(content);
 
         // Return true if no terms are found, indicating the content is appropriate
-        return moderatedContent == null || moderatedContent.equals("null");
+        return content == null || moderatedContent == null || moderatedContent.equals("null");
     }
 
     public boolean isBusy() {
