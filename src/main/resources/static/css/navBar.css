@@ -37,6 +37,27 @@ li {
 }
 
 
+.balanceDisplay {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;     /* Center vertically */
+}
+
+.svg {
+    margin: auto;
+    padding-top: 15px;
+    padding-right: 5px;
+    width: 50px;
+}
+
+.svg-fragment {
+    justify-content: center; /* Center horizontally */
+    align-items: center;     /* Center vertically */
+}
+
+
+
+
 .navBar-logout {
     margin-left: auto;
     display: flex;
@@ -49,6 +70,10 @@ li {
     flex-grow: 1;
 }
 
+.navBar-bloom-display {
+    color: #FFFFFF;
+    width: 100%;
+}
 
 .navBar-logout-button {
     background-color: #0A3407;
@@ -64,6 +89,9 @@ li {
     outline: none;
     margin: 0 30px 0 0;
 }
+
+
+
 
 .navBar-logout-button:hover {
     color: #80A444;
