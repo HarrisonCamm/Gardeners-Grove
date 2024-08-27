@@ -54,6 +54,12 @@ body {
 .required-input {
     color: #DE2929;
 }
+
+.transactions-display {
+    padding: 5%;
+}
+
+
 textarea {
     min-width: 350px;
     max-width: 350px;
