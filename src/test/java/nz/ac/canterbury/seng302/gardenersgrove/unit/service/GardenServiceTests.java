@@ -33,8 +33,7 @@ public class GardenServiceTests {
     private Garden returnedGarden;
 
     @BeforeEach
-    public void setUp() {
-
+    void setUp() {
         gardenRepository = mock(GardenRepository.class);
         gardenService = new GardenService(gardenRepository);
 
@@ -53,13 +52,13 @@ public class GardenServiceTests {
     }
 
     @Test
-    public void EmptyRepo_AddGarden_ReturnsGarden() {
+    void EmptyRepo_AddGarden_ReturnsGarden() {
         // Assert that the returned garden matches the saved garden
         assertEquals(savedGarden, returnedGarden);
     }
 
     @Test
-    public void NonEmptyRepo_GetGardens_ReturnsGardens() {
+    void NonEmptyRepo_GetGardens_ReturnsGardens() {
         // Mock the behavior of gardenRepository.findAll() to return a list containing the saved garden
         List<Garden> mockedGardens = Collections.singletonList(savedGarden);
         when(gardenRepository.findAll()).thenReturn(mockedGardens);
@@ -69,7 +68,7 @@ public class GardenServiceTests {
     }
 
     @Test
-    public void NonEmptyRepo_GetGardenById_ReturnsCorrectGarden() {
+    void NonEmptyRepo_GetGardenById_ReturnsCorrectGarden() {
         // Mock the behavior of gardenRepository.findById() to return the saved garden
         when(gardenRepository.findById(any(Long.class))).thenReturn(Optional.of(savedGarden));
 
@@ -77,7 +76,7 @@ public class GardenServiceTests {
         assertEquals(Optional.of(savedGarden), gardenService.findGarden(1L));
     }
     @Test
-    public void updateGarden_SetPublicStatus_UpdatesIsPublic() {
+    void updateGarden_SetPublicStatus_UpdatesIsPublic() {
         // Create a garden and set its initial public status to false
         Garden garden = new Garden("Test Garden", location, "1");
         garden.setIsPublic(false);

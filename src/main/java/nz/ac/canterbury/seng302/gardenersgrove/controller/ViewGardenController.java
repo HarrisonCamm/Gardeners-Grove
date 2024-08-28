@@ -126,7 +126,7 @@ public class ViewGardenController {
     }
 
     @PatchMapping("/view-garden")
-    public ResponseEntity<?> changePublicity(@RequestParam("gardenID") Long gardenID,
+    public ResponseEntity<Void> changePublicity(@RequestParam("gardenID") Long gardenID,
                                           @RequestParam("isPublic") Boolean isPublic,
                                           Model model,
                                           HttpSession session){
@@ -143,7 +143,6 @@ public class ViewGardenController {
         garden.get().setIsPublic(isPublic);
         gardenService.addGarden(garden.get());
 
-//        return "viewGardenDetailsTemplate";
         return ResponseEntity.ok().build();
     }
 
