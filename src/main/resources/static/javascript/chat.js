@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function() {
         switch (message.status) {
             case 'blocked':
                 backgroundColor = 'bg-danger error'; // Red for blocked messages
-                message.content = 'Message contains inappropriate language language';
+                message.content = 'Message contains inappropriate language language or is too long';
                 break;
             case 'evaluating':
                 backgroundColor = 'bg-warning'; // Yellow for pending messages

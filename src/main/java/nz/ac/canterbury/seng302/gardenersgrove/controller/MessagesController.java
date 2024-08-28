@@ -29,6 +29,7 @@ public class MessagesController {
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageService messageService;
     private final ModerationService moderationService;
+    private static final int MAX_MESSAGE_LENGTH = 255;
 
     /**
      * Constructor for the MessagesController
@@ -89,9 +90,6 @@ public class MessagesController {
         if (message.getStatus().equals("sent")) {
             messageService.saveMessage(message);
             messagingTemplate.convertAndSendToUser(username, "/queue/reply", message);
-        } else {
-            // Send the message status back to the sender
-            messagingTemplate.convertAndSendToUser(message.getSender(), "/queue/reply", message);
         }
     }
 
@@ -108,6 +106,9 @@ public class MessagesController {
 
     @GetMapping("/message/status")
     public @ResponseBody String getMessageStatus(@RequestParam String content) {
+        if (content.length() > MAX_MESSAGE_LENGTH) {
+            return "blocked";
+        }
         String term = moderationService.moderateText(content);
         return switch (term) {
             case "evaluation_error" -> "evaluating";
