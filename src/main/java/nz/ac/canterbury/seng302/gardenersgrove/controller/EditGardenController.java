@@ -82,7 +82,7 @@ public class EditGardenController {
      * @return Redirect object
      */
     @PutMapping("/edit-garden")
-    public ResponseEntity<String> submitForm(@RequestParam("gardenID") Long gardenID,
+    public String submitForm(@RequestParam("gardenID") Long gardenID,
                              @ModelAttribute Garden garden,
                              BindingResult bindingResult,
                              Model model,
@@ -91,10 +91,11 @@ public class EditGardenController {
 
         Optional<Garden> result = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenticatedUser();
-        if (result.isEmpty())
+        if (result.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
-        else if (!result.get().getOwner().equals(currentUser))
+        } else if (!result.get().getOwner().equals(currentUser)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this garden.");
+        }
 
         Garden currentGarden = result.get();
         String gardenName = garden.getName();
@@ -103,8 +104,15 @@ public class EditGardenController {
         Location gardenLocation = garden.getLocation();
         gardenLocation.setId(currentGarden.getLocation().getId());
 
-        // Perform validation
+        // Perform field validation
         ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize, gardenDescription);
+
+        // Validate garden description
+        FieldError descriptionError = validateGardenDescription(gardenDescription);
+        if (descriptionError != null) {
+            errors.add(descriptionError);
+        }
+
         session.setAttribute("gardenID", gardenID);
         addAttributes(model, session, currentGarden, currentGarden.getId(), gardenName, gardenLocation, gardenSize, gardenDescription);
 
@@ -119,12 +127,14 @@ public class EditGardenController {
                 model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());
             }
             model.addAttribute("garden", currentGarden);
-            return new ResponseEntity<>("editGardenTemplate" + currentGarden.getId(), HttpStatus.BAD_REQUEST);
+            return "editGardenTemplate"; // Use the correct form template name here
         } else {
             gardenService.updateGarden(currentGarden, gardenName, gardenLocation, gardenSize, garden.getIsPublic(), gardenDescription);
-            return new ResponseEntity<>("redirect:/view-garden?gardenID=" + currentGarden.getId(), HttpStatus.TEMPORARY_REDIRECT);
+            return "redirect:/view-garden?gardenID=" + currentGarden.getId();
         }
     }
+
+
 
     @PatchMapping("/edit-garden")
     public ResponseEntity changePublicity(@RequestParam("gardenID") Long gardenID,
