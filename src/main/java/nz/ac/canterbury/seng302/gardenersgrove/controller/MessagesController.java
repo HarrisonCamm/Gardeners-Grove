@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Message;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MessageService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ModerationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +13,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,17 +28,23 @@ public class MessagesController {
     private final UserService userService;
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageService messageService;
+    private final ModerationService moderationService;
 
     /**
      * Constructor for the MessagesController
      * @param userService The user service
      * @param messagingTemplate The messaging template
      * @param messageService The message service
+     * @param moderationService The moderation service
      */
-    public MessagesController(UserService userService, SimpMessagingTemplate messagingTemplate, MessageService messageService) {
+    public MessagesController(UserService userService,
+                              SimpMessagingTemplate messagingTemplate,
+                              MessageService messageService,
+                              ModerationService moderationService) {
         this.userService = userService;
         this.messagingTemplate = messagingTemplate;
         this.messageService = messageService;
+        this.moderationService = moderationService;
     }
 
     /**
@@ -78,8 +85,14 @@ public class MessagesController {
      */
     @MessageMapping("/chat.send/{username}")
     public void sendMessage(@DestinationVariable String username, Message message) {
-        messageService.saveMessage(message.getSender(), username, message.getContent());
-        messagingTemplate.convertAndSendToUser(username, "/queue/reply", message);
+
+        if (message.getStatus().equals("sent")) {
+            messageService.saveMessage(message);
+            messagingTemplate.convertAndSendToUser(username, "/queue/reply", message);
+        } else {
+            // Send the message status back to the sender
+            messagingTemplate.convertAndSendToUser(message.getSender(), "/queue/reply", message);
+        }
     }
 
     /**
@@ -91,6 +104,16 @@ public class MessagesController {
     public @ResponseBody List<Message> getChat(@PathVariable String username) {
         String currentUser = userService.getAuthenticatedUser().getEmail();
         return messageService.getConversation(currentUser, username); // Return the list of messages as JSON
+    }
+
+    @GetMapping("/message/status")
+    public @ResponseBody String getMessageStatus(@RequestParam String content) {
+        String term = moderationService.moderateText(content);
+        return switch (term) {
+            case "evaluation_error" -> "evaluating";
+            case "null" -> "sent";
+            default -> "blocked";
+        };
     }
 
 }

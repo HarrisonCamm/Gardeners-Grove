@@ -52,17 +52,36 @@ document.addEventListener("DOMContentLoaded", function() {
                 sender: from,
                 recipient: to.email,
                 content: messageContent,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                status: "pending" // Initial status
             };
-            // Send the message to the recipient's queue
-            stompClient.send("/app/chat.send/" + to.email, {}, JSON.stringify(chatMessage));
-            messageInput.value = '';
-            let noMessagesText = document.getElementById("no-messages-text");
-            if (noMessagesText) {
-                noMessagesText.setAttribute('style', 'display: none !important;');
-            }
-            // Show the message in the chat area
-            showMessage(chatMessage, userId);
+
+            let messageProcessed = false;
+
+            // Update the message status
+            fetch('/message/status?content=' + encodeURIComponent(chatMessage.content), {
+                method: 'GET',
+            })
+                .then(response => response.text())
+                .then(status => {
+                    if (!messageProcessed) {
+                        chatMessage.status = status;
+                        messageProcessed = true;
+
+                        // Only send the message if it is appropriate
+                        if (chatMessage.status === "sent") {
+                            stompClient.send("/app/chat.send/" + to.email, {}, JSON.stringify(chatMessage));
+                        }
+
+                        messageInput.value = '';
+                        let noMessagesText = document.getElementById("no-messages-text");
+                        if (noMessagesText) {
+                            noMessagesText.setAttribute('style', 'display: none !important;');
+                        }
+                        // Show the message in the chat area
+                        showMessage(chatMessage, userId);
+                    }
+                });
         }
     }
 
@@ -128,14 +147,28 @@ document.addEventListener("DOMContentLoaded", function() {
         const isSender = message.sender === from;
         const messageClass = isSender ? 'align-self-end text-end ms-auto' : 'align-self-start text-start me-auto';
 
-        const backgroundColor = isSender ? 'background' : 'bg-light' // Green if sender or gray if received
+        // Determine the background color based on the message status
+        let backgroundColor;
+        switch (message.status) {
+            case 'blocked':
+                backgroundColor = 'bg-danger error'; // Red for blocked messages
+                message.content = 'Message contains inappropriate language language';
+                break;
+            case 'evaluating':
+                backgroundColor = 'bg-warning'; // Yellow for pending messages
+                message.content = 'Message is being evaluated by the system';
+                break;
+            default:
+                backgroundColor = isSender ? 'background' : 'bg-light'; // Green if sender or gray if received
+                break;
+        }
 
         // EACH MESSAGE HTML
         messageElement.innerHTML = `
-            <div class="${messageClass} ${backgroundColor} p-3 rounded w-20 text-break">
-                <strong>${message.sender}</strong>: ${message.content} <br>
-                <small class="text-muted">${new Date(message.timestamp).toLocaleTimeString()}</small>
-            </div>`;
+        <div class="${messageClass} ${backgroundColor} p-3 rounded w-20 text-break">
+            ${message.status === 'sent' ? `<strong>${message.sender}</strong>: ` : ''}${message.content} <br>
+            <small class="text-muted">${new Date(message.timestamp).toLocaleTimeString()}</small>
+        </div>`;
 
         // Append the message to the chat area
         chatArea.appendChild(messageElement);
@@ -149,13 +182,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         lastMessageElement.textContent = lastMessageContent;
     }
-
-    document.querySelectorAll('[id^="send-button-"]').forEach(button => {
-        button.addEventListener('click', function() {
-            const userId = this.id.split('-')[2];
-            sendMessage(userId);
-        });
-    });
 
     // Connect to the WebSocket firstly
     connect();
