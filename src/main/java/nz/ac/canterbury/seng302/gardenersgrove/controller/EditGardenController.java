@@ -13,14 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -72,7 +68,7 @@ public class EditGardenController {
         Garden garden = result.get();
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         session.setAttribute("gardenID", gardenID);
-        addAttributes(model, session, garden, garden.getId(), garden.getName(), garden.getLocation(), garden.getSize(), garden.getDescription());
+        addAttributes(model, garden, garden.getId(), garden.getName(), garden.getLocation(), garden.getSize(), garden.getDescription());
         return "editGardenTemplate";
     }
 
@@ -107,10 +103,10 @@ public class EditGardenController {
         gardenLocation.setId(currentGarden.getLocation().getId());
 
         // Perform field validation
-        ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize, gardenDescription);
+        List<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize, gardenDescription);
 
         session.setAttribute("gardenID", gardenID);
-        addAttributes(model, session, currentGarden, currentGarden.getId(), gardenName, gardenLocation, gardenSize, gardenDescription);
+        addAttributes(model, currentGarden, currentGarden.getId(), gardenName, gardenLocation, gardenSize, gardenDescription);
 
         boolean isAppropriate = moderationService.isContentAppropriate(gardenDescription);
         if (!isAppropriate) {
@@ -131,29 +127,6 @@ public class EditGardenController {
         }
     }
 
-
-
-    @PatchMapping("/edit-garden")
-    public ResponseEntity changePublicity(@RequestParam("gardenID") Long gardenID,
-                                          @RequestParam("isPublic") Boolean isPublic,
-                                          Model model,
-                                          HttpSession session){
-        logger.info("PATCH /edit-garden");
-
-        Optional<Garden> garden = gardenService.findGarden(gardenID);
-
-        User currentUser = userService.getAuthenticatedUser();
-        if (garden.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
-        else if (!garden.get().getOwner().equals(currentUser))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this garden.");
-
-        garden.get().setIsPublic(isPublic);
-        gardenService.addGarden(garden.get());
-
-        return ResponseEntity.ok().build();
-    }
-
     /**
      * Checks the garden name, location and size for errors
      *
@@ -161,7 +134,7 @@ public class EditGardenController {
      * @param gardenLocation Garden location
      * @param gardenSize     Garden size
      */
-    private ArrayList<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
+    private List<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
 
         ArrayList<FieldError> errors = new ArrayList<>();
 
@@ -218,15 +191,14 @@ public class EditGardenController {
     }
 
 
-    public void addAttributes(Model model,HttpSession session,  Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
+    public void addAttributes(Model model, Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
         model.addAttribute("id", gardenID);
 
         model.addAttribute("name", gardenName);
         model.addAttribute("description", gardenDescription);
 
-
         model.addAttribute("garden", garden);
-        model.addAttribute("gardenID", session.getAttribute("gardenID"));
+        model.addAttribute("gardenID", gardenID);
         model.addAttribute("location.streetAddress", gardenLocation.getStreetAddress());
         model.addAttribute("location.suburb", gardenLocation.getSuburb());
         model.addAttribute("location.city", gardenLocation.getCity());

@@ -15,7 +15,7 @@ function publicityHandler(checkbox){
     params.append('_csrf', getCsrfToken());
     params.append("isPublic", checkbox.checked)
     params.append("gardenID", gardenID)
-    fetch(getDeployPath(url) + '/edit-garden', {
+    fetch(getDeployPath(url) + '/view-garden', {
         method: 'PATCH',
         body: params
     }).then(response => {
