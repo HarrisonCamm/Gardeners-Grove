@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
@@ -86,7 +87,8 @@ public class EditGardenController {
                              @ModelAttribute Garden garden,
                              BindingResult bindingResult,
                              Model model,
-                             HttpSession session) throws ResponseStatusException {
+                             HttpSession session,
+                             HttpServletResponse response) throws ResponseStatusException {
         logger.info("PUT /edit-garden");
 
         Optional<Garden> result = gardenService.findGarden(gardenID);
@@ -107,12 +109,6 @@ public class EditGardenController {
         // Perform field validation
         ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize, gardenDescription);
 
-        // Validate garden description
-        FieldError descriptionError = validateGardenDescription(gardenDescription);
-        if (descriptionError != null) {
-            errors.add(descriptionError);
-        }
-
         session.setAttribute("gardenID", gardenID);
         addAttributes(model, session, currentGarden, currentGarden.getId(), gardenName, gardenLocation, gardenSize, gardenDescription);
 
@@ -127,6 +123,7 @@ public class EditGardenController {
                 model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());
             }
             model.addAttribute("garden", currentGarden);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "editGardenTemplate"; // Use the correct form template name here
         } else {
             gardenService.updateGarden(currentGarden, gardenName, gardenLocation, gardenSize, garden.getIsPublic(), gardenDescription);
