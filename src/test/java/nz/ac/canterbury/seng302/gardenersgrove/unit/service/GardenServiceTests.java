@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -75,6 +76,7 @@ public class GardenServiceTests {
         // Call the findGarden method with an arbitrary ID and assert that it returns the saved garden
         assertEquals(Optional.of(savedGarden), gardenService.findGarden(1L));
     }
+
     @Test
     void updateGarden_SetPublicStatus_UpdatesIsPublic() {
         // Create a garden and set its initial public status to false
@@ -89,7 +91,24 @@ public class GardenServiceTests {
         Assertions.assertTrue(garden.getIsPublic());
     }
 
+    @Test
+    void updateGarden_SetAll_UpdatesAllFields() {
+        // Create a garden and set its initial fields
+        Location newLocation = new Location("test1", "test2", "test3", "test4", "test5");
 
+        gardenService.updateGarden(savedGarden, "New Name", newLocation, "2", false, "New Description");
+
+        // Verify that the garden's fields have been updated
+        assertEquals("New Name", savedGarden.getName());
+        assertFalse(savedGarden.getIsPublic());
+        assertEquals("New Description", savedGarden.getDescription());
+        assertEquals("2", savedGarden.getSize());
+        assertEquals("test1", savedGarden.getLocation().getStreetAddress());
+        assertEquals("test2", savedGarden.getLocation().getSuburb());
+        assertEquals("test3", savedGarden.getLocation().getCity());
+        assertEquals("test4", savedGarden.getLocation().getPostcode());
+        assertEquals("test5", savedGarden.getLocation().getCountry());
+    }
 
 }
 
