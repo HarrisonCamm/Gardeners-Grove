@@ -240,6 +240,10 @@ public class User {
         return friends;
     }
 
+    public void setFriends(List<User> friends) {
+        this.friends = friends;
+    }
+
 
 }
 
