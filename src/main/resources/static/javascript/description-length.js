@@ -10,3 +10,17 @@ function descriptionLength(input) {
         descriptionLengthCounter.style.color = "black";
     }
 }
+
+// Message Length Checker for direct messages
+function messageLength(input) {
+    const maxLength = 255;
+    let message = input.value;
+    let messageLength = message.length;
+    let messageLengthCounter = document.getElementById('messageLengthCounter');
+    messageLengthCounter.textContent = messageLength + "/" + maxLength;
+    if (messageLength > maxLength) {
+        messageLengthCounter.style.color = "red";
+    } else {
+        messageLengthCounter.style.color = "black";
+    }
+}

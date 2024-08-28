@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.controller.AutocompleteController;
+import nz.ac.canterbury.seng302.gardenersgrove.controller.MessagesController;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -91,6 +92,9 @@ public class AutocompleteControllerTests {
 
     @MockBean
     private AlertService alertService;
+
+    @MockBean
+    private MessagesController messagesController;
 
     AutocompleteController autocompleteController;
 
