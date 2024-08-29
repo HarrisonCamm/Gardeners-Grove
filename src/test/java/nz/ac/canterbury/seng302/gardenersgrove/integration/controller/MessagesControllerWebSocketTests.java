@@ -20,15 +20,13 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -43,32 +41,32 @@ public class MessagesControllerWebSocketTests {
     @MockBean
     private MessageService messageService;
 
-    @MockBean
+    @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    @MockBean
-    private ModerationService moderationService;
-
-    @InjectMocks
-    private MessagesController messagesController;
-
     private StompSession stompSession;
-    private List<Message> messages = new ArrayList<>();
+    private BlockingQueue<Message> receivedMessages;
 
     @BeforeEach
+    @WithMockUser(username = "to@email.com")
     public void setUp() throws Exception {
-        User loggedUser = new User("test@email.com", "test", "user", "password");
+        receivedMessages = new LinkedBlockingDeque<>();
+
+        User loggedUser = new User("to@email.com", "to@email.com", "to@email.com", "password");
         when(userService.getAuthenticatedUser()).thenReturn(loggedUser);
-        doNothing().when(messagingTemplate).convertAndSendToUser(anyString(), anyString(), any(Message.class));
         doNothing().when(messageService).saveMessage(any(Message.class));
 
+        // Set up the WebSocket client and Stomp session
         WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-        stompSession = stompClient.connect("ws://localhost:" + port + "/ws", new StompSessionHandlerAdapter() {}).get(1, TimeUnit.SECONDS);
+        stompSession = stompClient.connect("ws://localhost:" + port + "/ws", new StompSessionHandlerAdapter() {}).get(5, TimeUnit.SECONDS);
+
+        // Subscribe to /user/queue/reply immediately after connection
+        stompSession.subscribe("/user/queue/reply", new SessionHandler());
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "to@email.com")
     public void testSendMessage() throws Exception {
         String sendTo = "to@email.com";
         Message chatMessage = new Message();
@@ -77,25 +75,50 @@ public class MessagesControllerWebSocketTests {
         chatMessage.setContent("Hello");
         chatMessage.setStatus("sent");
 
-//        stompSession.subscribe("/" +sendTo+ "/queue/reply", new StompFrameHandler() {
-//            @NotNull
-//            @Override
-//            public Type getPayloadType(@NotNull StompHeaders stompHeaders) {
-//                return Message.class;
-//            }
-//
-//            @Override
-//            public void handleFrame(@NotNull StompHeaders stompHeaders, Object o) {
-//                System.out.println("Received message: " + o);
-//                messages.add((Message) o);
-//            }
-//        });
+        assertThat(stompSession.isConnected()).isTrue();
+
+        stompSession.send("/app/chat.send/" + sendTo, chatMessage);
+
+        // Simulate the message being saved and sent to the recipient as it takes time
+        Thread.sleep(50);
+
+        verify(messageService, times(1)).saveMessage(any(Message.class));
+        verify(messagingTemplate, times(1)).convertAndSendToUser(eq(sendTo), eq("/queue/reply"), any(Message.class));
+    }
+
+    @Test
+    @WithMockUser(username = "to@email.com")
+    public void testReceiveMessage() throws Exception {
+        String sendTo = "to@email.com";
+        Message chatMessage = new Message();
+        chatMessage.setSender("from@email.com");
+        chatMessage.setRecipient(sendTo);
+        chatMessage.setContent("Hello");
+        chatMessage.setStatus("sent");
 
         assertThat(stompSession.isConnected()).isTrue();
 
         stompSession.send("/app/chat.send/" + sendTo, chatMessage);
 
-        verify(messageService, times(1)).saveMessage(any(Message.class));
-        verify(messagingTemplate, times(1)).convertAndSendToUser(eq(sendTo), eq("/queue/reply"), any(Message.class));
+        // Wait for the message to be received
+        Message response = receivedMessages.poll(5, TimeUnit.SECONDS);
+        assertNotNull(response);
+    }
+
+    private class SessionHandler extends StompSessionHandlerAdapter {
+        @NotNull
+        @Override
+        public Type getPayloadType(@NotNull StompHeaders headers) {
+            return Message.class;
+        }
+
+        @Override
+        public void handleFrame(@NotNull StompHeaders headers, Object payload) {
+            try {
+                receivedMessages.offer((Message) payload, 500, MILLISECONDS);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
