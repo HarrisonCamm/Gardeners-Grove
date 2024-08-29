@@ -86,7 +86,6 @@ public class MessagesController {
      */
     @MessageMapping("/chat.send/{username}")
     public void sendMessage(@DestinationVariable String username, Message message) {
-
         if (message.getStatus().equals("sent")) {
             messageService.saveMessage(message);
             messagingTemplate.convertAndSendToUser(username, "/queue/reply", message);
