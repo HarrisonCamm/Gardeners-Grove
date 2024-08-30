@@ -39,7 +39,10 @@
                             <li th:each="garden : ${gardens}">
                                 <div class="friend-form">
                                     <div class="align-left">
-                                        <h3 th:text="${garden.name}"></h3>
+                                        <a th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
+                                            <h3 th:text="${garden.name}"></h3>
+                                        </a>
+
                                     </div>
                                     <div class="empty-space"></div>
 

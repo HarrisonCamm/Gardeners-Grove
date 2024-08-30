@@ -68,11 +68,12 @@ public class ViewGardenController {
         Image.removeTemporaryImage(session, imageService);
         session.removeAttribute("imageFile");
 
-        Optional<Garden> garden = gardenService.findGarden(gardenID);
+        Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenticatedUser();
-        if (garden.isEmpty())
+        if (foundGarden.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
-        else if (!garden.get().getOwner().equals(currentUser))
+        Garden garden = foundGarden.get();
+        if (!garden.getIsPublic() && !garden.getOwner().equals(currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
