@@ -9,7 +9,8 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,8 +34,7 @@ public class GardenServiceTests {
     private Garden returnedGarden;
 
     @BeforeEach
-    public void setUp() {
-
+    void setUp() {
         gardenRepository = mock(GardenRepository.class);
         gardenService = new GardenService(gardenRepository);
 
@@ -53,13 +53,13 @@ public class GardenServiceTests {
     }
 
     @Test
-    public void EmptyRepo_AddGarden_ReturnsGarden() {
+    void EmptyRepo_AddGarden_ReturnsGarden() {
         // Assert that the returned garden matches the saved garden
         assertEquals(savedGarden, returnedGarden);
     }
 
     @Test
-    public void NonEmptyRepo_GetGardens_ReturnsGardens() {
+    void NonEmptyRepo_GetGardens_ReturnsGardens() {
         // Mock the behavior of gardenRepository.findAll() to return a list containing the saved garden
         List<Garden> mockedGardens = Collections.singletonList(savedGarden);
         when(gardenRepository.findAll()).thenReturn(mockedGardens);
@@ -69,15 +69,16 @@ public class GardenServiceTests {
     }
 
     @Test
-    public void NonEmptyRepo_GetGardenById_ReturnsCorrectGarden() {
+    void NonEmptyRepo_GetGardenById_ReturnsCorrectGarden() {
         // Mock the behavior of gardenRepository.findById() to return the saved garden
         when(gardenRepository.findById(any(Long.class))).thenReturn(Optional.of(savedGarden));
 
         // Call the findGarden method with an arbitrary ID and assert that it returns the saved garden
         assertEquals(Optional.of(savedGarden), gardenService.findGarden(1L));
     }
+
     @Test
-    public void updateGarden_SetPublicStatus_UpdatesIsPublic() {
+    void updateGarden_SetPublicStatus_UpdatesIsPublic() {
         // Create a garden and set its initial public status to false
         Garden garden = new Garden("Test Garden", location, "1");
         garden.setIsPublic(false);
@@ -90,7 +91,28 @@ public class GardenServiceTests {
         Assertions.assertTrue(garden.getIsPublic());
     }
 
+    @Test
+    void updateGarden_SetAll_UpdatesAllFields() {
+        // Create a garden and set its initial fields
+        Location newLocation = new Location("test1", "test2", "test3", "test4", "test5");
 
+        gardenService.updateGarden(savedGarden, "New Name", newLocation, "2", false, "New Description");
+
+        // Verify that the garden's fields have been updated
+        assertEquals("New Name", savedGarden.getName());
+        assertFalse(savedGarden.getIsPublic());
+        assertEquals("New Description", savedGarden.getDescription());
+        assertEquals("2", savedGarden.getSize());
+
+        assertAll("Location",
+                () -> assertEquals("test1", savedGarden.getLocation().getStreetAddress()),
+                () -> assertEquals("test2", savedGarden.getLocation().getSuburb()),
+                () -> assertEquals("test3", savedGarden.getLocation().getCity()),
+                () -> assertEquals("test4", savedGarden.getLocation().getPostcode()),
+                () -> assertEquals("test5", savedGarden.getLocation().getCountry())
+        );
+
+    }
 
 }
 

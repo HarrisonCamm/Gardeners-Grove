@@ -1,6 +1,8 @@
 body {
     background-color: floralwhite;
     font-family: Verdana, sans-serif;
+    height: 100vh; /* Full height of the viewport */
+    width: 100vw; /* Full width of the viewport */
 }
 .content {
     display: flex;
@@ -54,7 +56,9 @@ body {
 .required-input {
     color: #DE2929;
 }
-textarea {
+
+/*Create Plant, Edit Plant Form*/
+.plantTextArea {
     min-width: 350px;
     max-width: 350px;
     font-size: 100%;
@@ -487,6 +491,21 @@ hr {
     margin: 2px 0 2px 0;
 }
 
+.friend-name {
+    font-size: 120%;
+    text-align: center;
+}
+
+[id^="message-input-"] {
+    line-height: 2.5rem;
+    height: 2.5rem;
+    padding: 0 1rem;
+    box-sizing: border-box;
+    overflow: hidden;
+    resize: none;
+}
+
+
 @media only screen and (orientation: portrait) {
     h2 {
         font-size: 300%;
@@ -592,3 +611,40 @@ hr {
         font-size: 200%;
     }
 }
+
+
+
+/* Chat content area */
+.chat-content {
+    flex-grow: 1;
+    overflow-y: auto; /* Allow scrolling */
+    max-height: calc(100vh - 300px); /* Set a maximum height */
+    padding-bottom: 10px; /* Ensure no white space below the last message */
+}
+/* Ensure the main container uses Flexbox */
+.chat-container {
+    height: 100vh; /* Full height of the viewport */
+    width: 100vw; /* Full width of the viewport */
+    overflow: hidden; /* Prevent overflow */
+}
+
+/* Chat sidebar styles */
+.chat-side-bar {
+    background-color: #f8f9fa; /* Matches Bootstrap's light background */
+    min-width: 400px; /* Minimum width for the sidebar */
+    max-width: 400px; /* Maximum width for the sidebar */
+    flex: 0 0 300px; /* Fixed width for the sidebar */
+    overflow-y: auto; /* Scroll if content overflows */
+}
+
+.chat-main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden; /* Prevent overflow */
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+

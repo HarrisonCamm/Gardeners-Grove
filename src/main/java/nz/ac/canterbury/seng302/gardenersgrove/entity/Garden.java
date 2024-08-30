@@ -35,7 +35,7 @@ public class Garden {
     @Column
     private Boolean isPublic;
 
-    @Column
+    @Column(length = 512)
     private String description;
 
 
@@ -62,6 +62,10 @@ public class Garden {
      * @param owner owner
      */
     public Garden(String name, Location location, String size, User owner) {
+        this(name, location, size, owner, "");
+    }
+
+    public Garden(String name, Location location, String size, User owner, String description) {
         this.name = name;
         this.location = location;
         this.size = size;
@@ -81,7 +85,9 @@ public class Garden {
 
     public String getDescription(){return description;}
 
-    public String setDescription(String description){return description;}
+    public void setDescription(String description){
+        this.description = description;
+    }
 
     public String getName() {
         return name;

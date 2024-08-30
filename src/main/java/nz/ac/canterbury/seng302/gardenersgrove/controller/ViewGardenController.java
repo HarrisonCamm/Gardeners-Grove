@@ -9,9 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -123,6 +125,27 @@ public class ViewGardenController {
         return "redirect:/view-garden?gardenID=" + gardenID;
     }
 
+    @PatchMapping("/view-garden")
+    public ResponseEntity<Void> changePublicity(@RequestParam("gardenID") Long gardenID,
+                                          @RequestParam("isPublic") Boolean isPublic,
+                                          Model model,
+                                          HttpSession session){
+        logger.info("PATCH /view-garden");
+
+        Optional<Garden> garden = gardenService.findGarden(gardenID);
+
+        User currentUser = userService.getAuthenticatedUser();
+        if (garden.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
+        else if (!garden.get().getOwner().equals(currentUser))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this garden.");
+
+        garden.get().setIsPublic(isPublic);
+        gardenService.addGarden(garden.get());
+
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/add-tag")
     public String addTag(@RequestParam("gardenID") Long gardenID,
                          @RequestParam("tag") String tag,
@@ -225,6 +248,7 @@ public class ViewGardenController {
             model.addAttribute("tagInput", "");
             model.addAttribute("gardenName", garden.get().getName());
             model.addAttribute("gardenLocation", garden.get().getLocation().toString());
+            model.addAttribute("gardenDescription", garden.get().getDescription());
             model.addAttribute("gardenSize", garden.get().getSize());
             model.addAttribute("gardenTags", gardenService.getEvaluatedTags(gardenID));
             model.addAttribute("gardenIsPublic", garden.get().getIsPublic());
