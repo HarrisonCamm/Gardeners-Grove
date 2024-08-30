@@ -80,10 +80,16 @@ public class EditGardenController {
      */
     @PutMapping("/edit-garden")
     public String submitForm(@RequestParam("gardenID") Long gardenID,
-                             @ModelAttribute Garden garden,
-                             BindingResult bindingResult,
-                             Model model,
+                             @RequestParam("name") String gardenName,
+                             @RequestParam(name = "location.streetAddress", required = false) String streetAddress,
+                             @RequestParam(name = "location.suburb", required = false) String suburb,
+                             @RequestParam(name = "location.city") String city,
+                             @RequestParam(name = "location.postcode", required = false) String postcode,
+                             @RequestParam(name = "location.country") String country,
+                             @RequestParam(name = "description", required = false) String gardenDescription,
+                             @RequestParam(name = "size", required = false) String gardenSize,
                              HttpSession session,
+                             Model model,
                              HttpServletResponse response) throws ResponseStatusException {
         logger.info("PUT /edit-garden");
 
@@ -96,17 +102,23 @@ public class EditGardenController {
         }
 
         Garden currentGarden = result.get();
-        String gardenName = garden.getName();
-        String gardenSize = garden.getSize();
-        String gardenDescription = (garden.getDescription() != null ? garden.getDescription().trim() : "");
-        Location gardenLocation = garden.getLocation();
-        gardenLocation.setId(currentGarden.getLocation().getId());
+        currentGarden.setName(gardenName);
+        currentGarden.setSize(gardenSize);
+        currentGarden.setDescription(gardenDescription != null ? gardenDescription.trim() : "");
 
-        // Perform field validation
+        Location gardenLocation = currentGarden.getLocation();
+        gardenLocation.setStreetAddress(streetAddress);
+        gardenLocation.setSuburb(suburb);
+        gardenLocation.setCity(city);
+        gardenLocation.setPostcode(postcode);
+        gardenLocation.setCountry(country);
+
         List<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize, gardenDescription);
 
-        session.setAttribute("gardenID", gardenID);
-        addAttributes(model, currentGarden, currentGarden.getId(), gardenName, gardenLocation, gardenSize, gardenDescription);
+        model.addAttribute("gardenID", gardenID);
+        model.addAttribute("garden", currentGarden);
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+        addAttributes(model, currentGarden, gardenID, gardenName, gardenLocation, gardenSize, gardenDescription);
 
         boolean isAppropriate = moderationService.isContentAppropriate(gardenDescription);
         if (!isAppropriate) {
@@ -114,18 +126,18 @@ public class EditGardenController {
         }
 
         if (!errors.isEmpty()) {
-            // If there are validation errors, return to the form page
             for (FieldError error : errors) {
                 model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());
             }
             model.addAttribute("garden", currentGarden);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return "editGardenTemplate"; // Use the correct form template name here
+            return "editGardenTemplate";
         } else {
-            gardenService.updateGarden(currentGarden, gardenName, gardenLocation, gardenSize, garden.getIsPublic(), gardenDescription);
+            gardenService.updateGarden(currentGarden, gardenName, gardenLocation, gardenSize, currentGarden.getIsPublic(), gardenDescription);
             return "redirect:/view-garden?gardenID=" + currentGarden.getId();
         }
     }
+
 
     /**
      * Checks the garden name, location and size for errors
@@ -193,10 +205,8 @@ public class EditGardenController {
 
     public void addAttributes(Model model, Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
         model.addAttribute("id", gardenID);
-
         model.addAttribute("name", gardenName);
         model.addAttribute("description", gardenDescription);
-
         model.addAttribute("garden", garden);
         model.addAttribute("gardenID", gardenID);
         model.addAttribute("location.streetAddress", gardenLocation.getStreetAddress());

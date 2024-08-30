@@ -57,7 +57,7 @@
                         <div>
                             <label for="gardenDescription"> Description: </label>
                             <br/>
-                            <textarea maxlength="1028" id="gardenDescription"
+                            <textarea class="plantTextArea" maxlength="1024" id="gardenDescription"
                                       th:field="*{description}"
                                       th:classappend="${descriptionError} ? 'error' : ''"
                                       rows="4"

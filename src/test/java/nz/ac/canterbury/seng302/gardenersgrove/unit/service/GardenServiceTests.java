@@ -9,8 +9,8 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -103,11 +103,15 @@ public class GardenServiceTests {
         assertFalse(savedGarden.getIsPublic());
         assertEquals("New Description", savedGarden.getDescription());
         assertEquals("2", savedGarden.getSize());
-        assertEquals("test1", savedGarden.getLocation().getStreetAddress());
-        assertEquals("test2", savedGarden.getLocation().getSuburb());
-        assertEquals("test3", savedGarden.getLocation().getCity());
-        assertEquals("test4", savedGarden.getLocation().getPostcode());
-        assertEquals("test5", savedGarden.getLocation().getCountry());
+
+        assertAll("Location",
+                () -> assertEquals("test1", savedGarden.getLocation().getStreetAddress()),
+                () -> assertEquals("test2", savedGarden.getLocation().getSuburb()),
+                () -> assertEquals("test3", savedGarden.getLocation().getCity()),
+                () -> assertEquals("test4", savedGarden.getLocation().getPostcode()),
+                () -> assertEquals("test5", savedGarden.getLocation().getCountry())
+        );
+
     }
 
 }
