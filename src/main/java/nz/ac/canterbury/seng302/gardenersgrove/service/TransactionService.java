@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransactionService {
     private TransactionRepository transactionRepository;
-    public Page<Transaction> findTransactionsByUserId(User user, Pageable pageable) {
+    public Page<Transaction> findTransactionsByUser(User user, Pageable pageable) {
         return transactionRepository.findAllByUser(user, pageable);
     }
 }

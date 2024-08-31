@@ -23,6 +23,8 @@ import org.springframework.ui.Model;
 import org.slf4j.Logger;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.web.PageableDefault;
+
 
 import java.io.IOException;
 import java.util.Optional;
@@ -59,14 +61,10 @@ public class UserProfileController {
      * @param model The model
      */
     @GetMapping("/view-user-profile")
-    public String getTemplate(@RequestParam("page") int page,
-                              @RequestParam("size") int size,
-                              HttpSession session, Model model) {
+    public String getTemplate( HttpSession session, Model model) {
         RedirectService.addEndpoint("/view-user-profile");
         User currentUser = userService.getAuthenticatedUser();
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Transaction> transactionsPage = transactionService.findTransactionsByUserId(currentUser, pageable);
 
         logger.info("User retrieved from session: " + currentUser);
 
@@ -78,9 +76,10 @@ public class UserProfileController {
             model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
             model.addAttribute("email", currentUser.getEmail());
             model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
-            model.addAttribute("transactions", transactionsPage.getContent());
-            model.addAttribute("totalPages", transactionsPage.getTotalPages());
-            model.addAttribute("currentPage", page);
+//            model.addAttribute("transactions", transactionsPage.getContent());
+//            model.addAttribute("totalPages", transactionsPage.getTotalPages());
+//            model.addAttribute("currentPage", page);
+
 
             return "viewUserProfileTemplate";
         } else {
@@ -88,6 +87,30 @@ public class UserProfileController {
             return "redirect:/sign-in-form";
         }
     }
+
+
+    @GetMapping("/transactions")
+    public String getTransactions(
+            @PageableDefault(size = 10) Pageable pageable,
+            Model model) {
+
+        User currentUser = userService.getAuthenticatedUser();
+
+        logger.info("Pageable User retrieved from session: " + currentUser);
+
+        Page<Transaction> transactionsPage = transactionService.findTransactionsByUser(currentUser, pageable);
+
+
+        model.addAttribute("transactionsPage", transactionsPage);
+
+        return "view-user-profile";
+    }
+
+
+
+
+
+
 
     /**
      * Handles saving a new user profile image that was uploaded from the View User Profile page
