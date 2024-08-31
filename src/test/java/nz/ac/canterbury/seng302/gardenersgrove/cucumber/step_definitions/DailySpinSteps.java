@@ -37,6 +37,7 @@ public class DailySpinSteps {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
+    //AC1, AC2
     @WithMockUser
     @Given("I am on the main page")
     public void i_am_on_the_main_page() throws Exception {
@@ -46,6 +47,7 @@ public class DailySpinSteps {
                 .andReturn();
     }
 
+//    AC1 - navigate to daily spin
     @Then("I see a {string} button prominently displayed on the navbar")
     public void i_see_a_daily_spin_button_prominently_displayed_on_the_navbar(String expectedText) throws UnsupportedEncodingException {
         String content = mvcResult.getResponse().getContentAsString(); //getting the html content
@@ -55,6 +57,7 @@ public class DailySpinSteps {
         Assertions.assertTrue(found, "Expected to find a '" + expectedText + "' button in the navbar");
     }
 
+    //AC2 - daily spin animation
     @When("I click the Daily Spin button on the navbar,")
     public void i_click_the_daily_spin_button_on_the_navbar() throws Exception {
         mvcResult = mockMvc.perform(get("/daily-spin"))
@@ -63,6 +66,7 @@ public class DailySpinSteps {
                 .andReturn();
     }
 
+    //AC2 - daily spin animation
     @Then("I am taken to the Daily Spin Page")
     public void i_am_taken_to_the_daily_spin_page() {
         String viewName = mvcResult.getModelAndView().getViewName();
@@ -72,6 +76,7 @@ public class DailySpinSteps {
         Assertions.assertEquals(200, status, "Expected status 200 (OK), but got: " + status);
     }
 
+    //AC2 - daily spin animation
     @Then("A spin wheel animation appears with garden themed emojis")
     public void a_spin_wheel_animation_appears_with_garden_themed_emojis() throws UnsupportedEncodingException {
         //verify that the HTML content includes the necessary elements for the
@@ -81,7 +86,9 @@ public class DailySpinSteps {
         boolean hasSpinButton = content.contains("<button class=\"spin-button\"") && content.contains("SPIN");
         boolean hasReelContainers = content.contains("<div class=\"reel-container\"");
 
-        Assertions.assertTrue(hasSpinButton, "Expected to find a spin button in the page.");
-        Assertions.assertTrue(hasReelContainers, "Expected to find reel containers for the spin wheel animation.");
+        Assertions.assertAll(
+                () -> Assertions.assertTrue(hasSpinButton, "Expected to find a spin button in the page."),
+                () -> Assertions.assertTrue(hasReelContainers, "Expected to find reel containers for the spin wheel animation.")
+        );
     }
 }
