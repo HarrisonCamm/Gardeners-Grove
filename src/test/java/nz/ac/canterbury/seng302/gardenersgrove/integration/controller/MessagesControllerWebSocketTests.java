@@ -21,6 +21,7 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
@@ -48,7 +49,6 @@ public class MessagesControllerWebSocketTests {
     private BlockingQueue<Message> receivedMessages;
 
     @BeforeEach
-    @WithMockUser(username = "to@email.com")
     public void setUp() throws Exception {
         receivedMessages = new LinkedBlockingDeque<>();
 
@@ -62,15 +62,14 @@ public class MessagesControllerWebSocketTests {
         stompSession = stompClient.connect("ws://localhost:" + port + "/ws", new StompSessionHandlerAdapter() {}).get(5, TimeUnit.SECONDS);
 
         // Subscribe to /user/queue/reply immediately after connection
-        stompSession.subscribe("/user/queue/reply", new SessionHandler());
+        stompSession.subscribe("/user/to@email.com/queue/reply", new SessionHandler());
     }
 
     @Test
-    @WithMockUser(username = "to@email.com")
     public void testSendMessage() throws Exception {
         String sendTo = "to@email.com";
         Message chatMessage = new Message();
-        chatMessage.setSender("from@email.com");
+        chatMessage.setSender("to@email.com");
         chatMessage.setRecipient(sendTo);
         chatMessage.setContent("Hello");
         chatMessage.setStatus("sent");
@@ -87,22 +86,41 @@ public class MessagesControllerWebSocketTests {
     }
 
     @Test
-    @WithMockUser(username = "to@email.com")
     public void testReceiveMessage() throws Exception {
         String sendTo = "to@email.com";
         Message chatMessage = new Message();
-        chatMessage.setSender("from@email.com");
+        chatMessage.setSender("to@email.com");
         chatMessage.setRecipient(sendTo);
         chatMessage.setContent("Hello");
         chatMessage.setStatus("sent");
 
         assertThat(stompSession.isConnected()).isTrue();
 
+        // Use a CountDownLatch to synchronize
+        CountDownLatch latch = new CountDownLatch(1);
+
+        // Modify SessionHandler to count down the latch
+        SessionHandler sessionHandler = new SessionHandler() {
+            @Override
+            public void handleFrame(@NotNull StompHeaders headers, Object payload) {
+                try {
+                    receivedMessages.offer((Message) payload, 500, MILLISECONDS);
+                    latch.countDown(); // Signal that the message has been received
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        stompSession.subscribe("/user/to@email.com/queue/reply", sessionHandler);
         stompSession.send("/app/chat.send/" + sendTo, chatMessage);
 
-        // Wait for the message to be received
-        Message response = receivedMessages.poll(5, TimeUnit.SECONDS);
-        assertNotNull(response);
+        // Wait for the latch to count down or timeout after 5 seconds
+        boolean messageReceived = latch.await(5, TimeUnit.SECONDS);
+        assertThat(messageReceived).isTrue(); // Ensure the message was received within the timeout
+
+        Message response = receivedMessages.poll(); // Retrieve the received message from the queue
+        assertNotNull(response); // Assert that the message is not null
     }
 
     private class SessionHandler extends StompSessionHandlerAdapter {
