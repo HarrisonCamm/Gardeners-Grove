@@ -61,7 +61,6 @@ public class ViewGardenController {
         response.setDateHeader("Expires", 0); // Proxies
 
 
-
         logger.info("GET /view-garden");
         RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
 
@@ -73,12 +72,18 @@ public class ViewGardenController {
         if (foundGarden.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         Garden garden = foundGarden.get();
-        if (!garden.getIsPublic() && !garden.getOwner().equals(currentUser))
+        boolean isOwner = garden.getOwner().equals(currentUser);
+        if (!garden.getIsPublic() && !isOwner)
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
         session.removeAttribute("tagEvaluationError");
-        return "viewGardenDetailsTemplate";
+
+        if (isOwner) {
+            return "viewGardenDetailsTemplate";
+        } else {
+            return "viewUnownedGardenDetailsTemplate";
+        }
     }
 
     /**
@@ -159,7 +164,7 @@ public class ViewGardenController {
         if (garden.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
         else if (!garden.get().getOwner().equals(currentUser))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot add tags to this garden.");
 
         // Get weather information
         WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
