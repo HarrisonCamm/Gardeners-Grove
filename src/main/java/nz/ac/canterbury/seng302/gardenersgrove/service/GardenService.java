@@ -44,6 +44,9 @@ public class GardenService {
     }
 
     public List<Garden> searchPublicGardens(String search) {
+        if (search == null || search.isEmpty()) {
+            return getPublicGardens();
+        }
         return gardenRepository.findPublicGardensBySearch(search);
     }
 
