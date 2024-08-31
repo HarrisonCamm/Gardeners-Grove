@@ -3,14 +3,19 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.TransactionService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -33,6 +38,10 @@ public class UserProfileController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private TransactionService transactionService;
+
+
     private final UserRepository userRepository;
     private final ImageService imageService;
 
@@ -50,9 +59,14 @@ public class UserProfileController {
      * @param model The model
      */
     @GetMapping("/view-user-profile")
-    public String getTemplate(HttpSession session, Model model) {
+    public String getTemplate(@RequestParam("page") int page,
+                              @RequestParam("size") int size,
+                              HttpSession session, Model model) {
         RedirectService.addEndpoint("/view-user-profile");
         User currentUser = userService.getAuthenticatedUser();
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Transaction> transactionsPage = transactionService.findTransactionsByUserId(currentUser, pageable);
 
         logger.info("User retrieved from session: " + currentUser);
 
@@ -64,7 +78,10 @@ public class UserProfileController {
             model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
             model.addAttribute("email", currentUser.getEmail());
             model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
-            model.addAttribute("transactions", currentUser.getTransactions());
+            model.addAttribute("transactions", transactionsPage.getContent());
+            model.addAttribute("totalPages", transactionsPage.getTotalPages());
+            model.addAttribute("currentPage", page);
+
             return "viewUserProfileTemplate";
         } else {
             model.addAttribute("signInError", "Please sign in to view your profile");

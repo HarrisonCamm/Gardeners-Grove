@@ -53,6 +53,7 @@ public class Transaction {
         this.transactionType = transactionType;
         this.plant = plant;
         this.notes = notes;
+
     }
 
     public Long getTransactionId() {
