@@ -2,6 +2,8 @@ package nz.ac.canterbury.seng302.gardenersgrove.repository;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -18,10 +20,14 @@ public interface GardenRepository extends CrudRepository<Garden, Long> {
     @Query("SELECT g FROM Garden g WHERE :tagId IN (SELECT t.id FROM g.tags t)")
     List<Garden> findGardensByTagId(Long tagId);
 
-    @Query("SELECT g FROM Garden g WHERE g.isPublic = TRUE")
-    List<Garden> findPublicGardens();
+    @Query("SELECT g FROM Garden g " +
+            "WHERE g.isPublic = TRUE " +
+            "ORDER BY COALESCE(g.created, '1970-01-01') DESC, g.id DESC")
+    Page<Garden> findPublicGardens(Pageable pageable);
 
-    @Query("SELECT g FROM Garden g JOIN Plant p ON p.garden = g WHERE g.isPublic = TRUE AND (g.name LIKE %:search% OR p.name LIKE %:search%)")
-    List<Garden> findPublicGardensBySearch(String search);
+    @Query("SELECT g FROM Garden g LEFT JOIN Plant p ON p.garden = g " +
+            "WHERE g.isPublic = TRUE AND (g.name LIKE %:search% OR p.name LIKE %:search%) " +
+            "ORDER BY COALESCE(g.created, '1970-01-01') DESC, g.id DESC")
+    Page<Garden> findPublicGardensBySearch(String search, Pageable pageable);
 
 }

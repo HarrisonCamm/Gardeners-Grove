@@ -10,11 +10,11 @@
 
         <div class="wrapper">
             <div class="search-container">
-                <form th:action="@{/browse-gardens}" method="post" novalidate th:hidden="${showSearch}">
+                <form th:action="@{/browse-gardens}" method="post" novalidate>
                     <div class="search-div">
                         <label for="search"></label>
-                        <input th:name="search"
-                               th:value="${search}"
+                        <input th:name="q"
+                               th:value="${q}"
                                class="search-field"
                                id="search"
                                type="text"
@@ -25,18 +25,9 @@
                         </div>
                     </div>
 
-                    <input type="hidden" name="action" th:id="search-action" th:value="invite" />
-                    <input type="hidden" name="email"  th:id="search-email" />
-
-                    <div class="search-friend" id="searchFriend">
-                        <br/>
-                        <p th:if="${searchResultMessage}" class="search-field-message" th:text="${searchResultMessage}"></p>
-
-                    </div>
-
                     <div>
                         <ul>
-                            <li th:each="garden : ${gardens}">
+                            <li th:each="garden : ${gardenPage.content}">
                                 <div class="friend-form">
                                     <div class="align-left">
                                         <a th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
@@ -53,8 +44,28 @@
 
                 </form>
             </div>
-
         </div>
+
+        <nav aria-label="Page navigation" class="paging">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" th:href="@{'/browse-gardens?page=1' + '&q=' + ${q}}">First</a>
+                </li>
+                <li class="page-item" th:classappend="${!gardenPage.hasPrevious() ? 'disabled' : ''}" disabled>
+                    <a class="page-link" th:href="@{'/browse-gardens?page=' + ${gardenPage.number + 0} + '&q=' + ${q}}">Previous</a>
+                </li>
+                <li class="page-item active">
+                    <span class="page-link" th:text="${gardenPage.number + 1}"></span>
+                </li>
+                <li class="page-item" th:classappend="${!gardenPage.hasNext() ? 'disabled' : ''}">
+                    <a class="page-link" th:href="@{'/browse-gardens?page=' + ${gardenPage.number + 2} + '&q=' + ${q}}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" th:href="@{'/browse-gardens?page=' + ${gardenPage.totalPages} + '&q=' + ${q}}">Last</a>
+                </li>
+            </ul>
+        </nav>
+        <span th:text="${'Showing results ' + ((gardenPage.number * 10) + 1) + ' to ' + ((gardenPage.number * 10) + gardenPage.numberOfElements) + ' of ' + gardenPage.totalElements}"></span>
 
         <!-- Scripts fragment, contains bootstrap scripts -->
         <div th:replace="~{fragments/scripts :: scripts}"></div>

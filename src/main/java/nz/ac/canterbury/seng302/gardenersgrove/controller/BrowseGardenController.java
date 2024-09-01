@@ -8,6 +8,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,28 +38,42 @@ public class BrowseGardenController {
 
     @GetMapping("/browse-gardens")
     public String browseGardens(HttpSession session,
+                         @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                         @RequestParam(value = "q", required = false, defaultValue = "") String query,
                          Model model,
                          HttpServletResponse response) {
 
         logger.info("GET /browse-gardens");
         RedirectService.addEndpoint("/browse-gardens");
 
-        List<Garden> gardens = gardenService.getPublicGardens();
-        model.addAttribute("gardens", gardens);
+        if (page < 1) {
+            return "redirect:/browse-gardens?page=1";
+        }
+
+//        Page<Garden> gardenPage = gardenService.getPublicGardens(page - 1);
+        Page<Garden> gardenPage = gardenService.searchPublicGardens(query, page - 1);
+        model.addAttribute("gardenPage", gardenPage);
+        model.addAttribute("q", query);
 
         return "browseGardensTemplate";
     }
 
     @PostMapping("/browse-gardens")
-    public String searchGardens(@RequestParam("search") String search,
-                         HttpSession session,
-                         Model model,
-                         HttpServletResponse response) {
+    public String searchGardens(@RequestParam(value = "q", defaultValue = "") String query,
+                                @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                                HttpSession session,
+                                Model model,
+                                HttpServletResponse response) {
 
         logger.info("POST /browse-gardens");
 
-        List<Garden> gardens = gardenService.searchPublicGardens(search);
-        model.addAttribute("gardens", gardens);
+        if (page < 1) {
+            return "redirect:/browse-gardens?page=1";
+        }
+
+        Page<Garden> gardenPage = gardenService.searchPublicGardens(query, page - 1);
+        model.addAttribute("gardenPage", gardenPage);
+        model.addAttribute("q", query);
 
         return "browseGardensTemplate";
     }

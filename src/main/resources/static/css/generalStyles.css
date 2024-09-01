@@ -302,7 +302,10 @@ h2 {
 }
 
 /* Disabled styles */
-.disabled {
+/*.disabled {*/
+/*    opacity: 0;*/
+/*}*/
+.invisible {
     opacity: 0;
 }
 

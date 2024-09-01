@@ -40,7 +40,7 @@
                     <h3 th:text="${gardenLocation}">  </h3>
                 </div>
             </div>
-            <div th:if="${gardenSize!=''}" class="row mb-3 ps-5" th:classappend="${gardenSize == '' ? 'disabled' : ''}">
+            <div th:if="${gardenSize!=''}" class="row mb-3 ps-5" th:classappend="${gardenSize == '' ? 'invisible' : ''}">
                 <div class="col">
                     <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
                 </div>
