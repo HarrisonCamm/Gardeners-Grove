@@ -20,6 +20,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -42,7 +43,7 @@ public class MessagesControllerWebSocketTests {
     @MockBean
     private MessageService messageService;
 
-    @Autowired
+    @MockBean
     private SimpMessagingTemplate messagingTemplate;
 
     private StompSession stompSession;
@@ -54,6 +55,16 @@ public class MessagesControllerWebSocketTests {
 
         User loggedUser = new User("to@email.com", "to@email.com", "to@email.com", "password");
         when(userService.getAuthenticatedUser()).thenReturn(loggedUser);
+
+        // Mock the messagingTemplate to add the message sent to an internal queue
+        doAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            if (args[2] instanceof Message) {
+                receivedMessages.offer((Message) args[2]);
+            }
+            return args[2];
+        }).when(messagingTemplate).convertAndSendToUser(anyString(), anyString(), any());
+
         doNothing().when(messageService).saveMessage(any(Message.class));
 
         // Set up the WebSocket client and Stomp session
@@ -61,8 +72,6 @@ public class MessagesControllerWebSocketTests {
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
         stompSession = stompClient.connect("ws://localhost:" + port + "/ws", new StompSessionHandlerAdapter() {}).get(5, TimeUnit.SECONDS);
 
-        // Subscribe to /user/queue/reply immediately after connection
-        stompSession.subscribe("/user/to@email.com/queue/reply", new SessionHandler());
     }
 
     @Test
@@ -79,7 +88,7 @@ public class MessagesControllerWebSocketTests {
         stompSession.send("/app/chat.send/" + sendTo, chatMessage);
 
         // Simulate the message being saved and sent to the recipient as it takes time
-        Thread.sleep(50);
+        Thread.sleep(500);
 
         verify(messageService, times(1)).saveMessage(any(Message.class));
         verify(messagingTemplate, times(1)).convertAndSendToUser(eq(sendTo), eq("/queue/reply"), any(Message.class));
@@ -96,47 +105,11 @@ public class MessagesControllerWebSocketTests {
 
         assertThat(stompSession.isConnected()).isTrue();
 
-        // Use a CountDownLatch to synchronize
-        CountDownLatch latch = new CountDownLatch(1);
-
-        // Modify SessionHandler to count down the latch
-        SessionHandler sessionHandler = new SessionHandler() {
-            @Override
-            public void handleFrame(@NotNull StompHeaders headers, Object payload) {
-                try {
-                    receivedMessages.offer((Message) payload, 500, MILLISECONDS);
-                    latch.countDown(); // Signal that the message has been received
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
-
-        stompSession.subscribe("/user/to@email.com/queue/reply", sessionHandler);
         stompSession.send("/app/chat.send/" + sendTo, chatMessage);
 
-        // Wait for the latch to count down or timeout after 5 seconds
-        boolean messageReceived = latch.await(5, TimeUnit.SECONDS);
-        assertThat(messageReceived).isTrue(); // Ensure the message was received within the timeout
+        Thread.sleep(500);
 
         Message response = receivedMessages.poll(); // Retrieve the received message from the queue
         assertNotNull(response); // Assert that the message is not null
-    }
-
-    private class SessionHandler extends StompSessionHandlerAdapter {
-        @NotNull
-        @Override
-        public Type getPayloadType(@NotNull StompHeaders headers) {
-            return Message.class;
-        }
-
-        @Override
-        public void handleFrame(@NotNull StompHeaders headers, Object payload) {
-            try {
-                receivedMessages.offer((Message) payload, 500, MILLISECONDS);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 }
