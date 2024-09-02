@@ -1,7 +1,10 @@
 package nz.ac.canterbury.seng302.gardenersgrove.repository;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -36,6 +39,12 @@ public interface UserRepository extends CrudRepository<User, Long>{
 
     @Query("SELECT r from FriendRequest r WHERE r.sender.userId = :userId")
     List<FriendRequest> getSentFriendRequests(Long userId);
+
+
+    @Query("SELECT t FROM Transaction t WHERE t.sender = :user OR t.receiver = :user")
+    Page<Transaction> findAllByUser(@Param("user") User user, Pageable pageable);
+
+
 
     @Query("SELECT r from FriendRequest r WHERE r.receiver.userId = :userId and r.status = 'Pending'")
     List<FriendRequest> getPendingFriendRequests(Long userId);

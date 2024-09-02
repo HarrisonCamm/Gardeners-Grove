@@ -50,6 +50,7 @@
             </div>
         </div>
         <div class="transactions-display">
+            <p th:text="${page}"></p>
             <table class="table table-striped table-bordered table-hover">
                 <thead class="thead-dark">
                 <tr>
@@ -63,7 +64,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="transaction : ${transactionsPage.getContent()}">
+                <tr th:each="transaction : ${transactions}">
                     <td th:text="${transaction.transactionId}"></td>
                     <td th:text="${transaction.sender != null ? transaction.sender.getFirstName() : 'Unknown Sender'}"></td>
                     <td th:text="${transaction.receiver != null ? transaction.receiver.getFirstName() : 'Unknown Receiver'}"></td>
@@ -75,5 +76,20 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="pagination-controls">
+            <ul class="pagination">
+                <li th:class="${!hasPrevious} ? 'disabled'">
+                    <a th:href="@{'/view-user-profile(page=' + (${currentPage} - 1) + ', size=' + ${size} + ')'}">Previous</a>
+                </li>
+                <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:class="${i == currentPage} ? 'active'">
+                    <a th:href="@{'/view-user-profile(page=' + ${i} + ', size=' + ${size} + ')'}" th:text="${i + 1}"></a>
+                </li>
+                <li th:class="${!hasNext} ? 'disabled'">
+                    <a th:href="@{'/view-user-profile(page=' + (${currentPage} + 1) + ', size=' + ${size} + ')'}">Next</a>
+                </li>
+            </ul>
+        </div>
+
     </body>
 </html>

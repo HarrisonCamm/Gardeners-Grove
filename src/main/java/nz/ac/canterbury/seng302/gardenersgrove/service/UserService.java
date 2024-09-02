@@ -1,9 +1,13 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -169,6 +173,7 @@ public class UserService {
         return userRepository.getPendingFriendRequests(currentUser.getUserId());
     }
 
+
     public boolean areUsersEqual(User user1, User user2) {
         return Objects.equals(user1.getUserId(), user2.getUserId()) &&
                 user1.getFirstName().equals(user2.getFirstName()) &&
@@ -182,4 +187,10 @@ public class UserService {
     public void incrementInappropriateTagCount(Long userId) {
         userRepository.incrementInappropriateTagCount(userId);
     }
+
+    public Page<Transaction> findTransactionsByUser(User currentUser, int page, int size) {
+        return userRepository.findAllByUser(currentUser, PageRequest.of(page, size));
+    }
+
+
 }

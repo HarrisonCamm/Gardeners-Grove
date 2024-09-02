@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
@@ -8,16 +7,11 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.TransactionService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.slf4j.Logger;
@@ -40,8 +34,6 @@ public class UserProfileController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private TransactionService transactionService;
 
 
     private final UserRepository userRepository;
@@ -61,10 +53,13 @@ public class UserProfileController {
      * @param model The model
      */
     @GetMapping("/view-user-profile")
-    public String getTemplate( HttpSession session, Model model) {
+    public String getTemplate( @RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "10") int size,
+                               HttpSession session, Model model) {
         RedirectService.addEndpoint("/view-user-profile");
         User currentUser = userService.getAuthenticatedUser();
 
+        Page<Transaction> transactionsPage = userService.findTransactionsByUser(currentUser, page, size);
 
         logger.info("User retrieved from session: " + currentUser);
 
@@ -76,9 +71,11 @@ public class UserProfileController {
             model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
             model.addAttribute("email", currentUser.getEmail());
             model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
-//            model.addAttribute("transactions", transactionsPage.getContent());
-//            model.addAttribute("totalPages", transactionsPage.getTotalPages());
-//            model.addAttribute("currentPage", page);
+            model.addAttribute("transactions", transactionsPage.getContent());
+            model.addAttribute("totalPages", transactionsPage.getTotalPages());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("hasPrevious", transactionsPage.hasPrevious());
+            model.addAttribute("hasNext", transactionsPage.hasNext());
 
 
             return "viewUserProfileTemplate";
@@ -89,22 +86,22 @@ public class UserProfileController {
     }
 
 
-    @GetMapping("/transactions")
-    public String getTransactions(
-            @PageableDefault(size = 10) Pageable pageable,
-            Model model) {
-
-        User currentUser = userService.getAuthenticatedUser();
-
-        logger.info("Pageable User retrieved from session: " + currentUser);
-
-        Page<Transaction> transactionsPage = transactionService.findTransactionsByUser(currentUser, pageable);
-
-
-        model.addAttribute("transactionsPage", transactionsPage);
-
-        return "view-user-profile";
-    }
+//    @GetMapping("/transactions")
+//    public String getTransactions(
+//            @PageableDefault(size = 10) Pageable pageable,
+//            Model model) {
+//
+//        User currentUser = userService.getAuthenticatedUser();
+//
+//        logger.info("Pageable User retrieved from session: " + currentUser);
+//
+//        Page<Transaction> transactionsPage = transactionService.findTransactionsByUser(currentUser, pageable);
+//
+//
+//        model.addAttribute("transactionsPage", transactionsPage);
+//
+//        return "viewUserProfileTemplate";
+//    }
 
 
 
