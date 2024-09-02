@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // For Test Environment
         registry.addEndpoint("/test/ws");
         // For Product Environment
-        registry.addEndpoint("prod/ws");
+        registry.addEndpoint("/prod/ws");
         // For Local Host
         registry.addEndpoint("/ws");
     }
