@@ -29,12 +29,12 @@ document.addEventListener("DOMContentLoaded", function() {
         // Determine the correct WebSocket URL based on the current environment
         let socketUrl;
         if (window.location.href.includes("/test/")) {
-            socketUrl = 'wss://csse-seng302-team600.canterbury.ac.nz/test/ws';
+            socketUrl = '/test/ws';
         } else if (window.location.href.includes("/prod/")) {
-            socketUrl = 'wss://csse-seng302-team600.canterbury.ac.nz/prod/ws';
+            socketUrl = '/prod/ws';
         } else {
             // Local Host (assuming localhost is being used for development)
-            socketUrl = 'ws://localhost:8080/ws';
+            socketUrl = '/ws';
         }
 
         //Create a WebSocket connection
