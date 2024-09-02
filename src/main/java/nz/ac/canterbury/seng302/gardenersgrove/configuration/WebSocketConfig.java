@@ -17,11 +17,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // For Test Environment
-        registry.addEndpoint("/test/ws");
+        registry.addEndpoint("/test/ws").setAllowedOrigins("*");
         // For Product Environment
-        registry.addEndpoint("/prod/ws");
+        registry.addEndpoint("/prod/ws").setAllowedOrigins("*");
         // For Local Host
-        registry.addEndpoint("/ws");
+        registry.addEndpoint("/ws").setAllowedOrigins("*");
     }
 
     /**
