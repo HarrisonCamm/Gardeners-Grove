@@ -26,8 +26,19 @@ document.addEventListener("DOMContentLoaded", function() {
     let stompClient = null;
 
     function connect() {
+        // Determine the correct WebSocket URL based on the current environment
+        let socketUrl;
+        if (window.location.href.includes("/test/")) {
+            socketUrl = '/test/ws';
+        } else if (window.location.href.includes("/prod/")) {
+            socketUrl = '/prod/ws';
+        } else {
+            // Local Host
+            socketUrl = '/ws';
+        }
+
         //Create a WebSocket connection
-        const socket = new WebSocket('/ws');
+        const socket = new WebSocket(socketUrl);
 
         //Create a Stomp client to send and receive messages
         stompClient = Stomp.over(socket);
