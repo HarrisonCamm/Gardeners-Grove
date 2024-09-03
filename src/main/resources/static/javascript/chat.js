@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function connect() {
         // Determine the correct WebSocket URL based on the current environment
-        // let socketUrl;
+        let socketUrl;
 
         // if (window.location.href.includes("/test/")) {
         //     socketUrl = '/test/ws';
@@ -39,7 +39,22 @@ document.addEventListener("DOMContentLoaded", function() {
         // }
 
         //Create a WebSocket connection
-        const socket = new WebSocket('/ws');
+        // const socket = new WebSocket('/ws');
+
+        if (window.location.href.includes("/test/")) {
+            socketUrl = 'https://csse-seng302-team600.canterbury.ac.nz/test/ws';
+        } else if (window.location.href.includes("/prod/")) {
+            socketUrl = 'https://csse-seng302-team600.canterbury.ac.nz/prod/ws';
+        } else {
+            // Local Host (assuming localhost is being used for development)
+            socketUrl = 'http://localhost:8080/ws';
+        }
+
+        // Create a WebSocket connection
+        // const socket = new WebSocket(socketUrl);
+
+        // Create a WebSocket connection
+        const socket = new WebSocket(socketUrl);
 
         //Create a Stomp client to send and receive messages
         stompClient = Stomp.over(socket);
