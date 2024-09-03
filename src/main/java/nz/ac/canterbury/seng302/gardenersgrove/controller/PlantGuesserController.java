@@ -30,7 +30,9 @@ public class PlantGuesserController {
 
     @Autowired
     private final PlantGuesserService plantGuesserService;
+    @Autowired
     private final UserService userService;
+    @Autowired
     private final UserRepository userRepository;
     private List<PlantData> plants;
     private int roundNumber = 0;
