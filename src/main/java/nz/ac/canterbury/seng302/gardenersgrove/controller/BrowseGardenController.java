@@ -47,31 +47,15 @@ public class BrowseGardenController {
         RedirectService.addEndpoint("/browse-gardens");
 
         if (page < 1) {
-            return "redirect:/browse-gardens?page=1";
-        }
-
-//        Page<Garden> gardenPage = gardenService.getPublicGardens(page - 1);
-        Page<Garden> gardenPage = gardenService.searchPublicGardens(query, page - 1);
-        model.addAttribute("gardenPage", gardenPage);
-        model.addAttribute("q", query);
-
-        return "browseGardensTemplate";
-    }
-
-    @PostMapping("/browse-gardens")
-    public String searchGardens(@RequestParam(value = "q", defaultValue = "") String query,
-                                @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-                                HttpSession session,
-                                Model model,
-                                HttpServletResponse response) {
-
-        logger.info("POST /browse-gardens");
-
-        if (page < 1) {
-            return "redirect:/browse-gardens?page=1";
+            return "redirect:/browse-gardens";
         }
 
         Page<Garden> gardenPage = gardenService.searchPublicGardens(query, page - 1);
+
+        if (gardenPage.getNumber() >= gardenPage.getTotalPages()) {
+            return "redirect:/browse-gardens";
+        }
+
         model.addAttribute("gardenPage", gardenPage);
         model.addAttribute("q", query);
 

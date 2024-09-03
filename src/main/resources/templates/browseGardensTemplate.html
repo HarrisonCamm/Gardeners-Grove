@@ -10,39 +10,37 @@
 
         <div class="wrapper">
             <div class="search-container">
-                <form th:action="@{/browse-gardens}" method="post" novalidate>
+                <form th:action="@{/browse-gardens}" method="get" novalidate>
                     <div class="search-div">
-                        <label for="search"></label>
-                        <input th:name="q"
-                               th:value="${q}"
-                               class="search-field"
-                               id="search"
-                               type="text"
-                               placeholder="Browse public gardens">
+                        <label>
+                            <input th:name="q"
+                                   th:value="${q}"
+                                   type="search"
+                                   placeholder="Browse public gardens">
+                        </label>
                         &nbsp;&nbsp;&nbsp;
                         <div class="search-button">
-                            <button type="submit" onclick="searchAndShowResults()">Search</button>
+                            <button type="submit" class="btn btn-primary button">Search</button>
                         </div>
                     </div>
+                </form>
 
-                    <div>
-                        <ul>
-                            <li th:each="garden : ${gardenPage.content}">
-                                <div class="friend-form">
-                                    <div class="align-left">
-                                        <a th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
-                                            <h3 th:text="${garden.name}"></h3>
-                                        </a>
-
-                                    </div>
-                                    <div class="empty-space"></div>
+                <div>
+                    <ul>
+                        <li th:each="garden : ${gardenPage.content}">
+                            <div class="friend-form">
+                                <div class="align-left">
+                                    <a th:href="@{'/view-garden?gardenID=' + ${garden.id}}">
+                                        <h3 th:text="${garden.name}"></h3>
+                                    </a>
 
                                 </div>
-                            </li>
-                        </ul>
-                    </div>
+                                <div class="empty-space"></div>
 
-                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -54,8 +52,19 @@
                 <li class="page-item" th:classappend="${!gardenPage.hasPrevious() ? 'disabled' : ''}" disabled>
                     <a class="page-link" th:href="@{'/browse-gardens?page=' + ${gardenPage.number + 0} + '&q=' + ${q}}">Previous</a>
                 </li>
-                <li class="page-item active">
-                    <span class="page-link" th:text="${gardenPage.number + 1}"></span>
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(-1, 3)}"
+                    th:classappend="${i == 1} ? 'active' : ''"
+                    th:if="${gardenPage.number + i >= 1 && gardenPage.number + i <= gardenPage.totalPages}">
+                    <a th:if="${i != 1}"
+                       th:class="page-link"
+                       th:text="${gardenPage.number + i}"
+                       th:href="@{'/browse-gardens?page=' + ${gardenPage.number + i} + '&q=' + ${q}}">
+                    </a>
+                    <span th:if="${i == 1}"
+                          th:class="page-link"
+                          th:text="${gardenPage.number + 1}">
+                    </span>
                 </li>
                 <li class="page-item" th:classappend="${!gardenPage.hasNext() ? 'disabled' : ''}">
                     <a class="page-link" th:href="@{'/browse-gardens?page=' + ${gardenPage.number + 2} + '&q=' + ${q}}">Next</a>
