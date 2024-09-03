@@ -36,7 +36,7 @@ body {
     background-color: #72543C;
     cursor: pointer;
 }
-.quiz-option-button {
+.quiz-option-button, .quiz-option-button.correct {
     height: 120px;
     width: 300px;
     border-radius: 5px;
@@ -49,9 +49,21 @@ body {
 
 }
 
-.quiz-option-button:hover {
+.quiz-option-button:hover, .quiz-option-button.correct:hover {
     background-color: #574536;
     cursor: pointer;
+}
+.quiz-option-button:disabled, .quiz-option-button.correct:disabled {
+    background-color: #72543C;
+    cursor: default;
+}
+
+.quiz-option-button.clicked {
+    background-color: darkred;
+}
+
+.quiz-option-button.correct.clicked {
+    background-color: #4CAF50;
 }
 
 .logout-button {

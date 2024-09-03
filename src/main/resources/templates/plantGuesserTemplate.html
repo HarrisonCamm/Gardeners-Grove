@@ -8,6 +8,7 @@
     <!-- Navbar styling -->
     <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
     <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+    <script th:src="@{javascript/plant-guesser-game.js}"></script>
 </head>
 <body>
 <!-- Navigation Bar Fragment -->
@@ -29,21 +30,35 @@
         <br/>
     </div>
     <div class="centre">
-        <div>
-            <h2>What plant is this?</h2>
-            <br/>
-        </div>
-        <div class="content p-2">
-            <button class="quiz-option-button" th:text="${quizOptions[0][0]} + ${quizOptions[0][1]}"> </button>
-            <div class="pe-4"></div>
-            <button class="quiz-option-button" th:text="${quizOptions[1][0]} + ${quizOptions[1][1]}"> </button>
-        </div>
-       <div class="content p-2">
-           <button class="quiz-option-button" th:text="${quizOptions[2][0]} + ${quizOptions[2][1]}"> </button>
-           <div class="pe-4"></div>
-           <button class="quiz-option-button" th:text="${quizOptions[3][0]} + ${quizOptions[3][1]}"> </button>
-       </div>
-        <label th:text="'Plant ' + ${roundNumber} + '/10'"></label>
+<!--        <form>-->
+            <div>
+                <h2>What plant is this?</h2>
+                <br/>
+            </div>
+            <div class="content p-2">
+                <button id = "option1" class="quiz-option-button"
+                        th:classappend="${0 == correctOption} ? ' correct'"
+                        th:text="${quizOptions[0][0]} + ${quizOptions[0][1]}"
+                        onclick="optionClicked(this)"> </button>
+                <div class="pe-4"></div>
+                <button id = "option2" class="quiz-option-button"
+                        th:classappend="${1 == correctOption} ? ' correct'"
+                        th:text="${quizOptions[1][0]} + ${quizOptions[1][1]}"
+                        onclick="optionClicked(this)"> </button>
+            </div>
+            <div class="content p-2">
+                <button id = "option3" class="quiz-option-button"
+                        th:classappend="${2 == correctOption} ? ' correct'"
+                        th:text="${quizOptions[2][0]} + ${quizOptions[2][1]}"
+                        onclick="optionClicked(this)"> </button>
+                <div class="pe-4"></div>
+                <button id = "option4" class="quiz-option-button"
+                        th:classappend="${3 == correctOption} ? ' correct'"
+                        th:text="${quizOptions[3][0]} + ${quizOptions[3][1]}"
+                        onclick="optionClicked(this)"> </button>
+            </div>
+            <label th:text="'Plant ' + ${roundNumber} + '/10'"></label>
+<!--        </form>-->
     </div>
 </div>
 </body>

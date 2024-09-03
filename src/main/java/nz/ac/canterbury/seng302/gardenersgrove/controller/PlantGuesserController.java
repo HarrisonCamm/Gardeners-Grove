@@ -45,7 +45,33 @@ public class PlantGuesserController {
     }
 
     public void createPlantGameRound(Model model) {
-        PlantData plant = plantGuesserService.getPlant();
+        List<PlantData> plants = plantGuesserService.getPlant();
+        logger.info(plants.get(0).common_name);
+        logger.info(plants.get(0).family);
+        logger.info(plants.get(1).common_name);
+        logger.info(plants.get(1).family);
+        logger.info(plants.get(2).common_name);
+        logger.info(plants.get(2).family);
+        logger.info(plants.get(3).common_name);
+        logger.info(plants.get(3).family);
+        logger.info(plants.get(4).common_name);
+        logger.info(plants.get(4).family);
+        logger.info(plants.get(5).common_name);
+        logger.info(plants.get(5).family);
+        logger.info(plants.get(6).common_name);
+        logger.info(plants.get(6).family);
+        logger.info(plants.get(7).common_name);
+        logger.info(plants.get(7).family);
+        logger.info(plants.get(8).common_name);
+        logger.info(plants.get(8).family);
+        logger.info(plants.get(9).common_name);
+        logger.info(plants.get(9).family);
+
+
+        playGameRound(model, plants.get(0));
+    }
+
+    public void playGameRound(Model model, PlantData plant) {
         String plantName = plant.common_name;
         String plantScientificName = plant.scientific_name;
         String plantImage = plant.image_url;
@@ -62,12 +88,19 @@ public class PlantGuesserController {
             String[] options = option.split(",");
             splitQuizOptions.add(options);
         }
+        int correctOption = 0;
+        for (int i = 0; i < 4; i++) {
+            if (splitQuizOptions.get(i)[1].contains(plant.scientific_name)) {
+                correctOption = i;
+            }
+        }
         model.addAttribute("plantFamily", familyCommonName == null ? plantFamily : familyCommonName);
         model.addAttribute("quizOptions", splitQuizOptions);
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit + " via Trefle");
         model.addAttribute("roundNumber", 1);
-//        TODO change this number to be for each round, not to be done in this task
+        model.addAttribute("correctOption", correctOption);
 
+//        TODO change this number to be for each round, not to be done in this task
     }
 }

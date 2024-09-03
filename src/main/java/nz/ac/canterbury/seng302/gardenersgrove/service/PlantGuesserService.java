@@ -49,10 +49,10 @@ public class PlantGuesserService {
         return getPlantPage(num).getPlantGuesserList();
         
     }
-    public PlantData getPlant() {
+    public List<PlantData> getPlant() {
         List<PlantData> plantList= new ArrayList<>(Arrays.stream(getPlants()).toList());
         Collections.shuffle(plantList);
-        return plantList.get(0);
+        return plantList.subList(0, Math.min(10, plantList.size()));
     }
 
     public PlantData[] getFamilyPlants(String family, String plantName) {
