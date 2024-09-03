@@ -28,14 +28,16 @@ document.addEventListener("DOMContentLoaded", function() {
     function connect() {
         // Determine the correct WebSocket URL based on the current environment
         let socketUrl;
-        if (window.location.href.includes("/test/")) {
-            socketUrl = '/test/ws';
-        } else if (window.location.href.includes("/prod/")) {
-            socketUrl = '/prod/ws';
-        } else {
-            // Local Host (assuming localhost is being used for development)
-            socketUrl = '/ws';
-        }
+
+        socketUrl = '/ws'
+        // if (window.location.href.includes("/test/")) {
+        //     socketUrl = '/test/ws';
+        // } else if (window.location.href.includes("/prod/")) {
+        //     socketUrl = '/prod/ws';
+        // } else {
+        //     // Local Host (assuming localhost is being used for development)
+        //     socketUrl = '/ws';
+        // }
 
         //Create a WebSocket connection
         const socket = new WebSocket(socketUrl);
