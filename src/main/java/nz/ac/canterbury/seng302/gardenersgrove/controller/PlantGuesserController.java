@@ -107,6 +107,8 @@ public class PlantGuesserController {
             model.addAttribute("gameOver", true);
             currentUser.setBloomBalance(currentBloomBalance + 100 + (this.score*10));
             userRepository.save(currentUser);
+            this.roundNumber = 0;
+            this.score = 0;
         }
 
         return "plantGuesserTemplate";
