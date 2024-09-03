@@ -27,9 +27,12 @@ public class PlantGuesserController {
 
     @Autowired
     private final PlantGuesserService plantGuesserService;
+    private List<PlantData> plants;
+    private int roundNumber = 0;
 
-    public PlantGuesserController(PlantGuesserService plantGuesserService) {
+    public PlantGuesserController(PlantGuesserService plantGuesserService, List<PlantData> plants) {
         this.plantGuesserService = plantGuesserService;
+        this.plants = plantGuesserService.getPlant();
     }
 
     /**
@@ -41,8 +44,7 @@ public class PlantGuesserController {
         logger.info("GET /plant-guesser");
         RedirectService.addEndpoint("/plant-guesser");
 
-        createPlantGameRound(model);
-
+        playGameRound(model, plants.get(roundNumber));
         return "plantGuesserTemplate";
     }
 
@@ -78,37 +80,12 @@ public class PlantGuesserController {
         model.addAttribute("answerSubmitted", true);
 
         if (selectedOption != correctOption) {
-            model.addAttribute("incorrectAnswer", "The selected answer is incorrect");
+            model.addAttribute("incorrectAnswer", "Wrong answer! The correct answer was: " + splitQuizOptions.get(correctOption)[0]);
+        } else {
+            model.addAttribute("correctAnswer", "You got it correct! +10 Blooms");
         }
-
+        this.roundNumber += 1;
         return "plantGuesserTemplate";
-    }
-
-    public void createPlantGameRound(Model model) {
-        List<PlantData> plants = plantGuesserService.getPlant();
-//        logger.info(plants.get(0).common_name);
-//        logger.info(plants.get(0).family);
-//        logger.info(plants.get(1).common_name);
-//        logger.info(plants.get(1).family);
-//        logger.info(plants.get(2).common_name);
-//        logger.info(plants.get(2).family);
-//        logger.info(plants.get(3).common_name);
-//        logger.info(plants.get(3).family);
-//        logger.info(plants.get(4).common_name);
-//        logger.info(plants.get(4).family);
-//        logger.info(plants.get(5).common_name);
-//        logger.info(plants.get(5).family);
-//        logger.info(plants.get(6).common_name);
-//        logger.info(plants.get(6).family);
-//        logger.info(plants.get(7).common_name);
-//        logger.info(plants.get(7).family);
-//        logger.info(plants.get(8).common_name);
-//        logger.info(plants.get(8).family);
-//        logger.info(plants.get(9).common_name);
-//        logger.info(plants.get(9).family);
-
-
-        playGameRound(model, plants.get(0));
     }
 
     public void playGameRound(Model model, PlantData plant) {
@@ -139,7 +116,7 @@ public class PlantGuesserController {
         model.addAttribute("quizOptions", splitQuizOptions);
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit + " via Trefle");
-        model.addAttribute("roundNumber", 1);
+        model.addAttribute("roundNumber", this.roundNumber + 1);
         model.addAttribute("correctOption", correctOption);
         model.addAttribute("selectedOption", -1);
         model.addAttribute("answerSubmitted", false);

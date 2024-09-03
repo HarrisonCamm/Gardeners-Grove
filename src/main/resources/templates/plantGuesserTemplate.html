@@ -33,7 +33,8 @@
             <div>
                 <h2>What plant is this?</h2>
                 <br/>
-                <div th:if="${incorrectAnswer}" class="error-message" th:text="${incorrectAnswer}"></div>
+                <div th:if="${incorrectAnswer}" class="ps-2 text-danger" th:text="${incorrectAnswer}"></div>
+                <div th:if="${correctAnswer}" class="ps-2 text-success" th:text="${correctAnswer}"></div>
             </div>
             <input type="hidden" name="plantFamily" th:value="${plantFamily}"/>
             <input type="hidden" name="quizOption1" th:value="${quizOptions[0][0]} + ',' + ${quizOptions[0][1]}"/>
@@ -75,7 +76,7 @@
                         th:text="${quizOptions[3][0]} + ${quizOptions[3][1]}"> </button>
             </div>
         </form>
-        <form th:hidden="${!answerSubmitted}">
+        <form th:hidden="${!answerSubmitted}" th:action="@{/plant-guesser}" method="get">
             <div>
                 <button type="submit" class="button">Next Question</button>
             </div>
