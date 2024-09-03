@@ -65,6 +65,31 @@ public class BloomTransactionSteps {
 
     }
 
+    @Given("I am logged into the system")
+    public void i_am_logged_into_the_system() {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+    @When("I navigate to my profile page")
+    public void i_navigate_to_my_profile_page() {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+    @Then("I can see my current Bloom balance displayed prominently")
+    public void i_can_see_my_current_bloom_balance_displayed_prominently() {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+    @Then("I can see a detailed transaction history for the Bloom currency")
+    public void i_can_see_a_detailed_transaction_history_for_the_bloom_currency() {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+    @Then("the transaction history should be paginated or scrollable if it exceeds a certain number of entries")
+    public void the_transaction_history_should_be_paginated_or_scrollable_if_it_exceeds_a_certain_number_of_entries() {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
 
 
 }

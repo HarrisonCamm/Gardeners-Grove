@@ -51,25 +51,26 @@
         </div>
 
         <div class="transactions-display">
-            <h2>Transactions</h2>
+            <h2 th:class="text-start">Transactions</h2>
             <p th:text="${page}"></p>
             <table class="table table-striped table-bordered table-hover">
                 <thead class="thead-dark">
                 <tr>
                     <th>Date</th>
-                    <th>Sender</th>
                     <th>Amount</th>
+                    <th>Sender</th>
+                    <th>Description</th>
                     <th>Type</th>
-                    <th>Notes</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="transaction : ${transactions}">
                     <td th:text="${#dates.format(transaction.transactionDate, 'dd-MM-yyyy')}"></td>
+                    <td th:class="${transaction.sender != null && user.userId == transaction.sender.userId} ? 'text-danger' : 'text-success'"
+                        th:text="${transaction.sender != null && user.userId == transaction.sender.userId} ? '-' + ${transaction.amount} : '+' + ${transaction.amount}"></td>
                     <td th:text="${transaction.sender != null ? transaction.sender.getFirstName() : 'Unknown Sender'}"></td>
-                    <td th:text="${transaction.amount}"></td>
-                    <td th:text="${transaction.transactionType}"></td>
                     <td th:text="${transaction.notes}"></td>
+                    <td th:text="${transaction.transactionType}"></td>
                 </tr>
                 </tbody>
             </table>
