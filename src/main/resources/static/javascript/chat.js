@@ -27,9 +27,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function connect() {
         // Determine the correct WebSocket URL based on the current environment
-        let socketUrl;
+        // let socketUrl;
 
-        socketUrl = '/ws'
         // if (window.location.href.includes("/test/")) {
         //     socketUrl = '/test/ws';
         // } else if (window.location.href.includes("/prod/")) {
@@ -40,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // }
 
         //Create a WebSocket connection
-        const socket = new WebSocket(socketUrl);
+        const socket = new WebSocket('/ws');
 
         //Create a Stomp client to send and receive messages
         stompClient = Stomp.over(socket);
