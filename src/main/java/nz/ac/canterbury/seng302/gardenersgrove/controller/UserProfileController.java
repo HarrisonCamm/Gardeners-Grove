@@ -29,6 +29,7 @@ import java.util.Optional;
 @Controller
 public class UserProfileController {
 
+    private static final Integer PAGE_SIZE = 10;
     Logger logger = LoggerFactory.getLogger(UserProfileController.class);
 
     @Autowired
@@ -53,13 +54,12 @@ public class UserProfileController {
      * @param model The model
      */
     @GetMapping("/view-user-profile")
-    public String getTemplate( @RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size,
+    public String getTemplate( @RequestParam(defaultValue = "0") Integer page,
                                HttpSession session, Model model) {
         RedirectService.addEndpoint("/view-user-profile");
         User currentUser = userService.getAuthenticatedUser();
 
-        Page<Transaction> transactionsPage = userService.findTransactionsByUser(currentUser, page, size);
+        Page<Transaction> transactionsPage = userService.findTransactionsByUser(currentUser, page, PAGE_SIZE);
 
         logger.info("User retrieved from session: " + currentUser);
 
@@ -84,27 +84,6 @@ public class UserProfileController {
             return "redirect:/sign-in-form";
         }
     }
-
-
-//    @GetMapping("/transactions")
-//    public String getTransactions(
-//            @PageableDefault(size = 10) Pageable pageable,
-//            Model model) {
-//
-//        User currentUser = userService.getAuthenticatedUser();
-//
-//        logger.info("Pageable User retrieved from session: " + currentUser);
-//
-//        Page<Transaction> transactionsPage = transactionService.findTransactionsByUser(currentUser, pageable);
-//
-//
-//        model.addAttribute("transactionsPage", transactionsPage);
-//
-//        return "viewUserProfileTemplate";
-//    }
-
-
-
 
 
 
