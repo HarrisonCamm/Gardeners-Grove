@@ -20,8 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper; // Weather service one
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @Suite
@@ -119,6 +118,8 @@ public class RunCucumberTest {
         // Moderation Service API mocks
         // Mock successful moderation
         when(moderationService.moderateText(anyString())).thenReturn("null");
+        when(moderationService.moderateText(null)).thenReturn("null");
+        when(moderationService.isContentAppropriate(null)).thenReturn(true);
 
         when(moderationService.moderateText(eq("NotEvaluated"))).thenReturn("evaluation_error");
 

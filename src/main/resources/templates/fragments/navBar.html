@@ -9,6 +9,18 @@
                 <li><a class="navLink" th:href="@{create-garden}">Create New Garden</a></li>
                 <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
                 <li><a class="navLink" th:href="@{manage-friends}">Manage Friends</a></li>
+                <li><a class="navLink" th:href="@{messages}">Messages</a></li>
+                <li><a class="navLink" th:href="@{daily-spin}">Daily Spin</a></li>
+            </div>
+
+            <!--            Displays user's Bloom currency -->
+            <div class="balanceDisplay">
+                <div class="svg">
+                    <div class="svg-fragment" th:replace="~{fragments/iconFragment.html :: iconFragment}"></div>
+                </div>
+                <!-- Include the SVG Icon-->
+                <!-- bloomBalance is from the global controller. -->
+                <span class="navBar-bloom-display" th:text="${bloomBalance}"></span>
             </div>
             <!-- Logout form button -->
             <li class="navBar-logout">
