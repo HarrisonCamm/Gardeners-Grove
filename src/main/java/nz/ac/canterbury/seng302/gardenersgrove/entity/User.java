@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -11,9 +12,13 @@ import java.util.List;
  * User class that contains all the values a user should have
  */
 
+
+
 @Entity
 @Table(name = "USERS") //revise later, ask tutor about style
 public class User {
+
+    public static final Integer DEFAULT_BALANCE = 500;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //research how this works
@@ -35,6 +40,9 @@ public class User {
 
     @Column(name = "dateOfBirth")
     private String dateOfBirth;
+
+    @Column(name = "bloomBalance", nullable = false, columnDefinition = "integer default 500")
+    private Integer bloomBalance = DEFAULT_BALANCE;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -75,6 +83,7 @@ public class User {
     public User(Long id, String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth) {
         this.userId = id;
         this.password = password;
+        this.bloomBalance = DEFAULT_BALANCE;
         this.setValues(firstName, lastName, noLastName, email, dateOfBirth);
     }
 
@@ -86,6 +95,7 @@ public class User {
         this.password = password;
         this.dateOfBirth = dateOfBirth;
         this.image = image;
+        this.bloomBalance = DEFAULT_BALANCE;
     }
 
     public User setValues(String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
@@ -94,6 +104,7 @@ public class User {
         this.noLastName = noLastName;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
+        this.bloomBalance = DEFAULT_BALANCE;
         return this;
     }
 
@@ -164,6 +175,10 @@ public class User {
     public String getDateOfBirth() {
         return dateOfBirth;
     }
+
+    public Integer getBloomBalance() { return bloomBalance; }
+
+    public void setBloomBalance(Integer bloomBalance) { this.bloomBalance = bloomBalance; }
 
     public String setPassword(String newPassword) {
         return this.password = newPassword;

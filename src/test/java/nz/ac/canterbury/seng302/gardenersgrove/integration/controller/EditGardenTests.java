@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.controller.AutocompleteController;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.CreateGardenController;
+import nz.ac.canterbury.seng302.gardenersgrove.controller.MessagesController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -95,6 +96,9 @@ public class EditGardenTests {
 
     @MockBean
     private PlantGuesserService plantGuesserService;
+
+    @MockBean
+    private MessagesController messagesController;
 
     private User mockUser;
 
