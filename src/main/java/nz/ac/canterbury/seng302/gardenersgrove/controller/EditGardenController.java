@@ -115,8 +115,6 @@ public class EditGardenController {
 
         List<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize, gardenDescription);
 
-        model.addAttribute("gardenID", gardenID);
-        model.addAttribute("garden", currentGarden);
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         addAttributes(model, currentGarden, gardenID, gardenName, gardenLocation, gardenSize, gardenDescription);
 
@@ -203,7 +201,7 @@ public class EditGardenController {
     }
 
 
-    public void addAttributes(Model model, Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
+    private void addAttributes(Model model, Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
         model.addAttribute("id", gardenID);
         model.addAttribute("name", gardenName);
         model.addAttribute("description", gardenDescription);
