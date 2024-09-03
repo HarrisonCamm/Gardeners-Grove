@@ -52,10 +52,12 @@ public class BrowseGardenController {
 
         Page<Garden> gardenPage = gardenService.searchPublicGardens(query, page - 1);
 
-        if (gardenPage.getNumber() >= gardenPage.getTotalPages()) {
+        if (gardenPage.getTotalElements() == 0) {
+            model.addAttribute("noResults", "No gardens match your search");
+        } else if (gardenPage.getNumber() >= gardenPage.getTotalPages()) {
+            // If the page number is too high, redirect to the first page
             return "redirect:/browse-gardens";
         }
-
         model.addAttribute("gardenPage", gardenPage);
         model.addAttribute("q", query);
 
