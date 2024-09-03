@@ -113,14 +113,27 @@ public class PlantGuesserController {
     }
 
     public void playGameRound(Model model, PlantData plant) {
-        String plantName = plant.common_name;
-        String plantScientificName = plant.scientific_name;
-        String plantImage = plant.image_url;
-        String imageCredit = (plantImage.split("//")[1]).split("/")[0];
-        String plantFamily = plant.family;
-        String familyCommonName = plant.family_common_name;
-        String plantCommonAndScientificName = plantName + ",\n(" + plantScientificName + ")";
-        List<String> quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
+        String plantName = null;
+        String plantScientificName;
+        String plantImage = null;
+        String imageCredit = null;
+        String plantFamily = null;
+        String familyCommonName = null;
+        String plantCommonAndScientificName;
+        List<String> quizOptions = null;
+        int listSize = 0;
+
+        while (listSize != 4) {
+            plantName = plant.common_name;
+            plantScientificName = plant.scientific_name;
+            plantImage = plant.image_url;
+            imageCredit = (plantImage.split("//")[1]).split("/")[0];
+            plantFamily = plant.family;
+            familyCommonName = plant.family_common_name;
+            plantCommonAndScientificName = plantName + ",\n(" + plantScientificName + ")";
+            quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
+            listSize = quizOptions.size();
+        }
 
         Collections.shuffle(quizOptions);
 
