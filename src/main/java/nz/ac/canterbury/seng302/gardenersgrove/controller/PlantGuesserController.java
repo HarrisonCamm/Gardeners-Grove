@@ -34,14 +34,14 @@ public class PlantGuesserController {
     private final UserService userService;
     @Autowired
     private final UserRepository userRepository;
-//    @Autowired
-//    private List<PlantData> plants;
-    private int roundNumber = 0;
-    private int score = 0;
+
+    public List<PlantData> plants;
+    public int roundNumber = 0;
+    public int score = 0;
 
     public PlantGuesserController(PlantGuesserService plantGuesserService, UserService userService, UserRepository userRepository) {
         this.plantGuesserService = plantGuesserService;
-//        this.plants = plantGuesserService.getPlant();
+        this.plants = plantGuesserService.getPlant();
         this.userService = userService;
         this.userRepository = userRepository;
     }
@@ -54,7 +54,7 @@ public class PlantGuesserController {
                               Model model) {
         logger.info("GET /plant-guesser");
         RedirectService.addEndpoint("/plant-guesser");
-        List<PlantData> plants = plantGuesserService.getPlant();
+
         playGameRound(model, plants.get(roundNumber));
         return "plantGuesserTemplate";
     }
