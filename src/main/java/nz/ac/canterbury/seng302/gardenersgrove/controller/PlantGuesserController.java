@@ -53,6 +53,7 @@ public class PlantGuesserController {
         RedirectService.addEndpoint("/plant-guesser");
         PlantData plant = plantGuesserService.getPlant();
         playGameRound(model, plant);
+
         return "plantGuesserTemplate";
     }
 
@@ -103,14 +104,14 @@ public class PlantGuesserController {
             model.addAttribute("answerSubmitted", true);
             model.addAttribute("gameOver", false);
         } else {
-            model.addAttribute("answerSubmitted", false);
-            model.addAttribute("gameOver", true);
             currentUser.setBloomBalance(currentBloomBalance + 100 + (this.score*10));
             userRepository.save(currentUser);
+            model.addAttribute("bloomBalance", currentUser.getBloomBalance());
+            model.addAttribute("answerSubmitted", false);
+            model.addAttribute("gameOver", true);
             this.roundNumber = 0;
             this.score = 0;
         }
-
         return "plantGuesserTemplate";
     }
 
