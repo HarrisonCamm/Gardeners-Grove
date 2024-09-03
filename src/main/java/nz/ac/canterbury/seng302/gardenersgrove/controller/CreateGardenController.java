@@ -3,10 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,12 +37,15 @@ public class CreateGardenController {
     private final GardenService gardenService;
     private final LocationService locationService;
     private final UserService userService;
+    private final ModerationService moderationService;
 
     @Autowired
-    public CreateGardenController(GardenService gardenService, LocationService locationService, UserService userService) {
+    public CreateGardenController(GardenService gardenService, LocationService locationService,
+                                  UserService userService, ModerationService moderationService) {
         this.gardenService = gardenService;
         this.locationService = locationService;
         this.userService = userService;
+        this.moderationService = moderationService;
     }
 
     /**
@@ -65,7 +65,7 @@ public class CreateGardenController {
 
         String gardenName = garden.getName();
         String gardenSize = garden.getSize();
-        addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize);
+        addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize, garden.getDescription());
 
         return "createGardenFormTemplate";
     }
@@ -90,6 +90,7 @@ public class CreateGardenController {
                             @RequestParam(name="location.city") String city,
                             @RequestParam(name="location.postcode", required = false) String postcode,
                             @RequestParam(name="location.country") String country,
+                            @RequestParam(name="description", required = false) String gardenDescription,
                             @RequestParam(name="size", required = false) String gardenSize,
                              Model model) {
         logger.info("POST /create-garden");
@@ -99,13 +100,17 @@ public class CreateGardenController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in");
         }
         Location gardenLocation = new Location(streetAddress, suburb, city, postcode, country);
-        Garden garden = new Garden(gardenName, gardenLocation, gardenSize);
-        garden.setOwner(currentUser);
+        Garden garden = new Garden(gardenName, gardenLocation, gardenSize, currentUser, gardenDescription);
 
         // Perform validation, get back all errors
-        ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize);
+        List<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize, gardenDescription);
 
-        addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize);
+        addAttributes(model, currentUser.getUserId(), gardenName, gardenLocation, gardenSize, gardenDescription);
+
+        boolean isAppropriate = moderationService.isContentAppropriate(gardenDescription);
+        if (!isAppropriate) {
+            errors.add(new FieldError("garden", "description", "The description does not match the language standards of the app"));
+        }
 
         if (!errors.isEmpty()) {
             // If there are validation errors, return to the form page
@@ -128,13 +133,18 @@ public class CreateGardenController {
      * @param gardenLocation Garden location
      * @param gardenSize     Garden size
      */
-    public ArrayList<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize) {
+    private List<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
 
         // List for all the errors
         ArrayList<FieldError> errors = new ArrayList<>();
 
         // Validates Garden Name
         FieldError nameError = validateGardenName(gardenName);
+
+        FieldError descriptionError = validateGardenDescription(gardenDescription);
+        if (descriptionError != null) {
+            errors.add(descriptionError);
+        }
 
         // Check for name error and display
         if (nameError != null) {
@@ -193,11 +203,12 @@ public class CreateGardenController {
      * @param gardenLocation garden location object
      * @param gardenSize garden size
      */
-    public void addAttributes(Model model, Long userId, String gardenName, Location gardenLocation, String gardenSize) {
+    public void addAttributes(Model model, Long userId, String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
 
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
 
         model.addAttribute("name", gardenName);
+        model.addAttribute("description", gardenDescription);
 
         model.addAttribute("location.streetAddress", gardenLocation.getStreetAddress());
         model.addAttribute("location.suburb", gardenLocation.getSuburb());
