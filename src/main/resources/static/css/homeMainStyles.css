@@ -53,17 +53,19 @@ body {
     background-color: #574536;
     cursor: pointer;
 }
-.quiz-option-button:disabled, .quiz-option-button.correct:disabled {
-    background-color: #72543C;
+.quiz-option-button:hover:disabled, .quiz-option-button.correct:hover:disabled {
+    background-color: #72543C;;
     cursor: default;
 }
 
-.quiz-option-button.clicked {
+.quiz-option-button.clicked, .quiz-option-button.clicked:hover {
     background-color: darkred;
+    cursor: default;
 }
 
-.quiz-option-button.correct.clicked {
+.quiz-option-button.clicked.correct, .quiz-option-button.clicked.correct:hover {
     background-color: #4CAF50;
+    cursor: default;
 }
 
 .logout-button {

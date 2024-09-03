@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
 
@@ -44,28 +46,66 @@ public class PlantGuesserController {
         return "plantGuesserTemplate";
     }
 
+    @PostMapping("/plant-guesser")
+    public String postTemplate(@RequestParam("selectedOption") int selectedOption,
+                               @RequestParam("plantFamily") String plantFamily,
+                               @RequestParam("quizOption1") String quizOption1,
+                               @RequestParam("quizOption2") String quizOption2,
+                               @RequestParam("quizOption3") String quizOption3,
+                               @RequestParam("quizOption4") String quizOption4,
+                               @RequestParam("plantImage") String plantImage,
+                               @RequestParam("imageCredit") String imageCredit,
+                               @RequestParam("roundNumber") int roundNumber,
+                               @RequestParam("correctOption") int correctOption,
+                               HttpServletRequest request,
+                              Model model) {
+        logger.info("POST /plant-guesser");
+        RedirectService.addEndpoint("/plant-guesser");
+        String[] quizOptions = {quizOption1, quizOption2, quizOption3, quizOption4};
+        List<String[]> splitQuizOptions = new ArrayList<>();
+        for (String option: quizOptions) {
+            String[] options = option.split(",");
+            splitQuizOptions.add(options);
+        }
+
+        model.addAttribute("plantFamily", plantFamily);
+        model.addAttribute("quizOptions", splitQuizOptions);
+        model.addAttribute("plantImage", plantImage);
+        model.addAttribute("imageCredit", imageCredit);
+        model.addAttribute("roundNumber", roundNumber);
+        model.addAttribute("correctOption", correctOption);
+        model.addAttribute("selectedOption", selectedOption);
+        model.addAttribute("answerSubmitted", true);
+
+        if (selectedOption != correctOption) {
+            model.addAttribute("incorrectAnswer", "The selected answer is incorrect");
+        }
+
+        return "plantGuesserTemplate";
+    }
+
     public void createPlantGameRound(Model model) {
         List<PlantData> plants = plantGuesserService.getPlant();
-        logger.info(plants.get(0).common_name);
-        logger.info(plants.get(0).family);
-        logger.info(plants.get(1).common_name);
-        logger.info(plants.get(1).family);
-        logger.info(plants.get(2).common_name);
-        logger.info(plants.get(2).family);
-        logger.info(plants.get(3).common_name);
-        logger.info(plants.get(3).family);
-        logger.info(plants.get(4).common_name);
-        logger.info(plants.get(4).family);
-        logger.info(plants.get(5).common_name);
-        logger.info(plants.get(5).family);
-        logger.info(plants.get(6).common_name);
-        logger.info(plants.get(6).family);
-        logger.info(plants.get(7).common_name);
-        logger.info(plants.get(7).family);
-        logger.info(plants.get(8).common_name);
-        logger.info(plants.get(8).family);
-        logger.info(plants.get(9).common_name);
-        logger.info(plants.get(9).family);
+//        logger.info(plants.get(0).common_name);
+//        logger.info(plants.get(0).family);
+//        logger.info(plants.get(1).common_name);
+//        logger.info(plants.get(1).family);
+//        logger.info(plants.get(2).common_name);
+//        logger.info(plants.get(2).family);
+//        logger.info(plants.get(3).common_name);
+//        logger.info(plants.get(3).family);
+//        logger.info(plants.get(4).common_name);
+//        logger.info(plants.get(4).family);
+//        logger.info(plants.get(5).common_name);
+//        logger.info(plants.get(5).family);
+//        logger.info(plants.get(6).common_name);
+//        logger.info(plants.get(6).family);
+//        logger.info(plants.get(7).common_name);
+//        logger.info(plants.get(7).family);
+//        logger.info(plants.get(8).common_name);
+//        logger.info(plants.get(8).family);
+//        logger.info(plants.get(9).common_name);
+//        logger.info(plants.get(9).family);
 
 
         playGameRound(model, plants.get(0));
@@ -94,12 +134,15 @@ public class PlantGuesserController {
                 correctOption = i;
             }
         }
+
         model.addAttribute("plantFamily", familyCommonName == null ? plantFamily : familyCommonName);
         model.addAttribute("quizOptions", splitQuizOptions);
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit + " via Trefle");
         model.addAttribute("roundNumber", 1);
         model.addAttribute("correctOption", correctOption);
+        model.addAttribute("selectedOption", -1);
+        model.addAttribute("answerSubmitted", false);
 
 //        TODO change this number to be for each round, not to be done in this task
     }

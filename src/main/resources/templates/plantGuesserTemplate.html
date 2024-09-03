@@ -8,7 +8,6 @@
     <!-- Navbar styling -->
     <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
     <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
-    <script th:src="@{javascript/plant-guesser-game.js}"></script>
 </head>
 <body>
 <!-- Navigation Bar Fragment -->
@@ -30,35 +29,58 @@
         <br/>
     </div>
     <div class="centre">
-<!--        <form>-->
+        <form th:action="@{/plant-guesser}" method="post" novalidate>
             <div>
                 <h2>What plant is this?</h2>
                 <br/>
+                <div th:if="${incorrectAnswer}" class="error-message" th:text="${incorrectAnswer}"></div>
             </div>
+            <input type="hidden" name="plantFamily" th:value="${plantFamily}"/>
+            <input type="hidden" name="quizOption1" th:value="${quizOptions[0][0]} + ',' + ${quizOptions[0][1]}"/>
+            <input type="hidden" name="quizOption2" th:value="${quizOptions[1][0]} + ',' + ${quizOptions[1][1]}"/>
+            <input type="hidden" name="quizOption3" th:value="${quizOptions[2][0]} + ',' + ${quizOptions[2][1]}"/>
+            <input type="hidden" name="quizOption4" th:value="${quizOptions[3][0]} + ',' + ${quizOptions[3][1]}"/>
+            <input type="hidden" name="plantImage" th:value="${plantImage}"/>
+            <input type="hidden" name="imageCredit" th:value="${imageCredit}"/>
+            <input type="hidden" name="roundNumber" th:value="${roundNumber}"/>
+            <input type="hidden" name="correctOption" th:value="${correctOption}"/>
             <div class="content p-2">
                 <button id = "option1" class="quiz-option-button"
-                        th:classappend="${0 == correctOption} ? ' correct'"
-                        th:text="${quizOptions[0][0]} + ${quizOptions[0][1]}"
-                        onclick="optionClicked(this)"> </button>
+                        type="submit" name="selectedOption" value="0"
+                        th:classappend="${0 == selectedOption ? 'clicked ' : ''}
+                        + ${0 == correctOption ? 'correct' : ''}"
+                        th:disabled="${answerSubmitted}"
+                        th:text="${quizOptions[0][0]} + ${quizOptions[0][1]}"> </button>
                 <div class="pe-4"></div>
                 <button id = "option2" class="quiz-option-button"
-                        th:classappend="${1 == correctOption} ? ' correct'"
-                        th:text="${quizOptions[1][0]} + ${quizOptions[1][1]}"
-                        onclick="optionClicked(this)"> </button>
+                        type="submit" name="selectedOption" value="1"
+                        th:classappend="${1 == selectedOption ? 'clicked ' : ''}
+                        + ${1 == correctOption ? 'correct' : ''}"
+                        th:disabled="${answerSubmitted}"
+                        th:text="${quizOptions[1][0]} + ${quizOptions[1][1]}"> </button>
             </div>
             <div class="content p-2">
                 <button id = "option3" class="quiz-option-button"
-                        th:classappend="${2 == correctOption} ? ' correct'"
-                        th:text="${quizOptions[2][0]} + ${quizOptions[2][1]}"
-                        onclick="optionClicked(this)"> </button>
+                        type="submit" name="selectedOption" value="2"
+                        th:classappend="${2 == selectedOption ? 'clicked ' : ''}
+                        + ${2 == correctOption ? 'correct' : ''}"
+                        th:disabled="${answerSubmitted}"
+                        th:text="${quizOptions[2][0]} + ${quizOptions[2][1]}"> </button>
                 <div class="pe-4"></div>
                 <button id = "option4" class="quiz-option-button"
-                        th:classappend="${3 == correctOption} ? ' correct'"
-                        th:text="${quizOptions[3][0]} + ${quizOptions[3][1]}"
-                        onclick="optionClicked(this)"> </button>
+                        type="submit" name="selectedOption" value="3"
+                        th:classappend="${3 == selectedOption ? 'clicked ' : ''}
+                        + ${3 == correctOption ? 'correct' : ''}"
+                        th:disabled="${answerSubmitted}"
+                        th:text="${quizOptions[3][0]} + ${quizOptions[3][1]}"> </button>
             </div>
-            <label th:text="'Plant ' + ${roundNumber} + '/10'"></label>
-<!--        </form>-->
+        </form>
+        <form th:hidden="${!answerSubmitted}">
+            <div>
+                <button type="submit" class="button">Next Question</button>
+            </div>
+        </form>
+        <label th:text="'Plant ' + ${roundNumber} + '/10'"></label>
     </div>
 </div>
 </body>
