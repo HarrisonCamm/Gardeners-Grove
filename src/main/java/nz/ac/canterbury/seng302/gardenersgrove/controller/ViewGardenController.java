@@ -67,14 +67,9 @@ public class ViewGardenController {
         Image.removeTemporaryImage(session, imageService);
         session.removeAttribute("imageFile");
 
-        Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenticatedUser();
-        if (foundGarden.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
-        Garden garden = foundGarden.get();
+        Garden garden = authoriseAction(gardenID, currentUser, true);
         boolean isOwner = garden.getOwner().equals(currentUser);
-        if (!garden.getIsPublic() && !isOwner)
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
         session.removeAttribute("tagEvaluationError");
@@ -102,7 +97,7 @@ public class ViewGardenController {
         logger.info("POST /view-garden");
 
         User currentUser = userService.getAuthenticatedUser();
-        authoriseAction(gardenID, currentUser);
+        authoriseAction(gardenID, currentUser, false);
 
         Optional<Plant> foundPlant = plantService.findPlant(plantID);
         if (foundPlant.isEmpty())
@@ -135,7 +130,7 @@ public class ViewGardenController {
         logger.info("PATCH /view-garden");
 
         User currentUser = userService.getAuthenticatedUser();
-        Garden garden = authoriseAction(gardenID, currentUser);
+        Garden garden = authoriseAction(gardenID, currentUser, false);
 
         garden.setIsPublic(isPublic);
         gardenService.addGarden(garden);
@@ -152,7 +147,7 @@ public class ViewGardenController {
 
 //        Optional<Garden> garden = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenticatedUser();
-        Garden garden = authoriseAction(gardenID, currentUser);
+        Garden garden = authoriseAction(gardenID, currentUser, false);
 
         // Get weather information
         WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.getLocation().getCity(), garden.getLocation().getCountry());
@@ -220,7 +215,7 @@ public class ViewGardenController {
                                HttpSession session) {
 
         User currentUser = userService.getAuthenticatedUser();
-        Garden garden = authoriseAction(gardenID, null);
+        Garden garden = authoriseAction(gardenID, null, false);
 
         alertService.dismissAlert(currentUser, garden, alertType);
 
@@ -233,12 +228,21 @@ public class ViewGardenController {
      * @param currentUser the logged-in user
      * @return the garden if it exists
      */
-    private Garden authoriseAction(Long gardenID, User currentUser) {
+    private Garden authoriseAction(Long gardenID, User currentUser, boolean onlyViewing) {
         Optional<Garden> garden = gardenService.findGarden(gardenID);
         if (garden.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
-        if (currentUser != null && !garden.get().getOwner().equals(currentUser))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot perform that action on this garden.");
+
+        if (currentUser != null) {
+            boolean isOwner = garden.get().getOwner().equals(currentUser);
+            if (!isOwner) {
+                if (onlyViewing && !garden.get().getIsPublic()) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
+                } else {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot perform the requested action on this garden.");
+                }
+            }
+        }
 
         return garden.get();
     }
