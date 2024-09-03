@@ -100,14 +100,14 @@ public class EditGardenTests {
     private User mockUser;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         mockUser = new User("user@email.com", "User", "Name", "password");
-//        mockUser.setUserId(1L);
         Mockito.when(userService.getAuthenticatedUser()).thenReturn(mockUser);
+        when(moderationService.isContentAppropriate(null)).thenReturn(true);
     }
 
     @Test
-    public void RequestPage_NoFields_Failure() throws Exception {
+    void RequestPage_NoFields_Failure() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/edit-garden"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
         verify(gardenService, times(0)).findGarden(any(Long.class));
@@ -115,7 +115,7 @@ public class EditGardenTests {
 
     @Test
     @WithMockUser
-    public void RequestPage_InvalidID_Failure() throws Exception {
+    void RequestPage_InvalidID_Failure() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/edit-garden")
                     .param("gardenID", "0"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
@@ -125,25 +125,27 @@ public class EditGardenTests {
     @ParameterizedTest
     @WithMockUser
     @CsvSource({
-            "325, My Garden, 12.00009123",
-            "211, Tomato's, " + SURFACE_AREA_OF_EARTH,
-            "1955, Bob, ''",
+            "325, My Garden, 12.00009123, ''",
+            "211, Tomato's, " + SURFACE_AREA_OF_EARTH + ", hello",
+            "1955, Bob, '', freakbob",
     })
-    public void PutForm_WithValidFields_Success(Long gardenID, String gardenName, String gardenSize) throws Exception {
+    void PutForm_WithValidFields_Success(Long gardenID, String gardenName, String gardenSize, String description) throws Exception {
         Location testLocation = new Location("123 test street", "test", "test", "0000", "test");
-        when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(new Garden(gardenName, testLocation, gardenSize, mockUser)));
+        when(gardenService.findGarden(gardenID)).thenReturn(Optional.of(new Garden(gardenName, testLocation, gardenSize, mockUser, description)));
+        when(moderationService.isContentAppropriate(description)).thenReturn(true);
         mockMvc.perform(MockMvcRequestBuilders.put("/edit-garden")
                         .with(csrf())
-                    .param("gardenID", gardenID.toString())
-                    .param("name", gardenName)
-                    .param("location.streetAddress", testLocation.getStreetAddress())
-                    .param("location.suburb", testLocation.getSuburb())
-                    .param("location.city", testLocation.getCity())
-                    .param("location.postcode", testLocation.getPostcode())
-                    .param("location.country", testLocation.getCountry())
-                    .param("size", gardenSize))
-                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/view-garden?gardenID=*"));
+                        .param("gardenID", gardenID.toString())
+                        .param("name", gardenName)
+                        .param("location.streetAddress", testLocation.getStreetAddress())
+                        .param("location.suburb", testLocation.getSuburb())
+                        .param("location.city", testLocation.getCity())
+                        .param("location.postcode", testLocation.getPostcode())
+                        .param("location.country", testLocation.getCountry())
+                        .param("size", gardenSize)
+                        .param("isPublic", "false")
+                        .param("description", description))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
         verify(gardenService).findGarden(gardenID);
     }
 
@@ -155,7 +157,7 @@ public class EditGardenTests {
             "1, '', '',  Bob, ''",
             "1, myGarden, -1,  The Mall, 143,5553"
     })
-    public void PutForm_WithInvalidFields_ErrorsShown(
+    void PutForm_WithInvalidFields_ErrorsShown(
             Long gardenID, String newName, String newSize,
                            String oldName, String oldSize) throws Exception {
 
@@ -173,7 +175,7 @@ public class EditGardenTests {
                         .param("location.postcode", newLocation.getPostcode())
                         .param("location.country", newLocation.getCountry())
                         .param("size", newSize))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
         verify(gardenService).findGarden(gardenID);
         verify(gardenService, times(0)).addGarden(any(Garden.class));
     }
@@ -186,7 +188,7 @@ public class EditGardenTests {
             "34534555, Bob, ''",
             "8, The Mall, 143,5553"
     })
-    public void OnForm_CancelEdit_RedirectToViewGarden(
+    void OnForm_CancelEdit_RedirectToViewGarden(
             Long gardenID, String name, String size) throws Exception {
         Location location = new Location("123 test street", "test", "test", "0000", "test");
         Garden garden = new Garden(name, location, size, mockUser);

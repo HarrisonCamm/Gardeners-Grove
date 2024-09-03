@@ -8,6 +8,7 @@
         <script th:src="@{/javascript/hover-enter.js}"></script>
         <script th:src="@{/javascript/autocomplete.js}"></script>
         <script th:src="@{/javascript/prevent-enter-submit.js}"></script>
+        <script th:src="@{/javascript/description-length.js}"></script>
     </head>
 
 <body>
@@ -33,12 +34,15 @@
     </div>
 
     <br/>
+
     <div class="form">
 
         <h2>Edit Garden</h2>
+
         <div class="formContainer">
             <form th:action="@{'/edit-garden?gardenID=' + ${id}}" method="post" th:object="${garden}">
                 <input type="hidden" name="_method" value="PUT">
+
                 <div>
                     <label for="name"> Garden Name:
                         <span class="required-input"> * </span>
@@ -50,6 +54,22 @@
                            th:classappend="${nameError} ? 'error' : 'form-control'">
                     <p th:if="${nameError}" class="error-message" th:text="${nameError}"></p>
                 </div>
+                <br/>
+                <div>
+                    <label for="gardenDescription"> Description: </label>
+                    <br/>
+                    <textarea class="plantTextArea" maxlength="1024" id="gardenDescription"
+                              th:field="*{description}"
+                              th:classappend="${descriptionError} ? 'error' : ''"
+                              rows="4"
+                              oninput="descriptionLength(this)">
+                    </textarea>
+                    <div class="buttons-centre">
+                        <span id="descriptionLengthCounter" th:text="${description != null ? description.length() + '/512' : '0/512'}"></span>
+                    </div>
+                    <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
+                </div>
+
                 <br/>
                 <div class="locationTable" id="locationContainer">
                     <div id="autocompleteContainer"></div>
@@ -118,6 +138,7 @@
                     </div>
                 </div>
                 <br/>
+
                 <div class="buttons-centre">
                     <button type="submit">Save</button>
                     &nbsp;
