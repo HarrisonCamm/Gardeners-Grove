@@ -34,6 +34,7 @@ public class PlantGuesserController {
     private final UserService userService;
     @Autowired
     private final UserRepository userRepository;
+    @Autowired
     private List<PlantData> plants;
     private int roundNumber = 0;
     private int score = 0;
