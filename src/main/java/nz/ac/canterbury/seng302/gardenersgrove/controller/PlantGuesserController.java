@@ -45,20 +45,35 @@ public class PlantGuesserController {
     }
 
     public void createPlantGameRound(Model model) {
-        PlantData plant = plantGuesserService.getPlant();
-        String plantName = plant.common_name;
-        String plantScientificName = plant.scientific_name;
-        String plantImage = plant.image_url;
-        String imageCredit = (plantImage.split("//")[1]).split("/")[0];
-        String plantFamily = plant.family;
-        String familyCommonName = plant.family_common_name;
-        String plantCommonAndScientificName = plantName + ",\n(" + plantScientificName + ")";
-        List<String> quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
-        logger.info(plantName); //for manual testing and playing, since functionality is not implemented yet
+
+        String plantName = null;
+        String plantScientificName;
+        String plantImage = null;
+        String imageCredit = null;
+        String plantFamily = null;
+        String familyCommonName = null;
+        String plantCommonAndScientificName;
+        List<String> quizOptions = null;
+        int listSize = 0;
+
+        while (listSize != 4) {
+            PlantData plant = plantGuesserService.getPlant();
+            plantName = plant.common_name;
+            plantScientificName = plant.scientific_name;
+            plantImage = plant.image_url;
+            imageCredit = (plantImage.split("//")[1]).split("/")[0];
+            plantFamily = plant.family;
+            familyCommonName = plant.family_common_name;
+            plantCommonAndScientificName = plantName + ",\n(" + plantScientificName + ")";
+            quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
+            listSize = quizOptions.size();
+            logger.info(plantName); //for manual testing and playing, since functionality is not implemented yet
+        }
+
         Collections.shuffle(quizOptions);
 
         List<String[]> splitQuizOptions = new ArrayList<>();
-        for (String option: quizOptions) {
+        for (String option : quizOptions) {
             String[] options = option.split(",");
             splitQuizOptions.add(options);
         }
