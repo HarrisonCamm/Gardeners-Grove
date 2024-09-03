@@ -3,8 +3,11 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +30,17 @@ public class PlantGuesserController {
 
     @Autowired
     private final PlantGuesserService plantGuesserService;
+    private final UserService userService;
+    private final UserRepository userRepository;
     private List<PlantData> plants;
     private int roundNumber = 0;
     private int score = 0;
 
-    public PlantGuesserController(PlantGuesserService plantGuesserService, List<PlantData> plants) {
+    public PlantGuesserController(PlantGuesserService plantGuesserService, UserService userService, UserRepository userRepository) {
         this.plantGuesserService = plantGuesserService;
         this.plants = plantGuesserService.getPlant();
+        this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -65,6 +72,9 @@ public class PlantGuesserController {
                               Model model) {
         logger.info("POST /plant-guesser");
         RedirectService.addEndpoint("/plant-guesser");
+        User currentUser = userService.getAuthenticatedUser();
+        int currentBloomBalance = currentUser.getBloomBalance();
+
         String[] quizOptions = {quizOption1, quizOption2, quizOption3, quizOption4};
         List<String[]> splitQuizOptions = new ArrayList<>();
         for (String option: quizOptions) {
@@ -79,13 +89,6 @@ public class PlantGuesserController {
         model.addAttribute("roundNumber", roundNumber);
         model.addAttribute("correctOption", correctOption);
         model.addAttribute("selectedOption", selectedOption);
-        if (roundNumber < 10) {
-            model.addAttribute("answerSubmitted", true);
-            model.addAttribute("gameOver", false);
-        } else {
-            model.addAttribute("answerSubmitted", false);
-            model.addAttribute("gameOver", true);
-        }
 
         if (selectedOption != correctOption) {
             model.addAttribute("incorrectAnswer", "Wrong answer! The correct answer was: " + splitQuizOptions.get(correctOption)[0]);
@@ -95,6 +98,17 @@ public class PlantGuesserController {
         }
         this.roundNumber += 1;
         model.addAttribute("score", this.score);
+
+        if (roundNumber < 10) {
+            model.addAttribute("answerSubmitted", true);
+            model.addAttribute("gameOver", false);
+        } else {
+            model.addAttribute("answerSubmitted", false);
+            model.addAttribute("gameOver", true);
+            currentUser.setBloomBalance(currentBloomBalance + 100 + (this.score*10));
+            logger.info(String.valueOf(currentUser.getBloomBalance()));
+            userRepository.save(currentUser);
+        }
 
         return "plantGuesserTemplate";
     }
