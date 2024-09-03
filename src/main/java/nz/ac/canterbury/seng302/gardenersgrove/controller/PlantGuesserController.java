@@ -113,7 +113,7 @@ public class PlantGuesserController {
     }
 
     public void playGameRound(Model model, PlantData plant) {
-        String plantName = null;
+        String plantName;
         String plantScientificName;
         String plantImage = null;
         String imageCredit = null;
