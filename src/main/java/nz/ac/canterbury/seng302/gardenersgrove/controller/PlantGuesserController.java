@@ -34,14 +34,11 @@ public class PlantGuesserController {
     private final UserService userService;
     @Autowired
     private final UserRepository userRepository;
-
-    public List<PlantData> plants;
     public int roundNumber = 0;
     public int score = 0;
 
     public PlantGuesserController(PlantGuesserService plantGuesserService, UserService userService, UserRepository userRepository) {
         this.plantGuesserService = plantGuesserService;
-        this.plants = plantGuesserService.getPlant();
         this.userService = userService;
         this.userRepository = userRepository;
     }
@@ -54,8 +51,8 @@ public class PlantGuesserController {
                               Model model) {
         logger.info("GET /plant-guesser");
         RedirectService.addEndpoint("/plant-guesser");
-
-        playGameRound(model, plants.get(roundNumber));
+        PlantData plant = plantGuesserService.getPlant();
+        playGameRound(model, plant);
         return "plantGuesserTemplate";
     }
 
@@ -109,7 +106,6 @@ public class PlantGuesserController {
             model.addAttribute("answerSubmitted", false);
             model.addAttribute("gameOver", true);
             currentUser.setBloomBalance(currentBloomBalance + 100 + (this.score*10));
-            logger.info(String.valueOf(currentUser.getBloomBalance()));
             userRepository.save(currentUser);
         }
 
