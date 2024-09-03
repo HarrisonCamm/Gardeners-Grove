@@ -29,6 +29,7 @@ public class PlantGuesserController {
     private final PlantGuesserService plantGuesserService;
     private List<PlantData> plants;
     private int roundNumber = 0;
+    private int score = 0;
 
     public PlantGuesserController(PlantGuesserService plantGuesserService, List<PlantData> plants) {
         this.plantGuesserService = plantGuesserService;
@@ -59,6 +60,7 @@ public class PlantGuesserController {
                                @RequestParam("imageCredit") String imageCredit,
                                @RequestParam("roundNumber") int roundNumber,
                                @RequestParam("correctOption") int correctOption,
+                               @RequestParam("score") int score,
                                HttpServletRequest request,
                               Model model) {
         logger.info("POST /plant-guesser");
@@ -77,14 +79,23 @@ public class PlantGuesserController {
         model.addAttribute("roundNumber", roundNumber);
         model.addAttribute("correctOption", correctOption);
         model.addAttribute("selectedOption", selectedOption);
-        model.addAttribute("answerSubmitted", true);
+        if (roundNumber < 10) {
+            model.addAttribute("answerSubmitted", true);
+            model.addAttribute("gameOver", false);
+        } else {
+            model.addAttribute("answerSubmitted", false);
+            model.addAttribute("gameOver", true);
+        }
 
         if (selectedOption != correctOption) {
             model.addAttribute("incorrectAnswer", "Wrong answer! The correct answer was: " + splitQuizOptions.get(correctOption)[0]);
         } else {
+            this.score += 1;
             model.addAttribute("correctAnswer", "You got it correct! +10 Blooms");
         }
         this.roundNumber += 1;
+        model.addAttribute("score", this.score);
+
         return "plantGuesserTemplate";
     }
 
@@ -97,7 +108,7 @@ public class PlantGuesserController {
         String familyCommonName = plant.family_common_name;
         String plantCommonAndScientificName = plantName + ",\n(" + plantScientificName + ")";
         List<String> quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
-        logger.info(plantName); //for manual testing and playing, since functionality is not implemented yet
+
         Collections.shuffle(quizOptions);
 
         List<String[]> splitQuizOptions = new ArrayList<>();
@@ -120,7 +131,8 @@ public class PlantGuesserController {
         model.addAttribute("correctOption", correctOption);
         model.addAttribute("selectedOption", -1);
         model.addAttribute("answerSubmitted", false);
+        model.addAttribute("gameOver", false);
+        model.addAttribute("score", this.score);
 
-//        TODO change this number to be for each round, not to be done in this task
     }
 }

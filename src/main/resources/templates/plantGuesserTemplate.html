@@ -35,6 +35,8 @@
                 <br/>
                 <div th:if="${incorrectAnswer}" class="ps-2 text-danger" th:text="${incorrectAnswer}"></div>
                 <div th:if="${correctAnswer}" class="ps-2 text-success" th:text="${correctAnswer}"></div>
+                <div th:if="${gameOver}" class="ps-2 text-success">Congratulations on guessing! You have gained 100 Blooms for playing.</div>
+                <div th:if="${gameOver}" class="ps-2 text-success" th:text="'Total score: ' + ${score} + '/10'"></div>
             </div>
             <input type="hidden" name="plantFamily" th:value="${plantFamily}"/>
             <input type="hidden" name="quizOption1" th:value="${quizOptions[0][0]} + ',' + ${quizOptions[0][1]}"/>
@@ -45,6 +47,7 @@
             <input type="hidden" name="imageCredit" th:value="${imageCredit}"/>
             <input type="hidden" name="roundNumber" th:value="${roundNumber}"/>
             <input type="hidden" name="correctOption" th:value="${correctOption}"/>
+            <input type="hidden" name="score" th:value="${score}"/>
             <div class="content p-2">
                 <button id = "option1" class="quiz-option-button"
                         type="submit" name="selectedOption" value="0"
@@ -81,6 +84,11 @@
                 <button type="submit" class="button">Next Question</button>
             </div>
         </form>
+        <div th:hidden="${!gameOver}">
+            <a th:href="@{/main}">
+                <button type="button" class="button">Back to games</button>
+            </a>
+        </div>
         <label th:text="'Plant ' + ${roundNumber} + '/10'"></label>
     </div>
 </div>
