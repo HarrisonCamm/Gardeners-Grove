@@ -229,15 +229,16 @@ public class ViewGardenController {
      * @return the garden if it exists
      */
     private Garden authoriseAction(Long gardenID, User currentUser, boolean onlyViewing) {
-        Optional<Garden> garden = gardenService.findGarden(gardenID);
+        final Optional<Garden> garden = gardenService.findGarden(gardenID);
         if (garden.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
 
         if (currentUser != null) {
-            boolean isOwner = garden.get().getOwner().equals(currentUser);
+            final boolean isOwner = garden.get().getOwner().equals(currentUser);
             if (!isOwner) {
-                if (onlyViewing && !garden.get().getIsPublic()) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
+                if (onlyViewing) {
+                    if (!garden.get().getIsPublic())
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
                 } else {
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot perform the requested action on this garden.");
                 }
