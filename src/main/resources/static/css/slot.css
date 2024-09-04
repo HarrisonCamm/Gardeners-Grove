@@ -201,7 +201,7 @@ body {
 }
 
 .container .info .prize-table {
-    width: 400px;
+    width: 90%;
     margin-left: auto;
     margin-right: auto;
     display: flex;
@@ -209,7 +209,7 @@ body {
     color: #0a3407; /* $textCol */
     font-weight: bold;
     font-family: "Fredoka One", sans-serif;
-    font-size: 1.3rem;
+    font-size: 1.6rem;
 }
 
 .container .info .prize-table .prize-item {
