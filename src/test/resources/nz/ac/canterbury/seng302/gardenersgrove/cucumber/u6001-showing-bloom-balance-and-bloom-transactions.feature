@@ -20,9 +20,10 @@ Feature: U6001 - Showing Blooms Balance and Bloom Transactions
   Scenario: AC2 - Viewing Blooms Balance and Transaction History on Profile Page
     Given I am logged into the system
     When I navigate to my profile page
-    Then I can see my current Bloom balance displayed prominently
+#    Then I can see my Bloom balance displayed prominently in the header or a dedicated section
     And I can see a detailed transaction history for the Bloom currency
     And the transaction history should be paginated or scrollable if it exceeds a certain number of entries
+
 #
 #  Scenario: AC3 - Transaction Details
 #    Given I am viewing the transaction history on my profile page

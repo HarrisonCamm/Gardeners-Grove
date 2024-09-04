@@ -74,6 +74,7 @@ public class UserProfileController {
             model.addAttribute("transactions", transactionsPage.getContent());
             model.addAttribute("totalPages", transactionsPage.getTotalPages());
             model.addAttribute("currentPage", page);
+            model.addAttribute("pageSize", PAGE_SIZE);
             model.addAttribute("hasPrevious", transactionsPage.hasPrevious());
             model.addAttribute("hasNext", transactionsPage.hasNext());
 
