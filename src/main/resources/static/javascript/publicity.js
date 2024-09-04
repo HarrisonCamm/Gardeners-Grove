@@ -1,4 +1,4 @@
-function getDeployPath(url) {
+function getDeploymentContextPath(url) {
     if (url == null)
         url = new URL(window.location.href);
     const deployPath = url.pathname.split('/')[1];
@@ -15,7 +15,7 @@ function publicityHandler(checkbox){
     params.append('_csrf', getCsrfToken());
     params.append("isPublic", checkbox.checked)
     params.append("gardenID", gardenID)
-    fetch(getDeployPath(url) + '/view-garden', {
+    fetch(getDeploymentContextPath(url) + '/view-garden', {
         method: 'PATCH',
         body: params
     }).then(response => {

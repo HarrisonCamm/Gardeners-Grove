@@ -1,3 +1,14 @@
+function getDeploymentContextPath(url) {
+    if (url == null)
+        url = new URL(window.location.href);
+    const deployPath = url.pathname.split('/')[1];
+    if (deployPath === 'test' || deployPath === 'prod')
+        return '/' + deployPath;
+    else
+        return '';
+
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     const from = document.getElementById('chat-container').dataset.from;
 
@@ -111,8 +122,8 @@ document.addEventListener("DOMContentLoaded", function() {
         lastName = lastName ? lastName : '';
         document.getElementById('friendName-' + userId).innerText = firstName + ' ' + lastName;
 
-
-        document.getElementById('friendImage-' + userId).src = '/get-image?view-user-profile=true&userID=' + userId;
+        const deployPath = getDeploymentContextPath(null);
+        document.getElementById('friendImage-' + userId).src = deployPath + '/get-image?view-user-profile=true&userID=' + userId;
 
         document.getElementById('message-input-' + userId).focus();
 
