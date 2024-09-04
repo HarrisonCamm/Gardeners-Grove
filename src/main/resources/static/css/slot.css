@@ -171,7 +171,7 @@ body {
     position: relative;
 }
 
-.container .info .info-button {
+.container .info-button {
     background-color: #3D7B36;
     color: floralwhite;
     border-radius: 50%;
@@ -180,8 +180,9 @@ body {
     width: 40px;
     height: 40px;
     position: absolute;
-    bottom: 10px;
-    right: 10px;
+    left: 325px;
+    font-family: cursive;
+    font-size: xx-large;
 }
 
 .container .info .info-button:hover {
@@ -237,10 +238,10 @@ body {
 
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto;
+    margin: 20% auto auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 30%;
+    width: 50%;
 }
 
 .modal-content .rewards-centre {
