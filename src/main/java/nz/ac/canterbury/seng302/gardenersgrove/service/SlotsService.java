@@ -12,20 +12,26 @@ public class SlotsService {
 
     private final static int GAME_ROWS = 3;
 
-    // Define how much will be one from combos for emojis 1 to 5
-    private static final int WIN_1 = 20;
-    private static final int WIN_2 = 50;
-    private static final int WIN_3 = 100;
-    private static final int WIN_4 = 500;
-    private static final int WIN_5 = 1000;
+    // Define base (3 in a row) amount of blooms for each emoji
+//         * ["" ,"💧", "☀️", "🍄", "🌶️", "🌾"];
+
+    private static final int WIN_1 = 1;         // 3 in a row of 💧
+    private static final int WIN_2 = 2;        // 3 in a row of ☀️
+    private static final int WIN_3 = 3;      // 3 in a row of 🍄
+    private static final int WIN_4 = 4;      // 3 in a row of 🌶️
+    private static final int WIN_5 = 5;    // 3 in a row of 🌾
 
     //IMPORTANT NOT 0 INDEXED
     private static final int[] WIN_AMOUNTS = {0, WIN_1, WIN_2, WIN_3, WIN_4, WIN_5};
 
+    //Define Multipliers for base win amounts
+    private static final int MULTIPLIER_4_IN_A_ROW = 10;
+    private static final int MULTIPLIER_5_IN_A_ROW = 100;
+
     // Define the weights (odds) of each emoji appearing on the slot machine
     // The higher the weight, the more likely the emoji will appear
-    private static final int WEIGHT_1 = 1;
-    private static final int WEIGHT_2 = 2;
+    private static final int WEIGHT_1 = 4;
+    private static final int WEIGHT_2 = 4;
     private static final int WEIGHT_3 = 3;
     private static final int WEIGHT_4 = 2;
     private static final int WEIGHT_5 = 1;
