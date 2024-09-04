@@ -3,8 +3,11 @@ package nz.ac.canterbury.seng302.gardenersgrove.cucumber;
 import io.cucumber.junit.platform.engine.Constants;
 import nz.ac.canterbury.seng302.gardenersgrove.GardenersGroveApplication;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ForecastResponse;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserList;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.WeatherResponse;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ModerationService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.WeatherService;
 import org.junit.platform.suite.api.*;
 import io.cucumber.spring.CucumberContextConfiguration;
@@ -19,7 +22,11 @@ import com.fasterxml.jackson.databind.ObjectMapper; // Weather service one
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.lang.Math.min;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -40,12 +47,16 @@ import static org.mockito.Mockito.when;
 // Permanent api mocks
 @MockBean(ModerationService.class)
 @MockBean(WeatherService.class)
+@MockBean(PlantGuesserService.class)
 
 public class RunCucumberTest {
     private static WeatherResponse mockedValidCurrentWeather;
     private static ForecastResponse mockedValidForecast;
     private static WeatherResponse mockedNullCityWeather;
     private static ForecastResponse mockedNullCityForecast;
+
+    private static PlantData plant;
+    private static List<String> fourOptions;
     private static String Rained;
     private static String NotRained;
     private static String Raining;
@@ -70,7 +81,8 @@ public class RunCucumberTest {
 //
 //            String currentWeatherRainJsonString = Files.readString(Paths.get("src/test/resources/json/validCurrentWeatherRain.json"));
 
-
+            String plantPageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
+            String plantFamilyPageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
 
             Rained = "Rained";
             NotRained = "NotRained";
@@ -96,6 +108,25 @@ public class RunCucumberTest {
 //            // Is not currently raining
 //            mockedValidCurrentWeatherNotRaining = objectMapper.readValue(currentWeatherJsonString, Boolean.class);
 
+            //To mock plant api
+            PlantGuesserList mockedPlantPage = objectMapper.readValue(plantPageJsonString, PlantGuesserList.class);
+            List<PlantData> plantList = new ArrayList<>(Arrays.stream(mockedPlantPage.getPlantGuesserList()).toList());
+            plant = plantList.get(0);
+
+
+            PlantGuesserList mockedPlantFamilyPage = objectMapper.readValue(plantFamilyPageJsonString, PlantGuesserList.class);
+            PlantData[] plantFamilyMembers = Arrays.stream(mockedPlantFamilyPage.getPlantGuesserList()).toList()
+                    .stream()
+                    .filter(plant_i -> !Objects.equals(plant_i.common_name, plant.common_name))
+                    .toArray(PlantData[]::new);
+            List<String> multichoicePlantNames = new ArrayList<>(Arrays.stream(plantFamilyMembers).toList()
+                    .stream()
+                    .map(PlantData::getCommonAndScientificName)
+                    .toList());
+
+            List<String> correctOption = Collections.singletonList(plant.getCommonAndScientificName());
+            fourOptions = Stream.concat(multichoicePlantNames.subList(0,3).stream(), correctOption.stream())
+                    .collect(Collectors.toList());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,7 +134,7 @@ public class RunCucumberTest {
     }
 
     @Autowired
-    public RunCucumberTest(ModerationService moderationService, WeatherService weatherService)  {
+    public RunCucumberTest(ModerationService moderationService, WeatherService weatherService, PlantGuesserService plantGuesserService)  {
         /*
          This constructor is run before every FEATURE, use it to set up mocks with their default behaviour.
          While the behaviour of the mocks can be adapted per test (see MockConfigurationSteps), creating the mocks
@@ -151,5 +182,9 @@ public class RunCucumberTest {
         when(moderationService.isBusy()).thenReturn(false);
         when(moderationService.isContentAppropriate("DelayedEvaluated")).thenReturn(true);
         when(moderationService.isContentAppropriate("InappropriateEvaluated")).thenReturn(false);
+
+
+        when(plantGuesserService.getPlant()).thenReturn(plant);
+        when(plantGuesserService.getMultichoicePlantNames(plant.family, plant.common_name, plant.getCommonAndScientificName())).thenReturn(fourOptions);
     }
 }

@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Optional;
+import java.util.Random;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -87,6 +88,9 @@ public class CreatePlantTests {
 
     @MockBean
     private MessagesController messagesController;
+
+    @MockBean
+    private Random random;
 
     private Garden testGarden;
     private Location testLocation;

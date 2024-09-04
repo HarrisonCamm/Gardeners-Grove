@@ -1,10 +1,13 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nz.ac.canterbury.seng302.gardenersgrove.controller.PlantGuesserController;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,12 +38,25 @@ public class PlantGuesserSteps {
 
     @Autowired
     PlantGuesserService plantGuesserService;
-    private MockMvc mockMvc;
 
+    @Autowired
+    PlantGuesserController plantGuesserController;
+    private MockMvc mockMvc;
     private MvcResult mvcResult;
+
+    private String validPlantJsonString;
+
+    private String common_name;
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+        validPlantJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        Random fixedRandom = new Random(13);
+        plantGuesserController.setRandom(fixedRandom);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(validPlantJsonString);
+        common_name = jsonNode.get("data").get(0).get("common_name").asText();
 
     }
 

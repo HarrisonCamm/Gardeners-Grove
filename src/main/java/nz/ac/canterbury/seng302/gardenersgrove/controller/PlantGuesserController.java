@@ -25,9 +25,14 @@ public class PlantGuesserController {
 
     @Autowired
     private final PlantGuesserService plantGuesserService;
+    private Random random;
 
-    public PlantGuesserController(PlantGuesserService plantGuesserService) {
+    public PlantGuesserController(PlantGuesserService plantGuesserService, Random random) {
         this.plantGuesserService = plantGuesserService;
+        this.random = random;
+    }
+    public void setRandom(Random random) {
+        this.random = random;
     }
 
     /**
@@ -70,7 +75,7 @@ public class PlantGuesserController {
             logger.info(plantName); //for manual testing and playing, since functionality is not implemented yet
         }
 
-        Collections.shuffle(quizOptions);
+        Collections.shuffle(quizOptions, random); // set random while testing, otherwise true random
 
         List<String[]> splitQuizOptions = new ArrayList<>();
         for (String option : quizOptions) {

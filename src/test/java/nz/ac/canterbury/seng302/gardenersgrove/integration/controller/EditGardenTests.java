@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Optional;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -99,6 +100,9 @@ public class EditGardenTests {
 
     @MockBean
     private MessagesController messagesController;
+
+    @MockBean
+    private Random random;
 
     private User mockUser;
 
