@@ -178,6 +178,16 @@ public class UserService {
                 user1.getDateOfBirth().equals(user2.getDateOfBirth());
     }
 
+    public void addBlooms(User user, int blooms) {
+        user.setBloomBalance(user.getBloomBalance() + blooms);
+        userRepository.save(user);
+    }
+
+    public void chargeBlooms(User user, int blooms) {
+        user.setBloomBalance(user.getBloomBalance() - blooms);
+        userRepository.save(user);
+    }
+
     // Used to increment the number of delayed tags that were deemed inappropriate
     public void incrementInappropriateTagCount(Long userId) {
         userRepository.incrementInappropriateTagCount(userId);
