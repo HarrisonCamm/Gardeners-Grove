@@ -9,28 +9,28 @@ Feature: U6005 - Play plant guesser
     When I go to the Plant Guesser game page
     Then I see an image of a plant and four options of plant names where one is the correct plant name and the other three are names of plants in the same family to click on
     And I see a text description saying "Plant X/10"
-    And "What plant is this?"
+    And I see a text description saying "What plant is this?"
 
   Scenario: AC3 - guessing correctly
     Given I am on the Plant Guesser game page
     When I select the correct plant name
     Then I am shown a message saying "You got it correct! +10 Blooms"
     And the option I selected is shown as green
-    And a 'Next Question' button (could be an icon) is shown
+    And a Next Question button (could be an icon) is shown
 
   Scenario: AC4 - going to next question
     Given I am on the Plant Guesser game page
-    When I click the "Next Question" button after guessing
+    When I click the Next Question button after guessing
     Then I am shown a new image of a plant and four options of plant names where one is the correct plant name and the other three are names of plants in the same family to click on
-    And I see a text description "Plant X+1/10"
-    And "What plant is this?"
+    And I see a text description saying "Plant X+1/10"
+    And I see a text description saying "What plant is this?"
 
   Scenario: AC5 - guessing incorrectly
     Given I am on the Plant Guesser game page
     When I select an incorrect plant name option
     Then I am shown a message saying "Wrong answer! The correct answer was: correct plant name"
     And the option I selected is shown as red
-    And a "Next Question" button (could be an icon) is shown
+    And a Next Question button (could be an icon) is shown
 
   Scenario: AC6 - completing the game
     Given I am on the Plant Guesser game page
@@ -41,7 +41,7 @@ Feature: U6005 - Play plant guesser
 
   Scenario: AC7 - exiting the game
     Given I am on the Plant Guesser game page
-    When I click the 'Back' button (could be an icon)
-    Then I am taken back to the 'Games' page
+    When I click the Back button (could be an icon)
+    Then I am taken back to the Games page
     And my total Blooms are displayed
     And my current game progress is not saved
