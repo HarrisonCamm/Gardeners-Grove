@@ -40,29 +40,14 @@ document.addEventListener("DOMContentLoaded", function() {
         // Determine the correct WebSocket URL based on the current environment
         let socketUrl;
 
-        // if (window.location.href.includes("/test/")) {
-        //     socketUrl = '/test/ws';
-        // } else if (window.location.href.includes("/prod/")) {
-        //     socketUrl = '/prod/ws';
-        // } else {
-        //     // Local Host (assuming localhost is being used for development)
-        //     socketUrl = '/ws';
-        // }
-
-        //Create a WebSocket connection
-        // const socket = new WebSocket('/ws');
-
-        if (window.location.href.includes("/test/")) {
-            socketUrl = 'https://csse-seng302-team600.canterbury.ac.nz/test/ws';
-        } else if (window.location.href.includes("/prod/")) {
-            socketUrl = 'https://csse-seng302-team600.canterbury.ac.nz/prod/ws';
+        const url = new URL(window.location.href);
+        const deployPath = getDeploymentContextPath(url);
+        if (deployPath != null && deployPath.length > 0) {
+            socketUrl = 'https://csse-seng302-team600.canterbury.ac.nz' + deployPath + '/ws'
         } else {
-            // Local Host (assuming localhost is being used for development)
-            socketUrl = 'http://localhost:8080/ws';
+            // socketUrl = 'http://localhost:8080/ws';
+            socketUrl = url.origin + '/ws'
         }
-
-        // Create a WebSocket connection
-        // const socket = new WebSocket(socketUrl);
 
         // Create a WebSocket connection
         const socket = new WebSocket(socketUrl);
