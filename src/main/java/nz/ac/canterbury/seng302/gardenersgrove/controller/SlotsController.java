@@ -35,8 +35,11 @@ public class SlotsController {
         List<int[]> slots = SlotsService.generateSlots();
         model.addAttribute("slots", slots);
         model.addAttribute("amountWon", SlotsService.amountWon(slots));
+        model.addAttribute("bloomBalance", userService.getAuthenticatedUser().getBloomBalance());
         //TODO in other task: pass counter or boolean if the user has spinned before
+
 
         return "dailySpinTemplate";
     }
+
 }

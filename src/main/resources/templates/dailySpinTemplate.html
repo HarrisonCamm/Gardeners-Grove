@@ -17,11 +17,11 @@
         </div>
     </div>
 
-    <script th:inline="javascript"> let slots = /*[[${slots}]]*/ [[]];</script>
+    <script th:inline="javascript">let bloomBalance = /*[[${bloomBalance}]]*/0; let amountWon = /*[[${amountWon}]]*/0; let slots = /*[[${slots}]]*/ [[]];</script>
 
     <div class="container" >
         <div class="money-container">
-            <div id="money">100</div>
+            <div id="money" th:text="${bloomBalance}"></div>
             <div class="changes"> </div>
         </div>
 

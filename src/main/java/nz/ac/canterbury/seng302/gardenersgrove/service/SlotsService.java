@@ -103,15 +103,40 @@ public class SlotsService {
     public static int amountWon(List<int[]> slots) {
         int amountWon = 0;
 
-        int longestComboLength = 0;
-        int longestComboEmoji = 0;
-        //Iterate though the last GAME_ROWS number of rows of the slot machine
-        //Where GAME_ROWS is the number of rows that wins are checked on
-        for (int i = COL_LENGTH - GAME_ROWS; i < COL_LENGTH; i++) {
-            for (int j = 0 ; i < NUM_COLS; i++) {
+        // Iterate through the last GAME_ROWS rows
+        for (int row = COL_LENGTH - GAME_ROWS; row < COL_LENGTH; row++) {
+            // Iterate through each column
+            for (int col = 0; col < NUM_COLS - 2; col++) { // -2 to avoid out of bounds when checking 3 in a row
+                int currentEmoji = slots.get(col)[row];
+                int comboLength = 1;
+
+                // Check for matching emojis in the next two columns
+                for (int nextCol = col + 1; nextCol < NUM_COLS; nextCol++) {
+                    if (slots.get(nextCol)[row] == currentEmoji) {
+                        comboLength++;
+                    } else {
+                        break;
+                    }
+                }
+
+                // Calculate the win amount based on combo length
+                if (comboLength >= 3) {
+                    int baseWinAmount = WIN_AMOUNTS[currentEmoji];
+                    if (comboLength == 4) {
+                        baseWinAmount *= MULTIPLIER_4_IN_A_ROW;
+                    } else if (comboLength == 5) {
+                        baseWinAmount *= MULTIPLIER_5_IN_A_ROW;
+                    }
+                    amountWon += baseWinAmount;
+
+                    // Move the column index forward to skip over the already checked combo
+                    col += comboLength - 1;
+                }
             }
         }
+
         return amountWon;
     }
+
 
 }

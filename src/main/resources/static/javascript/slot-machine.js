@@ -12,8 +12,8 @@
     let spinningReels = [];
     let spinning = false;
     let reelDelay = 100;
-    let money = 100;            //Todo set to blooms amount
-    let moneyToAdd = 0;     //Ensure this is updated to be model attribute "amountWon" at appropriate time
+    let money = bloomBalance;            //Todo set to blooms amount
+    let moneyToAdd = amountWon;     //Ensure this is updated to be model attribute "amountWon" at appropriate time
     let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let masterVolume = audioCtx.createGain();
     masterVolume.gain.setValueAtTime(0.05, audioCtx.currentTime);
@@ -152,10 +152,10 @@
         setChange(winAmount);
         addToMoney(winAmount);
     };
-    let addToMoney = (amount, speed) => {
-        let changeAmount = Math.ceil(amount / 2);
+    let addToMoney = (amountWon, speed) => {
+        let changeAmount = Math.ceil(amountWon / 2);
         updateMoney(changeAmount);
-        let remainder = amount - changeAmount;
+        let remainder = amountWon - changeAmount;
         if (!speed) speed = 101;
         speed -= 5;
         if (speed < 10) speed = 10;
