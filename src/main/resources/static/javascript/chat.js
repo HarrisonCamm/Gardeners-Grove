@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('message-input-' + userId).focus();
 
         // Get all the past chats from the backend
-        fetch('/chat/' + to.email)
+        fetch(deployPath + '/chat/' + to.email)
             .then(response => response.json())
             .then(messages => {
                 const chatArea = document.getElementById('chatArea-' + to.email);
