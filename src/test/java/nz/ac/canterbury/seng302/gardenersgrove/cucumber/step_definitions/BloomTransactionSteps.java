@@ -72,11 +72,7 @@ public class BloomTransactionSteps {
         mockMvcUserProfile = MockMvcBuilders.standaloneSetup(userProfileController).build();
     }
 
-//    @BeforeAll
-//    public static void before_or_after_all() {
-//        mockMvcUserProfile = MockMvcBuilders.standaloneSetup(new UserProfileController(userService, )).build();
-//    }
-//    UserProfileController userProfileController = new UserProfileController(userService, userRepository, imageService);
+
 
     //AC1
     @When("I navigate to any page {string} in the system")
@@ -141,7 +137,41 @@ public class BloomTransactionSteps {
             Assertions.assertEquals((int) Math.floor(transactionCount / PAGE_SIZE)+1, totalPages);
         }
         else {
-            Assertions.assertEquals(totalPages, 1);
+            Assertions.assertEquals(totalPages, 0);
         }
     }
+
+    //AC3
+    @Given("I am a new user or have not made any transactions")
+    public void i_am_a_new_user_or_have_not_made_any_transactions() throws Exception {
+
+        //probably shouldn't be here, but isn't working otherwise.
+        this.mvcResult = mockMvcUserProfile.perform(get("/view-user-profile")).andExpect(status()
+                        .isOk())
+                .andExpect(view().name("viewUserProfileTemplate"))
+                .andReturn();
+
+        Object transactions = mvcResult.getModelAndView().getModel().get("transactions");
+        Integer transactionCount = ((List<?>) transactions).size();
+        Assertions.assertEquals(0, transactionCount);
+    }
+
+    //AC3
+    @Then("I should see a message indicating that no transaction history is available")
+    public void i_should_see_a_message_indicating_that_no_transaction_history_is_available() {
+        Object noTransactionsText = mvcResult.getModelAndView().getModel().get("noTransactionsText");
+        Assertions.assertEquals("No Transactions to Display", noTransactionsText);
+    }
+
+    //AC3
+    @Then("I should see a brief description of how to earn or spend Blooms")
+    public void i_should_see_a_brief_description_of_how_to_earn_or_spend_blooms() {
+        Object earnBloomsText = mvcResult.getModelAndView().getModel().get("earnBloomsText");
+        Assertions.assertEquals("You can earn Blooms by: Selling plants, playing games, recieving tips from other users", earnBloomsText);
+
+        Object noTransactionsText = mvcResult.getModelAndView().getModel().get("spendBloomsText");
+        Assertions.assertEquals("You can spend Blooms by: Tipping other people's gardens, playing games, buying plants for your gardens", noTransactionsText);
+
+    }
+
 }

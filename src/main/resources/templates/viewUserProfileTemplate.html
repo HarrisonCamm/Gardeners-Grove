@@ -50,7 +50,7 @@
             </div>
         </div>
 
-        <div class="transactions-display">
+        <div th:if="${totalPages > 0}" class="transactions-display">
             <h2 th:class="text-start">Transactions</h2>
             <p th:text="${totalPages}"></p>
             <table class="table table-striped table-bordered table-hover">
@@ -90,16 +90,21 @@
                     </li>
                 </ul>
             </nav>
-
         </div>
 
-
-
-
-
-
-
-
+        <div th:unless="${totalPages > 0}" th:class="no-transactions-display">
+            <div th:class="p-5">
+                <div th:class="text-center">
+                    <h4 th:class="text-center" th:text="${noTransactionsText}"></h4>
+                    <div th:class="p-5">
+                        <p th:text="${earnBloomsText}">You can earn Blooms by: Selling plants, playing games, recieving tips from other users</p>
+                    </div>
+                    <div th:class="p-2">
+                        <p th:text="${spendBloomsText}">You can spend Blooms by: Tipping other people's gardens, playing games, buying plants for your gardens</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </body>
 </html>

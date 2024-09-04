@@ -77,7 +77,10 @@ public class UserProfileController {
             model.addAttribute("pageSize", PAGE_SIZE);
             model.addAttribute("hasPrevious", transactionsPage.hasPrevious());
             model.addAttribute("hasNext", transactionsPage.hasNext());
-
+            //For the purposes of tests
+            model.addAttribute("noTransactionsText", "No Transactions to Display");
+            model.addAttribute("earnBloomsText", "You can earn Blooms by: Selling plants, playing games, recieving tips from other users");
+            model.addAttribute("spendBloomsText", "You can spend Blooms by: Tipping other people's gardens, playing games, buying plants for your gardens");
 
             return "viewUserProfileTemplate";
         } else {

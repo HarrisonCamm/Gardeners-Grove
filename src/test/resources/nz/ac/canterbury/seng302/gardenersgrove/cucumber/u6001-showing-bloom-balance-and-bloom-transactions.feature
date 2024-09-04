@@ -34,8 +34,9 @@ Feature: U6001 - Showing Blooms Balance and Bloom Transactions
 #      | Any associated messages or notes               |
 #      | A link to the related content or action        |
 #
-#  Scenario: AC4 - No Transaction History Available
-#    Given I am a new user or have not made any transactions
-#    When I navigate to my profile page
-#    Then I should see a message indicating that no transaction history is available
-#    And I should see a brief description of how to earn or spend Blooms
+  Scenario: AC4 - No Transaction History Available
+    Given I am logged into the system
+    And I am a new user or have not made any transactions
+    When I navigate to my profile page
+    Then I should see a message indicating that no transaction history is available
+    And I should see a brief description of how to earn or spend Blooms
