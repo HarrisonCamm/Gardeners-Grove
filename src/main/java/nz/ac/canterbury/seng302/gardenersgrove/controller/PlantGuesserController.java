@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.service.PlantFamilyService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
@@ -31,14 +32,17 @@ public class PlantGuesserController {
     @Autowired
     private final PlantGuesserService plantGuesserService;
     @Autowired
+    private final PlantFamilyService plantFamilyService;
+    @Autowired
     private final UserService userService;
     @Autowired
     private final UserRepository userRepository;
     public int roundNumber = 0;
     public int score = 0;
 
-    public PlantGuesserController(PlantGuesserService plantGuesserService, UserService userService, UserRepository userRepository) {
+    public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, UserService userService, UserRepository userRepository) {
         this.plantGuesserService = plantGuesserService;
+        this.plantFamilyService = plantFamilyService;
         this.userService = userService;
         this.userRepository = userRepository;
     }
@@ -145,6 +149,7 @@ public class PlantGuesserController {
             String[] options = option.split(",");
             splitQuizOptions.add(options);
         }
+
         int correctOption = 0;
         for (int i = 0; i < 4; i++) {
             if (splitQuizOptions.get(i)[1].contains(plant.scientific_name)) {
@@ -152,7 +157,9 @@ public class PlantGuesserController {
             }
         }
 
-        model.addAttribute("plantFamily", familyCommonName == null ? plantFamily : familyCommonName);
+        String retrievedCommonName = plantFamilyService.getPlantFamily(plantFamily);
+
+        model.addAttribute("plantFamily", familyCommonName == null ? retrievedCommonName : familyCommonName);
         model.addAttribute("quizOptions", splitQuizOptions);
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit + " via Trefle");
