@@ -24,10 +24,13 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    document.querySelectorAll('[id^="send-button-"]').forEach(button => {
-        button.addEventListener('click', function() {
-            const userId = this.dataset.userId;
-            sendMessage(userId);
+    document.querySelectorAll('[id^="message-input-"]').forEach(input => {
+        input.addEventListener('keydown', function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                const userId = this.dataset.userId;
+                sendMessage(userId);
+            }
         });
     });
 
@@ -68,6 +71,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function sendMessage(userId) {
         const messageInput = document.getElementById('message-input-' + userId);
         const messageContent = messageInput.value.trim();
+
         if (messageContent && stompClient) {
 
             // Serialize the message to send this will become an Entity in the backend
@@ -87,6 +91,8 @@ document.addEventListener("DOMContentLoaded", function() {
             // Show the message in the chat area
             showMessage(chatMessage, userId);
         }
+
+        messageLength(messageInput);
     }
 
     function showChatUI(userId, firstName, lastName, email) {
@@ -110,7 +116,10 @@ document.addEventListener("DOMContentLoaded", function() {
         const deployPath = getDeploymentContextPath(null);
         document.getElementById('friendImage-' + userId).src = deployPath + '/get-image?view-user-profile=true&userID=' + userId;
 
-        document.getElementById('message-input-' + userId).focus();
+        const messageInput = document.getElementById('message-input-' + userId);
+        // document.getElementById('message-input-' + userId).focus();
+        messageInput.focus();
+        messageLength(messageInput);
 
         // Get all the past chats from the backend
         fetch(deployPath + '/chat/' + to.email)
