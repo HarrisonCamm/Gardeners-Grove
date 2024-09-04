@@ -8,21 +8,30 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.PlantGuesserController;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -42,43 +51,97 @@ public class PlantGuesserSteps {
     @Autowired
     PlantGuesserController plantGuesserController;
     private MockMvc mockMvc;
+    private ResultActions resultActions;
     private MvcResult mvcResult;
-
+    private ModelAndView modelAndView;
     private String validPlantJsonString;
-
-    private String common_name;
+    private String validPlantFamilyJsonString;
+    private String plantName;
+    private String plantScientificName;
+    private String plantImage;
+    private List<String> familyMembersCommonNames;
+    private int roundNumber = 1;
     @Before
     public void setup() throws IOException {
         validPlantJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
+        validPlantFamilyJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        // This makes the shuffling of plant guesser options not random so it can be tested
         Random fixedRandom = new Random(13);
         plantGuesserController.setRandom(fixedRandom);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(validPlantJsonString);
-        common_name = jsonNode.get("data").get(0).get("common_name").asText();
+        JsonNode jsonNode1 = objectMapper.readTree(validPlantJsonString);
+        plantName = jsonNode1.get("data").get(0).get("common_name").asText();
+        plantScientificName = jsonNode1.get("data").get(0).get("scientific_name").asText();
+        plantImage = jsonNode1.get("data").get(0).get("image_url").asText();
+
+        familyMembersCommonNames = new ArrayList<>();;
+        JsonNode jsonNode2 = objectMapper.readTree(validPlantFamilyJsonString);
+        for (int i=0; i < jsonNode2.get("data").size(); i++) {
+            String plantName = jsonNode2.get("data").get(i).get("common_name").asText();
+            familyMembersCommonNames.add(plantName);
+        }
 
     }
 
     @Given("I am on the Games page")
-    public void i_am_on_the_games_page() {
-        // can't test til merged with u6004
-    }
-
-    @When("I go to the Plant Guesser game page")
-    public void i_go_to_the_plant_guesser_game_page() throws Exception {
-        mvcResult = mockMvc.perform(get("/plant-guesser"))
+    public void i_am_on_the_games_page() throws Exception {
+        mvcResult = mockMvc.perform(get("/games"))
                 .andExpect(status().isOk())
                 .andReturn();
     }
 
-    @Then("I see an image of a plant and four options of plant names where one is the correct plant name and the other three are names of plants in the same family to click on")
-    public void i_see_an_image_of_a_plant_and_four_options_of_plant_names() {
+    @When("I go to the Plant Guesser game page")
+    public void i_go_to_the_plant_guesser_game_page() throws Exception {
+        resultActions = mockMvc.perform(get("/plant-guesser"));
+        mvcResult = resultActions.andExpect(status().isOk())
+                .andReturn();
+        modelAndView = mvcResult.getModelAndView();
+    }
+
+    @Then("I see an image of a plant")
+    public void i_see_an_image_of_a_plant() {
+        String displayedImage = (String) Objects.requireNonNull(modelAndView).getModel().get("plantImage");
+        Assertions.assertEquals(plantImage, displayedImage);
+    }
+
+    @And("I see four options of plant names where one is the correct plant name and the other three are names of plants in the same family to click on")
+    public void i_see_four_options_of_plant_names() {
+        List<String[]> options = (List<String[]>) modelAndView.getModel().get("quizOptions");
+
+        // checks that the quiz options contain the correct plant name, and gets the index of it to ignore it when checking the other plants
+        int correctPlantIndex = IntStream.range(0, options.size())
+                .filter(i -> options.get(i)[0].contains(plantName))
+                .findFirst()
+                .orElse(-1);  // returns -1 if options doesn't contain the correct plant name
+
+        Assertions.assertTrue(correctPlantIndex != -1);
+
+        // checks the other quiz options to make sure they're in the plant family
+        IntStream.range(0, options.size())
+                .filter(i -> i != correctPlantIndex) // skips the index of correct plant
+                .forEach(i -> {
+                    String option = options.get(i)[0];
+                    boolean containsCommonName = familyMembersCommonNames.stream()
+                            .anyMatch(option::contains);
+
+                    Assertions.assertTrue(containsCommonName);
+                });
+
 
     }
 
+    @And("I see a text description saying Plant X {string}")
+    public void i_see_a_text_description_saying_x_of_of_10(String totalRounds) throws Exception {
+        resultActions.andExpect(content().string(org.hamcrest.Matchers
+                                .containsString("Plant " + roundNumber + totalRounds)));
+    }
+
     @And("I see a text description saying {string}")
-    public void i_see_a_text_description_saying(String arg0) {
+    public void i_see_a_text_description_saying(String description) throws Exception {
+        resultActions.andExpect(content().string(org.hamcrest.Matchers
+                .containsString(description)));
     }
 
     @Given("I am on the Plant Guesser game page")
@@ -107,6 +170,10 @@ public class PlantGuesserSteps {
 
     @Then("I am shown a new image of a plant and four options of plant names where one is the correct plant name and the other three are names of plants in the same family to click on")
     public void i_am_shown_a_new_image_of_a_plant_and_four_options_of_plant_names_where_one_is_the_correct_plant_name_and_the_other_three_are_names_of_plants_in_the_same_family_to_click_on() {
+    }
+
+    @And("I see a text description saying Plant X+{int} {string}")
+    public void i_see_a_text_description_saying_plant_X_1(int nextRound, String totalRounds) {
     }
 
     @When("I select an incorrect plant name option")
@@ -148,5 +215,4 @@ public class PlantGuesserSteps {
     @And("my current game progress is not saved")
     public void my_current_game_progress_is_not_saved() {
     }
-
 }
