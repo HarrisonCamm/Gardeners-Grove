@@ -1,18 +1,59 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class PlantGuesserSteps {
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    PlantGuesserService plantGuesserService;
+    private MockMvc mockMvc;
+
+    private MvcResult mvcResult;
+    @Before
+    public void setup() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+
+    }
+
+    @Given("I am on the Games page")
+    public void i_am_on_the_games_page() {
+        // can't test til merged with u6004
+    }
 
     @When("I go to the Plant Guesser game page")
-    public void i_go_to_the_plant_guesser_game_page() {
+    public void i_go_to_the_plant_guesser_game_page() throws Exception {
+        mvcResult = mockMvc.perform(get("/plant-guesser"))
+                .andExpect(status().isOk())
+                .andReturn();
     }
 
     @Then("I see an image of a plant and four options of plant names where one is the correct plant name and the other three are names of plants in the same family to click on")
-    public void i_see_an_image_of_a_plant_and_four_options_of_plant_names_where_one_is_the_correct_plant_name_and_the_other_three_are_names_of_plants_in_the_same_family_to_click_on() {
+    public void i_see_an_image_of_a_plant_and_four_options_of_plant_names() {
+
     }
 
     @And("I see a text description saying {string}")
@@ -86,4 +127,5 @@ public class PlantGuesserSteps {
     @And("my current game progress is not saved")
     public void my_current_game_progress_is_not_saved() {
     }
+
 }

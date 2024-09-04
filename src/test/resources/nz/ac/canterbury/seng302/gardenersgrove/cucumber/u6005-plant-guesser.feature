@@ -5,7 +5,7 @@ Feature: U6005 - Play plant guesser
     Given I am logged in with email "lei@email.com" and password "Password1!"
 
   Scenario: AC1 - Viewing game
-    Given I am anywhere on the app
+    Given I am on the Games page
     When I go to the Plant Guesser game page
     Then I see an image of a plant and four options of plant names where one is the correct plant name and the other three are names of plants in the same family to click on
     And I see a text description saying "Plant X/10"
