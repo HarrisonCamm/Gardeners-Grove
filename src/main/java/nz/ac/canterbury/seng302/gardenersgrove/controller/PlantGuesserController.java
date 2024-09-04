@@ -39,12 +39,14 @@ public class PlantGuesserController {
     private final UserRepository userRepository;
     public int roundNumber = 0;
     public int score = 0;
+    private Random random;
 
-    public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, UserService userService, UserRepository userRepository) {
+    public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, UserService userService, UserRepository userRepository, Random random) {
         this.plantGuesserService = plantGuesserService;
         this.plantFamilyService = plantFamilyService;
         this.userService = userService;
         this.userRepository = userRepository;
+        this.random = random;
     }
     public void setRandom(Random random) {
         this.random = random;
