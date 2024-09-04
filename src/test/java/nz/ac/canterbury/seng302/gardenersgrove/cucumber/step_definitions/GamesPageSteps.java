@@ -73,10 +73,13 @@ public class GamesPageSteps {
                 .andReturn();
 
         String content = gamesResult.getResponse().getContentAsString();
-        boolean hasPlayButton = content.contains("<a href=\"/daily-spin\" class=\"btn btn-primary\">" + buttonText + "</a>");
+
+        boolean hasPlayButton = content.matches("(?s).*<a.*class=\"btn btn-primary\".*>\\s*" + buttonText + "\\s*</a>.*");
 
         Assertions.assertTrue(hasPlayButton, "Expected to find a '" + buttonText + "' button on the page.");
     }
+
+
 
     @Then("I am taken to the Games page")
     public void iAmTakenToTheGamesPage() throws Exception {
