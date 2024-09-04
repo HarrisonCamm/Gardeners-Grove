@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.Random;
+
 import static org.mockito.ArgumentMatchers.any;
 
 @WebMvcTest
@@ -84,6 +86,9 @@ public class ViewGardensTest {
 
     @MockBean
     private MessagesController messagesController;
+
+    @MockBean
+    private Random random;
 
     private User testUser;
 

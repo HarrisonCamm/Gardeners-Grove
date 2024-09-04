@@ -46,7 +46,9 @@ public class PlantGuesserController {
         this.userService = userService;
         this.userRepository = userRepository;
     }
-
+    public void setRandom(Random random) {
+        this.random = random;
+    }
     /**
      * Gets the thymeleaf page showing the plant guesser page
      */
@@ -142,7 +144,7 @@ public class PlantGuesserController {
             listSize = quizOptions.size();
         }
 
-        Collections.shuffle(quizOptions);
+        Collections.shuffle(quizOptions, random); // set random while testing, otherwise true random
 
         List<String[]> splitQuizOptions = new ArrayList<>();
         for (String option: quizOptions) {

@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.service;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserList;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -25,6 +26,7 @@ public class PlantGuesserService {
 
     private final RestTemplate restTemplate;
 
+    @Autowired
     public PlantGuesserService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }

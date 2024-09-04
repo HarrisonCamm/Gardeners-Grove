@@ -9,25 +9,30 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@JsonDeserialize
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PlantData {
 
+    @JsonDeserialize
     @JsonProperty("id")
     public int id;
 
+    @JsonDeserialize
     @JsonProperty("common_name")
     public String common_name;
 
+    @JsonDeserialize
     @JsonProperty("scientific_name")
     public String scientific_name;
 
+    @JsonDeserialize
     @JsonProperty("image_url")
     public String image_url;
 
+    @JsonDeserialize
     @JsonProperty("family")
     public String family;
 
+    @JsonDeserialize
     @JsonProperty("family_common_name")
     public String family_common_name;
 

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head(title='Games')"><title>Games</title></head>
+<body>
+
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+
+<div class="container mt-4">
+    <h2>Games</h2>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        <div class="col">
+            <div class="card h-100">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img th:src="@{/images/photosynthesis_slots.png}" class="img-fluid rounded-start" alt="Plant Guesser">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Photosynthesis Slots</h5>
+                            <p class="card-text">
+                                Photosynthesis Slots is a fun slot machine game where you spin to match nature-themed
+                                symbols like the sun, water, and plants. Match three or more to win Blooms and coins.
+                                Spin to play, learn, and earn! Come and play for your free daily spin!
+                            </p>
+                            <a th:href="@{/daily-spin}" class="btn btn-primary">Play</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100">
+                <div class="row g-0">
+                    <div class="col-md-4">
+
+                        <img th:src="@{/images/plant_guesser.jpg}" class="img-fluid rounded-start" alt="Plant Guesser">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Plant Guesser</h5>
+                            <p class="card-text">
+                                Learn some plant names and images! Each round consists of 10 plant images you must guess
+                                the name of correctly. If you get nothing correct, that's okay, you're still learning and
+                                you still get 100 Blooms! On top of that, you also get 10 Blooms for each correct answer.
+                                So if you get all 10 questions correct, you could earn 200 Blooms!
+                            </p>
+                            <a th:href="@{/plant-guesser}" class="btn btn-primary">Play</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div th:replace="fragments/scripts :: scripts"></div>
+</body>
+</html>
