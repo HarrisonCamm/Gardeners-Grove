@@ -98,21 +98,17 @@ public class SlotsService {
     /**
      * Calculates the amount won by the player
      * @param slots The slots returned from generateSlots() function
-     * @return The amount won by the player as a number 😊
+     * @return The amount of blooms won by the player as a number 😊
      */
     public static int amountWon(List<int[]> slots) {
         int amountWon = 0;
-        for (int i = COL_LENGTH - 1; i >= COL_LENGTH - GAME_ROWS; i--) {
-            int value = slots.get(0)[i];
-            boolean isWin = true;
-            for (int j = 1; j < slots.size(); j++) {
-                if (slots.get(j)[i] != value) {
-                    isWin = false;
-                    break;
-                }
-            }
-            if (isWin) {
-                amountWon += WIN_AMOUNTS[value];
+
+        int longestComboLength = 0;
+        int longestComboEmoji = 0;
+        //Iterate though the last GAME_ROWS number of rows of the slot machine
+        //Where GAME_ROWS is the number of rows that wins are checked on
+        for (int i = COL_LENGTH - GAME_ROWS; i < COL_LENGTH; i++) {
+            for (int j = 0 ; i < NUM_COLS; i++) {
             }
         }
         return amountWon;
