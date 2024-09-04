@@ -108,6 +108,8 @@ public class ViewGardenTests {
 
         // Mock unsuccessful moderation (profanity detected)
         when(moderationService.moderateText(eq("InappropriateTag"))).thenReturn("[{\"term\":\"InappropriateTerm\"}]");
+
+        when(moderationService.isContentAppropriate(null)).thenReturn(true);
     }
 
 

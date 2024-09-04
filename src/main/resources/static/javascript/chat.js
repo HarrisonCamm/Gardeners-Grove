@@ -1,3 +1,14 @@
+function getDeploymentContextPath(url) {
+    if (url == null)
+        url = new URL(window.location.href);
+    const deployPath = url.pathname.split('/')[1];
+    if (deployPath === 'test' || deployPath === 'prod')
+        return '/' + deployPath;
+    else
+        return '';
+
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     const from = document.getElementById('chat-container').dataset.from;
 
@@ -26,8 +37,20 @@ document.addEventListener("DOMContentLoaded", function() {
     let stompClient = null;
 
     function connect() {
-        //Create a WebSocket connection
-        const socket = new WebSocket('/ws');
+        // Determine the correct WebSocket URL based on the current environment
+        let socketUrl;
+
+        const url = new URL(window.location.href);
+        const deployPath = getDeploymentContextPath(url);
+        if (deployPath != null && deployPath.length > 0) {
+            socketUrl = 'https://csse-seng302-team600.canterbury.ac.nz' + deployPath + '/ws'
+        } else {
+            // socketUrl = 'http://localhost:8080/ws';
+            socketUrl = url.origin + '/ws'
+        }
+
+        // Create a WebSocket connection
+        const socket = new WebSocket(socketUrl);
 
         //Create a Stomp client to send and receive messages
         stompClient = Stomp.over(socket);
@@ -84,13 +107,13 @@ document.addEventListener("DOMContentLoaded", function() {
         lastName = lastName ? lastName : '';
         document.getElementById('friendName-' + userId).innerText = firstName + ' ' + lastName;
 
-
-        document.getElementById('friendImage-' + userId).src = '/get-image?view-user-profile=true&userID=' + userId;
+        const deployPath = getDeploymentContextPath(null);
+        document.getElementById('friendImage-' + userId).src = deployPath + '/get-image?view-user-profile=true&userID=' + userId;
 
         document.getElementById('message-input-' + userId).focus();
 
         // Get all the past chats from the backend
-        fetch('/chat/' + to.email)
+        fetch(deployPath + '/chat/' + to.email)
             .then(response => response.json())
             .then(messages => {
                 const chatArea = document.getElementById('chatArea-' + to.email);
