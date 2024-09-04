@@ -301,10 +301,6 @@ h2 {
     margin-left: 20px;
 }
 
-/* Disabled styles */
-/*.disabled {*/
-/*    opacity: 0;*/
-/*}*/
 .invisible {
     opacity: 0;
 }
@@ -615,8 +611,6 @@ hr {
     }
 }
 
-
-
 /* Chat content area */
 .chat-content {
     flex-grow: 1;
@@ -650,4 +644,3 @@ hr {
     padding: 0;
     margin: 0;
 }
-
