@@ -8,7 +8,6 @@
     <script th:src="@{javascript/enter-date.js}"></script>
     <script th:src="@{javascript/prevent-enter-submit.js}"></script>
     <script th:src="@{/javascript/image-handling.js}"></script>
-    <script th:src="@{/javascript/description-length.js}"></script>
 </head>
 <body>
 <!-- Navigation Bar Fragment -->
@@ -37,7 +36,6 @@
                     <span class="required-input"> * </span>
                 </label>
                 <br/>
-                <!--                todo maxlength will need to be update along with plant validator and plant class sql string length for the defined limit from Fabian-->
                 <input type="text" class="form-control" id="plantName"
                        maxlength="1028" th:value="*{name}" th:field="*{name}"
                        th:classappend="${nameError} ? 'error' : 'form-control'">
@@ -62,7 +60,7 @@
                           th:field="*{description}"
                           th:classappend="${descriptionError} ? 'error' : ''"
                           oninput="descriptionLength(this)">
-                        </textarea>
+                </textarea>
             </div>
             <div id="descriptionLengthValidation" class="error-message" th:text="${descriptionError}"></div>
             <br/>
