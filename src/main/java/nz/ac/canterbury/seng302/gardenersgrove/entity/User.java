@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,6 +41,9 @@ public class User {
 
     @Column(name = "dateOfBirth")
     private String dateOfBirth;
+
+    @Column
+    private Date lastFreeSpinUsed;
 
     @Column(name = "bloomBalance", nullable = false, columnDefinition = "integer default 500")
     private Integer bloomBalance = DEFAULT_BALANCE;
@@ -238,6 +242,14 @@ public class User {
 
     public List<User> getFriends() {
         return friends;
+    }
+
+    public Date getLastFreeSpinUsed() {
+        return lastFreeSpinUsed;
+    }
+
+    public void UpdateLastFreeSpinUsed() {
+        lastFreeSpinUsed = new Date();
     }
 
 

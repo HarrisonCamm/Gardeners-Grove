@@ -34,12 +34,12 @@
     let spinStarted = false; // This is very important and checks if you have spun already
 
     let startSpin = () => {
-        if (!spinStarted && !spinning && money > 0) {
+        if (!spinStarted && !spinning) {
             document.querySelectorAll(".prize-item.active").forEach(s => {
                 s.classList.remove("active");
             });
-            updateMoney(-1);
-            setChange(-1);
+            updateMoney(-50);
+            setChange(-50);
             spinningReels = [0, 1, 2, 3, 4];  // Include all reels at once
             spinning = true;
             spinUpdate(11);     //This works out as working through the 15 increments of the reel
