@@ -96,6 +96,8 @@ public class ViewGardenTests {
     @MockBean
     private PlantGuesserService plantGuesserService;
 
+    @MockBean
+    private PlantFamilyService plantFamilyService;
 
     @MockBean
     private MessagesController messagesController;

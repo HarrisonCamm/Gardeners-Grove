@@ -98,6 +98,9 @@ public class EditGardenTests {
     private PlantGuesserService plantGuesserService;
 
     @MockBean
+    private PlantFamilyService plantFamilyService;
+
+    @MockBean
     private MessagesController messagesController;
 
     private User mockUser;
