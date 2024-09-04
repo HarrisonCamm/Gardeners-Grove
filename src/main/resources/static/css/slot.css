@@ -182,10 +182,12 @@ body {
     position: absolute;
     left: 325px;
     font-family: cursive;
-    font-size: xx-large;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 1.7rem;
 }
 
-.container .info .info-button:hover {
+.container .info-button:hover {
     background-color: #72543C;
     cursor: pointer;
 }
@@ -239,7 +241,7 @@ body {
 .modal-content {
     background-color: #fefefe;
     margin: 20% auto auto;
-    padding: 20px;
+    padding: 15px 20px 20px;
     border: 1px solid #888;
     width: 50%;
 }
