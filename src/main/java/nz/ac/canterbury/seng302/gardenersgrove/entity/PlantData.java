@@ -3,11 +3,6 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import jakarta.persistence.Tuple;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PlantData {
@@ -48,7 +43,7 @@ public class PlantData {
         return common_name;
     }
 
-    public String getCommonAndScientificName() {;
+    public String getCommonAndScientificName() {
         return common_name + ",\n(" + scientific_name + ")";
     }
 
