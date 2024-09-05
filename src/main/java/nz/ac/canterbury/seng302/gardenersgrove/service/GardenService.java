@@ -5,6 +5,8 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.GardenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.Optional;
  */
 @Service
 public class GardenService {
+    private static final int GARDENS_PER_PAGE = 10;
     private GardenRepository gardenRepository;
 
     @Autowired
@@ -37,6 +40,17 @@ public class GardenService {
 
     public List<Garden> getGardensByTag(Tag tag) {
         return gardenRepository.findGardensByTagId(tag.getId());
+    }
+
+    public Page<Garden> getPublicGardens(Integer page) {
+        return gardenRepository.findPublicGardens(PageRequest.of(page, GARDENS_PER_PAGE));
+    }
+
+    public Page<Garden> searchPublicGardens(String search, Integer page) {
+        if (search == null || search.isEmpty()) {
+            return getPublicGardens(page);
+        }
+        return gardenRepository.findPublicGardensBySearch(search, PageRequest.of(page, GARDENS_PER_PAGE));
     }
 
     public Garden addGarden(Garden garden) {
