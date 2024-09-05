@@ -24,15 +24,15 @@ Feature: U6001 - Showing Blooms Balance and Bloom Transactions
     And I can see a detailed transaction history for the Bloom currency
     And the transaction history should be paginated or scrollable if it exceeds a certain number of entries
 
-#
-#  Scenario: AC3 - Transaction Details
-#    Given I am viewing the transaction history on my profile page
-#    When I click on a specific transaction
-#    Then I can see additional details for that transaction, if available
-#    And the details may include:
-#      | The user or entity involved in the transaction |
-#      | Any associated messages or notes               |
-#      | A link to the related content or action        |
+
+  Scenario: AC3 - Transaction Details
+    Given I am viewing the transaction history on my profile page
+    When I click on a specific transaction
+    Then I can see additional details for that transaction, if available
+    And the details may include:
+      | The user or entity involved in the transaction |
+      | Any associated messages or notes               |
+      | A link to the related content or action        |
 #
   Scenario: AC4 - No Transaction History Available
     Given I am logged into the system
