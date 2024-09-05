@@ -142,8 +142,13 @@ public class PlantGuesserSteps {
     }
 
     @Given("I am on the Plant Guesser game page")
-    public void i_am_on_the_plant_guesser_game_page() {
-        //not yet implemented
+    public void i_am_on_the_plant_guesser_game_page() throws Exception {
+        mvcResult = mockMvc.perform(get("/plant-guesser"))
+                .andExpect(status().isOk())
+                .andReturn();
+        String viewName = Objects.requireNonNull(mvcResult.getModelAndView()).getViewName();
+        boolean onPlantGuesserPage = Objects.equals(Objects.requireNonNull(mvcResult.getModelAndView()).getViewName(), "plantGuesserTemplate");
+        Assertions.assertTrue(onPlantGuesserPage);
     }
 
     @When("I select the correct plant name")
