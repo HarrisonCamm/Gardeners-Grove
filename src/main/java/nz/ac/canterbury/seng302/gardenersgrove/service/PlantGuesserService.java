@@ -25,6 +25,7 @@ public class PlantGuesserService {
     private String apiUrl;
 
     private final RestTemplate restTemplate;
+    private Random random = new Random();
 
     @Autowired
     public PlantGuesserService(RestTemplate restTemplate) {
@@ -46,7 +47,6 @@ public class PlantGuesserService {
     }
 
     public PlantData[] getPlants() {
-        Random random = new Random();
         int num = random.nextInt(747);
         return getPlantPage(num).getPlantGuesserList();
         
