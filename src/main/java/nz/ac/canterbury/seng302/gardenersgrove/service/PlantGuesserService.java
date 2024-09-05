@@ -34,7 +34,11 @@ public class PlantGuesserService {
 
     public PlantGuesserList getPlantPage(int pageNum) {
         String url = apiUrl + "?page=" + pageNum + "&filter_not[common_name]=null&filter_not[image_url]=null&token=" + apiKey;
-        return restTemplate.getForObject(url, PlantGuesserList.class);
+        try {
+            return restTemplate.getForObject(url, PlantGuesserList.class);
+        } catch (Exception e) {
+            return null; // Return null for invalid or error responses e.g. no token
+        }
     }
     public PlantGuesserList getPlantFamily(String family) {
         String url = apiUrl + "?filter[family_name]=" + family + "&filter_not[common_name]=null&token=" + apiKey;

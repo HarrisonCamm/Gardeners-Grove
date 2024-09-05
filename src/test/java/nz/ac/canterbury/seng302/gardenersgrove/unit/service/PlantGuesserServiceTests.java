@@ -24,6 +24,8 @@ public class PlantGuesserServiceTests {
 
     private static String plantFamilyResponseJsonString;
     private static String plantsResponseJsonString;
+    private static String invalidTokenPlantsResponseJsonString;
+
     private static PlantGuesserList plantGuesserList;
 
 
@@ -33,6 +35,8 @@ public class PlantGuesserServiceTests {
         //read json example file
         plantFamilyResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
         plantsResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
+        invalidTokenPlantsResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsNoTokenResponse.json"));
+
 
         ObjectMapper objectMapper = new ObjectMapper();
         plantGuesserList = objectMapper.readValue(plantsResponseJsonString, PlantGuesserList.class);
@@ -42,17 +46,27 @@ public class PlantGuesserServiceTests {
     @BeforeEach
     public void setUp() {
         //mock any classes here if needed
-        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserList);
         plantGuesserService = new PlantGuesserService(restTemplate);
     }
 
     @Test
     public void validApiRequest_ReturnsPlantGuesserList() {
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserList);
+
         int pageNum = 1;
         PlantGuesserList plantGuesserList = plantGuesserService.getPlantPage(pageNum);
         Assertions.assertNotNull(plantGuesserList);
+
         PlantData[] plantGuesserItems = plantGuesserList.getPlantGuesserList();
         String plantItemCommonName = Arrays.stream(plantGuesserItems).toList().get(0).common_name;
         Assertions.assertEquals("Benguet pine", plantItemCommonName);
+    }
+
+    @Test
+    public void invalidTokenRequest_ReturnsNull() {
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(invalidTokenPlantsResponseJsonString);
+        int pageNum = 1;
+        PlantGuesserList response = plantGuesserService.getPlantPage(pageNum);
+        Assertions.assertNull(response);
     }
 }
