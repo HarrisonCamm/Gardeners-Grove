@@ -10,7 +10,16 @@ function getDeploymentContextPath(url) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    const from = document.getElementById('chat-container').dataset.from;
+    const dataset = document.getElementById('chat-container').dataset;
+    const from = dataset.from;
+    const gardenID = dataset.gardenId;
+    if (gardenID != null) {
+        const userId = dataset.ownerId;
+        const firstName = dataset.firstName;
+        const lastName = dataset.lastName;
+        const email = dataset.email;
+        showChatUI(userId, firstName, lastName, email);
+    }
 
     // Attach event listeners to chat links
     document.querySelectorAll('.chat-link').forEach(link => {

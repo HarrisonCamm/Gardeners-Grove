@@ -1,6 +1,9 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Message;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.MessageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
@@ -25,17 +29,21 @@ public class MessagesController {
     Logger logger = LoggerFactory.getLogger(MessagesController.class);
 
     private final UserService userService;
+    private final GardenService gardenService;
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageService messageService;
 
     /**
      * Constructor for the MessagesController
      * @param userService The user service
+     * @param gardenService The garden service
      * @param messagingTemplate The messaging template
      * @param messageService The message service
      */
-    public MessagesController(UserService userService, SimpMessagingTemplate messagingTemplate, MessageService messageService) {
+    public MessagesController(UserService userService, GardenService gardenService,
+                              SimpMessagingTemplate messagingTemplate, MessageService messageService) {
         this.userService = userService;
+        this.gardenService = gardenService;
         this.messagingTemplate = messagingTemplate;
         this.messageService = messageService;
     }
@@ -46,8 +54,24 @@ public class MessagesController {
      * @return The name of the template to render
      */
     @GetMapping("/messages")
-    public String getMessages(Model model) {
-        logger.info("/GET messages");
+    public String getMessages(Model model,
+                              @RequestParam(value = "gardenID", required = false) Long gardenID) {
+        logger.info("GET /messages");
+
+        Garden garden = null;
+        if (gardenID != null) {
+            Optional<Garden> foundGarden = gardenService.findGarden(gardenID);
+            if (foundGarden.isEmpty() || !foundGarden.get().getIsPublic()) {
+                return "redirect:/messages";
+            }
+            garden = foundGarden.get();
+            model.addAttribute("gardenID", gardenID);
+            User owner = garden.getOwner();
+            model.addAttribute("ownerID", owner.getUserId());
+            model.addAttribute("firstName", owner.getFirstName());
+            model.addAttribute("lastName", owner.getLastName());
+            model.addAttribute("email", owner.getEmail());
+        }
 
         // Add the current user's email to the model and the list of the user's friends
         String currentUserEmail = userService.getAuthenticatedUser().getEmail();
