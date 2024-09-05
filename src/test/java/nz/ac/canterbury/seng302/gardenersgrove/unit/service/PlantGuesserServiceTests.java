@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -128,7 +129,15 @@ public class PlantGuesserServiceTests {
 
     @Test
     public void getMultiChoice_ContainsCorrectAnswer() {
-        //TODO
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserFamilyList);
+        String familyString = "Pinaceae";
+        String correctPlantName = "Mountain pine";
+        String plantScientificName = "Pinus uncinata";
+        String commonAndScientificName = correctPlantName + ",\n(" + plantScientificName + ")";
+
+        List<String> response = plantGuesserService.getMultichoicePlantNames(familyString, correctPlantName, commonAndScientificName);
+        boolean containsCorrectName = response.stream().anyMatch(plantData -> Objects.equals(plantData, correctPlantName));
+        Assertions.assertFalse(containsCorrectName);
     }
 
     @Test
