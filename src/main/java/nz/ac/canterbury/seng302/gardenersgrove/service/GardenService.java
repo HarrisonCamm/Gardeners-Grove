@@ -18,6 +18,7 @@ import java.util.Optional;
  */
 @Service
 public class GardenService {
+    private static final int GARDENS_PER_PAGE = 10;
     private GardenRepository gardenRepository;
 
     @Autowired
@@ -42,14 +43,14 @@ public class GardenService {
     }
 
     public Page<Garden> getPublicGardens(Integer page) {
-        return gardenRepository.findPublicGardens(PageRequest.of(page, 10));
+        return gardenRepository.findPublicGardens(PageRequest.of(page, GARDENS_PER_PAGE));
     }
 
     public Page<Garden> searchPublicGardens(String search, Integer page) {
         if (search == null || search.isEmpty()) {
             return getPublicGardens(page);
         }
-        return gardenRepository.findPublicGardensBySearch(search, PageRequest.of(page, 10));
+        return gardenRepository.findPublicGardensBySearch(search, PageRequest.of(page, GARDENS_PER_PAGE));
     }
 
     public Garden addGarden(Garden garden) {
