@@ -47,7 +47,11 @@ public class PlantGuesserService {
 
     public PlantGuesserItem getPlantById(int id) {
         String url = apiUrl + "/" + id + "?token=" + apiKey;
-        return restTemplate.getForObject(url, PlantGuesserItem.class);
+        try {
+            return restTemplate.getForObject(url, PlantGuesserItem.class);
+        } catch (Exception e) {
+            return null; //e.g. invalid ID
+        }
     }
 
     public PlantData[] getPlants() {

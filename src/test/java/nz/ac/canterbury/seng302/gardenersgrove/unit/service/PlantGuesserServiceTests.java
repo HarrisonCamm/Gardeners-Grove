@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.unit.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserList;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
 import org.junit.jupiter.api.Assertions;
@@ -25,6 +26,8 @@ public class PlantGuesserServiceTests {
     private static String plantFamilyResponseJsonString;
     private static String plantsResponseJsonString;
     private static String invalidTokenPlantsResponseJsonString;
+    private static String invalidPlantIdResponseJsonString;
+
 
     private static PlantGuesserList plantGuesserList;
     private static PlantGuesserList plantGuesserFamilyList;
@@ -38,6 +41,7 @@ public class PlantGuesserServiceTests {
         plantFamilyResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
         plantsResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
         invalidTokenPlantsResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsNoTokenResponse.json"));
+        invalidPlantIdResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantInvalidIdResponse.json"));
 
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -85,5 +89,13 @@ public class PlantGuesserServiceTests {
         String plantItemCommonName = Arrays.stream(plantGuesserItems).toList().get(0).common_name;
         Assertions.assertEquals("Scotch pine", plantItemCommonName);
 
+    }
+
+    @Test
+    public void invalidPlantId_ReturnsNull() {
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(invalidPlantIdResponseJsonString);
+        int id = 0;
+        PlantGuesserItem response = plantGuesserService.getPlantById(id);
+        Assertions.assertNull(response);
     }
 }
