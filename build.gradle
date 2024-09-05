@@ -30,7 +30,18 @@ sonarqube {
 		property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/jacoco/test-report.xml"
 		// TODO TEST THIS SPRINT 4
 		//property "sonar.java.source", "17"
-		//property "sonar.java.target", "17"
+		//property "sonar.java.target", "17
+
+		// For pipelines run for a branch build only
+		if (System.env.CI_MERGE_REQUEST_IID == null || System.env.CI_MERGE_REQUEST_IID.trim().isEmpty()) {
+			property "sonar.branch.name", "${System.env.CI_COMMIT_REF_NAME}"
+		}
+		// For pipelines run as part of a merge request
+		else {
+			property "sonar.pullrequest.key", "${System.env.CI_MERGE_REQUEST_IID}"
+			property "sonar.pullrequest.branch", "${System.env.CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+			property "sonar.pullrequest.base", "${System.env.CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
+		}
 	}
 }
 
@@ -74,6 +85,13 @@ dependencies {
 	testImplementation 'io.cucumber:cucumber-spring:7.15.0'
 	testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.15.0'
 	testImplementation 'org.junit.platform:junit-platform-suite:1.10.2'
+
+	// Spring websockets
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	//WebJars STOMP
+	implementation 'org.webjars:stomp-websocket:2.3.4'
+
 }
 
 tasks.named("check") {

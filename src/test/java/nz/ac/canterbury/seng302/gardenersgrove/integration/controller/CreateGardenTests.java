@@ -4,10 +4,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.controller.CreateGardenController
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -50,13 +47,16 @@ public class CreateGardenTests {
     @MockBean
     private ImageService imageService;
 
+    @MockBean
+    private ModerationService moderationService;
+
     private User testUser;
 
     @BeforeEach
     public void setUp() {
         testUser = new User("user@email.com", "User", "Name", "password");
-//        testUser.setUserId(1L);
         Mockito.when(userService.getAuthenticatedUser()).thenReturn(testUser);
+        when(moderationService.isContentAppropriate(null)).thenReturn(true);
     }
 
     @Test

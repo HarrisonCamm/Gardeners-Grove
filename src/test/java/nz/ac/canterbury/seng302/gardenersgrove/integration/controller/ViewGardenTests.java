@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
 
+import nz.ac.canterbury.seng302.gardenersgrove.controller.MessagesController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
@@ -92,6 +93,9 @@ public class ViewGardenTests {
     @MockBean
     private AlertService alertService;
 
+    @MockBean
+    private MessagesController messagesController;
+
     private User testUser;
 
     @BeforeEach
@@ -104,6 +108,8 @@ public class ViewGardenTests {
 
         // Mock unsuccessful moderation (profanity detected)
         when(moderationService.moderateText(eq("InappropriateTag"))).thenReturn("[{\"term\":\"InappropriateTerm\"}]");
+
+        when(moderationService.isContentAppropriate(null)).thenReturn(true);
     }
 
 
