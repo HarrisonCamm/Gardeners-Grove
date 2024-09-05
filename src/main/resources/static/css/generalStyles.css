@@ -301,8 +301,7 @@ h2 {
     margin-left: 20px;
 }
 
-/* Disabled styles */
-.disabled {
+.invisible {
     opacity: 0;
 }
 
@@ -611,8 +610,6 @@ hr {
         font-size: 200%;
     }
 }
-
-
 
 /* Chat content area */
 .chat-content {
