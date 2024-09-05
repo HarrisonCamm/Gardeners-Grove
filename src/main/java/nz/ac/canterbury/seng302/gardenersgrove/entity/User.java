@@ -64,12 +64,6 @@ public class User {
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Transaction> transactions = new ArrayList<>();
 
-    public List<Transaction> getTransactions() {
-        return transactions;
-    }
-
-
-
 
 
     @Column(nullable = false, columnDefinition = "integer default 0")
@@ -217,6 +211,13 @@ public class User {
     public void setInappropriateTagCount(int inappropriateTagCount) {
         this.inappropriateTagCount = inappropriateTagCount;
     }
+
+
+
+
+
+
+
 
     @Override
     public String toString() {

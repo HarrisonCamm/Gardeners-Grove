@@ -71,12 +71,22 @@ public class UserProfileController {
             model.addAttribute("displayName", (currentUser.getFirstName() + " " + currentUser.getLastName()));
             model.addAttribute("email", currentUser.getEmail());
             model.addAttribute("dateOfBirth", currentUser.getDateOfBirth());
-            model.addAttribute("transactions", transactionsPage.getContent());
-            model.addAttribute("totalPages", transactionsPage.getTotalPages());
+
+            if(transactionsPage != null) {
+                model.addAttribute("transactions", transactionsPage.getContent());
+                model.addAttribute("totalPages", transactionsPage.getTotalPages());
+                model.addAttribute("hasPrevious", transactionsPage.hasPrevious());
+                model.addAttribute("hasNext", transactionsPage.hasNext());
+            } else {
+                model.addAttribute("transactions", null);
+                model.addAttribute("totalPages", 0);
+                model.addAttribute("hasPrevious", false);
+                model.addAttribute("hasNext", false);
+            }
+
             model.addAttribute("currentPage", page);
             model.addAttribute("pageSize", PAGE_SIZE);
-            model.addAttribute("hasPrevious", transactionsPage.hasPrevious());
-            model.addAttribute("hasNext", transactionsPage.hasNext());
+
             //For the purposes of tests
             model.addAttribute("noTransactionsText", "No Transactions to Display");
             model.addAttribute("earnBloomsText", "You can earn Blooms by: Selling plants, playing games, recieving tips from other users");
