@@ -54,7 +54,7 @@ public class PlantGuesserController {
                               Model model) {
         logger.info("GET /plant-guesser");
         RedirectService.addEndpoint("/plant-guesser");
-        PlantData plant = plantGuesserService.getPlant();
+        PlantData plant = plantGuesserService.getPlant(roundNumber);
         playGameRound(model, plant);
 
         return "plantGuesserTemplate";
@@ -142,6 +142,7 @@ public class PlantGuesserController {
             plantCommonAndScientificName = plantName + ",\n(" + plantScientificName + ")";
             quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
             listSize = quizOptions.size();
+            logger.info(plantName);
         }
 
         Collections.shuffle(quizOptions, random); // set random while testing, otherwise true random

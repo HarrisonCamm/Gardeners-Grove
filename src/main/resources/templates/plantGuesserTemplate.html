@@ -84,7 +84,7 @@
                         th:text="${quizOptions[3][0]} + ${quizOptions[3][1]}"> </button>
             </div>
         </form>
-        <form th:hidden="${!answerSubmitted}" th:action="@{/plant-guesser}" method="get">
+        <form id="next-question" th:hidden="${!answerSubmitted}" th:action="@{/plant-guesser}" method="get">
             <div>
                 <button type="submit" class="button">Next Question</button>
             </div>

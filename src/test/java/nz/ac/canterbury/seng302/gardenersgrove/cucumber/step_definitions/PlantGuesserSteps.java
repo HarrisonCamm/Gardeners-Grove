@@ -25,13 +25,13 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -54,17 +54,29 @@ public class PlantGuesserSteps {
     private ResultActions resultActions;
     private MvcResult mvcResult;
     private ModelAndView modelAndView;
-    private String validPlantJsonString;
-    private String validPlantFamilyJsonString;
-    private String plantName;
-    private String plantImage;
+    private String plantNameJson;
+    private String plantImageJson;
     private List<String> familyMembersCommonNames;
-    private int roundNumber = 1;
+    private List<String[]> quizOptions;
+    private String plantFamily;
+    private String quizOption1;
+    private String quizOption2;
+    private String quizOption3;
+    private String quizOption4;
+    private String plantImage;
+    private String imageCredit;
+    private int roundNumber;
+    private int correctOption;
+    private int score;
+    private String plantImagePrevious;
+    private List<String[]> quizOptionsPrevious;
+    private int correctOptionPrevious;
+    private int roundNumberPrevious;
     private User currentUser;
     @Before
     public void setup() throws IOException {
-        validPlantJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
-        validPlantFamilyJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
+        String validPlantJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
+        String validPlantFamilyJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         // This makes the shuffling of plant guesser options not random so it can be tested
         Random fixedRandom = new Random(13);
@@ -72,8 +84,8 @@ public class PlantGuesserSteps {
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode1 = objectMapper.readTree(validPlantJsonString);
-        plantName = jsonNode1.get("data").get(0).get("common_name").asText();
-        plantImage = jsonNode1.get("data").get(0).get("image_url").asText();
+        plantNameJson = jsonNode1.get("data").get(0).get("common_name").asText();
+        plantImageJson = jsonNode1.get("data").get(0).get("image_url").asText();
 
         familyMembersCommonNames = new ArrayList<>();
         JsonNode jsonNode2 = objectMapper.readTree(validPlantFamilyJsonString);
@@ -97,31 +109,42 @@ public class PlantGuesserSteps {
         mvcResult = resultActions.andExpect(status().isOk())
                 .andReturn();
         modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        Map<String, Object> model = modelAndView.getModel();
+        quizOptions = (List<String[]>) model.get("quizOptions");
+        plantFamily = (String) model.get("plantFamily");
+        quizOption1 = quizOptions.get(0)[0] + ',' + quizOptions.get(0)[1];
+        quizOption2 = quizOptions.get(1)[0] + ',' + quizOptions.get(1)[1];
+        quizOption3 = quizOptions.get(2)[0] + ',' + quizOptions.get(2)[1];
+        quizOption4 = quizOptions.get(3)[0] + ',' + quizOptions.get(3)[1];
+        plantImage = (String) model.get("plantImage");
+        imageCredit = (String) model.get("imageCredit");
+        roundNumber = (int) model.get("roundNumber");
+        correctOption = (int) model.get("correctOption");
+        score = (int) model.get("score");
     }
 
     @Then("I see an image of a plant")
     public void i_see_an_image_of_a_plant() {
-        String displayedImage = (String) Objects.requireNonNull(modelAndView).getModel().get("plantImage");
-        Assertions.assertEquals(plantImage, displayedImage);
+        Assertions.assertEquals(plantImageJson, plantImage);
     }
 
     @And("I see four options of plant names where one is the correct plant name and the other three are names of plants in the same family to click on")
     public void i_see_four_options_of_plant_names() {
-        List<String[]> options = (List<String[]>) modelAndView.getModel().get("quizOptions");
 
         // checks that the quiz options contain the correct plant name, and gets the index of it to ignore it when checking the other plants
-        int correctPlantIndex = IntStream.range(0, options.size())
-                .filter(i -> options.get(i)[0].contains(plantName))
+        int correctPlantIndex = IntStream.range(0, quizOptions.size())
+                .filter(i -> quizOptions.get(i)[0].contains(plantNameJson))
                 .findFirst()
                 .orElse(-1);  // returns -1 if options doesn't contain the correct plant name
 
         Assertions.assertNotEquals(-1, correctPlantIndex);
 
         // checks the other quiz options to make sure they're in the plant family
-        IntStream.range(0, options.size())
+        IntStream.range(0, quizOptions.size())
                 .filter(i -> i != correctPlantIndex) // skips the index of correct plant
                 .forEach(i -> {
-                    String option = options.get(i)[0];
+                    String option = quizOptions.get(i)[0];
                     boolean containsCommonName = familyMembersCommonNames.stream()
                             .anyMatch(option::contains);
 
@@ -143,54 +166,103 @@ public class PlantGuesserSteps {
                 .containsString(description)));
     }
 
-    @Given("I am on the Plant Guesser game page")
-    public void i_am_on_the_plant_guesser_game_page() throws Exception {
-        mvcResult = mockMvc.perform(get("/plant-guesser"))
-                .andExpect(status().isOk())
-                .andReturn();
-        String viewName = Objects.requireNonNull(mvcResult.getModelAndView()).getViewName();
-        boolean onPlantGuesserPage = Objects.equals(viewName, "plantGuesserTemplate");
-        Assertions.assertTrue(onPlantGuesserPage);
-    }
-
     @When("I select the correct plant name")
-    public void i_select_the_correct_plant_name() {
-        //not yet implemented
+    public void i_select_the_correct_plant_name() throws Exception {
+        resultActions = mockMvc.perform(post("/plant-guesser")
+                .param("selectedOption", String.valueOf(correctOption))
+                .param("plantFamily", plantFamily)
+                .param("quizOption1", quizOption1)
+                .param("quizOption2", quizOption2)
+                .param("quizOption3", quizOption3)
+                .param("quizOption4", quizOption4)
+                .param("plantImage", plantImage)
+                .param("imageCredit", imageCredit)
+                .param("roundNumber", String.valueOf(roundNumber))
+                .param("correctOption", String.valueOf(correctOption))
+                .param("score", String.valueOf(score)));
+
+        mvcResult = resultActions.andExpect(status().isOk())
+                .andReturn();
+
     }
 
     @Then("I am shown a message saying {string}")
-    public void i_am_shown_a_message_saying(String arg0) {
-        //not yet implemented
+    public void i_am_shown_a_message_saying(String answerMessage) throws Exception {
+        resultActions.andExpect(content().string(org.hamcrest.Matchers
+                .containsString(answerMessage)));
     }
 
     @And("the option I selected is shown as green")
     public void the_option_i_selected_is_shown_as_green() {
-        //not yet implemented
+        //Can't be tested with cucumber
     }
 
     @And("a Next Question button \\(could be an icon) is shown")
-    public void a_next_question_button_could_be_an_icon_is_shown() {
-        //not yet implemented
+    public void a_next_question_button_could_be_an_icon_is_shown() throws Exception{
+        resultActions.andExpect(content().string(
+                org.hamcrest.Matchers.containsString(
+                        "<form id=\"next-question\" action=\"/plant-guesser\" method=\"get\">"))
+        )
+        .andExpect(content().string(
+                        org.hamcrest.Matchers.containsString(
+                                "Next Question"))
+        )
+        .andExpect(content().string(
+                org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("<form id=\"next-question\" hidden=\"hidden\" action=\"/plant-guesser\" method=\"get\">"))
+        ));
+
     }
 
     @When("I click the Next Question button after guessing")
-    public void i_click_the_next_question_button_after_guessing() {
-        //not yet implemented
+    public void i_click_the_next_question_button_after_guessing() throws Exception {
+        i_select_the_correct_plant_name();
+        plantImagePrevious = plantImage;
+        quizOptionsPrevious = quizOptions;
+        correctOptionPrevious = correctOption;
+        roundNumberPrevious = roundNumber;
+        i_go_to_the_plant_guesser_game_page();
     }
 
-    @Then("I am shown a new image of a plant and four options of plant names where one is the correct plant name and the other three are names of plants in the same family to click on")
-    public void i_am_shown_a_new_image_of_a_plant_and_four_options_of_plant_names_where_one_is_the_correct_plant_name_and_the_other_three_are_names_of_plants_in_the_same_family_to_click_on() {
-        //not yet implemented
+    @Then("I am shown a new image of a plant")
+    public void i_am_shown_a_new_image_of_a_plant() {
+        Assertions.assertNotEquals(plantImage, plantImagePrevious);
+    }
+
+    @And("I am shown four new options of plant names where one is the correct plant name and the other three are names of plants in the same family to click on")
+    public void i_am_shown_four_new_options_of_plant_names_where_one_is_the_correct_plant_name_and_the_other_three_are_names_of_plants_in_the_same_family_to_click_on() {
+        Assertions.assertNotEquals(quizOptionsPrevious.get(correctOption), quizOptions.get(correctOption));
     }
 
     @And("I see a text description saying Plant X+{int} {string}")
-    public void i_see_a_text_description_saying_plant_X_1(int nextRound, String totalRounds) {
-        //not yet implemented
+    public void i_see_a_text_description_saying_plant_X_1(int nextRound, String totalRounds) throws Exception {
+        resultActions.andExpect(content().string(org.hamcrest.Matchers
+                .containsString("Plant " + (roundNumberPrevious+nextRound) + totalRounds)));
     }
 
     @When("I select an incorrect plant name option")
-    public void i_select_an_incorrect_plant_name_option() {
-        //not yet implemented
+    public void i_select_an_incorrect_plant_name_option() throws Exception {
+        resultActions = mockMvc.perform(post("/plant-guesser")
+                .param("selectedOption", String.valueOf(correctOption+1))
+                .param("plantFamily", plantFamily)
+                .param("quizOption1", quizOption1)
+                .param("quizOption2", quizOption2)
+                .param("quizOption3", quizOption3)
+                .param("quizOption4", quizOption4)
+                .param("plantImage", plantImage)
+                .param("imageCredit", imageCredit)
+                .param("roundNumber", String.valueOf(roundNumber))
+                .param("correctOption", String.valueOf(correctOption))
+                .param("score", String.valueOf(score)));
+
+        mvcResult = resultActions.andExpect(status().isOk())
+                .andReturn();
+
+    }
+
+    @Then("I am shown a message saying {string} correct plant name")
+    public void i__am_shown_a_message_saying_correct_plant_name(String message) throws Exception{
+        resultActions.andExpect(content().string(org.hamcrest.Matchers
+                .containsString(message + plantNameJson)));
     }
 
     @And("the option I selected is shown as red")

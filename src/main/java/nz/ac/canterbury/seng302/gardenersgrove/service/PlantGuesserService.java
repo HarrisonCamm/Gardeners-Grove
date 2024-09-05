@@ -51,10 +51,10 @@ public class PlantGuesserService {
         return getPlantPage(num).getPlantGuesserList();
         
     }
-    public PlantData getPlant() {
+    public PlantData getPlant(int i) {
         List<PlantData> plantList= new ArrayList<>(Arrays.stream(getPlants()).toList());
         Collections.shuffle(plantList);
-        return plantList.get(0);
+        return plantList.get(i);
     }
 
     public PlantData[] getFamilyPlants(String family, String plantName) {
