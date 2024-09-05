@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.cucumber.junit.platform.engine.Constants;
 import nz.ac.canterbury.seng302.gardenersgrove.GardenersGroveApplication;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ForecastResponse;
@@ -83,8 +84,17 @@ public class RunCucumberTest {
 //            String currentWeatherRainJsonString = Files.readString(Paths.get("src/test/resources/json/validCurrentWeatherRain.json"));
 
             String plantPageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
-            String plantFamily1PageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
-            String plantFamily2PageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamily2Response.json"));
+            String plantFamilyPageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
+
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            // Parse the combined JSON
+            JsonNode combinedData = objectMapper.readTree(plantFamilyPageJsonString);
+
+            // Extract "pine_family" and "brassicaceae_family" as separate strings
+            String plantFamily1PageJsonString = combinedData.get("plant1_family").toString();
+            String plantFamily2PageJsonString = combinedData.get("plant2_family").toString();
+
 
             Rained = "Rained";
             NotRained = "NotRained";
@@ -120,7 +130,7 @@ public class RunCucumberTest {
             PlantGuesserList mockedPlantFamilyPage1 = objectMapper.readValue(plantFamily1PageJsonString, PlantGuesserList.class);
             PlantData[] plantFamilyMembers1 = Arrays.stream(mockedPlantFamilyPage1.getPlantGuesserList()).toList()
                     .stream()
-                    .filter(plant_i -> !Objects.equals(plant_i.common_name, plant1.common_name))
+                    .filter(eachPlant -> !Objects.equals(eachPlant.common_name, plant1.common_name))
                     .toArray(PlantData[]::new);
             List<String> multichoicePlantNames1 = new ArrayList<>(Arrays.stream(plantFamilyMembers1).toList()
                     .stream()
@@ -135,7 +145,7 @@ public class RunCucumberTest {
             PlantGuesserList mockedPlantFamilyPage2 = objectMapper.readValue(plantFamily2PageJsonString, PlantGuesserList.class);
             PlantData[] plantFamilyMembers2 = Arrays.stream(mockedPlantFamilyPage2.getPlantGuesserList()).toList()
                     .stream()
-                    .filter(plant_i -> !Objects.equals(plant_i.common_name, plant2.common_name))
+                    .filter(eachPlant -> !Objects.equals(eachPlant.common_name, plant2.common_name))
                     .toArray(PlantData[]::new);
             List<String> multichoicePlantNames2 = new ArrayList<>(Arrays.stream(plantFamilyMembers2).toList()
                     .stream()
@@ -203,11 +213,33 @@ public class RunCucumberTest {
 
 
         when(plantGuesserService.getPlant(0)).thenReturn(plant1);
-        when(plantGuesserService.getPlant(1)).thenReturn(plant1);
         when(plantGuesserService.getMultichoicePlantNames(plant1.family, plant1.common_name, plant1.getCommonAndScientificName())).thenReturn(fourOptions1);
+
+        when(plantGuesserService.getPlant(1)).thenReturn(plant2);
+        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
+
         when(plantGuesserService.getPlant(2)).thenReturn(plant2);
+        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
+
         when(plantGuesserService.getPlant(3)).thenReturn(plant2);
+        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
+
         when(plantGuesserService.getPlant(4)).thenReturn(plant2);
+        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
+
+        when(plantGuesserService.getPlant(5)).thenReturn(plant2);
+        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
+
+        when(plantGuesserService.getPlant(6)).thenReturn(plant2);
+        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
+
+        when(plantGuesserService.getPlant(7)).thenReturn(plant2);
+        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
+
+        when(plantGuesserService.getPlant(8)).thenReturn(plant2);
+        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
+
+        when(plantGuesserService.getPlant(9)).thenReturn(plant2);
         when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
 
     }

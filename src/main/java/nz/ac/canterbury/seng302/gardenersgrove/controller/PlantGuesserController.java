@@ -32,8 +32,8 @@ public class PlantGuesserController {
     private final PlantFamilyService plantFamilyService;
     private final UserService userService;
     private final UserRepository userRepository;
-    private int roundNumber = 0;
-    private int score = 0;
+    private int roundNumber;
+    private int score;
     private Random random;
 
     public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, UserService userService, UserRepository userRepository, Random random) {
@@ -42,9 +42,16 @@ public class PlantGuesserController {
         this.userService = userService;
         this.userRepository = userRepository;
         this.random = random;
+        this.roundNumber = 0;
+        this.score = 0;
     }
     public void setRandom(Random random) {
         this.random = random;
+    }
+    public void resetRound() {
+
+        this.roundNumber = 0;
+        this.score = 0;
     }
     /**
      * Gets the thymeleaf page showing the plant guesser page
@@ -53,6 +60,9 @@ public class PlantGuesserController {
     public String getTemplate(HttpServletRequest request,
                               Model model) {
         logger.info("GET /plant-guesser");
+        if (!Objects.equals(RedirectService.getPreviousPage(), "/plant-guesser")) {
+            resetRound();
+        }
         RedirectService.addEndpoint("/plant-guesser");
         PlantData plant = plantGuesserService.getPlant(roundNumber);
         playGameRound(model, plant);
@@ -142,7 +152,6 @@ public class PlantGuesserController {
             plantCommonAndScientificName = plantName + ",\n(" + plantScientificName + ")";
             quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
             listSize = quizOptions.size();
-            logger.info(plantName);
         }
 
         Collections.shuffle(quizOptions, random); // set random while testing, otherwise true random

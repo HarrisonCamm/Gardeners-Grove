@@ -89,8 +89,8 @@ public class PlantGuesserSteps {
 
         familyMembersCommonNames = new ArrayList<>();
         JsonNode jsonNode2 = objectMapper.readTree(validPlantFamilyJsonString);
-        for (int i=0; i < jsonNode2.get("data").size(); i++) {
-            String plantFamilyMemberName = jsonNode2.get("data").get(i).get("common_name").asText();
+        for (int i=0; i < jsonNode2.get("plant1_family").get("data").size(); i++) {
+            String plantFamilyMemberName = jsonNode2.get("plant1_family").get("data").get(i).get("common_name").asText();
             familyMembersCommonNames.add(plantFamilyMemberName);
         }
 
@@ -108,20 +108,7 @@ public class PlantGuesserSteps {
         resultActions = mockMvc.perform(get("/plant-guesser"));
         mvcResult = resultActions.andExpect(status().isOk())
                 .andReturn();
-        modelAndView = mvcResult.getModelAndView();
-        assert modelAndView != null;
-        Map<String, Object> model = modelAndView.getModel();
-        quizOptions = (List<String[]>) model.get("quizOptions");
-        plantFamily = (String) model.get("plantFamily");
-        quizOption1 = quizOptions.get(0)[0] + ',' + quizOptions.get(0)[1];
-        quizOption2 = quizOptions.get(1)[0] + ',' + quizOptions.get(1)[1];
-        quizOption3 = quizOptions.get(2)[0] + ',' + quizOptions.get(2)[1];
-        quizOption4 = quizOptions.get(3)[0] + ',' + quizOptions.get(3)[1];
-        plantImage = (String) model.get("plantImage");
-        imageCredit = (String) model.get("imageCredit");
-        roundNumber = (int) model.get("roundNumber");
-        correctOption = (int) model.get("correctOption");
-        score = (int) model.get("score");
+        get_model_data();
     }
 
     @Then("I see an image of a plant")
@@ -183,6 +170,7 @@ public class PlantGuesserSteps {
 
         mvcResult = resultActions.andExpect(status().isOk())
                 .andReturn();
+        get_model_data();
 
     }
 
@@ -256,6 +244,7 @@ public class PlantGuesserSteps {
 
         mvcResult = resultActions.andExpect(status().isOk())
                 .andReturn();
+        get_model_data();
 
     }
 
@@ -267,22 +256,54 @@ public class PlantGuesserSteps {
 
     @And("the option I selected is shown as red")
     public void the_option_i_selected_is_shown_as_red() {
-        //not yet implemented
+        //Can't be cucumber tested
     }
 
     @When("I have guessed for 10 plants \\(completed the game)")
-    public void i_have_guessed_for_10_plants_completed_the_game() {
-        //not yet implemented
+    public void i_have_guessed_for_10_plants_completed_the_game() throws Exception{
+        // round 1
+        i_select_an_incorrect_plant_name_option();
+        i_go_to_the_plant_guesser_game_page();
+        // round 2
+        i_select_the_correct_plant_name();
+        i_go_to_the_plant_guesser_game_page();
+        // round 3
+        i_select_the_correct_plant_name();
+        i_go_to_the_plant_guesser_game_page();
+        // round 4
+        i_select_an_incorrect_plant_name_option();
+        i_go_to_the_plant_guesser_game_page();
+        // round 5
+        i_select_the_correct_plant_name();
+        i_go_to_the_plant_guesser_game_page();
+        // round 6
+        i_select_the_correct_plant_name();
+        i_go_to_the_plant_guesser_game_page();
+        // round 7
+        i_select_the_correct_plant_name();
+        i_go_to_the_plant_guesser_game_page();
+        // round 8
+        i_select_an_incorrect_plant_name_option();
+        i_go_to_the_plant_guesser_game_page();
+        // round 9
+        i_select_an_incorrect_plant_name_option();
+        i_go_to_the_plant_guesser_game_page();
+        // round 10
+        i_select_the_correct_plant_name();
+        i_go_to_the_plant_guesser_game_page();
+
     }
 
     @Then("an additional message is shown below any other messages {string}")
-    public void an_additional_message_is_shown_below_any_other_messages(String arg0) {
-        //not yet implemented
+    public void an_additional_message_is_shown_below_any_other_messages(String message) throws Exception {
+        resultActions.andExpect(content().string(org.hamcrest.Matchers
+                .containsString(message)));
     }
 
     @And("I see my score of correct guesses out of 10")
-    public void i_see_my_score_of_correct_guesses_out_of_10() {
-        //not yet implemented
+    public void i_see_my_score_of_correct_guesses_out_of_10() throws Exception {
+        resultActions.andExpect(content().string(org.hamcrest.Matchers
+                .containsString("Total score: " + score + "/10")));
     }
 
     @And("my total Bloom count is updated and displayed")
@@ -324,5 +345,22 @@ public class PlantGuesserSteps {
     @And("my current game progress is not saved")
     public void my_current_game_progress_is_not_saved() {
         //not yet implemented
+    }
+
+    public void get_model_data() {
+        modelAndView = mvcResult.getModelAndView();
+        assert modelAndView != null;
+        Map<String, Object> model = modelAndView.getModel();
+        quizOptions = (List<String[]>) model.get("quizOptions");
+        plantFamily = (String) model.get("plantFamily");
+        quizOption1 = quizOptions.get(0)[0] + ',' + quizOptions.get(0)[1];
+        quizOption2 = quizOptions.get(1)[0] + ',' + quizOptions.get(1)[1];
+        quizOption3 = quizOptions.get(2)[0] + ',' + quizOptions.get(2)[1];
+        quizOption4 = quizOptions.get(3)[0] + ',' + quizOptions.get(3)[1];
+        plantImage = (String) model.get("plantImage");
+        imageCredit = (String) model.get("imageCredit");
+        roundNumber = (int) model.get("roundNumber");
+        correctOption = (int) model.get("correctOption");
+        score = (int) model.get("score");
     }
 }
