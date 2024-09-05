@@ -52,6 +52,14 @@ public class User {
     )
     private List<User> friends = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "User_NonFriendContacts",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "contact_id")
+    )
+    private List<User> nonFriendContacts = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn
     private Image image;
@@ -219,6 +227,9 @@ public class User {
      * @param acceptedFriend the user to add as a friend
      */
     public void addFriend(User acceptedFriend) {
+        if (nonFriendContacts.contains(acceptedFriend)) {
+            this.removeContact(acceptedFriend);
+        }
         friends.add(acceptedFriend);
     }
 
@@ -227,9 +238,7 @@ public class User {
      * @param friendToRemove The user to be removed from the friends list.
      */
     public void removeFriend(User friendToRemove) {
-
         friends.removeIf(friend -> friend.equals(friendToRemove));
-
     }
 
     public void removeAllFriends() {
@@ -240,26 +249,33 @@ public class User {
         return friends;
     }
 
+    /**
+     * Adds a non-friend contact
+     * @param contact the contact
+     * @return true if added, false if already contained
+     */
+    public boolean addContact(User contact) {
+        if (!nonFriendContacts.contains(contact)) {
+            nonFriendContacts.add(contact);
+            return true;
+        }
+        return false;
+    }
 
+    /**
+     * Removes a non-friend contact
+     * @param contact the contact
+     */
+    public void removeContact(User contact) {
+        nonFriendContacts.removeIf(c -> c.equals(contact));
+    }
+
+
+    /**
+     * Gets an immutable list of non-friend contacts
+     * @return the list of contacts
+     */
+    public List<User> getNonFriendContacts() {
+        return nonFriendContacts;
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
