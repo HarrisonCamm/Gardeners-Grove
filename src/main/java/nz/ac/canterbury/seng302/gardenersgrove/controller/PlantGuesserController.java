@@ -29,14 +29,11 @@ public class PlantGuesserController {
     Logger logger = LoggerFactory.getLogger(PlantGuesserController.class);
 
     private final PlantGuesserService plantGuesserService;
-    @Autowired
     private final PlantFamilyService plantFamilyService;
-    @Autowired
     private final UserService userService;
-    @Autowired
     private final UserRepository userRepository;
-    public int roundNumber = 0;
-    public int score = 0;
+    private int roundNumber = 0;
+    private int score = 0;
     private Random random;
 
     public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, UserService userService, UserRepository userRepository, Random random) {
@@ -106,18 +103,21 @@ public class PlantGuesserController {
         this.roundNumber += 1;
         model.addAttribute("score", this.score);
 
+        boolean answerSubmitted = false;
+        boolean gameOver = false;
+
         if (roundNumber < 10) {
-            model.addAttribute("answerSubmitted", true);
-            model.addAttribute("gameOver", false);
+            answerSubmitted = true;
         } else {
             currentUser.setBloomBalance(currentBloomBalance + 100 + (this.score*10));
             userRepository.save(currentUser);
             model.addAttribute("bloomBalance", currentUser.getBloomBalance());
-            model.addAttribute("answerSubmitted", false);
-            model.addAttribute("gameOver", true);
+            gameOver = true;
             this.roundNumber = 0;
             this.score = 0;
         }
+        model.addAttribute("answerSubmitted", answerSubmitted);
+        model.addAttribute("gameOver", gameOver);
         return "plantGuesserTemplate";
     }
 
