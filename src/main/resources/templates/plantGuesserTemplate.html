@@ -13,6 +13,11 @@
 <!-- Navigation Bar Fragment -->
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 <div>
+    <div th:hidden="${gameOver}">
+        <a th:href="@{/games}">
+            <button type="button" class="button" id="backButton">◄ Games</button>
+        </a>
+    </div>
     <div class="centre">
         <br/>
         <div class="card w-auto centre plant-card">
