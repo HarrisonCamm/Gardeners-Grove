@@ -9,8 +9,8 @@ Feature: U20 - Browsing public gardens
 
   Scenario: AC2 - Browse gardens from anywhere in the system
     Given I am anywhere on the system
-    When I click the "Browse Gardens" button
-    Then I am taken to a page with a search text box and the 10 newest created gardens
+    When I click the "Browse Gardens" button on the navigation bar
+    Then I am taken to a page with a search text box and the 10 or fewer of newest created gardens
 
   Scenario: AC3 - Search for gardens by name or plants
     Given I enter a search string "rose" into the search box

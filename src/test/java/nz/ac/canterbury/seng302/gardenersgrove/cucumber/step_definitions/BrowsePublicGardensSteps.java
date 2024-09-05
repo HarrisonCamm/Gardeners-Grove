@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
@@ -12,6 +13,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -91,8 +93,11 @@ public class BrowsePublicGardensSteps {
     // AC1
     @Then("any logged-in user can view the name, size, and plants when clicking on a link to the garden")
     public void loggedInUserCanViewGardenDetails() throws Exception {
+        // Create the public garden link
         String gardenLink = "/view-garden?gardenID=" + publicGarden.getId();
-        mockMvc.perform(get(gardenLink).with(csrf())) // CSRF token is what authenticates the user
+
+        // Perform the GET request to view that garden
+        mockMvc.perform(get(gardenLink))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("gardenName", "gardenSize", "plants"))
                 .andExpect(model().attribute("gardenName", publicGarden.getName()))
@@ -116,13 +121,42 @@ public class BrowsePublicGardensSteps {
         // Assuming user is logged in and navigating the system
     }
 
+    @When("I click the {string} button on the navigation bar")
+    public void iClickTheButtonOnTheNavigationBar(String browserGardens) throws Exception {
+        // change button name to actual url
+        browserGardens = "/browse-gardens";
+
+        // Click the browse gardens button
+        mockMvc.perform(get(browserGardens).with(csrf()))
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("gardenPage"));
+    }
+
     // AC2
-    @Then("I click the {string} button")
-    public void clickBrowseGardensButton(String buttonLabel) throws Exception {
-        // Trigger browse gardens page loading
+    @Then("I am taken to a page with a search text box and the {int} or fewer of newest created gardens")
+    public void iAmTakenToAPageWithASearchTextBoxAndTheOrFewerOfNewestCreatedGardens(Integer maxGardens) throws Exception {
+        // Perform the GET request to the "/browse-gardens" endpoint
         mockMvc.perform(get("/browse-gardens"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("gardenPage"));
+
+                // Ensure the model contains the gardenPage attribute
+                .andExpect(MockMvcResultMatchers.model().attributeExists("gardenPage"))
+
+                // TODO: Figure out if garden is actually being put on model
+
+                // Ensure that the "content" inside the "gardenPage" is an array (the list of gardens)
+                .andExpect(MockMvcResultMatchers.model().attribute("gardenPage", MockMvcResultMatchers.jsonPath("$.content").isArray()))
+
+                // Ensure that the number of gardens listed is either equal to or less than the max number (10 in this case)
+                .andExpect(MockMvcResultMatchers.model().attribute("gardenPage", MockMvcResultMatchers.jsonPath("$.content.length()").value(Math.min(maxGardens, 10))))
+
+                // Check for the presence of the search box in the HTML structure
+                .andExpect(MockMvcResultMatchers.xpath("//input[@type='search' and @name='q']").exists())
+
+                // Ensure that the search box has the correct placeholder text by accessing its attribute via XPath
+                .andExpect(MockMvcResultMatchers.xpath("//input[@type='search']/@placeholder").string("Browse public gardens"));
     }
+
+
 }
 
