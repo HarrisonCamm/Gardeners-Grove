@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -38,6 +39,9 @@ public class Garden {
     @Column(length = 512)
     private String description;
 
+    @Column
+    private Date created;
+
 
     /**
      * Required constructor
@@ -72,6 +76,7 @@ public class Garden {
         this.owner = owner;
         this.isPublic = false;
         this.description = description;
+        this.created = new Date();
     }
 
     // Getter for id
