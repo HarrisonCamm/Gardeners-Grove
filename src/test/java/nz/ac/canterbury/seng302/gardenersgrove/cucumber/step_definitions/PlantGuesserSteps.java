@@ -61,6 +61,7 @@ public class PlantGuesserSteps {
     private List<String> familyMembersCommonNames;
     private int roundNumber = 1;
     private User currentUser;
+    private Integer startingBalance;
     @Before
     public void setup() throws IOException {
         validPlantJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
@@ -151,6 +152,8 @@ public class PlantGuesserSteps {
         String viewName = Objects.requireNonNull(mvcResult.getModelAndView()).getViewName();
         boolean onPlantGuesserPage = Objects.equals(viewName, "plantGuesserTemplate");
         Assertions.assertTrue(onPlantGuesserPage);
+        currentUser = userService.getAuthenticatedUser();
+        startingBalance = currentUser.getBloomBalance();
     }
 
     @When("I select the correct plant name")
@@ -251,6 +254,7 @@ public class PlantGuesserSteps {
 
     @And("my current game progress is not saved")
     public void my_current_game_progress_is_not_saved() {
-        //not yet implemented
+        Integer currentBloomBal = currentUser.getBloomBalance();
+        Assertions.assertEquals(startingBalance, currentBloomBal);
     }
 }
