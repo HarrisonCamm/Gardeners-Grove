@@ -147,7 +147,7 @@ public class PlantGuesserSteps {
                 .andExpect(status().isOk())
                 .andReturn();
         String viewName = Objects.requireNonNull(mvcResult.getModelAndView()).getViewName();
-        boolean onPlantGuesserPage = Objects.equals(Objects.requireNonNull(mvcResult.getModelAndView()).getViewName(), "plantGuesserTemplate");
+        boolean onPlantGuesserPage = Objects.equals(viewName, "plantGuesserTemplate");
         Assertions.assertTrue(onPlantGuesserPage);
     }
 
