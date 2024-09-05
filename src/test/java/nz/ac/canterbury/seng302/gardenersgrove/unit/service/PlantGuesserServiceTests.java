@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Objects;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -97,5 +98,41 @@ public class PlantGuesserServiceTests {
         int id = 0;
         PlantGuesserItem response = plantGuesserService.getPlantById(id);
         Assertions.assertNull(response);
+    }
+
+    @Test
+    public void getPlant_ReturnsValidPlant() {
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserList);
+
+        PlantData response = plantGuesserService.getPlant();
+
+        Assertions.assertTrue(plantsResponseJsonString.contains(response.scientific_name));
+
+    }
+
+    @Test
+    public void getFamilyPlants_ExcludesPlantOfSameName() {
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserFamilyList);
+        String familyString = "Pinaceae";
+        String correctPlantName = "Mountain pine";
+
+        PlantData[] response = plantGuesserService.getFamilyPlants(familyString, correctPlantName);
+        boolean containsCorrectName = Arrays.stream(response).anyMatch(plantData -> Objects.equals(plantData.common_name, correctPlantName));
+        Assertions.assertFalse(containsCorrectName);
+    }
+
+    @Test
+    public void getFamilyPlants_OnlyOnePlant_ReturnsNull() {
+        //TODO
+    }
+
+    @Test
+    public void getMultiChoice_ContainsCorrectAnswer() {
+        //TODO
+    }
+
+    @Test
+    public void getMultiChoice_LessThanThreeOptions_ReturnsNull() {
+        //TODO
     }
 }
