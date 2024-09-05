@@ -81,8 +81,17 @@ public class PlantGuesserService {
                 .toList());
         Collections.shuffle(multichoicePlantNames);
         List<String> plant = Collections.singletonList(commonAndScientificName);
-        return Stream.concat(multichoicePlantNames.subList(0,min(3, multichoicePlantNames.size())).stream(), plant.stream())
-                .collect(Collectors.toList());
+        try {
+            List<String> result = Stream.concat(multichoicePlantNames.subList(0, min(3, multichoicePlantNames.size())).stream(), plant.stream())
+                    .collect(Collectors.toList());
+            if (result.size() < 3) {
+                throw new Exception("At least 3 plants needed");
+            }
+            return result;
+        } catch (Exception e) {
+            return null; //e.g. less than 3 in a family
+        }
+
     }
 
 }

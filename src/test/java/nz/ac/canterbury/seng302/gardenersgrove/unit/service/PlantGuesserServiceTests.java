@@ -30,9 +30,13 @@ public class PlantGuesserServiceTests {
     private static String invalidTokenPlantsResponseJsonString;
     private static String invalidPlantIdResponseJsonString;
 
+    private static String lessThanThreePlantsResponseJsonString;
+
 
     private static PlantGuesserList plantGuesserList;
     private static PlantGuesserList plantGuesserFamilyList;
+    private static PlantGuesserList shortPlantGuesserFamilyList;
+
 
 
 
@@ -44,12 +48,16 @@ public class PlantGuesserServiceTests {
         plantsResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
         invalidTokenPlantsResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsNoTokenResponse.json"));
         invalidPlantIdResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantInvalidIdResponse.json"));
+        lessThanThreePlantsResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getMultiChoicePlantsFewPlantsResponse.json"));
 
 
         ObjectMapper objectMapper = new ObjectMapper();
         plantGuesserList = objectMapper.readValue(plantsResponseJsonString, PlantGuesserList.class);
 
         plantGuesserFamilyList = objectMapper.readValue(plantFamilyResponseJsonString, PlantGuesserList.class);
+
+        shortPlantGuesserFamilyList = objectMapper.readValue(lessThanThreePlantsResponseJsonString, PlantGuesserList.class);
+
 
 
     }
@@ -128,7 +136,7 @@ public class PlantGuesserServiceTests {
     }
 
     @Test
-    public void getMultiChoice_ContainsCorrectAnswer() {
+    public void getMultiChoice_DoesNotContainCorrectAnswer() {
         Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserFamilyList);
         String familyString = "Pinaceae";
         String correctPlantName = "Mountain pine";
@@ -142,6 +150,15 @@ public class PlantGuesserServiceTests {
 
     @Test
     public void getMultiChoice_LessThanThreeOptions_ReturnsNull() {
-        //TODO
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(shortPlantGuesserFamilyList);
+
+        String familyString = "Pinaceae";
+        String correctPlantName = "Common spruce";
+        String plantScientificName = "Picea abies";
+        String commonAndScientificName = correctPlantName + ",\n(" + plantScientificName + ")";
+
+        List<String> response = plantGuesserService.getMultichoicePlantNames(familyString, correctPlantName, commonAndScientificName);
+
+        Assertions.assertNull(response);
     }
 }

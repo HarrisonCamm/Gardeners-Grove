@@ -1,0 +1,73 @@
+{
+  "data": [
+    {
+      "id": 127300,
+      "common_name": "Scotch pine",
+      "slug": "pinus-sylvestris",
+      "scientific_name": "Pinus sylvestris",
+      "year": 1753,
+      "bibliography": "Sp. Pl.: 1000 (1753)",
+      "author": "L.",
+      "status": "accepted",
+      "rank": "species",
+      "family_common_name": "Pine family",
+      "genus_id": 6614,
+      "image_url": "https://bs.plantnet.org/image/o/33d84b84c09347d360afa0d610e220664cfb6d93",
+      "synonyms": [
+        "Pinus sylvestris f. palustris",
+        "Pinus sylvestris f. erythranthera",
+        "Pinus sylvestris f. gibba",
+        "Pinus sylvestris f. nanus",
+        "Pinus sylvestris f. plana",
+        "Pinus sylvestris f. corticola",
+        "Pinus sylvestris f. tuberculata",
+        "Pinus sylvestris f. condensata",
+        "Pinus sylvestris f. brachyphylla",
+        "Pinus sylvestris f. globosa",
+        "Pinus sylvestris f. plicata",
+        "Pinus sylvestris f. virgata",
+        "Pinus borealis"
+      ],
+      "genus": "Pinus",
+      "family": "Pinaceae",
+      "links": {
+        "self": "/api/v1/species/pinus-sylvestris",
+        "plant": "/api/v1/plants/pinus-sylvestris",
+        "genus": "/api/v1/genus/pinus"
+      }
+    },
+    {
+      "id": 127388,
+      "common_name": "Common spruce",
+      "slug": "picea-abies",
+      "scientific_name": "Picea abies",
+      "year": 1881,
+      "bibliography": "Deut. Fl.: 325 (1881)",
+      "author": "(L.) H.Karst.",
+      "status": "accepted",
+      "rank": "species",
+      "family_common_name": "Pine family",
+      "genus_id": 6623,
+      "image_url": "https://bs.plantnet.org/image/o/839086b536fc2782b9c1cc0f9687b97f3a18ef43",
+      "synonyms": [
+        "Pinus abies subsp. vulgaris",
+        "Picea abies subsp. europaea",
+        "Pinus pyramidalis",
+        "Picea excelsa f. chlorocarpa",
+        "Picea excelsa f. leucogyna",
+        "Picea excelsa f. viminalis",
+        "Picea excelsa f. virgata",
+        "Picea excelsa f. tubuliformis",
+        "Picea excelsa f. clanbrassiliana",
+        "Picea excelsa f. europaea"
+      ],
+      "genus": "Picea",
+      "family": "Pinaceae",
+      "links": {
+        "self": "/api/v1/species/picea-abies",
+        "plant": "/api/v1/plants/picea-abies",
+        "genus": "/api/v1/genus/picea"
+      }
+    }
+  ]
+}
