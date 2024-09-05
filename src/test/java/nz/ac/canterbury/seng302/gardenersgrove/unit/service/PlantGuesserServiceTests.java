@@ -27,6 +27,8 @@ public class PlantGuesserServiceTests {
     private static String invalidTokenPlantsResponseJsonString;
 
     private static PlantGuesserList plantGuesserList;
+    private static PlantGuesserList plantGuesserFamilyList;
+
 
 
 
@@ -40,6 +42,9 @@ public class PlantGuesserServiceTests {
 
         ObjectMapper objectMapper = new ObjectMapper();
         plantGuesserList = objectMapper.readValue(plantsResponseJsonString, PlantGuesserList.class);
+
+        plantGuesserFamilyList = objectMapper.readValue(plantFamilyResponseJsonString, PlantGuesserList.class);
+
 
     }
 
@@ -68,5 +73,17 @@ public class PlantGuesserServiceTests {
         int pageNum = 1;
         PlantGuesserList response = plantGuesserService.getPlantPage(pageNum);
         Assertions.assertNull(response);
+    }
+
+    @Test
+    public void validFamilyRequest_ReturnsPlantGuesserList() {
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserFamilyList);
+        PlantGuesserList plantGuesserFamilyList = plantGuesserService.getPlantFamily("Pinaceae"); //same family as mocked json
+        Assertions.assertNotNull(plantGuesserFamilyList);
+
+        PlantData[] plantGuesserItems = plantGuesserFamilyList.getPlantGuesserList();
+        String plantItemCommonName = Arrays.stream(plantGuesserItems).toList().get(0).common_name;
+        Assertions.assertEquals("Scotch pine", plantItemCommonName);
+
     }
 }
