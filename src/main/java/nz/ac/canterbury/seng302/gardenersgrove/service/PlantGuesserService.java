@@ -26,6 +26,9 @@ public class PlantGuesserService {
 
     private final RestTemplate restTemplate;
     private Random random = new Random();
+    private static final String PLANT_PAGE_FILTERS = "&filter_not[common_name]=null&filter_not[image_url]=null&token=";
+    private static final String PLANT_FAMILY_PAGE_FILTERS = "&filter_not[common_name]=null&token=";
+    private static final int MAX_PAGE_NUM = 747;
 
     @Autowired
     public PlantGuesserService(RestTemplate restTemplate) {
@@ -33,7 +36,7 @@ public class PlantGuesserService {
     }
 
     public PlantGuesserList getPlantPage(int pageNum) {
-        String url = apiUrl + "?page=" + pageNum + "&filter_not[common_name]=null&filter_not[image_url]=null&token=" + apiKey;
+        String url = apiUrl + "?page=" + pageNum + PLANT_PAGE_FILTERS + apiKey;
         try {
             return restTemplate.getForObject(url, PlantGuesserList.class);
         } catch (Exception e) {
@@ -41,7 +44,7 @@ public class PlantGuesserService {
         }
     }
     public PlantGuesserList getPlantFamily(String family) {
-        String url = apiUrl + "?filter[family_name]=" + family + "&filter_not[common_name]=null&token=" + apiKey;
+        String url = apiUrl + "?filter[family_name]=" + family + PLANT_FAMILY_PAGE_FILTERS + apiKey;
         return restTemplate.getForObject(url, PlantGuesserList.class);
     }
 
@@ -55,7 +58,7 @@ public class PlantGuesserService {
     }
 
     public PlantData[] getPlants() {
-        int num = random.nextInt(747);
+        int num = random.nextInt(MAX_PAGE_NUM);
         return getPlantPage(num).getPlantGuesserList();
         
     }

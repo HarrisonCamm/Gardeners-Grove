@@ -30,6 +30,8 @@ public class PlantGuesserController {
         this.random = random;
     }
     public void setRandom(Random random) {
+        // This is used for testing purposes, so the shuffling of the answers in not random and can stay consistent for testing
+        // This setter is so it can be set to a fixed random during testing, otherwise it is always truly random
         this.random = random;
     }
 
@@ -75,6 +77,7 @@ public class PlantGuesserController {
 
         Collections.shuffle(quizOptions, random); // set random while testing, otherwise true random
 
+        // The quiz options list has a string that contains both the common and scientific name of a plant so they can be shuffled together, then they need to be split up to display the scientific name on a new line
         List<String[]> splitQuizOptions = new ArrayList<>();
         for (String option : quizOptions) {
             String[] options = option.split(",");
