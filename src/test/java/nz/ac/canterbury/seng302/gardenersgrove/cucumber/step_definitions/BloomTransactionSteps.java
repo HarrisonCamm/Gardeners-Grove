@@ -132,12 +132,12 @@ public class BloomTransactionSteps {
         Integer totalPages = (Integer) mvcResult.getModelAndView().getModel().get("totalPages");
         Integer pageSize = (Integer) mvcResult.getModelAndView().getModel().get("pageSize");
 
-        Assertions.assertEquals(pageSize, PAGE_SIZE);
+        Assertions.assertEquals(PAGE_SIZE, pageSize);
         if(transactionCount > PAGE_SIZE) {
             Assertions.assertEquals((int) Math.floor(transactionCount / PAGE_SIZE)+1, totalPages);
         }
         else {
-            Assertions.assertEquals(totalPages, 0);
+            Assertions.assertEquals(0, totalPages);
         }
     }
 
