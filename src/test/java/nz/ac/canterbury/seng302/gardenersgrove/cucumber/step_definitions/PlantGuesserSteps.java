@@ -73,6 +73,7 @@ public class PlantGuesserSteps {
     private int correctOptionPrevious;
     private int roundNumberPrevious;
     private User currentUser;
+    private Integer startingBalance;
     @Before
     public void setup() throws IOException {
         String validPlantJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
@@ -151,6 +152,18 @@ public class PlantGuesserSteps {
     public void i_see_a_text_description_saying(String description) throws Exception {
         resultActions.andExpect(content().string(org.hamcrest.Matchers
                 .containsString(description)));
+    }
+
+    @Given("I am on the Plant Guesser game page")
+    public void i_am_on_the_plant_guesser_game_page() throws Exception {
+        mvcResult = mockMvc.perform(get("/plant-guesser"))
+                .andExpect(status().isOk())
+                .andReturn();
+        String viewName = Objects.requireNonNull(mvcResult.getModelAndView()).getViewName();
+        boolean onPlantGuesserPage = Objects.equals(viewName, "plantGuesserTemplate");
+        Assertions.assertTrue(onPlantGuesserPage);
+        currentUser = userService.getAuthenticatedUser();
+        startingBalance = currentUser.getBloomBalance();
     }
 
     @When("I select the correct plant name")
@@ -344,7 +357,8 @@ public class PlantGuesserSteps {
 
     @And("my current game progress is not saved")
     public void my_current_game_progress_is_not_saved() {
-        //not yet implemented
+        Integer currentBloomBal = currentUser.getBloomBalance();
+        Assertions.assertEquals(startingBalance, currentBloomBal);
     }
 
     public void get_model_data() {
