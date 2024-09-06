@@ -10,6 +10,10 @@ function getDeploymentContextPath(url) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+    // To send to, updated when a chat is opened
+    let to;
+    let stompClient = null;
+
     const dataset = document.getElementById('chat-container').dataset;
     const from = dataset.from;
     const gardenID = dataset.gardenId;
@@ -42,11 +46,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     });
-
-    // To send to, updated when a chat is opened
-    let to;
-
-    let stompClient = null;
 
     function connect() {
         // Determine the correct WebSocket URL based on the current environment
