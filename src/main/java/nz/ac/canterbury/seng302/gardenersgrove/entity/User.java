@@ -278,4 +278,18 @@ public class User {
     public List<User> getNonFriendContacts() {
         return nonFriendContacts;
     }
+
+    public List<User> getAllContacts() {
+        List<User> contacts = new ArrayList<>(getFriends());
+        contacts.addAll(getNonFriendContacts());
+        return contacts;
+    }
+
+    @Override
+    public boolean equals(Object user) {
+        if (!(user instanceof User)) {
+            return false;
+        }
+        return this.userId.equals(((User)user).userId);
+    }
 }
