@@ -23,13 +23,13 @@
 
                     <!-- Display Friends -->
                     <div>
-                        <div th:if="${#lists.isEmpty(friends)}">
+                        <div th:if="${#lists.isEmpty(contacts)}">
                             <p>Your friends will be shown here</p>
                         </div>
 
-                        <div th:if="${!#lists.isEmpty(friends)}">
+                        <div th:if="${!#lists.isEmpty(contacts)}">
                             <ul class="list-unstyled">
-                                <li th:each="friend, iterStat : ${friends}">
+                                <li th:each="friend, iterStat : ${contacts}">
                                     <a href="#"
                                        th:data-user-id="${friend.userId}"
                                        th:data-first-name="${friend.firstName}"
@@ -60,13 +60,14 @@
                     </div>
 
                     <!-- Display actual conversation when friends clicked -->
-                    <div th:each="friend : ${friends}" th:id="'chatUI-' + ${friend.userId}" class="d-flex flex-column h-100" style="display:none !important;">
+                    <div th:each="friend : ${contacts}" th:id="'chatUI-' + ${friend.userId}" class="d-flex flex-column h-100" style="display:none !important;">
                         <div class="p-3 border-bottom">
                             <div class="d-flex align-items-center">
                                 <img th:id="'friendImage-' + ${friend.userId}" class="image-small me-3" src="" alt="">
                                 <div>
                                     <h5 th:id="'friendName-' + ${friend.userId}" class="mb-0"></h5>
-                                    <small class="text-muted">Verified</small>
+                                    <small th:if="${#lists.contains(friends, friend)}" class="text-muted">Verified</small>
+                                    <small th:if="${!#lists.contains(friends, friend)}" class="text-muted">Unverified</small>
                                 </div>
                             </div>
                         </div>

@@ -40,6 +40,7 @@ public class MessagesController {
      * @param messagingTemplate The messaging template
      * @param messageService The message service
      */
+    @Autowired
     public MessagesController(UserService userService, GardenService gardenService,
                               SimpMessagingTemplate messagingTemplate, MessageService messageService) {
         this.userService = userService;
@@ -75,15 +76,21 @@ public class MessagesController {
 
         // Add the current user's email to the model and the list of the user's friends
         String currentUserEmail = userService.getAuthenticatedUser().getEmail();
+        List<User> friends = userService.getAuthenticatedUser().getFriends();
+        List<User> contacts = userService.getAuthenticatedUser().getAllContacts();
+        if (garden != null) {
+            contacts.add(garden.getOwner());
+        }
         model.addAttribute("from", currentUserEmail);
-        model.addAttribute("friends", userService.getAuthenticatedUser().getFriends());
+        model.addAttribute("friends", friends);
+        model.addAttribute("contacts", contacts);
 
         String defaultMessage = "Start a conversation!";
 
         // Add all the last messages sent
         List<String> lastMessages = new ArrayList<>();
-        userService.getAuthenticatedUser().getFriends().forEach(friend -> {
-            Optional<Message> lastMessage = messageService.getLastMessage(currentUserEmail, friend.getEmail());
+        contacts.forEach(contact -> {
+            Optional<Message> lastMessage = messageService.getLastMessage(currentUserEmail, contact.getEmail());
             String lastMessageContent = lastMessage.map(Message::getContent).orElse(defaultMessage);
             if (lastMessageContent.length() > defaultMessage.length()) {
                 lastMessageContent = lastMessageContent.substring(0, defaultMessage.length()) + "...";
@@ -104,6 +111,15 @@ public class MessagesController {
     public void sendMessage(@DestinationVariable String username, Message message) {
         messageService.saveMessage(message.getSender(), username, message.getContent());
         messagingTemplate.convertAndSendToUser(username, "/queue/reply", message);
+
+        User sender = userService.getUserByEmail(message.getSender());
+        User recipient = userService.getUserByEmail(username);
+        if (!sender.getFriends().contains(recipient) && sender.addContact(recipient)) {
+            userService.addUser(sender);
+        }
+        if (!recipient.getFriends().contains(sender) && recipient.addContact(sender)) {
+            userService.addUser(recipient);
+        }
     }
 
     /**
