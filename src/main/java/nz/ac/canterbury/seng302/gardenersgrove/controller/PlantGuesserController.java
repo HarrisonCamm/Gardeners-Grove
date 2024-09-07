@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
@@ -35,6 +36,8 @@ public class PlantGuesserController {
     private int roundNumber;
     private int score;
     private Random random;
+    private static final int NUM_OPTIONS = 4;
+    private static final int MAX_TRIES = 5;
 
     public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, UserService userService, UserRepository userRepository, Random random) {
         this.plantGuesserService = plantGuesserService;
@@ -46,6 +49,8 @@ public class PlantGuesserController {
         this.score = 0;
     }
     public void setRandom(Random random) {
+        // This is used for testing purposes, so the shuffling of the answers in not random and can stay consistent for testing
+        // This setter is so it can be set to a fixed random during testing, otherwise it is always truly random
         this.random = random;
     }
     public void resetRound() {
@@ -57,17 +62,26 @@ public class PlantGuesserController {
      * Gets the thymeleaf page showing the plant guesser page
      */
     @GetMapping("/plant-guesser")
-    public String getTemplate(HttpServletRequest request,
+    public String getTemplate(HttpSession session,
+                              HttpServletRequest request,
                               Model model) {
         logger.info("GET /plant-guesser");
         if (!Objects.equals(RedirectService.getPreviousPage(), "/plant-guesser")) {
             resetRound();
         }
         RedirectService.addEndpoint("/plant-guesser");
-        PlantData plant = plantGuesserService.getPlant(roundNumber);
-        playGameRound(model, plant);
 
-        return "plantGuesserTemplate";
+        try {
+            session.removeAttribute("guesserGameError");
+            PlantData plant = plantGuesserService.getPlant(roundNumber);
+            playGameRound(model, plant);
+            return "plantGuesserTemplate";
+        } catch (Exception e){
+            // if there is an error in creating the game, the app will redirect back to the games page and display an error message
+            session.setAttribute("guesserGameErrorMessage", "Plant guesser could not be played right now, please try again later.");
+            return "redirect:/games";
+        }
+
     }
 
     @PostMapping("/plant-guesser")
