@@ -54,7 +54,7 @@ public class PlantGuesserController {
             return "plantGuesserTemplate";
         } catch (Exception e){
             // if there is an error in creating the game, the app will redirect back to the games page and display an error message
-            session.setAttribute("guesserGameError", "Plant guesser could not be played right now, please try again later.");
+            session.setAttribute("guesserGameErrorMessage", "Plant guesser could not be played right now, please try again later.");
             return "redirect:/games";
         }
 
@@ -85,7 +85,7 @@ public class PlantGuesserController {
             quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
             listSize = quizOptions.size();
             logger.info(plantName); //for manual testing and playing, since functionality is not implemented yet
-            attempt++; // Increment the attempt counter after each loop
+            attempt++;
         }
 
         // to throw list size error in get mapping, since otherwise the error won't be caught until the thymeleaf parsing
