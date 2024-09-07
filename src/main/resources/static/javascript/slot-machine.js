@@ -227,3 +227,22 @@
             addToPrizeTable(`${symbol}`, (index) * 100, "quintuples");
         }
     });
+
+    //Modal functionality - can possibly refactor to bootstrap but was facing too many conflicts
+    var modal = document.getElementById("prizeModal");
+    var btn = document.getElementById("infoButton");
+    var span = document.getElementsByClassName("close")[0];
+
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }

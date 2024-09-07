@@ -1,4 +1,4 @@
-function getDeployPath(url) {
+function getDeploymentContextPath(url) {
     if (url == null)
         url = new URL(window.location.href);
     const deployPath = url.pathname.split('/')[1];
@@ -17,7 +17,7 @@ function getDeployPath(url) {
 function setParamsFromUrl() {
     let params = new URLSearchParams();
     const url = new URL(window.location.href);
-    const deployPath = getDeployPath(url);
+    const deployPath = getDeploymentContextPath(url);
     const pathname = url.pathname.replace(deployPath, '');
 
     let gardenID = null;
@@ -100,7 +100,7 @@ function filePicked(event, image, id, form) {
     // console.log("User or Plant ID: " + plantID)
     const file = event.target.files[0];
     const url = new URL(window.location.href);
-    const deployPath = getDeployPath(url);
+    const deployPath = getDeploymentContextPath(url);
     const pathname = url.pathname.replace(deployPath, '');
     // const isTemporary = pathname !== '/view-garden' && pathname !== '/view-user-profile';
     const isTemporary = pathname === '/create-plant';
@@ -139,7 +139,7 @@ function filePicked(event, image, id, form) {
 
 function submitAction(file, id, form, image, submitClicked) {
     const url = new URL(window.location.href);
-    const deployPath = getDeployPath(url);
+    const deployPath = getDeploymentContextPath(url);
     const pathname = url.pathname.replace(deployPath, '');
 
     if (pathname === '/upload-image' && file == null) {
