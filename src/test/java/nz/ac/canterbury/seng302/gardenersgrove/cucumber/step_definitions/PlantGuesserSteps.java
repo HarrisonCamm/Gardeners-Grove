@@ -32,7 +32,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class PlantGuesserSteps {
@@ -70,7 +69,6 @@ public class PlantGuesserSteps {
     private int score;
     private String plantImagePrevious;
     private List<String[]> quizOptionsPrevious;
-    private int correctOptionPrevious;
     private int roundNumberPrevious;
     private User currentUser;
     private Integer startingBalance;
@@ -102,6 +100,8 @@ public class PlantGuesserSteps {
         mvcResult = mockMvc.perform(get("/games"))
                 .andExpect(status().isOk())
                 .andReturn();
+        currentUser = userService.getAuthenticatedUser();
+        startingBalance = currentUser.getBloomBalance();
     }
 
     @When("I go to the Plant Guesser game page")
@@ -219,7 +219,6 @@ public class PlantGuesserSteps {
         i_select_the_correct_plant_name();
         plantImagePrevious = plantImage;
         quizOptionsPrevious = quizOptions;
-        correctOptionPrevious = correctOption;
         roundNumberPrevious = roundNumber;
         i_go_to_the_plant_guesser_game_page();
     }
@@ -303,7 +302,6 @@ public class PlantGuesserSteps {
         i_go_to_the_plant_guesser_game_page();
         // round 10
         i_select_the_correct_plant_name();
-        i_go_to_the_plant_guesser_game_page();
 
     }
 
@@ -321,7 +319,10 @@ public class PlantGuesserSteps {
 
     @And("my total Bloom count is updated and displayed")
     public void my_total_bloom_count_is_updated_and_displayed() {
-        //not yet implemented
+        currentUser = userService.getAuthenticatedUser();
+        int currentBalance = currentUser.getBloomBalance();
+        int bloomsWon = 100 + score*10;
+        Assertions.assertEquals(startingBalance+bloomsWon, currentBalance);
     }
 
     @When("I click the Back button \\(could be an icon)")
@@ -342,7 +343,6 @@ public class PlantGuesserSteps {
 
     @And("my total Blooms are displayed")
     public void my_total_blooms_are_displayed() throws UnsupportedEncodingException {
-        currentUser = userService.getAuthenticatedUser();
         Integer balance = currentUser.getBloomBalance();
 
         String content = mvcResult.getResponse().getContentAsString();  //repeated from bloom transaction step def but necessary as this is a different mvcResult

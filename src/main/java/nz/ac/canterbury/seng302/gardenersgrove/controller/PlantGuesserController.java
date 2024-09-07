@@ -38,6 +38,7 @@ public class PlantGuesserController {
     private Random random;
     private static final int NUM_OPTIONS = 4;
     private static final int MAX_TRIES = 5;
+    private static final String PAGE_URL = "/plant-guesser";
 
     public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, UserService userService, UserRepository userRepository, Random random) {
         this.plantGuesserService = plantGuesserService;
@@ -66,10 +67,10 @@ public class PlantGuesserController {
                               HttpServletRequest request,
                               Model model) {
         logger.info("GET /plant-guesser");
-        if (!Objects.equals(RedirectService.getPreviousPage(), "/plant-guesser")) {
+        if (!Objects.equals(RedirectService.getPreviousPage(), PAGE_URL)) {
             resetRound();
         }
-        RedirectService.addEndpoint("/plant-guesser");
+        RedirectService.addEndpoint(PAGE_URL);
 
         try {
             session.removeAttribute("guesserGameError");
@@ -99,7 +100,7 @@ public class PlantGuesserController {
                                HttpServletRequest request,
                               Model model) {
         logger.info("POST /plant-guesser");
-        RedirectService.addEndpoint("/plant-guesser");
+        RedirectService.addEndpoint(PAGE_URL);
         User currentUser = userService.getAuthenticatedUser();
         int currentBloomBalance = currentUser.getBloomBalance();
 
@@ -146,17 +147,18 @@ public class PlantGuesserController {
     }
 
     public void playGameRound(Model model, PlantData plant) {
-        String plantName;
-        String plantScientificName;
+        String plantName = null;
+        String plantScientificName = null;
         String plantImage = null;
         String imageCredit = null;
         String plantFamily = null;
         String familyCommonName = null;
         String plantCommonAndScientificName;
-        List<String> quizOptions = null;
+        List<String> quizOptions = new ArrayList<>();
         int listSize = 0;
+        int attempt = 0;
 
-        while (listSize != 4) {
+        while (listSize != NUM_OPTIONS && attempt < MAX_TRIES) {
             plantName = plant.common_name;
             plantScientificName = plant.scientific_name;
             plantImage = plant.image_url;
@@ -166,10 +168,19 @@ public class PlantGuesserController {
             plantCommonAndScientificName = plantName + ",\n(" + plantScientificName + ")";
             quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
             listSize = quizOptions.size();
+            attempt++;
+        }
+
+        // to throw list size error in get mapping, since otherwise the error won't be caught until the thymeleaf parsing
+        if (quizOptions.size() != 4 || plantName==null || plantScientificName==null
+                || imageCredit==null || plantFamily==null ) {
+            logger.info("Invalid plant error");
+            throw new IllegalStateException();
         }
 
         Collections.shuffle(quizOptions, random); // set random while testing, otherwise true random
 
+        // The quiz options list has a string that contains both the common and scientific name of a plant so they can be shuffled together, then they need to be split up to display the scientific name on a new line
         List<String[]> splitQuizOptions = new ArrayList<>();
         for (String option: quizOptions) {
             String[] options = option.split(",");
@@ -177,7 +188,7 @@ public class PlantGuesserController {
         }
 
         int correctOption = 0;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < NUM_OPTIONS; i++) {
             if (splitQuizOptions.get(i)[1].contains(plant.scientific_name)) {
                 correctOption = i;
             }
