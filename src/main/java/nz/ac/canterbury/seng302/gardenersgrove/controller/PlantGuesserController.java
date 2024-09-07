@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
@@ -24,6 +25,8 @@ public class PlantGuesserController {
 
     private final PlantGuesserService plantGuesserService;
     private Random random;
+    private static final int NUM_OPTIONS = 4;
+    private static final int MAX_TRIES = 5;
 
     public PlantGuesserController(PlantGuesserService plantGuesserService, Random random) {
         this.plantGuesserService = plantGuesserService;
@@ -39,29 +42,38 @@ public class PlantGuesserController {
      * Gets the thymeleaf page showing the plant guesser page
      */
     @GetMapping("/plant-guesser")
-    public String getTemplate(HttpServletRequest request,
+    public String getTemplate(HttpSession session,
+                              HttpServletRequest request,
                               Model model) {
         logger.info("GET /plant-guesser");
         RedirectService.addEndpoint("/plant-guesser");
 
-        createPlantGameRound(model);
+        try {
+            session.removeAttribute("guesserGameError");
+            createPlantGameRound(model);
+            return "plantGuesserTemplate";
+        } catch (Exception e){
+            // if there is an error in creating the game, the app will redirect back to the games page and display an error message
+            session.setAttribute("guesserGameError", "Plant guesser could not be played right now, please try again later.");
+            return "redirect:/games";
+        }
 
-        return "plantGuesserTemplate";
     }
 
     public void createPlantGameRound(Model model) {
 
-        String plantName = null;
+        String plantName;
         String plantScientificName;
         String plantImage = null;
         String imageCredit = null;
         String plantFamily = null;
         String familyCommonName = null;
         String plantCommonAndScientificName;
-        List<String> quizOptions = null;
+        List<String> quizOptions = new ArrayList<>();
         int listSize = 0;
+        int attempt = 0;
 
-        while (listSize != 4) {
+        while (listSize != NUM_OPTIONS && attempt < MAX_TRIES) {
             PlantData plant = plantGuesserService.getPlant();
             plantName = plant.common_name;
             plantScientificName = plant.scientific_name;
@@ -73,6 +85,12 @@ public class PlantGuesserController {
             quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
             listSize = quizOptions.size();
             logger.info(plantName); //for manual testing and playing, since functionality is not implemented yet
+            attempt++; // Increment the attempt counter after each loop
+        }
+
+        // to throw list size error in get mapping, since otherwise the error won't be caught until the thymeleaf parsing
+        if (quizOptions.size() != 4) {
+            throw new IllegalStateException("quizOptions size must be 4, but was " + quizOptions.size());
         }
 
         Collections.shuffle(quizOptions, random); // set random while testing, otherwise true random

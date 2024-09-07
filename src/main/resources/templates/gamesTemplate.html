@@ -38,6 +38,7 @@
                     </div>
                     <div class="col-md-8">
                         <div class="card-body">
+                            <div th:if="${guesserGameError}" class="error-message" th:text="${guesserGameError}"></div>
                             <h5 class="card-title">Plant Guesser</h5>
                             <p class="card-text">
                                 Learn some plant names and images! Each round consists of 10 plant images you must guess

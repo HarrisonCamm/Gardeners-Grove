@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.gardenersgrove.service;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import static java.lang.Math.min;
 
 @Service
 public class PlantGuesserService {
+
+    Logger logger = LoggerFactory.getLogger(PlantGuesserService.class);
     //Retrieved from application-dev.properties
     @Value("${trefle.api.key:#{null}}")
     private String apiKey;
@@ -29,6 +33,7 @@ public class PlantGuesserService {
     private static final String PLANT_PAGE_FILTERS = "&filter_not[common_name]=null&filter_not[image_url]=null&token=";
     private static final String PLANT_FAMILY_PAGE_FILTERS = "&filter_not[common_name]=null&token=";
     private static final int MAX_PAGE_NUM = 747;
+    private static final int NUM_FAMILY_OPTIONS = 3;
 
     @Autowired
     public PlantGuesserService(RestTemplate restTemplate) {
@@ -40,6 +45,7 @@ public class PlantGuesserService {
         try {
             return restTemplate.getForObject(url, PlantGuesserList.class);
         } catch (Exception e) {
+            logger.info("Invalid Trefle URL");
             return null; // Return null for invalid or error responses e.g. no token
         }
     }
@@ -84,16 +90,9 @@ public class PlantGuesserService {
                 .toList());
         Collections.shuffle(multichoicePlantNames);
         List<String> plant = Collections.singletonList(commonAndScientificName);
-        try {
-            List<String> result = Stream.concat(multichoicePlantNames.subList(0, min(3, multichoicePlantNames.size())).stream(), plant.stream())
+        return Stream.concat(multichoicePlantNames.subList(0, min(NUM_FAMILY_OPTIONS, multichoicePlantNames.size())).stream(), plant.stream())
                     .collect(Collectors.toList());
-            if (result.size() < 3) {
-                throw new Exception("At least 3 plants needed");
-            }
-            return result;
-        } catch (Exception e) {
-            return null; //e.g. less than 3 in a family
-        }
+
 
     }
 

@@ -21,7 +21,7 @@ import java.util.Objects;
 import static org.mockito.ArgumentMatchers.any;
 
 
-public class PlantGuesserServiceTests {
+class PlantGuesserServiceTests {
     private PlantGuesserService plantGuesserService;
     private static final RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
 
@@ -42,7 +42,7 @@ public class PlantGuesserServiceTests {
 
 
     @BeforeAll
-    static public void  jsonSetup() throws Exception {
+    static void  jsonSetup() throws Exception {
         //read json example file
         plantFamilyResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
         plantsResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
@@ -69,7 +69,7 @@ public class PlantGuesserServiceTests {
     }
 
     @Test
-    public void validApiRequest_ReturnsPlantGuesserList() {
+    void validApiRequest_ReturnsPlantGuesserList() {
         Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserList);
 
         int pageNum = 1;
@@ -82,7 +82,7 @@ public class PlantGuesserServiceTests {
     }
 
     @Test
-    public void invalidTokenRequest_ReturnsNull() {
+    void invalidTokenRequest_ReturnsNull() {
         Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(invalidTokenPlantsResponseJsonString);
         int pageNum = 1;
         PlantGuesserList response = plantGuesserService.getPlantPage(pageNum);
@@ -90,7 +90,7 @@ public class PlantGuesserServiceTests {
     }
 
     @Test
-    public void validFamilyRequest_ReturnsPlantGuesserList() {
+    void validFamilyRequest_ReturnsPlantGuesserList() {
         Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserFamilyList);
         PlantGuesserList plantGuesserFamilyList = plantGuesserService.getPlantFamily("Pinaceae"); //same family as mocked json
         Assertions.assertNotNull(plantGuesserFamilyList);
@@ -102,7 +102,7 @@ public class PlantGuesserServiceTests {
     }
 
     @Test
-    public void invalidPlantId_ReturnsNull() {
+    void invalidPlantId_ReturnsNull() {
         Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(invalidPlantIdResponseJsonString);
         int id = 0;
         PlantGuesserItem response = plantGuesserService.getPlantById(id);
@@ -110,7 +110,7 @@ public class PlantGuesserServiceTests {
     }
 
     @Test
-    public void getPlant_ReturnsValidPlant() {
+    void getPlant_ReturnsValidPlant() {
         Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserList);
 
         PlantData response = plantGuesserService.getPlant();
@@ -120,7 +120,7 @@ public class PlantGuesserServiceTests {
     }
 
     @Test
-    public void getFamilyPlants_ExcludesPlantOfSameName() {
+    void getFamilyPlants_ExcludesPlantOfSameName() {
         Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserFamilyList);
         String familyString = "Pinaceae";
         String correctPlantName = "Mountain pine";
@@ -131,12 +131,7 @@ public class PlantGuesserServiceTests {
     }
 
     @Test
-    public void getFamilyPlants_OnlyOnePlant_ReturnsNull() {
-        //TODO
-    }
-
-    @Test
-    public void getMultiChoice_DoesNotContainCorrectAnswer() {
+    void getMultiChoice_DoesNotContainCorrectAnswer() {
         Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserFamilyList);
         String familyString = "Pinaceae";
         String correctPlantName = "Mountain pine";
@@ -148,17 +143,4 @@ public class PlantGuesserServiceTests {
         Assertions.assertFalse(containsCorrectName);
     }
 
-    @Test
-    public void getMultiChoice_LessThanThreeOptions_ReturnsNull() {
-        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(shortPlantGuesserFamilyList);
-
-        String familyString = "Pinaceae";
-        String correctPlantName = "Common spruce";
-        String plantScientificName = "Picea abies";
-        String commonAndScientificName = correctPlantName + ",\n(" + plantScientificName + ")";
-
-        List<String> response = plantGuesserService.getMultichoicePlantNames(familyString, correctPlantName, commonAndScientificName);
-
-        Assertions.assertNull(response);
-    }
 }
