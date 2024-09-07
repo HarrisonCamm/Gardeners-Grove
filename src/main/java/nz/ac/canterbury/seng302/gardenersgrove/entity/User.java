@@ -1,19 +1,16 @@
 package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * User class that contains all the values a user should have
  */
-
-
-
 @Entity
 @Table(name = "USERS") //revise later, ask tutor about style
 public class User {
@@ -291,5 +288,10 @@ public class User {
             return false;
         }
         return this.email.equals(((User) user).email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email, firstName, lastName);
     }
 }

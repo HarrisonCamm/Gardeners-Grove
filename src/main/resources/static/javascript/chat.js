@@ -219,13 +219,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // document.querySelectorAll('[id^="send-button-"]').forEach(button => {
-    //     button.addEventListener('click', function() {
-    //         const userId = this.id.split('-')[2];
-    //         sendMessage(userId);
-    //     });
-    // });
-
     // Connect to the WebSocket firstly
     connect();
 });

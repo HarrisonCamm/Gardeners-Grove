@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 public class MessagesController {
@@ -85,8 +84,6 @@ public class MessagesController {
         if (garden != null && !contacts.contains(garden.getOwner())) {
             contacts.add(garden.getOwner());
         }
-        friends.forEach(friend -> { friend.setPassword(""); });
-        contacts.forEach(contact -> { contact.setPassword(""); });
         model.addAttribute("from", currentUserEmail);
         model.addAttribute("friends", friends);
         model.addAttribute("contacts", contacts);
@@ -117,16 +114,16 @@ public class MessagesController {
 
     /**
      * Send a message to a user
-     * @param username The username of the recipient
+     * @param recipientEmail The username of the recipient
      * @param message The message to send
      */
-    @MessageMapping("/chat.send/{username}")
-    public void sendMessage(@DestinationVariable String username, Message message) {
-        messageService.saveMessage(message.getSender(), username, message.getContent());
-        messagingTemplate.convertAndSendToUser(username, "/queue/reply", message);
+    @MessageMapping("/chat.send/{recipientEmail}")
+    public void sendMessage(@DestinationVariable String recipientEmail, Message message) {
+        messageService.saveMessage(message.getSender(), recipientEmail, message.getContent());
+        messagingTemplate.convertAndSendToUser(recipientEmail, "/queue/reply", message);
 
         User sender = userService.getUserByEmail(message.getSender());
-        User recipient = userService.getUserByEmail(username);
+        User recipient = userService.getUserByEmail(recipientEmail);
         if (!sender.getFriends().contains(recipient) && sender.addContact(recipient)) {
             userService.addUser(sender);
         }
