@@ -34,10 +34,14 @@
             <div class="reel-container"></div>
         </div>
         <br>
-        <button class="spin-button" onclick="startSpin()">SPIN</button>
+        <form th:action="@{/daily-spin}" method="post">
+<!--            <input type="hidden" name="_method" value="PUT">-->
+            <input type="hidden" name="gameState" th:value="${gameState}"/>
+            <button type="submit" class="spin-button" th:text="${buttonText}"></button>
+        </form>
         <div class="info">
             <div class="instructions">
-                Press to spin the reels.<br/> Each spin costs 1 💰<br/> Match at least three on any row to win!<br/>
+                Press to spin the reels.<br/> Match at least three on any row to win!<br/>
             </div>
         </div>
     </div>
@@ -59,7 +63,20 @@
     </div>
 
 
-    <script th:src="@{/javascript/slot-machine.js}"></script>
 
+<!--    TODO REMOVE THIS-->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener("DOMContentLoaded", function() {
+            let gameState = /*[[${gameState}]]*/ 'FREE_SPIN'; // Fallback in case gameState is null
+            if (gameState === "SPINNING") {
+                startSpin();
+            }
+        });
+        /*]]>*/
+    </script>
+
+
+    <script th:src="@{/javascript/slot-machine.js}"></script>
 </body>
 </html>
