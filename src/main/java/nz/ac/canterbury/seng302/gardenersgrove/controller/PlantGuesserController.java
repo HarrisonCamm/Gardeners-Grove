@@ -91,7 +91,7 @@ public class PlantGuesserController {
         // to throw list size error in get mapping, since otherwise the error won't be caught until the thymeleaf parsing
         if (quizOptions.size() != 4 || plantName==null || plantScientificName==null
                 || imageCredit==null || plantFamily==null ) {
-            throw new IllegalStateException("quizOptions size must be 4, but was " + quizOptions.size());
+            throw new IllegalStateException();
         }
 
         Collections.shuffle(quizOptions, random); // set random while testing, otherwise true random
