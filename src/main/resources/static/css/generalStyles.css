@@ -58,9 +58,29 @@ body {
 }
 
 
+.table-wrapper {
+    max-width: 100%; /* Full width on smaller screens */
+    margin: 0 auto;
+    overflow-x: auto;
+}
+
+
+
+@media (min-width: 768px) {
+    .table-wrapper {
+        max-width: 1000px; /* Max width on medium or larger screens */
+    }
+}
 
 .transactions-display {
     padding: 5%;
+}
+
+.table-description {
+    word-break: break-word; /* Breaks long words */
+    white-space: nowrap; /* Prevents wrapping */
+    overflow: hidden; /* Hides overflow */
+    text-overflow: ellipsis; /* Adds ellipsis (...) to long content */
 }
 
 

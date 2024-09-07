@@ -87,7 +87,7 @@ public class UserProfileController {
 
             //For the purposes of tests
             model.addAttribute("noTransactionsText", "No Transactions to Display");
-            model.addAttribute("earnBloomsText", "You can earn Blooms by: Selling plants, playing games, recieving tips from other users");
+            model.addAttribute("earnBloomsText", "You can earn Blooms by: Selling plants, playing games, receiving tips from other users");
             model.addAttribute("spendBloomsText", "You can spend Blooms by: Tipping other people's gardens, playing games, buying plants for your gardens");
 
             return "viewUserProfileTemplate";

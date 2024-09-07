@@ -35,7 +35,7 @@ Feature: U6001 - Showing Blooms Balance and Bloom Transactions
 #      | A link to the related content or action        |
 #
   Scenario: AC4 - No Transaction History Available
-    Given I am logged into the system
+    Given I am logged in with email "kaia@email.com" and password "Password1!"
     And I am a new user or have not made any transactions
     When I navigate to my profile page
     Then I should see a message indicating that no transaction history is available

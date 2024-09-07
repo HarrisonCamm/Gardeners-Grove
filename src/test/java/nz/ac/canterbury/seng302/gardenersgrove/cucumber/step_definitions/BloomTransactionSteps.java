@@ -100,13 +100,6 @@ public class BloomTransactionSteps {
 
     }
 
-    //AC2
-    @Given("I am logged into the system")
-    public void i_am_logged_into_the_system() {
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("liam@email.com", "Password1!");
-        var authentication = authenticationManager.authenticate(token);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
 
 
     //AC2
@@ -159,15 +152,15 @@ public class BloomTransactionSteps {
     //AC3
     @Then("I should see a message indicating that no transaction history is available")
     public void i_should_see_a_message_indicating_that_no_transaction_history_is_available() {
-        Object noTransactionsText = mvcResult.getModelAndView().getModel().get("noTransactionsText");
-        Assertions.assertEquals("No Transactions to Display", noTransactionsText);
+        Object noTransactionsMessage = mvcResult.getModelAndView().getModel().get("noTransactionsText");
+        Assertions.assertEquals("No Transactions to Display", noTransactionsMessage);
     }
 
     //AC3
     @Then("I should see a brief description of how to earn or spend Blooms")
     public void i_should_see_a_brief_description_of_how_to_earn_or_spend_blooms() {
         Object earnBloomsText = mvcResult.getModelAndView().getModel().get("earnBloomsText");
-        Assertions.assertEquals("You can earn Blooms by: Selling plants, playing games, recieving tips from other users", earnBloomsText);
+        Assertions.assertEquals("You can earn Blooms by: Selling plants, playing games, receiving tips from other users", earnBloomsText);
 
         Object noTransactionsText = mvcResult.getModelAndView().getModel().get("spendBloomsText");
         Assertions.assertEquals("You can spend Blooms by: Tipping other people's gardens, playing games, buying plants for your gardens", noTransactionsText);
