@@ -62,8 +62,8 @@ public class PlantGuesserController {
 
     public void createPlantGameRound(Model model) {
 
-        String plantName;
-        String plantScientificName;
+        String plantName = null;
+        String plantScientificName = null;
         String plantImage = null;
         String imageCredit = null;
         String plantFamily = null;
@@ -89,7 +89,8 @@ public class PlantGuesserController {
         }
 
         // to throw list size error in get mapping, since otherwise the error won't be caught until the thymeleaf parsing
-        if (quizOptions.size() != 4) {
+        if (quizOptions.size() != 4 || plantName==null || plantScientificName==null
+                || imageCredit==null || plantFamily==null ) {
             throw new IllegalStateException("quizOptions size must be 4, but was " + quizOptions.size());
         }
 
