@@ -290,6 +290,6 @@ public class User {
         if (!(user instanceof User)) {
             return false;
         }
-        return this.userId.equals(((User)user).userId);
+        return this.email.equals(((User) user).email);
     }
 }
