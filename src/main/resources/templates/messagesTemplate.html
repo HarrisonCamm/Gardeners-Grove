@@ -11,7 +11,8 @@
              th:data-owner-id="${ownerID}"
              th:data-first-name="${firstName}"
              th:data-last-name="${lastName}"
-             th:data-email="${email}">
+             th:data-email="${email}"
+             th:data-contact-emails="${contactEmails}">
             <div class="row h-100">
 
                 <!-- Friends Chat Area -->
@@ -93,7 +94,7 @@
                                         class="btn btn-primary rounded-pill"
                                         type="button"
                                         th:data-user-id="${friend.userId}"
-                                        th:onclick="sendMessage(${friend.userId})"
+                                        th:attr="onclick=|sendMessage(${friend.userId})|"
                                         style="padding-left: 20px; padding-right: 20px;">Send</button>
                             </div>
 
