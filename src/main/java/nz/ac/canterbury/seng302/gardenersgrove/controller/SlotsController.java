@@ -49,6 +49,11 @@ public class SlotsController {
         User user = userService.getAuthenticatedUser();
         model.addAttribute("bloomBalance", user.getBloomBalance());
 
+        //This handles form resubmission:
+        if (session.getAttribute("slots") == null) {
+            return "redirect:/daily-spin";
+        }
+
         //Seems logical to use one function for postMapping and getMapping even though amountWon isn't used here
         int amountWon = processSlots(session, model);
 
