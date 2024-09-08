@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Gardener's Grove</title>
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Navbar styling -->
+    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+    <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+</head>
+<body>
+<!-- Navigation Bar Fragment -->
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<div>
+    <div class="centre">
+        <br/>
+        <div class="card w-auto centre plant-card">
+            <div>
+                <label class="pt-4 ps-4 pe-4" th:text="'Image source: ' + ${imageCredit}"></label>
+            </div>
+            <div>
+                <img class="image pe-4 ps-4" th:src="@{${plantImage}}" alt="picture"/>
+            </div>
+            <div>
+                <h4 class="p-2" th:text="'Family: ' + ${plantFamily}"> </h4>
+            </div>
+        </div>
+        <br/>
+    </div>
+    <div class="centre">
+        <div>
+            <h2>What plant is this?</h2>
+            <br/>
+        </div>
+        <div class="content p-2">
+            <button class="quiz-option-button" th:text="${quizOptions[0][0]} + ${quizOptions[0][1]}"> </button>
+            <div class="pe-4"></div>
+            <button class="quiz-option-button" th:text="${quizOptions[1][0]} + ${quizOptions[1][1]}"> </button>
+        </div>
+       <div class="content p-2">
+           <button class="quiz-option-button" th:text="${quizOptions[2][0]} + ${quizOptions[2][1]}"> </button>
+           <div class="pe-4"></div>
+           <button class="quiz-option-button" th:text="${quizOptions[3][0]} + ${quizOptions[3][1]}"> </button>
+       </div>
+        <label th:text="'Plant ' + ${roundNumber} + '/10'"></label>
+    </div>
+</div>
+</body>
+</html>

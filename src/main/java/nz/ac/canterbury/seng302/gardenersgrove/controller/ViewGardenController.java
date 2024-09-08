@@ -288,8 +288,12 @@ public class ViewGardenController {
                 boolean isRainingDismissed = alertService.isAlertDismissed(owner, garden.get(), "isRaining");
 
                 // If forecastResponse is null, because API does not find weather at that location
-                if (forecastResponse == null) {
+                User currentUser = userService.getAuthenticatedUser();
+                User gardenOwner = garden.get().getOwner();
+                if (forecastResponse == null && currentUser.equals(gardenOwner)) {
                     model.addAttribute("weatherErrorMessage", "Location not found, please update your location to see the weather");
+                } else if (forecastResponse == null && !currentUser.equals(gardenOwner)) {
+                    model.addAttribute("weatherErrorMessage", "Location not found, please contact the garden owner for more information");
                 } else {
                     // Null current weather check (for tests)
                     if (currentWeather != null) {
