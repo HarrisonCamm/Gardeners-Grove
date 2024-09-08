@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Gardener's Grove</title>
+    <!-- Navbar styling -->
+    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+    <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+    <link th:href="@{/css/slot.css}" rel="stylesheet"/>
+</head>
+<body>
+    <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+    <div class="content">
+        <div>
+            <h1>Daily Spin</h1>
+            <br/>
+        </div>
+    </div>
+
+    <script th:inline="javascript"> let slots = /*[[${slots}]]*/ [[]];</script>
+
+    <div class="container" >
+        <div class="money-container">
+            <div id="money" th:value="*{money}">100</div>
+            <div class="changes"> </div>
+        </div>
+
+        <div class="play-area">
+            <div class="reel-container"></div>
+            <div class="reel-container"></div>
+            <div class="reel-container"></div>
+            <div class="reel-container"></div>
+            <div class="reel-container"></div>
+        </div>
+        <button class="spin-button" onclick="startSpin()">SPIN</button>
+        <div class="info">
+            <div class="instructions">
+                Press to spin the reels.<br/> Each spin costs 1 💰<br/> Match at least three on any row to win!<br/>
+            </div>
+
+            <!--                TODO have the below table appear in a popup on clicking the info button-->
+        </div>
+
+    </div>
+
+    <script th:src="@{/javascript/slot-machine.js}"></script>
+
+</body>
+</html>

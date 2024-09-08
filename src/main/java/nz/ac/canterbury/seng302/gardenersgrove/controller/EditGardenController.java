@@ -1,23 +1,22 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ModerationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -38,11 +37,13 @@ public class EditGardenController {
 
     private final GardenService gardenService;
     private final UserService userService;
+    private final ModerationService moderationService;
 
-    //    @Autowired
-    public EditGardenController(GardenService gardenService, UserService userService) {
+    @Autowired
+    public EditGardenController(GardenService gardenService, UserService userService, ModerationService moderationService) {
         this.gardenService = gardenService;
         this.userService = userService;
+        this.moderationService = moderationService;
     }
 
     /**
@@ -67,7 +68,7 @@ public class EditGardenController {
         Garden garden = result.get();
         model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
         session.setAttribute("gardenID", gardenID);
-        addAttributes(model, session, garden, garden.getId(), garden.getName(), garden.getLocation(), garden.getSize());
+        addAttributes(model, garden, garden.getId(), garden.getName(), garden.getLocation(), garden.getSize(), garden.getDescription());
         return "editGardenTemplate";
     }
 
@@ -79,40 +80,62 @@ public class EditGardenController {
      */
     @PutMapping("/edit-garden")
     public String submitForm(@RequestParam("gardenID") Long gardenID,
-                             @ModelAttribute Garden garden,
-                             BindingResult bindingResult,
+                             @RequestParam("name") String gardenName,
+                             @RequestParam(name = "location.streetAddress", required = false) String streetAddress,
+                             @RequestParam(name = "location.suburb", required = false) String suburb,
+                             @RequestParam(name = "location.city") String city,
+                             @RequestParam(name = "location.postcode", required = false) String postcode,
+                             @RequestParam(name = "location.country") String country,
+                             @RequestParam(name = "description", required = false) String gardenDescription,
+                             @RequestParam(name = "size", required = false) String gardenSize,
+                             HttpSession session,
                              Model model,
-                             HttpSession session) throws ResponseStatusException {
+                             HttpServletResponse response) throws ResponseStatusException {
         logger.info("PUT /edit-garden");
 
         Optional<Garden> result = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenticatedUser();
-        if (result.isEmpty())
+        if (result.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
-        else if (!result.get().getOwner().equals(currentUser))
+        } else if (!result.get().getOwner().equals(currentUser)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot edit this garden.");
-        Garden currentGarden = result.get();
-        String gardenName = garden.getName();
-        String gardenSize = garden.getSize();
-        Location gardenLocation = garden.getLocation();
-        // Perform validation
-        ArrayList<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize);
-        session.setAttribute("gardenID", gardenID);
-        addAttributes(model, session, currentGarden, currentGarden.getId(), gardenName, gardenLocation, gardenSize);
+        }
 
+        Garden currentGarden = result.get();
+        currentGarden.setName(gardenName);
+        currentGarden.setSize(gardenSize);
+        currentGarden.setDescription(gardenDescription != null ? gardenDescription.trim() : "");
+
+        Location gardenLocation = currentGarden.getLocation();
+        gardenLocation.setStreetAddress(streetAddress);
+        gardenLocation.setSuburb(suburb);
+        gardenLocation.setCity(city);
+        gardenLocation.setPostcode(postcode);
+        gardenLocation.setCountry(country);
+
+        List<FieldError> errors = checkFields(gardenName, gardenLocation, gardenSize, gardenDescription);
+
+        model.addAttribute("lastEndpoint", RedirectService.getPreviousPage());
+        addAttributes(model, currentGarden, gardenID, gardenName, gardenLocation, gardenSize, gardenDescription);
+
+        boolean isAppropriate = moderationService.isContentAppropriate(gardenDescription);
+        if (!isAppropriate) {
+            errors.add(new FieldError("garden", "description", "The description does not match the language standards of the app"));
+        }
 
         if (!errors.isEmpty()) {
-            // If there are validation errors, return to the form page
             for (FieldError error : errors) {
                 model.addAttribute(error.getField().replace('.', '_') + "Error", error.getDefaultMessage());
             }
             model.addAttribute("garden", currentGarden);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "editGardenTemplate";
         } else {
-            gardenService.updateGarden(currentGarden, gardenName, gardenLocation, gardenSize);
+            gardenService.updateGarden(currentGarden, gardenName, gardenLocation, gardenSize, currentGarden.getIsPublic(), gardenDescription);
             return "redirect:/view-garden?gardenID=" + currentGarden.getId();
         }
     }
+
 
     /**
      * Checks the garden name, location and size for errors
@@ -121,7 +144,7 @@ public class EditGardenController {
      * @param gardenLocation Garden location
      * @param gardenSize     Garden size
      */
-    public ArrayList<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize) {
+    private List<FieldError> checkFields(String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
 
         ArrayList<FieldError> errors = new ArrayList<>();
 
@@ -130,6 +153,10 @@ public class EditGardenController {
             errors.add(nameError);
         }
 
+        FieldError descriptionError = validateGardenDescription(gardenDescription);
+        if (descriptionError != null) {
+            errors.add(descriptionError);
+        }
 
         List<FieldError> locationErrors = validateGardenLocation(gardenLocation);
         errors.addAll(locationErrors);
@@ -174,13 +201,12 @@ public class EditGardenController {
     }
 
 
-    public void addAttributes(Model model,HttpSession session,  Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize) {
+    private void addAttributes(Model model, Garden garden, Long gardenID, String gardenName, Location gardenLocation, String gardenSize, String gardenDescription) {
         model.addAttribute("id", gardenID);
-
         model.addAttribute("name", gardenName);
-
+        model.addAttribute("description", gardenDescription);
         model.addAttribute("garden", garden);
-        model.addAttribute("gardenID", session.getAttribute("gardenID"));
+        model.addAttribute("gardenID", gardenID);
         model.addAttribute("location.streetAddress", gardenLocation.getStreetAddress());
         model.addAttribute("location.suburb", gardenLocation.getSuburb());
         model.addAttribute("location.city", gardenLocation.getCity());

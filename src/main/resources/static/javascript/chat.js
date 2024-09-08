@@ -1,3 +1,14 @@
+function getDeploymentContextPath(url) {
+    if (url == null)
+        url = new URL(window.location.href);
+    const deployPath = url.pathname.split('/')[1];
+    if (deployPath === 'test' || deployPath === 'prod')
+        return '/' + deployPath;
+    else
+        return '';
+
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     const from = document.getElementById('chat-container').dataset.from;
 
@@ -13,10 +24,13 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    document.querySelectorAll('[id^="send-button-"]').forEach(button => {
-        button.addEventListener('click', function() {
-            const userId = this.dataset.userId;
-            sendMessage(userId);
+    document.querySelectorAll('[id^="message-input-"]').forEach(input => {
+        input.addEventListener('keydown', function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                const userId = this.dataset.userId;
+                sendMessage(userId);
+            }
         });
     });
 
@@ -26,8 +40,20 @@ document.addEventListener("DOMContentLoaded", function() {
     let stompClient = null;
 
     function connect() {
-        //Create a WebSocket connection
-        const socket = new WebSocket('/ws');
+        // Determine the correct WebSocket URL based on the current environment
+        let socketUrl;
+
+        const url = new URL(window.location.href);
+        const deployPath = getDeploymentContextPath(url);
+        if (deployPath != null && deployPath.length > 0) {
+            socketUrl = 'https://csse-seng302-team600.canterbury.ac.nz' + deployPath + '/ws'
+        } else {
+            // socketUrl = 'http://localhost:8080/ws';
+            socketUrl = url.origin + '/ws'
+        }
+
+        // Create a WebSocket connection
+        const socket = new WebSocket(socketUrl);
 
         //Create a Stomp client to send and receive messages
         stompClient = Stomp.over(socket);
@@ -45,6 +71,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function sendMessage(userId) {
         const messageInput = document.getElementById('message-input-' + userId);
         const messageContent = messageInput.value.trim();
+
         if (messageContent && stompClient) {
 
             // Serialize the message to send this will become an Entity in the backend
@@ -83,6 +110,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 });
         }
+
+        messageLength(messageInput);
     }
 
     function showChatUI(userId, firstName, lastName, email) {
@@ -103,13 +132,16 @@ document.addEventListener("DOMContentLoaded", function() {
         lastName = lastName ? lastName : '';
         document.getElementById('friendName-' + userId).innerText = firstName + ' ' + lastName;
 
+        const deployPath = getDeploymentContextPath(null);
+        document.getElementById('friendImage-' + userId).src = deployPath + '/get-image?view-user-profile=true&userID=' + userId;
 
-        document.getElementById('friendImage-' + userId).src = '/get-image?view-user-profile=true&userID=' + userId;
-
-        document.getElementById('message-input-' + userId).focus();
+        const messageInput = document.getElementById('message-input-' + userId);
+        // document.getElementById('message-input-' + userId).focus();
+        messageInput.focus();
+        messageLength(messageInput);
 
         // Get all the past chats from the backend
-        fetch('/chat/' + to.email)
+        fetch(deployPath + '/chat/' + to.email)
             .then(response => response.json())
             .then(messages => {
                 const chatArea = document.getElementById('chatArea-' + to.email);
