@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -162,7 +164,13 @@ public class PlantGuesserController {
             plantName = plant.common_name;
             plantScientificName = plant.scientific_name;
             plantImage = plant.image_url;
-            imageCredit = (plantImage.split("//")[1]).split("/")[0];
+            try {
+                URI plantUri = new URI(plantImage);
+                URL plantUrl = plantUri.toURL();
+                imageCredit = plantUrl.getHost();
+            } catch (Exception e) {
+                logger.error("Invalid URL for plant image: " + plantImage, e);
+            }
             plantFamily = plant.family;
             familyCommonName = plant.family_common_name;
             plantCommonAndScientificName = plantName + ",\n(" + plantScientificName + ")";
@@ -172,7 +180,7 @@ public class PlantGuesserController {
         }
 
         // to throw list size error in get mapping, since otherwise the error won't be caught until the thymeleaf parsing
-        if (quizOptions.size() != 4 || plantName==null || plantScientificName==null
+        if (quizOptions.size() != NUM_OPTIONS || plantName==null || plantScientificName==null
                 || imageCredit==null || plantFamily==null ) {
             logger.info("Invalid plant error");
             throw new IllegalStateException();
