@@ -86,8 +86,9 @@
                                         class="btn btn-primary rounded-pill"
                                         type="button"
                                         th:data-user-id="${friend.userId}"
-                                        th:onclick="sendMessage(${friend.userId})"
+                                        th:attr="onclick=${'sendMessage(' + friend.userId + ')'}"
                                         style="padding-left: 20px; padding-right: 20px;">Send</button>
+
                             </div>
 
                             <!-- Input size counter -->
