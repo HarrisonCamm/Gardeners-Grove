@@ -4,9 +4,12 @@ import io.cucumber.junit.platform.engine.Constants;
 import jakarta.servlet.annotation.MultipartConfig;
 import nz.ac.canterbury.seng302.gardenersgrove.GardenersGroveApplication;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ForecastResponse;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserList;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Message;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.WeatherResponse;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ModerationService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.WeatherService;
 import org.junit.platform.suite.api.*;
 import io.cucumber.spring.CucumberContextConfiguration;
@@ -30,9 +33,13 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
+import static java.lang.Math.min;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -57,6 +64,7 @@ import static org.mockito.Mockito.when;
 @MockBean(WebSocketStompClient.class)
 @MockBean(StompSession.class)
 @MockBean(StompFrameHandler.class)
+@MockBean(PlantGuesserService.class)
 
 public class RunCucumberTest {
 
@@ -64,6 +72,9 @@ public class RunCucumberTest {
     private static ForecastResponse mockedValidForecast;
     private static WeatherResponse mockedNullCityWeather;
     private static ForecastResponse mockedNullCityForecast;
+
+    private static PlantData plant;
+    private static List<String> fourOptions;
     private static String Rained;
     private static String NotRained;
     private static String Raining;
@@ -97,6 +108,36 @@ public class RunCucumberTest {
             // Invalid weather and forecast
             mockedNullCityWeather = objectMapper.readValue(jsonNullCityResponse, WeatherResponse.class);
             mockedNullCityForecast = objectMapper.readValue(jsonNullCityResponse, ForecastResponse.class);
+
+//            // Has rained in the last two days
+//            mockedValidHistoricForcastWeatherHasRain = objectMapper.readValue(historicWeatherJsonString, Boolean.class);
+//            // Has not rained in the last two days
+//            mockedValidHistoricForcastWeatherNoRain = objectMapper.readValue(historicWeatherNoRainJsonString, Boolean.class);
+//
+//            // Is currently raining
+//            mockedValidCurrentWeatherIsRaining = objectMapper.readValue(currentWeatherRainJsonString, Boolean.class);
+//            // Is not currently raining
+//            mockedValidCurrentWeatherNotRaining = objectMapper.readValue(currentWeatherJsonString, Boolean.class);
+
+            //To mock plant api
+            PlantGuesserList mockedPlantPage = objectMapper.readValue(plantPageJsonString, PlantGuesserList.class);
+            List<PlantData> plantList = new ArrayList<>(Arrays.stream(mockedPlantPage.getPlantGuesserList()).toList());
+            plant = plantList.get(0);
+
+
+            PlantGuesserList mockedPlantFamilyPage = objectMapper.readValue(plantFamilyPageJsonString, PlantGuesserList.class);
+            PlantData[] plantFamilyMembers = Arrays.stream(mockedPlantFamilyPage.getPlantGuesserList()).toList()
+                    .stream()
+                    .filter(plant_i -> !Objects.equals(plant_i.common_name, plant.common_name))
+                    .toArray(PlantData[]::new);
+            List<String> multichoicePlantNames = new ArrayList<>(Arrays.stream(plantFamilyMembers).toList()
+                    .stream()
+                    .map(PlantData::getCommonAndScientificName)
+                    .toList());
+
+            List<String> correctOption = Collections.singletonList(plant.getCommonAndScientificName());
+            fourOptions = Stream.concat(multichoicePlantNames.subList(0,3).stream(), correctOption.stream())
+                    .collect(Collectors.toList());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -160,6 +201,10 @@ public class RunCucumberTest {
         when(moderationService.isBusy()).thenReturn(false);
         when(moderationService.isContentAppropriate("DelayedEvaluated")).thenReturn(true);
         when(moderationService.isContentAppropriate("InappropriateEvaluated")).thenReturn(false);
+
+
+        when(plantGuesserService.getPlant()).thenReturn(plant);
+        when(plantGuesserService.getMultichoicePlantNames(plant.family, plant.common_name, plant.getCommonAndScientificName())).thenReturn(fourOptions);
 
         // WebSocketStompClient mocks
         CompletableFuture<StompSession> sessionFuture = new CompletableFuture<>();
