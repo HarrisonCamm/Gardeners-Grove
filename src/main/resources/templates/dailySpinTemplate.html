@@ -36,7 +36,7 @@
         <br>
         <form th:action="@{/daily-spin}" method="post">
 <!--            <input type="hidden" name="_method" value="PUT">-->
-            <input type="hidden" name="gameState" th:value="${gameState}"/>
+            <input type="hidden" name="gameState" th:value="${buttonAction}"/>
             <button type="submit" class="spin-button" th:text="${buttonText}"></button>
         </form>
         <div class="info">
@@ -69,7 +69,7 @@
         /*<![CDATA[*/
         document.addEventListener("DOMContentLoaded", function() {
             let gameState = /*[[${gameState}]]*/ 'FREE_SPIN'; // Fallback in case gameState is null
-            if (gameState === "SPINNING") {
+            if (gameState === "FREE_SPINNING" || gameState === "PAYED_SPINNING") {
                 startSpin();
             }
         });

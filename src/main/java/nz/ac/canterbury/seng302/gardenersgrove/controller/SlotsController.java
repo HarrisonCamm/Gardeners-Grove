@@ -47,50 +47,36 @@ public class SlotsController {
     public String getTemplate(Model model, HttpSession session) {
         logger.info("GET /daily-spin");
 
-        List<int[]> slots;
         User user = userService.getAuthenticatedUser();
         model.addAttribute("bloomBalance", user.getBloomBalance());
 
-
-        //If there is not a set of slots generates new ones
-        if (session.getAttribute("slots") == null) {
-            slots = SlotsService.generateSlots();
-            session.setAttribute("slots", slots);
-        } else {
-            slots = (List<int[]>) session.getAttribute("slots");
-        }
-
-        model.addAttribute("slots", slots);
-        int amountWon = SlotsService.amountWon(slots);
-        model.addAttribute("amountWon", amountWon);
+        //Seems logical to use one function for postMapping and getMapping even though amountWon isn't used here
+        int amountWon = processSlots(session, model);
 
         GameState gameState = session.getAttribute("gameState") == null ? GameState.FREE_SPIN : (GameState) session.getAttribute("gameState");
         logger.info("Game state: " + gameState);
 
         switch(gameState) {
-            case SPINNING:
-                session.setAttribute("gameState", GameState.PAYED_SPIN);
-                model.addAttribute("buttonText", "Spin for " + SPIN_COST + " Blooms");
-                model.addAttribute("message", "You've already spun today! Spend " + SPIN_COST + "฿ to spin again?");
-                model.addAttribute("gameState", GameState.SPINNING);
-                session.setAttribute("slots", null);
-                break;
             case FREE_SPIN:
                 if (isWithin24Hours(user.getLastFreeSpinUsed())) {
                     session.setAttribute("gameState", GameState.PAYED_SPIN);
-                    model.addAttribute("gameState", GameState.FREE_SPINNING);
+                    return "redirect:/daily-spin";
                 } else {
-                    session.setAttribute("gameState", GameState.FREE_SPIN);     //Todo check if this is redundant and remove
+                    session.setAttribute("gameState", GameState.FREE_SPIN);
+
                     model.addAttribute("buttonText", "Spin");
                     model.addAttribute("message", "You have a free spin available!");
-                    model.addAttribute("gameState", GameState.FREE_SPINNING);
+                    model.addAttribute("gameState", GameState.FREE_SPIN);
+                    model.addAttribute("buttonAction", GameState.FREE_SPINNING);
                     break;
                 }
             case PAYED_SPIN:
                 session.setAttribute("gameState", GameState.PAYED_SPIN);
-                model.addAttribute("buttonText", "Spin for " + SPIN_COST + " Blooms");
-                model.addAttribute("message", "You've already spun today! Spend " + SPIN_COST + "B to spin again?");
-                model.addAttribute("gameState", GameState.PAYED_SPINNING);
+
+                model.addAttribute("buttonText", "Spin for " + SPIN_COST + "฿");
+                model.addAttribute("message", "You've already spun today! Spend " + SPIN_COST + "฿ to spin again?");
+                model.addAttribute("gameState", GameState.PAYED_SPIN);
+                model.addAttribute("buttonAction", GameState.PAYED_SPINNING);
                 break;
         }
 
@@ -98,52 +84,60 @@ public class SlotsController {
     }
 
     @PostMapping("/daily-spin")
-    public String postTemplate(@RequestParam("gameState") String newGameState, HttpSession session, Model model) throws InterruptedException {
+    public String postTemplate(@RequestParam("gameState") String buttonActionString, HttpSession session, Model model) throws InterruptedException {
         logger.info("POST /daily-spin");
 
-        List<int[]> slots;                                                                                          //Duplicated from here:
         User user = userService.getAuthenticatedUser();
         model.addAttribute("bloomBalance", user.getBloomBalance());
 
+        int amountWon = processSlots(session, model);
 
-        //If there is not a set of slots generates new ones
-        if (session.getAttribute("slots") == null) {
-            slots = SlotsService.generateSlots();
-            session.setAttribute("slots", slots);
-        } else {
-            slots = (List<int[]>) session.getAttribute("slots");
-        }
-
-        model.addAttribute("slots", slots);
-        int amountWon = SlotsService.amountWon(slots);
-        model.addAttribute("amountWon", amountWon);                                                     //To here:
-
-        GameState gameState;
-
+        GameState buttonActionGameState;
         try {
-            logger.info("New game state: " + newGameState);
-            gameState = GameState.valueOf(newGameState);
+            buttonActionGameState = GameState.valueOf(buttonActionString);
         } catch (IllegalArgumentException e) {
             logger.info("User tried to cheat");
             Thread.sleep(1000); // Punish user for trying to cheat
             return "redirect:/daily-spin";
         }
-        logger.info("Game state: " + gameState);
 
-        switch (gameState) {
-            case FREE_SPINNING:         //TODO add check here to ensure havent used free spin
-                freeSpin(user, amountWon);
-                session.setAttribute("gameState", GameState.SPINNING);        ///Might need to change
+        switch (buttonActionGameState) {
+            case FREE_SPINNING:
+                if (isWithin24Hours(user.getLastFreeSpinUsed())) {
+                    session.setAttribute("gameState", GameState.PAYED_SPIN);
+                    return "redirect:/daily-spin";
+                } else {
+                    freeSpin(user, amountWon);
+                    session.setAttribute("gameState", GameState.FREE_SPIN);
+
+                    model.addAttribute("gameState", GameState.FREE_SPINNING);
+                    model.addAttribute("buttonText", "Spin");
+                    model.addAttribute("message", "You have a free spin available!");
+                    model.addAttribute("buttonAction", GameState.FREE_SPINNING);
+
+                    session.setAttribute("slots", null); //Reset slots
+                }
+                break;
             case PAYED_SPINNING:
                 payedSpin(user, amountWon);
-                session.setAttribute("gameState", GameState.SPINNING);
+                session.setAttribute("gameState", GameState.PAYED_SPIN);
+
+                model.addAttribute("gameState", GameState.PAYED_SPINNING);
+                model.addAttribute("buttonText", "Spin for " + SPIN_COST + "฿");
+                model.addAttribute("message", "You've already spun today! Spend " + SPIN_COST + "฿ to spin again?");
+                model.addAttribute("buttonAction", GameState.PAYED_SPINNING);
+
+                session.setAttribute("slots", null); //Reset slots
+                break;
         }
 
-        return "redirect:/daily-spin";
+        return "dailySpinTemplate";
     }
 
     void freeSpin(User user, int amountWon) {
         userService.addBlooms(user, amountWon);
+        user.UpdateLastFreeSpinUsed();
+        userService.updateUserFriends(user);        //Only update method that just takes user as a parameter
     }
 
     void payedSpin(User user, int amountWon) {
@@ -156,6 +150,20 @@ public class SlotsController {
         else return Duration.between(date.toInstant(), Instant.now()).toHours() < 24;
     }
 
+    int processSlots(HttpSession session, Model model) {
+        List<int[]> slots;                                                                                          //Duplicated from here:
+        //If there is not a set of slots generates new ones
+        if (session.getAttribute("slots") == null) {
+            slots = SlotsService.generateSlots();
+            session.setAttribute("slots", slots);
+        } else {
+            slots = (List<int[]>) session.getAttribute("slots");
+        }
 
-
+        model.addAttribute("slots", slots);
+        int amountWon = SlotsService.amountWon(slots);
+        logger.info("Amount won: " + amountWon);
+        model.addAttribute("amountWon", amountWon);
+        return amountWon;
+    }
 }
