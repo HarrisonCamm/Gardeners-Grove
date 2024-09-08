@@ -59,6 +59,7 @@ import static org.mockito.Mockito.when;
 @MockBean(StompFrameHandler.class)
 
 public class RunCucumberTest {
+
     private static WeatherResponse mockedValidCurrentWeather;
     private static ForecastResponse mockedValidForecast;
     private static WeatherResponse mockedNullCityWeather;
@@ -67,13 +68,8 @@ public class RunCucumberTest {
     private static String NotRained;
     private static String Raining;
     private static String NotRaining;
-
-    final Message[] receivedMessage = new Message[1]; // Define receivedMessage here
-
-
     private static final ObjectMapper objectMapper = new ObjectMapper();
-
-
+    final Message[] receivedMessage = new Message[1]; // Define receivedMessage here
 
     // Loads static variables when the class is first loaded
     static {
@@ -84,6 +80,9 @@ public class RunCucumberTest {
             String forecastWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/validForecast.json"));
 
             String jsonNullCityResponse = Files.readString(Paths.get("src/test/resources/json/invalidCityForcastWeatherResponse.json"));
+
+            String plantPageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
+            String plantFamilyPageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
 
             Rained = "Rained";
             NotRained = "NotRained";
@@ -99,11 +98,14 @@ public class RunCucumberTest {
             mockedNullCityWeather = objectMapper.readValue(jsonNullCityResponse, WeatherResponse.class);
             mockedNullCityForecast = objectMapper.readValue(jsonNullCityResponse, ForecastResponse.class);
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
+
+
 
     @Autowired
     public RunCucumberTest(ModerationService moderationService,
@@ -111,22 +113,53 @@ public class RunCucumberTest {
                            StompSession stompSession,
                            StompFrameHandler stompFrameHandler) {
 
-        // ModerationService mocks
+        /*
+         This constructor is run before every FEATURE, use it to set up mocks with their default behaviour.
+         While the behaviour of the mocks can be adapted per test (see MockConfigurationSteps), creating the mocks
+         initially should be done in this class, and their default behaviour configured here (see @MockBean above).
+
+         Additionally, you can do other setup here that should be done the same for all tests, such as adding default
+         users. If you want to get rid of any sample data in some cases, you can always write a Cucumber step to delete
+         it, e.g., `Given no users already exist in the database` if you wanted to make sure there were no existing
+         users for some particular feature.
+        */
+
+        // Moderation Service API mocks
+        // Mock successful moderation
         when(moderationService.moderateText(anyString())).thenReturn("null");
+        when(moderationService.moderateText(null)).thenReturn("null");
+        when(moderationService.isContentAppropriate(null)).thenReturn(true);
+
         when(moderationService.moderateText(eq("NotEvaluated"))).thenReturn("evaluation_error");
+
+        // Mock unsuccessful moderation (profanity detected)
         when(moderationService.moderateText(eq("InappropriateTag"))).thenReturn("[{\"term\":\"InappropriateTerm\"}]");
+
+
+        // Weather Service API mocks
+        // Mock successful current weather service response
+        when(weatherService.getCurrentWeather(anyString(), anyString())).thenReturn(mockedValidCurrentWeather);
+        // Mock successful weather forecast service response
+        when(weatherService.getForecastWeather(anyString(), anyString())).thenReturn(mockedValidForecast);
+
+        // Mock unsuccessful location current weather service response
+        when(weatherService.getCurrentWeather(eq("InvalidCity"), anyString())).thenReturn(null);
+        // Mock unsuccessful location weather forecast service response
+        when(weatherService.getForecastWeather(eq("InvalidCity"), anyString())).thenReturn(null);
+
+        // Mock successful has rained in the last 2 days
+        when(weatherService.hasRained(eq(Rained), anyString())).thenReturn(true);
+        // Mock unsuccessful has not rained in the last 2 days
+        when(weatherService.hasRained(eq(NotRained), anyString())).thenReturn(false);
+
+        // Mock successful is currently raining
+        when(weatherService.isRaining(eq(Raining), anyString())).thenReturn(true);
+        // Mock unsuccessful is not currently raining
+        when(weatherService.isRaining(eq(NotRaining), anyString())).thenReturn(false);
+
         when(moderationService.isBusy()).thenReturn(false);
         when(moderationService.isContentAppropriate("DelayedEvaluated")).thenReturn(true);
         when(moderationService.isContentAppropriate("InappropriateEvaluated")).thenReturn(false);
-
-        // WeatherService mocks
-        WeatherResponse mockedValidCurrentWeather = getMockedValidCurrentWeather();
-        ForecastResponse mockedValidForecast = getMockedValidForecast();
-
-        when(weatherService.getCurrentWeather(anyString(), anyString())).thenReturn(mockedValidCurrentWeather);
-        when(weatherService.getForecastWeather(anyString(), anyString())).thenReturn(mockedValidForecast);
-
-
 
         // WebSocketStompClient mocks
         CompletableFuture<StompSession> sessionFuture = new CompletableFuture<>();
