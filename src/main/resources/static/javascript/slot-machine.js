@@ -38,8 +38,10 @@
             document.querySelectorAll(".prize-item.active").forEach(s => {
                 s.classList.remove("active");
             });
-            updateMoney(-50);
-            setChange(-50);
+            if (spinCost !== 0) {
+                updateMoney(-spinCost);
+                setChange(-spinCost);
+            }
             spinningReels = [0, 1, 2, 3, 4];  // Include all reels at once
             spinning = true;
             spinUpdate(11);     //This works out as working through the 15 increments of the reel

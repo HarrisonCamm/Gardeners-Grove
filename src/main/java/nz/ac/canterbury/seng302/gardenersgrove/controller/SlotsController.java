@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -52,6 +51,8 @@ public class SlotsController {
 
         //Seems logical to use one function for postMapping and getMapping even though amountWon isn't used here
         int amountWon = processSlots(session, model);
+
+        logger.info("Calculated win for current slots: " + amountWon);
 
         GameState gameState = session.getAttribute("gameState") == null ? GameState.FREE_SPIN : (GameState) session.getAttribute("gameState");
         logger.info("Game state: " + gameState);
@@ -115,6 +116,8 @@ public class SlotsController {
                     model.addAttribute("message", "You have a free spin available!");
                     model.addAttribute("buttonAction", GameState.FREE_SPINNING);
 
+                    model.addAttribute("spinCost", 0);
+
                     session.setAttribute("slots", null); //Reset slots
                 }
                 break;
@@ -126,6 +129,8 @@ public class SlotsController {
                 model.addAttribute("buttonText", "Spin for " + SPIN_COST + "฿");
                 model.addAttribute("message", "You've already spun today! Spend " + SPIN_COST + "฿ to spin again?");
                 model.addAttribute("buttonAction", GameState.PAYED_SPINNING);
+
+                model.addAttribute("spinCost", SPIN_COST);
 
                 session.setAttribute("slots", null); //Reset slots
                 break;
