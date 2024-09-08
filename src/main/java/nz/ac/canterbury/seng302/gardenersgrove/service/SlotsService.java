@@ -25,7 +25,9 @@ public class SlotsService {
     private static final int[] WIN_AMOUNTS = {0, WIN_1, WIN_2, WIN_3, WIN_4, WIN_5};
 
     //Define Multipliers for base win amounts
-    private static final int MULTIPLIER_4_IN_A_ROW = 10;
+    private static final int MULTIPLIER_3_IN_A_ROW = 10;
+
+    private static final int MULTIPLIER_4_IN_A_ROW = 30;
     private static final int MULTIPLIER_5_IN_A_ROW = 100;
 
     // Define the weights (odds) of each emoji appearing on the slot machine
@@ -136,7 +138,9 @@ public class SlotsService {
             int baseWinAmount = WIN_AMOUNTS[bestEmoji];
 
             // Apply multipliers based on the count of the most frequent emoji
-            if (bestCount == 4) {
+            if (bestCount == 3) {
+                baseWinAmount *= MULTIPLIER_3_IN_A_ROW;
+            } else if (bestCount == 4) {
                 baseWinAmount *= MULTIPLIER_4_IN_A_ROW;
             } else if (bestCount == 5) {
                 baseWinAmount *= MULTIPLIER_5_IN_A_ROW;

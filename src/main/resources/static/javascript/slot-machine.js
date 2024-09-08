@@ -149,7 +149,8 @@
         });
         let winAmount = reelContents.indexOf(symbol);
         playWinChime(winAmount);
-        if (amountMatching === 4) winAmount *= 10;
+        if (amountMatching === 3) winAmount *= 10;
+        if (amountMatching === 4) winAmount *= 30;
         if (amountMatching === 5) winAmount *= 100;
         setChange(winAmount);
         addToMoney(winAmount);
@@ -224,8 +225,8 @@
 
     reelContents.forEach((symbol, index) => {
         if (index !== 0) {
-            addToPrizeTable(`${symbol}`, index, "triples");
-            addToPrizeTable(`${symbol}`, (index) * 10, "quadruples");
+            addToPrizeTable(`${symbol}`, (index) * 10, "triples");
+            addToPrizeTable(`${symbol}`, (index) * 30, "quadruples");
             addToPrizeTable(`${symbol}`, (index) * 100, "quintuples");
         }
     });
