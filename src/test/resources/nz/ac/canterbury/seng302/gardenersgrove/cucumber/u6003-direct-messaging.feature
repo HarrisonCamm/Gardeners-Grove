@@ -21,4 +21,14 @@ Feature: U6003 - Direct Messaging
     When I send a message to another user
     Then they are able to see the message in real time and my message appears on the right
 
+  Scenario: AC5 - Receiving a Message
+    Given I send a message to another user
+    When they receive the message
+    Then they are able to see the message in real time and my message appears on the left
+
+  Scenario: AC6 - Content Moderation
+    Given I send a message to another user
+    When when I enter inappropriate words and click send
+    Then then that message is not sent, and I am shown the message "Message contains inappropriate language"
+
 

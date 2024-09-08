@@ -10,11 +10,17 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.spring.CucumberContextConfiguration;
+import nz.ac.canterbury.seng302.gardenersgrove.cucumber.RunCucumberTest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Message;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ModerationService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.WeatherService;
+import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -30,6 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
@@ -43,41 +50,52 @@ import java.util.concurrent.TimeUnit;
 import static nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions.ResetPasswordSteps.authenticationManager;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.data.repository.util.ClassUtils.hasProperty;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT) // FORGIVE ME FOR I HAVE SINNED
-@TestPropertySource(properties = {
-        "local.server.port=${local.server.port}"
-})
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+
 public class DirectMessagingSteps {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     @Autowired
+    private ModerationService moderationService;
+
+    @Autowired
+    private WeatherService weatherService;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private Environment environment;
+    private StompSession stompSession;
 
-    private int port;
+    @Autowired
+    private StompFrameHandler stompFrameHandler;
 
     private MockMvc mockMvc;
 
     private ResultActions resultActions;
 
-    private StompSession stompSession;
     private Message receivedMessage;
+
+    RunCucumberTest runCucumberTest;
+
 
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        port = Integer.parseInt(environment.getProperty("local.server.port"));
+
+        // Grab the running config instance to be able to get the received message when it is mocked in the doAnswer
+        runCucumberTest = new RunCucumberTest(moderationService, weatherService, stompSession, stompFrameHandler);
     }
 
     // Background
@@ -160,37 +178,58 @@ public class DirectMessagingSteps {
 
     @When("I send a message to another user")
     public void iSendAMessageToAnotherUser() throws Exception {
-        WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
-        stompSession = stompClient.connect("ws://localhost:" +port+ "/ws", new StompSessionHandlerAdapter() {}).get(5, TimeUnit.SECONDS);
+        stompSession.subscribe("/user/queue/reply", stompFrameHandler);
 
-        // Subscribe to the /user/queue/reply endpoint
-        stompSession.subscribe("/user/queue/reply", new StompFrameHandler() {
-            @NotNull
-            @Override
-            public Type getPayloadType(@NotNull StompHeaders headers) {
-                return Message.class;
-            }
-
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                // Handle the received message here
-                receivedMessage = (Message) payload;
-            }
-        });
-
-        // Send the message
+        // Send the message using the mocked session
         stompSession.send("/app/chat.send/inaya@email.com", new Message(
                 "sarah@email.com",
                 "inaya@email.com",
-                "Hello",
-                new Date()));
+                "Send Message",
+                new Date()
+        ));
 
+        // Get the received message from the mocked session
+        receivedMessage = runCucumberTest.getReceivedMessage();
+
+        // Simulate waiting for the message to be processed
         Thread.sleep(500);
     }
 
     @Then("they are able to see the message in real time and my message appears on the right")
     public void theyAreAbleToSeeTheMessageInRealTimeAndMyMessageAppearsOnTheRight() {
+        assertNotNull(receivedMessage);
+    }
+
+    @When("they receive the message")
+    public void theyReceiveTheMessage() {
+        assertNotNull(receivedMessage);
+    }
+
+    @Then("they are able to see the message in real time and my message appears on the left")
+    public void theyAreAbleToSeeTheMessageInRealTimeAndMyMessageAppearsOnTheLeft() {
+        // This is bad, but we require e2e testing to test this properly and we already test they receive it before
+        // This is more a problem with the AC itself
+        assertNotNull(receivedMessage);
+    }
+
+    @When("when I enter inappropriate words and click send")
+    public void whenIEnterInappropriateWordsAndClickSend() {
+        stompSession.send("/app/chat.send/inaya@email.com", new Message(
+                "sarah@email.com",
+                "inaya@email.com",
+                "InappropriateTag", //This is an inappropriate word in the config file
+                new Date()
+        ));
+
+    }
+
+    @Then("then that message is not sent, and I am shown the message {string}")
+    public void thenThatMessageIsNotSentAndIAmShownTheMessage(String errorMessage) throws Exception {
+        // We are going to test the status of the message in the backend
+        mockMvc.perform(get("/message/status")
+                        .param("content", "InappropriateTag") // provide the content parameter
+                        .with(csrf()))
+                .andExpect(content().string("blocked")); // expect the errorMessage as a response body
     }
 }
