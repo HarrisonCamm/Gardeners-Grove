@@ -33,12 +33,17 @@
             <div class="reel-container"></div>
             <div class="reel-container"></div>
         </div>
+        <br/>
+        <div>
+            <h3 th:text="${message}"?></h3>
+        </div>
         <br>
         <form th:action="@{/daily-spin}" method="post">
 <!--            <input type="hidden" name="_method" value="PUT">-->
             <input type="hidden" name="gameState" th:value="${buttonAction}"/>
             <button type="submit" class="spin-button" th:text="${buttonText}"></button>
         </form>
+
         <div class="info">
             <div class="instructions">
                 Press to spin the reels.<br/> Match at least three on any row to win!<br/>
