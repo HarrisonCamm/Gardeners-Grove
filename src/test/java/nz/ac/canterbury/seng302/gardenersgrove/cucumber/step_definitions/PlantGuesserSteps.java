@@ -26,11 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -81,10 +77,8 @@ public class PlantGuesserSteps {
     private Integer startingBalance;
     @Before
     public void setup() throws IOException {
-        String validPlantJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
-        String validPlantFamilyJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
-        validPlantJsonString = Files.readString(plantResponse.getFile().toPath());
-        validPlantFamilyJsonString = Files.readString(plantFamilyResponse.getFile().toPath());
+        String validPlantJsonString = Files.readString(plantResponse.getFile().toPath());
+        String validPlantFamilyJsonString = Files.readString(plantFamilyResponse.getFile().toPath());
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         // This makes the shuffling of plant guesser options not random so it can be tested
         Random fixedRandom = new Random(13);
