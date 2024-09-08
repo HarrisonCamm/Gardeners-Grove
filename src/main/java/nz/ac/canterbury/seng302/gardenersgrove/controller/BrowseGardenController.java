@@ -29,17 +29,20 @@ public class BrowseGardenController {
     Logger logger = LoggerFactory.getLogger(BrowseGardenController.class);
     private final GardenService gardenService;
     private final UserService userService;
+    private final TagService tagService;
 
     @Autowired
-    public BrowseGardenController(GardenService gardenService, UserService userService) {
+    public BrowseGardenController(GardenService gardenService, UserService userService, TagService tagService) {
         this.gardenService = gardenService;
         this.userService = userService;
+        this.tagService = tagService;
     }
 
     @GetMapping("/browse-gardens")
     public String browseGardens(HttpSession session,
                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
                          @RequestParam(value = "q", required = false, defaultValue = "") String query,
+                         @RequestParam(value = "tagsInput", required = false, defaultValue = "") String tagNames,
                          Model model) {
 
         logger.info("GET /browse-gardens");
@@ -48,8 +51,22 @@ public class BrowseGardenController {
         if (page < 1) {
             return "redirect:/browse-gardens";
         }
+        
+        Page<Garden> gardenPage = null;
+        List<Long> tagIds = null;
 
-        Page<Garden> gardenPage = gardenService.searchPublicGardens(query, page - 1);
+        if (!tagNames.isEmpty()) { //TODO make nicer
+            tagIds = tagService.getTagsByString(tagNames);
+        }
+
+        if (!query.isEmpty() && !tagNames.isEmpty()) { //query and tag entered
+            gardenPage = gardenService.searchPublicGardensBySearchAndTags(query, page-1, tagIds);
+        } else if (!tagNames.isEmpty()) { //tags entered but no query
+            gardenPage = gardenService.searchPublicGardensByTags(tagIds, page - 1);
+        } else {
+            gardenPage = gardenService.searchPublicGardens(query, page - 1);
+        }
+        
 
         if (gardenPage.getTotalElements() == 0) {
             model.addAttribute("noResults", "No gardens match your search");
@@ -59,6 +76,7 @@ public class BrowseGardenController {
         }
         model.addAttribute("gardenPage", gardenPage);
         model.addAttribute("q", query);
+        model.addAttribute("tagsInput", tagNames);
 
         return "browseGardensTemplate";
     }

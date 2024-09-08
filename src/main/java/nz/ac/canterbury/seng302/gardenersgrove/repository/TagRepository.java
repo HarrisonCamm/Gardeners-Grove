@@ -24,4 +24,7 @@ public interface TagRepository extends CrudRepository<Tag, Long> {
 
     @Query("SELECT t FROM Tag t WHERE t.evaluated = false")
     List<Tag> findWaitingTags();
+
+    @Query("SELECT t.id FROM Tag t WHERE t.name in :tagNames")
+    List<Long> getTagsByString(String tagNames);
 }
