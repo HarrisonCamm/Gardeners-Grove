@@ -12,6 +12,8 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -22,7 +24,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -59,10 +60,13 @@ public class PlantGuesserSteps {
     private String plantImage;
     private List<String> familyMembersCommonNames;
     private int roundNumber = 1;
+    Resource plantResponse = new ClassPathResource("json/getPlantsResponse.json");
+    Resource plantFamilyResponse = new ClassPathResource("json/getPlantFamilyResponse.json");
+
     @Before
     public void setup() throws IOException {
-        validPlantJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
-        validPlantFamilyJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
+        validPlantJsonString = Files.readString(plantResponse.getFile().toPath());
+        validPlantFamilyJsonString = Files.readString(plantFamilyResponse.getFile().toPath());
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         // This makes the shuffling of plant guesser options not random so it can be tested
         Random fixedRandom = new Random(13);
