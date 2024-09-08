@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -65,7 +64,7 @@ public class SlotsController {
                 } else {
                     session.setAttribute("gameState", GameState.FREE_SPIN);
 
-                    model.addAttribute("buttonText", "Spin");
+                    model.addAttribute("buttonText", "SPIN");
                     model.addAttribute("message", "You have a free spin available!");
                     model.addAttribute("gameState", GameState.FREE_SPIN);
                     model.addAttribute("buttonAction", GameState.FREE_SPINNING);
@@ -74,7 +73,7 @@ public class SlotsController {
             case PAYED_SPIN:
                 session.setAttribute("gameState", GameState.PAYED_SPIN);
 
-                model.addAttribute("buttonText", "Spin for " + SPIN_COST + "฿");
+                model.addAttribute("buttonText", "SPIN for " + SPIN_COST + "฿");
                 model.addAttribute("message", "You've already spun today! Spend " + SPIN_COST + "฿ to spin again?");
                 model.addAttribute("gameState", GameState.PAYED_SPIN);
                 model.addAttribute("buttonAction", GameState.PAYED_SPINNING);
@@ -117,7 +116,7 @@ public class SlotsController {
                     session.setAttribute("gameState", GameState.FREE_SPIN);
 
                     model.addAttribute("gameState", GameState.FREE_SPINNING);
-                    model.addAttribute("buttonText", "Spin");
+                    model.addAttribute("buttonText", "SPIN");
                     model.addAttribute("message", "You have a free spin available!");
                     model.addAttribute("buttonAction", GameState.FREE_SPINNING);
 
@@ -131,7 +130,7 @@ public class SlotsController {
                 session.setAttribute("gameState", GameState.PAYED_SPIN);
 
                 model.addAttribute("gameState", GameState.PAYED_SPINNING);
-                model.addAttribute("buttonText", "Spin for " + SPIN_COST + "฿");
+                model.addAttribute("buttonText", "SPIN for " + SPIN_COST + "฿");
                 model.addAttribute("message", "You've already spun today! Spend " + SPIN_COST + "฿ to spin again?");
                 model.addAttribute("buttonAction", GameState.PAYED_SPINNING);
 

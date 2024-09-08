@@ -4,17 +4,13 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import nz.ac.canterbury.seng302.gardenersgrove.controller.SlotsController;
 import org.junit.jupiter.api.Assertions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.io.UnsupportedEncodingException;
 
@@ -83,7 +79,7 @@ public class DailySpinSteps {
         // spin wheel animation and the garden-themed emojis 💧☀️🍄🌶️🌾.
         String content = mvcResult.getResponse().getContentAsString();
 
-        boolean hasSpinButton = content.contains("<button class=\"spin-button\"") && content.contains("SPIN");
+        boolean hasSpinButton = content.contains("<button type=\"submit\" class=\"spin-button\"") && content.contains("SPIN");
         boolean hasReelContainers = content.contains("<div class=\"reel-container\"");
 
         Assertions.assertAll(
