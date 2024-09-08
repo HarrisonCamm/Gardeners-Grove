@@ -14,6 +14,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.cucumber.RunCucumberTest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Message;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ModerationService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.WeatherService;
 import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
@@ -81,6 +82,9 @@ public class DirectMessagingSteps {
     @Autowired
     private StompFrameHandler stompFrameHandler;
 
+    @Autowired
+    private PlantGuesserService plantGuesserService;
+
     private MockMvc mockMvc;
 
     private ResultActions resultActions;
@@ -95,7 +99,7 @@ public class DirectMessagingSteps {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
         // Grab the running config instance to be able to get the received message when it is mocked in the doAnswer
-        runCucumberTest = new RunCucumberTest(moderationService, weatherService, stompSession, stompFrameHandler);
+        runCucumberTest = new RunCucumberTest(moderationService, weatherService, stompSession, stompFrameHandler, plantGuesserService);
     }
 
     // Background

@@ -144,15 +144,12 @@ public class RunCucumberTest {
         }
     }
 
-
-
-
-
     @Autowired
     public RunCucumberTest(ModerationService moderationService,
                            WeatherService weatherService,
                            StompSession stompSession,
-                           StompFrameHandler stompFrameHandler) {
+                           StompFrameHandler stompFrameHandler,
+                           PlantGuesserService plantGuesserService) {
 
         /*
          This constructor is run before every FEATURE, use it to set up mocks with their default behaviour.
