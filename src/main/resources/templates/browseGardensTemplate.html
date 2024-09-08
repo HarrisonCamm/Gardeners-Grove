@@ -100,7 +100,7 @@
         </ul>
     </nav>
     <!-- Text showing number of results -->
-    <div class="text-center" th:text="${'Showing results ' + ((gardenPage.number * 10) + 1) + ' to ' + ((gardenPage.number * 10) + gardenPage.numberOfElements) + ' of ' + gardenPage.totalElements}"></div>
+    <div class="text-center" th:unless="${noResults}" th:text="${'Showing results ' + ((gardenPage.number * 10) + 1) + ' to ' + ((gardenPage.number * 10) + gardenPage.numberOfElements) + ' of ' + gardenPage.totalElements}"></div>
 </div>
 
 <!-- Scripts fragment, contains bootstrap scripts -->
