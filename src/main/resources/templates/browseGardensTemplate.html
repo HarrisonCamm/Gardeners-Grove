@@ -48,6 +48,7 @@
                            placeholder="Search by tags"/>
                     <div id="tags-list"></div> <!-- For displaying selected tags -->
                 </div>
+                <p th:if="${tagNotFoundError}" class="error-message" th:text="${tagNotFoundError}"></p>
 
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary">Search</button>
@@ -64,7 +65,7 @@
     </div>
     <!-- Gardens List -->
     <div class="row justify-content-center">
-        <div class="col-12 col-md-8">
+        <div th:unless="${noResults}" class="col-12 col-md-8">
             <ul class="list-group">
                 <li th:each="garden : ${gardenPage.content}" class="list-group-item d-flex justify-content-between align-items-center">
                     <a th:href="@{'/view-garden?gardenID=' + ${garden.id}}" class="text-decoration-none">

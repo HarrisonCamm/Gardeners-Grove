@@ -49,11 +49,15 @@ public class BrowseGardenController {
         }
 
 
-        if (!tagName.isEmpty()) { //TODO make nicer
+        if (!tagName.isEmpty() ) {
             Tag tag = tagService.getTagByName(tagName);
-            if (!displayedSearchTags.stream().anyMatch(existingTag -> existingTag.getId().equals(tag.getId()))) {
-                displayedSearchTags.add(tag);
-                tagIds.add(tag.getId());
+            if(tag != null) {
+                if (!displayedSearchTags.stream().anyMatch(existingTag -> existingTag.getId().equals(tag.getId()))) {
+                    displayedSearchTags.add(tag);
+                    tagIds.add(tag.getId());
+                }
+            }else {
+                model.addAttribute("tagNotFoundError", "No matching tags found");
             }
         }
 
