@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
@@ -9,20 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import static nz.ac.canterbury.seng302.gardenersgrove.validation.TagValidator.doTagValidations;
-import static nz.ac.canterbury.seng302.gardenersgrove.validation.TagValidator.isAppropriateName;
+import java.util.stream.IntStream;
 
 @Controller
 public class BrowseGardenController {
@@ -30,6 +24,8 @@ public class BrowseGardenController {
     private final GardenService gardenService;
     private final UserService userService;
     private final TagService tagService;
+    List<Long> tagIds = new ArrayList<>();
+    List<Tag> displayedSearchTags = new ArrayList<>();
 
     @Autowired
     public BrowseGardenController(GardenService gardenService, UserService userService, TagService tagService) {
@@ -42,7 +38,7 @@ public class BrowseGardenController {
     public String browseGardens(HttpSession session,
                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
                          @RequestParam(value = "q", required = false, defaultValue = "") String query,
-                         @RequestParam(value = "tagsInput", required = false, defaultValue = "") String tagNames,
+                         @RequestParam(value = "tagsInput", required = false, defaultValue = "") String tagName,
                          Model model) {
 
         logger.info("GET /browse-gardens");
@@ -51,22 +47,52 @@ public class BrowseGardenController {
         if (page < 1) {
             return "redirect:/browse-gardens";
         }
-        
-        Page<Garden> gardenPage = null;
-        List<Long> tagIds = null;
 
-        if (!tagNames.isEmpty()) { //TODO make nicer
-            tagIds = tagService.getTagsByString(tagNames);
+
+        if (!tagName.isEmpty()) { //TODO make nicer
+            Tag tag = tagService.getTagByName(tagName);
+            if (!displayedSearchTags.stream().anyMatch(existingTag -> existingTag.getId().equals(tag.getId()))) {
+                displayedSearchTags.add(tag);
+                tagIds.add(tag.getId());
+            }
         }
 
-        if (!query.isEmpty() && !tagNames.isEmpty()) { //query and tag entered
+        displayTags(query, page, model);
+
+
+        return "browseGardensTemplate";
+    }
+
+    @PostMapping("/browse-gardens")
+    public String browseGardens(@RequestParam(value="tagToRemove") String tagNameToRemove,
+                                @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                                @RequestParam(value = "q", required = false, defaultValue = "") String query,
+                                @RequestParam(value = "tagsInput", required = false, defaultValue = "") String tagName,
+                                Model model) {
+        logger.info("POST /browse-gardens");
+        RedirectService.addEndpoint("/browse-gardens");
+
+        int tagIndex = IntStream.range(0, displayedSearchTags.size())
+                .filter(i -> displayedSearchTags.get(i).getName().equals(tagNameToRemove))
+                .findFirst()
+                .orElse(-1);
+        Tag tagToRemove = displayedSearchTags.get(tagIndex);
+        displayedSearchTags.remove(tagToRemove);
+        tagIds.remove(tagToRemove.getId());
+
+        displayTags(query, page, model);
+        return "browseGardensTemplate";
+    }
+
+    public String displayTags(String query, int page, Model model) {
+        Page<Garden> gardenPage;
+        if (!query.isEmpty() && !displayedSearchTags.isEmpty()) { //query and tag entered
             gardenPage = gardenService.searchPublicGardensBySearchAndTags(query, page-1, tagIds);
-        } else if (!tagNames.isEmpty()) { //tags entered but no query
+        } else if (!displayedSearchTags.isEmpty()) { //tags entered but no query
             gardenPage = gardenService.searchPublicGardensByTags(tagIds, page - 1);
         } else {
             gardenPage = gardenService.searchPublicGardens(query, page - 1);
         }
-        
 
         if (gardenPage.getTotalElements() == 0) {
             model.addAttribute("noResults", "No gardens match your search");
@@ -76,9 +102,10 @@ public class BrowseGardenController {
         }
         model.addAttribute("gardenPage", gardenPage);
         model.addAttribute("q", query);
-        model.addAttribute("tagsInput", tagNames);
+        model.addAttribute("tagsInput", "");
+        model.addAttribute("searchTags", displayedSearchTags);
 
-        return "browseGardensTemplate";
+        return query;
     }
 
 }
