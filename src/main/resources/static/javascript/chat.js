@@ -21,15 +21,16 @@ const gardenID = dataset.gardenId;
  *     then reload the page
  * @param url the link to fetch the contacts
  * @param contact the expected contact
+ * @param furtherAttempts the number of further recursive attempts to make
  */
-function getContact(url, contact) {
-    fetch(url)
+function getContact(url, contact, furtherAttempts) {
+    fetch(url + `?email=${contact}`)
         .then(response => response.json())
         .then(messages => {
-            if (messages.includes(contact)) {
+            if (furtherAttempts <= 0 || messages.includes(contact)) {
                 window.location.reload();
             } else {
-                getContact(url, contact);
+                getContact(url, contact, furtherAttempts - 1);
             }
         });
 }
@@ -61,7 +62,7 @@ function connect() {
             const contactEmails = JSON.parse(dataset.contactEmails);
             const unknownSender = !contactEmails.includes(message.sender);
             if (unknownSender) {
-                getContact(deployPath + '/contacts', message.sender)
+                getContact(deployPath + '/contacts', message.sender, 10)
             }
             // Show the message in the chat area
             showMessage(message);
