@@ -18,6 +18,20 @@
     <!-- Search Section -->
     <div class="row justify-content-center mb-4">
         <div class="col-12 col-md-8">
+            <form th:action="@{/browse-gardens}" method="post" novalidate >
+                <div class="row" th:if="${searchTags != null and searchTags.size() > 0}">
+                    <div class="col d-flex flex-wrap">
+                        <th:block th:each="eachTag : ${searchTags}">
+                            <span class="badge me-2 mb-2 tag-colour">
+                                <span th:text="${eachTag.name}"></span>&nbsp;&nbsp;&nbsp;
+                                <button type="submit" th:name="tagToRemove" th:value="${eachTag.name}" class="clickable-x">
+                                    ✕
+                                </button>
+                            </span>
+                        </th:block>
+                    </div>
+                </div>
+            </form>
             <form th:action="@{/browse-gardens}" method="get" novalidate>
                 <div class="input-group mb-3">
                     <input th:name="q"
@@ -37,16 +51,6 @@
 
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary">Search</button>
-                </div>
-            </form>
-            <form th:action="@{/browse-gardens}" method="post" novalidate >
-                <div class="row mb-3 ps-5" th:if="${searchTags != null and searchTags.size() > 0}">
-                    <div class="col d-flex flex-wrap">
-                        <th:block th:each="eachTag : ${searchTags}">
-                            <button type="submit" th:name="tagToRemove" th:value="${eachTag.name}" class="badge me-2 mb-2 tag-colour"
-                                    th:text="${eachTag.name} + '&nbsp;&nbsp;&nbsp;✕'"></button>
-                        </th:block>
-                    </div>
                 </div>
             </form>
         </div>
