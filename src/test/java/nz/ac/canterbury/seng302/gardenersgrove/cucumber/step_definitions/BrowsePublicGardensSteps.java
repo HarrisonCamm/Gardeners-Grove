@@ -10,6 +10,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.hamcrest.Matchers;
@@ -18,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -40,14 +43,17 @@ public class BrowsePublicGardensSteps {
     @Autowired
     private PlantService plantService;
 
+    @Autowired
+    private LocationService locationService;
+
     private MockMvc mockMvc;
 
     private Garden publicGarden;
 
     private User gardenOwner;
 
-    @Before
-    public void setup() {
+    @Before("@SingleGarden")
+    public void setupSingleGarden() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
         // Create a test garden owner
@@ -83,6 +89,46 @@ public class BrowsePublicGardensSteps {
 
         // Save garden to a database
         gardenService.addGarden(publicGarden);
+    }
+
+    @Before("@MultipleGardens")
+    public void setupMultipleGardens() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+
+        // Create a test garden owner
+        User gardenOwner = new User(
+                "inaya@email.com",  // Email
+                "Inaya",                    // First name
+                true,                       // No last name
+                "",                         // Empty last name
+                "Password1!",               // Password
+                "1990-01-01"                // Date of birth
+        );
+
+        // Save user to a database
+        userService.addUser(gardenOwner);
+
+        IntStream.rangeClosed(1, 20).forEach(i -> {
+            // NOTE: If not done, get a detached entity problem.
+            // NOTE: Tried persisting location to database did not fix
+            // Create a new unique location for each garden
+            Location location = new Location("Test Street " + i, "Test Suburb", "Test City", "1234", "Country");
+
+            String gardenName = "Public Test Garden " + i;
+            Garden garden = new Garden(gardenName, location, "100", gardenOwner, "A public garden " + i);
+
+            // Mark the garden as public
+            garden.setIsPublic(true);
+
+            // Save garden to a database
+            gardenService.addGarden(garden);
+
+            // Create and add plants to the garden
+            Plant testPlant = new Plant(garden, "TestPlant " + i, "5", "Testy plant " + i, "2024-09-05");
+
+            // Save plants to the database
+            plantService.addPlant(testPlant);
+        });
     }
 
     // AC1
@@ -153,7 +199,7 @@ public class BrowsePublicGardensSteps {
                 .andExpect(MockMvcResultMatchers.model().attribute("gardenPage", hasProperty("content", hasSize(lessThanOrEqualTo(Math.min(maxGardens, 10))))));
     }
 
-    // AC3, AC4
+    // AC3, AC4, AC6
     @Given("I enter a search string {string} into the search box")
     public void iEnterASearchStringIntoTheSearchBox(String query) throws Exception {
         // Perform the GET request to the "/browse-gardens" endpoint with a query
@@ -240,6 +286,52 @@ public class BrowsePublicGardensSteps {
                 .andExpect(status().isOk())
                 // Ensure the "noResults" message is present in the model and matches the expected message
                 .andExpect(model().attribute("noResults", is(expectedMessage)));
+    }
+
+    // AC6
+    @When("there are more than {int} gardens")
+    public void thereAreMoreThanGardens(Integer gardenCount) throws Exception {
+        String query = "TestPlant";
+
+        // Check the first page for 10 results
+        mockMvc.perform(get("/browse-gardens")
+                        .param("q",query)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                // Check the number of gardens in the content of gardenPage
+                .andExpect(model().attribute("gardenPage", hasProperty("content", hasSize(equalTo(gardenCount)))));
+
+        // Check the second page for less than or equal 10 results for the same search
+        mockMvc.perform(get("/browse-gardens")
+                        .param("q",query)
+                        .param("page", "2")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                // Check the number of gardens in the content of gardenPage
+                .andExpect(model().attribute("gardenPage", hasProperty("content", hasSize(lessThanOrEqualTo(gardenCount)))));
+    }
+
+    // AC6
+    @Then("the results are paginated with {int} per page")
+    public void theResultsArePaginatedWithPerPage(Integer resultsPerPage) throws Exception {
+        String query = "TestPlant";
+
+        // Check the first page for 10 results
+        mockMvc.perform(get("/browse-gardens")
+                        .param("q",query)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                // Check the number of gardens in the content of gardenPage
+                .andExpect(model().attribute("gardenPage", hasProperty("content", hasSize(equalTo(resultsPerPage)))));
+
+        // Check the second page for 10 results
+        mockMvc.perform(get("/browse-gardens")
+                        .param("q",query)
+                        .param("page", "2")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                // Check the number of gardens in the content of gardenPage
+                .andExpect(model().attribute("gardenPage", hasProperty("content", hasSize(equalTo(resultsPerPage)))));
     }
 }
 
