@@ -13,18 +13,18 @@ Feature: U20 - Browsing public gardens
     Then I am taken to a page with a search text box and the 10 or fewer of newest created gardens
 
   Scenario: AC3 - Search for gardens by name or plants
-    Given I enter a search string "rose" into the search box
-    When I click the search button labelled "search" or the magnifying glass icon
-    Then I am shown only gardens whose names or plants include "rose"
+    Given I enter a search string "TestPlant" into the search box
+    When I click the search button labelled "Search" or the magnifying glass icon
+    Then I am shown only gardens whose names or plants include "TestPlant"
 
   Scenario: AC4 - Search results when pressing Enter
-    Given I enter a search string "tulip" into the search box
+    Given I enter a search string "TestPlant" into the search box
     When I press the Enter key
     Then the results are shown as if I clicked the search button
 
   Scenario: AC5 - No matching gardens found
     Given I enter a search string "unknown" that has no matches
-    When I click the search button
+    When I click the search button labelled "Search" or the magnifying glass icon
     Then a message tells me "No gardens match your search"
 
   Scenario: AC6 - Paginated search results

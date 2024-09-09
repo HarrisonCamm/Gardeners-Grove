@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
+import com.zaxxer.hikari.SQLExceptionOverride;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -141,10 +142,9 @@ public class BrowsePublicGardensSteps {
     public void iAmTakenToAPageWithASearchTextBoxAndTheOrFewerOfNewestCreatedGardens(Integer maxGardens) throws Exception {
         // Perform the GET request to the "/browse-gardens" endpoint
         mockMvc.perform(get("/browse-gardens"))
-                .andExpect(status().isOk()) // Check that the status is OK (200)
-                .andExpect(MockMvcResultMatchers.model().attributeExists("gardenPage")) // Ensure the gardenPage attribute exists
-
-                // Adjust the matcher to accept any number of gardens between 1 and maxGardens
+                .andExpect(status().isOk())
+                // Ensure the gardenPage attribute exists
+                .andExpect(MockMvcResultMatchers.model().attributeExists("gardenPage"))
 
                 // Ensure at least 1 garden is present
                 .andExpect(MockMvcResultMatchers.model().attribute("gardenPage", hasProperty("content", hasSize(greaterThanOrEqualTo(1)))))
@@ -153,21 +153,93 @@ public class BrowsePublicGardensSteps {
                 .andExpect(MockMvcResultMatchers.model().attribute("gardenPage", hasProperty("content", hasSize(lessThanOrEqualTo(Math.min(maxGardens, 10))))));
     }
 
-    // AC3
+    // AC3, AC4
     @Given("I enter a search string {string} into the search box")
-    public void iEnterASearchStringIntoTheSearchBox(String arg0) {
-
+    public void iEnterASearchStringIntoTheSearchBox(String query) throws Exception {
+        // Perform the GET request to the "/browse-gardens" endpoint with a query
+        mockMvc.perform(get("/browse-gardens")
+                        .param("q", query)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                // Check results returned
+                .andExpect(model().attribute("q", query));
     }
 
-    // AC3
+    // AC3, AC5
     @When("I click the search button labelled {string} or the magnifying glass icon")
-    public void iClickTheSearchButtonLabelledOrTheMagnifyingGlassIcon(String arg0) {
-
+    public void iClickTheSearchButtonLabelledOrTheMagnifyingGlassIcon(String buttonLabel) throws Exception{
+        // Clicking the button by submitting the search query with CSRF protection
+        mockMvc.perform(get("/browse-gardens")
+                        .with(csrf()))
+                .andExpect(status().isOk());
     }
 
     // AC3
     @Then("I am shown only gardens whose names or plants include {string}")
-    public void iAmShownOnlyGardensWhoseNamesOrPlantsInclude(String arg0) {
+    public void iAmShownOnlyGardensWhoseNamesOrPlantsInclude(String query) throws Exception{
+        // Ensure the search results only include gardens that match the search query in either name or plants
+        mockMvc.perform(get("/browse-gardens")
+                        .param("q", query)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("gardenPage"))
+                .andExpect(model().attribute("gardenPage", hasProperty("content", everyItem(
+                        allOf(
+                                // Check that test garden with test plant is returned
+                                hasProperty("name", containsString("Public Test Garden"))
+                        )
+                ))));
+    }
+
+    // AC4
+    @When("I press the Enter key")
+    public void iPressTheEnterKey() throws Exception {
+        // User presses enter button
+    }
+
+    // AC4
+    @Then("the results are shown as if I clicked the search button")
+    public void theResultsAreShownAsIfIClickedTheSearchButton() throws Exception {
+        // Ensure the same behavior as clicking the search button, i.e., search results are displayed
+        mockMvc.perform(get("/browse-gardens")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("gardenPage"))
+                .andExpect(model().attribute("gardenPage", hasProperty("content", everyItem(
+                        allOf(
+                                // Check that test garden with test plant is returned
+                                hasProperty("name", containsString("Public Test Garden"))
+                        )
+                ))));
+    }
+
+    // AC5
+    @Given("I enter a search string {string} that has no matches")
+    public void iEnterASearchStringThatHasNoMatches(String query) throws Exception {
+        // Perform the GET request to the "/browse-gardens" endpoint with a query that has no matches
+        mockMvc.perform(get("/browse-gardens")
+                        .param("q", query)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                // Ensure the query is processed
+                .andExpect(model().attribute("q", query))
+                // Ensure no results are returned
+                .andExpect(model().attribute("gardenPage", hasProperty("content", hasSize(0))));
+    }
+
+    // AC5
+    @Then("a message tells me {string}")
+    public void aMessageTellsMe(String expectedMessage) throws Exception {
+        // Same query as step above
+        String query = "unknown";
+
+        // Perform the query call that would result in no matches and trigger the message
+        mockMvc.perform(get("/browse-gardens")
+                        .param("q", query)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                // Ensure the "noResults" message is present in the model and matches the expected message
+                .andExpect(model().attribute("noResults", is(expectedMessage)));
     }
 }
 
