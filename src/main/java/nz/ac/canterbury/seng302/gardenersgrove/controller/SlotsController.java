@@ -26,7 +26,11 @@ public class SlotsController {
         FREE_SPIN, FREE_SPINNING, PAYED_SPIN, PAYED_SPINNING, SPINNING
     }
 
-    int SPIN_COST = 50;
+    private static final int SPIN_COST = 50;
+    private static final String BUTTON_TEXT = "SPIN";
+    private static final String MESSAGE = "You have a free spin available!";
+    private static final String BUTTON_TEXT_PAYED = "SPIN for " + SPIN_COST + "฿";
+    private static final String MESSAGE_PAYED = "You've already spun today! Spend " + SPIN_COST + "฿ to spin again?";
 
     Logger logger = LoggerFactory.getLogger(SlotsController.class);
     private final UserService userService;
@@ -51,10 +55,10 @@ public class SlotsController {
         //Seems logical to use one function for postMapping and getMapping even though amountWon isn't used here
         int amountWon = processSlots(session, model);
 
-        logger.info("Calculated win for current slots: " + amountWon);
+        logger.info(String.valueOf(amountWon));
+
 
         GameState gameState = session.getAttribute("gameState") == null ? GameState.FREE_SPIN : (GameState) session.getAttribute("gameState");
-        logger.info("Game state: " + gameState);
 
         switch(gameState) {
             case FREE_SPIN:
@@ -62,22 +66,19 @@ public class SlotsController {
                     session.setAttribute("gameState", GameState.PAYED_SPIN);
                     return "redirect:/daily-spin";
                 } else {
-                    session.setAttribute("gameState", GameState.FREE_SPIN);
-
-                    model.addAttribute("buttonText", "SPIN");
-                    model.addAttribute("message", "You have a free spin available!");
-                    model.addAttribute("gameState", GameState.FREE_SPIN);
-                    model.addAttribute("buttonAction", GameState.FREE_SPINNING);
+                    setSessionModelAttributes(session, model,
+                            GameState.FREE_SPIN, GameState.FREE_SPIN,
+                            BUTTON_TEXT, MESSAGE, GameState.FREE_SPINNING);
                     break;
                 }
             case PAYED_SPIN:
-                session.setAttribute("gameState", GameState.PAYED_SPIN);
-
-                model.addAttribute("buttonText", "SPIN for " + SPIN_COST + "฿");
-                model.addAttribute("message", "You've already spun today! Spend " + SPIN_COST + "฿ to spin again?");
-                model.addAttribute("gameState", GameState.PAYED_SPIN);
-                model.addAttribute("buttonAction", GameState.PAYED_SPINNING);
+                setSessionModelAttributes(session, model,
+                        GameState.PAYED_SPIN, GameState.PAYED_SPIN,
+                        BUTTON_TEXT_PAYED, MESSAGE_PAYED, GameState.PAYED_SPINNING);
                 break;
+            default:
+                session.setAttribute("gameState", GameState.FREE_SPIN);
+                return "redirect:/daily-spin";
         }
 
         return "dailySpinTemplate";
@@ -113,12 +114,9 @@ public class SlotsController {
                     return "redirect:/daily-spin";
                 } else {
                     freeSpin(user, amountWon);
-                    session.setAttribute("gameState", GameState.FREE_SPIN);
-
-                    model.addAttribute("gameState", GameState.FREE_SPINNING);
-                    model.addAttribute("buttonText", "SPIN");
-                    model.addAttribute("message", "You have a free spin available!");
-                    model.addAttribute("buttonAction", GameState.FREE_SPINNING);
+                    setSessionModelAttributes(session, model,
+                            GameState.FREE_SPIN, GameState.FREE_SPINNING,
+                            BUTTON_TEXT, MESSAGE, GameState.FREE_SPINNING);
 
                     model.addAttribute("spinCost", 0);
 
@@ -127,51 +125,67 @@ public class SlotsController {
                 break;
             case PAYED_SPINNING:
                 payedSpin(user, amountWon);
-                session.setAttribute("gameState", GameState.PAYED_SPIN);
-
-                model.addAttribute("gameState", GameState.PAYED_SPINNING);
-                model.addAttribute("buttonText", "SPIN for " + SPIN_COST + "฿");
-                model.addAttribute("message", "You've already spun today! Spend " + SPIN_COST + "฿ to spin again?");
-                model.addAttribute("buttonAction", GameState.PAYED_SPINNING);
+                setSessionModelAttributes(session, model,
+                        GameState.PAYED_SPIN, GameState.PAYED_SPINNING,
+                        BUTTON_TEXT_PAYED, MESSAGE_PAYED, GameState.PAYED_SPINNING);
 
                 model.addAttribute("spinCost", SPIN_COST);
 
                 session.setAttribute("slots", null); //Reset slots
                 break;
+            default:
+                session.setAttribute("gameState", GameState.FREE_SPIN);
+                return "redirect:/daily-spin";
         }
 
         return "dailySpinTemplate";
     }
 
-    void freeSpin(User user, int amountWon) {
+    private void setSessionModelAttributes(HttpSession session, Model model,
+                                           GameState sessionGameState, GameState gameState,
+                                           String buttonText, String message, GameState buttonAction) {
+        session.setAttribute("gameState", sessionGameState);
+
+        model.addAttribute("gameState", gameState);
+        model.addAttribute("buttonText", buttonText);
+        model.addAttribute("message", message);
+        model.addAttribute("buttonAction", buttonAction);
+    }
+
+    private void freeSpin(User user, int amountWon) {
         userService.addBlooms(user, amountWon);
         user.UpdateLastFreeSpinUsed();
         userService.updateUserFriends(user);        //Only update method that just takes user as a parameter
     }
 
-    void payedSpin(User user, int amountWon) {
+    private void payedSpin(User user, int amountWon) {
         userService.addBlooms(user, amountWon);
         userService.chargeBlooms(user, SPIN_COST);
     }
 
-    boolean isWithin24Hours(Date date) {
+    private boolean isWithin24Hours(Date date) {
         if (date == null) return false;
         else return Duration.between(date.toInstant(), Instant.now()).toHours() < 24;
     }
 
-    int processSlots(HttpSession session, Model model) {
-        List<int[]> slots;                                                                                          //Duplicated from here:
+    /**
+     * Generates or retrieves slots from session and adds them to the model
+     * @param session The session to get the slots from
+     * @param model The model to add the slots to
+     * @return The amount won by the player
+     */
+    private int processSlots(HttpSession session, Model model) {
+        @SuppressWarnings("unchecked")
+        List<int[]> slots = (List<int[]>) session.getAttribute("slots");
+
         //If there is not a set of slots generates new ones
-        if (session.getAttribute("slots") == null) {
+        if (slots == null) {
             slots = SlotsService.generateSlots();
             session.setAttribute("slots", slots);
-        } else {
-            slots = (List<int[]>) session.getAttribute("slots");
         }
 
         model.addAttribute("slots", slots);
         int amountWon = SlotsService.amountWon(slots);
-        logger.info("Amount won: " + amountWon);
         model.addAttribute("amountWon", amountWon);
         return amountWon;
     }

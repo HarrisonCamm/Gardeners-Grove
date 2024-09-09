@@ -13,7 +13,7 @@ public class SlotsService {
     private final static int GAME_ROWS = 3;
 
     // Define base (3 in a row) amount of blooms for each emoji
-//         * ["" ,"💧", "☀️", "🍄", "🌶️", "🌾"];
+    // "" ,"💧", "☀️", "🍄", "🌶️", "🌾"
 
     private static final int WIN_1 = 1;         // 3 in a row of 💧
     private static final int WIN_2 = 2;        // 3 in a row of ☀️
