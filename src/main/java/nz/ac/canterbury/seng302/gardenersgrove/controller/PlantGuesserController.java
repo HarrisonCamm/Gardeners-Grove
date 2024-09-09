@@ -131,7 +131,6 @@ public class PlantGuesserController {
             session.setAttribute(SESSION_SCORE, score);
             model.addAttribute("correctAnswer", "You got it correct! +10 Blooms");
         }
-        roundNumber += 1;
         session.setAttribute(SESSION_ROUND, roundNumber);
         model.addAttribute("score", score);
 
@@ -214,7 +213,7 @@ public class PlantGuesserController {
         model.addAttribute("quizOptions", splitQuizOptions);
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit + " via Trefle");
-        model.addAttribute("roundNumber", roundNumber);
+        model.addAttribute("roundNumber", roundNumber + 1);
         model.addAttribute("correctOption", correctOption);
         model.addAttribute("selectedOption", -1);
         model.addAttribute("answerSubmitted", false);
