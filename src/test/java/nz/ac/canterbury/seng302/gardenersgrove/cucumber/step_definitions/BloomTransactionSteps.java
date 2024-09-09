@@ -24,6 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -31,8 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class BloomTransactionSteps {
@@ -61,6 +61,7 @@ public class BloomTransactionSteps {
 
     private MockMvc mockMvc;
     private MvcResult mvcResult;
+    private ResultActions resultActions;
 
     private User currentUser;
 
@@ -84,7 +85,7 @@ public class BloomTransactionSteps {
 
     //AC1, AC2
     @Then("I can see my Bloom balance displayed prominently in the header or a dedicated section")
-    public void i_can_see_my_bloom_balance_displayed_prominently_in_the_header_or_a_dedicated_section() throws UnsupportedEncodingException {
+    public void i_can_see_my_bloom_balance_displayed_prominently_in_the_header_or_a_dedicated_section() throws Exception {
 
         currentUser = userService.getAuthenticatedUser();
         Integer balance = currentUser.getBloomBalance();
@@ -97,7 +98,6 @@ public class BloomTransactionSteps {
         Assertions.assertNotNull(currentUser.getBloomBalance(), "Expected bloom balance to be a number, but it was null");
 
         Assertions.assertTrue(hasBloomBalance, "Expected to find a bloom balance icon and number on the page.");
-
     }
 
 
@@ -105,7 +105,7 @@ public class BloomTransactionSteps {
     //AC2
     @When("I navigate to my profile page")
     public void i_navigate_to_my_profile_page() throws Exception {
-        this.mvcResult = mockMvcUserProfile.perform(get("/view-user-profile")).andExpect(status()
+        this.mvcResult = mockMvc.perform(get("/view-user-profile")).andExpect(status()
                 .isOk())
                 .andExpect(view().name("viewUserProfileTemplate"))
                 .andReturn();
