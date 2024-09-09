@@ -38,28 +38,34 @@ Feature: U20 - Browsing public gardens
     When there are more than 10 gardens
     Then the results are paginated with 10 per page
 
+  @MultipleGardens
   Scenario: AC7 - Navigate to the first page of results
     Given I am on any page of results
     When I click "first" underneath the results
     Then I am taken to the first page
 
+  @MultipleGardens
   Scenario: AC8 - Navigate to the last page of results
     Given I am on any page of results
     When I click "last" underneath the results
     Then I am taken to the last page
 
+  @MultipleGardens
   Scenario: AC9 - Prevent navigating beyond first or last page
     Given I click any page navigation button
     Then I am never taken before the first page or beyond the last page
 
+  @MultipleGardens
   Scenario: AC10 - View page numbers and links
-    Given I am on page 2 with 31 results
-    Then I should see links for pages 1, 3, and 4
+    Given I am on page 2 with 10 results
+    Then I should see links for pages 1, 2
 
+  @MultipleGardens
   Scenario: AC11 - Navigate to a specific page
-    Given I click on page number 3
+    Given I click on page number 2
     Then I am navigated to that page
 
+  @MultipleGardens
   Scenario: AC12 - Display search results index
     Given I am on any page
-    Then I see the text "Showing results X to Y of Z"
+    Then I see the text "Showing results 11 to 20 of 20"

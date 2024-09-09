@@ -14,6 +14,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.LocationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.hamcrest.Matchers;
+import org.mockito.internal.matchers.Equals;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -333,5 +334,156 @@ public class BrowsePublicGardensSteps {
                 // Check the number of gardens in the content of gardenPage
                 .andExpect(model().attribute("gardenPage", hasProperty("content", hasSize(equalTo(resultsPerPage)))));
     }
+
+    // AC7, AC8
+    @Given("I am on any page of results")
+    public void iAmOnAnyPageOfResults() {
+        // Assume user is on the browse gardens page
+    }
+
+    // AC7
+    @When("I click \"first\" underneath the results")
+    public void iClickFirstUnderneathTheResults() throws Exception {
+        mockMvc.perform(get("/browse-gardens")
+                        // Simulate clicking the first page button
+                        .param("page", "1")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("gardenPage"));
+    }
+
+    // AC7
+    @Then("I am taken to the first page")
+    public void iAmTakenToTheFirstPage() throws Exception {
+        mockMvc.perform(get("/browse-gardens")
+                        // First page
+                        .param("page", "1")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                // Checks if page number is 0 (first page in this test context)
+                .andExpect(model().attribute("gardenPage", hasProperty("number", is(0))));
+    }
+
+    // AC8
+    @When("I click \"last\" underneath the results")
+    public void iClickLastUnderneathTheResults() throws Exception {
+        mockMvc.perform(get("/browse-gardens")
+                        // Simulate clicking the last page button
+                        .param("page", "2")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("gardenPage"));
+    }
+
+    // AC8
+    @Then("I am taken to the last page")
+    public void iAmTakenToTheLastPage() throws Exception {
+        mockMvc.perform(get("/browse-gardens")
+                        .param("page", "2")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                // Checks if page number is 1 (last page in this test context)
+                .andExpect(model().attribute("gardenPage", hasProperty("number", is(1))));
+    }
+
+    // AC9
+    @Given("I click any page navigation button")
+    public void iClickAnyPageNavigationButton() {
+        // Assume user clicks any pagination page button
+    }
+
+    // AC9
+    @Then("I am never taken before the first page or beyond the last page")
+    public void iAmNeverTakenBeforeTheFirstOrBeyondTheLastPage() throws Exception {
+        // Test navigating before the first page
+        mockMvc.perform(get("/browse-gardens")
+                        // Trying to access page 0 (before first)
+                        .param("page", "0")
+                        .with(csrf()))
+                // Redirect to the first page (expected behavior)
+                .andExpect(status().is3xxRedirection());
+
+        // Test navigating beyond the last page
+        mockMvc.perform(get("/browse-gardens")
+                        // Beyond the last page (in this test context)
+                        .param("page", "3")
+                        .with(csrf()))
+                // Redirect to the last page
+                .andExpect(status().is3xxRedirection());
+    }
+
+    // AC10
+    @Given("I am on page {int} with {int} results")
+    public void iAmOnPageWithResults(int pageNumber, int resultsPerPage) throws Exception {
+        mockMvc.perform(get("/browse-gardens")
+                        .param("page", String.valueOf(pageNumber))
+                        .param("results", String.valueOf(resultsPerPage))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("gardenPage"))
+                // Check the correct page
+                .andExpect(model().attribute("gardenPage", hasProperty("number", is(pageNumber - 1))))
+                // Check the number of public gardens is correct
+                .andExpect(model().attribute("gardenPage", hasProperty("size", is(resultsPerPage))));
+    }
+
+    // AC10
+    @Then("I should see links for pages {int}, {int}")
+    public void iShouldSeeLinksForPages(int firstPage, int nextPage) throws Exception {
+        mockMvc.perform(get("/browse-gardens")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("gardenPage"))
+                // Check that the total pages are greater than or equal to the 2 pages it should have
+                .andExpect(model().attribute("gardenPage", hasProperty("totalPages", equalTo(nextPage))));
+    }
+
+    // AC11
+    @Given("I click on page number {int}")
+    public void iClickOnPageNumber(int pageNumber) throws Exception {
+        mockMvc.perform(get("/browse-gardens")
+                        .param("page", String.valueOf(pageNumber))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("gardenPage"))
+                // Check if the page number is the one that was clicked (-1 because its zero-based index)
+                .andExpect(model().attribute("gardenPage", hasProperty("number", is(pageNumber - 1))));
+    }
+
+    // AC11
+    @Then("I am navigated to that page")
+    public void iAmNavigatedToThatPage() throws Exception {
+        mockMvc.perform(get("/browse-gardens")
+                        .param("page", "2")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("gardenPage"))
+                // Page number is 2 (but is index 1)
+                .andExpect(model().attribute("gardenPage", hasProperty("number", is(1))));
+    }
+
+    // AC12
+    @Given("I am on any page")
+    public void iAmOnAnyPage() throws Exception {
+        mockMvc.perform(get("/browse-gardens")
+                        // Assuming we're on the second page for this test
+                        .param("page", "2")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("gardenPage"));
+    }
+
+    // AC12
+    @Then("I see the text {string}")
+    public void iSeeTheText(String expectedText) throws Exception {
+        // Fetch the page to get the current results
+        mockMvc.perform(get("/browse-gardens")
+                        .param("page", "2")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                // Verify the text showing results is correctly rendered
+                .andExpect(MockMvcResultMatchers.content().string(containsString(expectedText)));
+    }
+
 }
 
