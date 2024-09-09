@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -248,7 +247,7 @@ public class User {
         return lastFreeSpinUsed;
     }
 
-    public void UpdateLastFreeSpinUsed() {
+    public void updateLastFreeSpinUsed() {
         lastFreeSpinUsed = new Date();
     }
 

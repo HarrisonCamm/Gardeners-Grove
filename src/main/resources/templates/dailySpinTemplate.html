@@ -35,12 +35,12 @@
         </div>
         <br/>
         <div>
-            <h3 th:text="${message}"?></h3>
+            <h3 th:text="${message}"></h3>
         </div>
         <br>
         <form th:action="@{/daily-spin}" method="post">
 <!--            <input type="hidden" name="_method" value="PUT">-->
-            <input type="hidden" name="gameState" th:value="${buttonAction}"/>
+            <input type="hidden" name="buttonAction" th:value="${buttonAction}"/>
             <button type="submit" class="spin-button" th:text="${buttonText}"></button>
         </form>
 
