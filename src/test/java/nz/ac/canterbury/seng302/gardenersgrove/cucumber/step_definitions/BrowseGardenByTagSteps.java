@@ -13,9 +13,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.TagService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -44,8 +42,8 @@ public class BrowseGardenByTagSteps {
     @Autowired
     private GardenService gardenService;
 
-    @MockBean
-    private static TagService tagService;
+    @Autowired
+    private TagService tagService;
 
     private MockMvc mockMvc;
     private MvcResult mvcResult;
@@ -65,11 +63,6 @@ public class BrowseGardenByTagSteps {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         location = new Location("Test Location", "Test Address", "Test City", "1234", "Test Postcode");
 
-        tagService = Mockito.mock(TagService.class);
-
-
-
-        existingTags = tagService.getTags();
     }
 
     @Given("I am browsing gardens")
