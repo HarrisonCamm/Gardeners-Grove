@@ -144,8 +144,18 @@ public class MessagesController {
     }
 
     @GetMapping("/contacts")
-    public @ResponseBody List<String> getContacts() {
-        return userService.getAuthenticatedUser().getAllContacts().stream().map(User::getEmail).toList();
+    public @ResponseBody List<String> getContacts(@RequestParam(value = "email", required = false) String email) {
+        logger.info("GET /contacts" + (email != null ? "  waiting for " + email : ""));
+
+        List<String> contacts = userService.getAuthenticatedUser().getAllContacts().stream().map(User::getEmail).toList();
+        if (email != null && !contacts.contains(email)) {
+            try {
+                Thread.sleep(250);
+            } catch (Exception e) {
+                logger.error("exception occurred while waiting for contact to be added");
+            }
+        }
+        return contacts;
     }
 
 }
