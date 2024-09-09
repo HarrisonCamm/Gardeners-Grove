@@ -67,10 +67,6 @@ public class TagService {
         tagRepository.delete(tag);
     }
 
-    public List<Long> getTagsByString(String tagNames) {
-        return tagRepository.getTagsByString(tagNames);
-    }
-
     /**
      * Evaluate the next unmoderated tag, called automatically every 5 seconds,
      * the free tier of Azure moderation allows only 1 transaction per second

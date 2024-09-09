@@ -52,7 +52,7 @@ public class BrowseGardenController {
         if (!tagName.isEmpty() ) {
             Tag tag = tagService.getTagByName(tagName);
             if(tag != null) {
-                if (!displayedSearchTags.stream().anyMatch(existingTag -> existingTag.getId().equals(tag.getId()))) {
+                if (displayedSearchTags.stream().noneMatch(existingTag -> existingTag.getId().equals(tag.getId()))) {
                     displayedSearchTags.add(tag);
                     tagIds.add(tag.getId());
                 }
