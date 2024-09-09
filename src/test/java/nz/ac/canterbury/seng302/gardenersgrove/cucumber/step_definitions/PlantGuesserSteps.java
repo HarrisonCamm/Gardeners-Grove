@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -75,10 +76,14 @@ public class PlantGuesserSteps {
     private int roundNumberPrevious;
     private User currentUser;
     private Integer startingBalance;
+    private static final int NUM_ROUNDS = 10;
+    private static final int BLOOM_BONUS = 100;
+    private MockHttpSession mockSession;
     @Before
     public void setup() throws IOException {
         String validPlantJsonString = Files.readString(plantResponse.getFile().toPath());
         String validPlantFamilyJsonString = Files.readString(plantFamilyResponse.getFile().toPath());
+        mockSession = new MockHttpSession();
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         // This makes the shuffling of plant guesser options not random so it can be tested
         Random fixedRandom = new Random(13);
@@ -100,7 +105,8 @@ public class PlantGuesserSteps {
 
     @Given("I am on the Games page")
     public void i_am_on_the_games_page() throws Exception {
-        mvcResult = mockMvc.perform(get("/games"))
+        mvcResult = mockMvc.perform(get("/games")
+                        .session(mockSession))
                 .andExpect(status().isOk())
                 .andReturn();
         currentUser = userService.getAuthenticatedUser();
@@ -109,7 +115,8 @@ public class PlantGuesserSteps {
 
     @When("I go to the Plant Guesser game page")
     public void i_go_to_the_plant_guesser_game_page() throws Exception {
-        resultActions = mockMvc.perform(get("/plant-guesser"));
+        resultActions = mockMvc.perform(get("/plant-guesser")
+                .session(mockSession));
         mvcResult = resultActions.andExpect(status().isOk())
                 .andReturn();
         get_model_data();
@@ -159,7 +166,8 @@ public class PlantGuesserSteps {
 
     @Given("I am on the Plant Guesser game page")
     public void i_am_on_the_plant_guesser_game_page() throws Exception {
-        mvcResult = mockMvc.perform(get("/plant-guesser"))
+        mvcResult = mockMvc.perform(get("/plant-guesser")
+                        .session(mockSession))
                 .andExpect(status().isOk())
                 .andReturn();
         String viewName = Objects.requireNonNull(mvcResult.getModelAndView()).getViewName();
@@ -182,7 +190,8 @@ public class PlantGuesserSteps {
                 .param("imageCredit", imageCredit)
                 .param("roundNumber", String.valueOf(roundNumber))
                 .param("correctOption", String.valueOf(correctOption))
-                .param("score", String.valueOf(score)));
+                .param("score", String.valueOf(score))
+                .session(mockSession));
 
         mvcResult = resultActions.andExpect(status().isOk())
                 .andReturn();
@@ -255,7 +264,8 @@ public class PlantGuesserSteps {
                 .param("imageCredit", imageCredit)
                 .param("roundNumber", String.valueOf(roundNumber))
                 .param("correctOption", String.valueOf(correctOption))
-                .param("score", String.valueOf(score)));
+                .param("score", String.valueOf(score))
+                .session(mockSession));
 
         mvcResult = resultActions.andExpect(status().isOk())
                 .andReturn();
@@ -324,7 +334,7 @@ public class PlantGuesserSteps {
     public void my_total_bloom_count_is_updated_and_displayed() {
         currentUser = userService.getAuthenticatedUser();
         int currentBalance = currentUser.getBloomBalance();
-        int bloomsWon = 100 + score*10;
+        int bloomsWon = BLOOM_BONUS + score*NUM_ROUNDS;
         Assertions.assertEquals(startingBalance+bloomsWon, currentBalance);
     }
 
@@ -337,7 +347,8 @@ public class PlantGuesserSteps {
 
     @Then("I am taken back to the Games page")
     public void i_am_taken_back_to_the_games_page() throws Exception {
-        mvcResult = mockMvc.perform(get("/games"))
+        mvcResult = mockMvc.perform(get("/games")
+                        .session(mockSession))
                 .andExpect(status().isOk())
                 .andReturn();
         String viewName = Objects.requireNonNull(mvcResult.getModelAndView()).getViewName();

@@ -86,7 +86,6 @@ public class RunCucumberTest {
             String plantPageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
             String plantFamilyPageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
 
-            ObjectMapper objectMapper = new ObjectMapper();
 
             // Parse the combined JSON
             JsonNode combinedData = objectMapper.readTree(plantFamilyPageJsonString);
@@ -212,35 +211,21 @@ public class RunCucumberTest {
         when(moderationService.isContentAppropriate("InappropriateEvaluated")).thenReturn(false);
 
 
-        when(plantGuesserService.getPlant(0)).thenReturn(plant1);
-        when(plantGuesserService.getMultichoicePlantNames(plant1.family, plant1.common_name, plant1.getCommonAndScientificName())).thenReturn(fourOptions1);
+        when(plantGuesserService.getPlant(anyInt())).thenAnswer(invocation -> {
+            int argument = invocation.getArgument(0);
+            if (argument == 0) {
+                return plant1;
+            } else if (argument >= 1) {
+                return plant2;
+            }
+            return null;
+        });
 
-        when(plantGuesserService.getPlant(1)).thenReturn(plant2);
-        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
+        when(plantGuesserService.getMultichoicePlantNames(plant1.family, plant1.common_name, plant1.getCommonAndScientificName()))
+                .thenReturn(fourOptions1);
 
-        when(plantGuesserService.getPlant(2)).thenReturn(plant2);
-        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
-
-        when(plantGuesserService.getPlant(3)).thenReturn(plant2);
-        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
-
-        when(plantGuesserService.getPlant(4)).thenReturn(plant2);
-        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
-
-        when(plantGuesserService.getPlant(5)).thenReturn(plant2);
-        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
-
-        when(plantGuesserService.getPlant(6)).thenReturn(plant2);
-        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
-
-        when(plantGuesserService.getPlant(7)).thenReturn(plant2);
-        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
-
-        when(plantGuesserService.getPlant(8)).thenReturn(plant2);
-        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
-
-        when(plantGuesserService.getPlant(9)).thenReturn(plant2);
-        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName())).thenReturn(fourOptions2);
+        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName()))
+                .thenReturn(fourOptions2);
 
     }
 }

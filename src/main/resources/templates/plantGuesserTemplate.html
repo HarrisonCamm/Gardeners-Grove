@@ -40,9 +40,10 @@
                 <br/>
                 <div th:if="${incorrectAnswer}" class="ps-2 text-danger" th:text="${incorrectAnswer}"></div>
                 <div th:if="${correctAnswer}" class="ps-2 text-success" th:text="${correctAnswer}"></div>
-                <div th:if="${gameOver}" class="ps-2 text-success">Congratulations on guessing! You have gained 100 Blooms for playing.</div>
+                <div th:if="${gameOver}" class="ps-2 text-success" th:text="'Congratulations on guessing! You have gained ' + ${bloomBonus} + ' Blooms for playing.'"></div>
                 <div th:if="${gameOver}" class="ps-2 text-success" th:text="'Total score: ' + ${score} + '/10'"></div>
             </div>
+<!--            These hidden fields are for passing data back to the model to be used in the post mapping-->
             <input type="hidden" name="plantFamily" th:value="${plantFamily}"/>
             <input type="hidden" name="quizOption1" th:value="${quizOptions[0][0]} + ',' + ${quizOptions[0][1]}"/>
             <input type="hidden" name="quizOption2" th:value="${quizOptions[1][0]} + ',' + ${quizOptions[1][1]}"/>

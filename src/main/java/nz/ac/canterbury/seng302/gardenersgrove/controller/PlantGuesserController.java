@@ -35,12 +35,14 @@ public class PlantGuesserController {
     private final PlantFamilyService plantFamilyService;
     private final UserService userService;
     private final UserRepository userRepository;
-    private int roundNumber;
-    private int score;
     private Random random;
     private static final int NUM_OPTIONS = 4;
+    private static final int NUM_ROUNDS = 10;
+    private static final int BLOOM_BONUS = 100;
     private static final int MAX_TRIES = 5;
     private static final String PAGE_URL = "/plant-guesser";
+    private static final String SESSION_SCORE = "plantGuesserScore";
+    private static final String SESSION_ROUND = "plantGuesserRound";
 
     public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, UserService userService, UserRepository userRepository, Random random) {
         this.plantGuesserService = plantGuesserService;
@@ -48,18 +50,16 @@ public class PlantGuesserController {
         this.userService = userService;
         this.userRepository = userRepository;
         this.random = random;
-        this.roundNumber = 0;
-        this.score = 0;
     }
     public void setRandom(Random random) {
         // This is used for testing purposes, so the shuffling of the answers in not random and can stay consistent for testing
         // This setter is so it can be set to a fixed random during testing, otherwise it is always truly random
         this.random = random;
     }
-    public void resetRound() {
+    public void resetRound(HttpSession session) {
 
-        this.roundNumber = 0;
-        this.score = 0;
+        session.setAttribute(SESSION_SCORE, 0);
+        session.setAttribute(SESSION_ROUND, 0);
     }
     /**
      * Gets the thymeleaf page showing the plant guesser page
@@ -70,14 +70,15 @@ public class PlantGuesserController {
                               Model model) {
         logger.info("GET /plant-guesser");
         if (!Objects.equals(RedirectService.getPreviousPage(), PAGE_URL)) {
-            resetRound();
+            resetRound(session);
         }
         RedirectService.addEndpoint(PAGE_URL);
+        int roundNumber = (int) session.getAttribute(SESSION_ROUND);
 
         try {
             session.removeAttribute("guesserGameError");
             PlantData plant = plantGuesserService.getPlant(roundNumber);
-            playGameRound(model, plant);
+            playGameRound(model, plant, session);
             return "plantGuesserTemplate";
         } catch (Exception e){
             // if there is an error in creating the game, the app will redirect back to the games page and display an error message
@@ -99,6 +100,7 @@ public class PlantGuesserController {
                                @RequestParam("roundNumber") int roundNumber,
                                @RequestParam("correctOption") int correctOption,
                                @RequestParam("score") int score,
+                               HttpSession session,
                                HttpServletRequest request,
                               Model model) {
         logger.info("POST /plant-guesser");
@@ -120,35 +122,37 @@ public class PlantGuesserController {
         model.addAttribute("roundNumber", roundNumber);
         model.addAttribute("correctOption", correctOption);
         model.addAttribute("selectedOption", selectedOption);
+        model.addAttribute("bloomBonus", BLOOM_BONUS);
 
         if (selectedOption != correctOption) {
             model.addAttribute("incorrectAnswer", "Wrong answer! The correct answer was: " + splitQuizOptions.get(correctOption)[0]);
         } else {
-            this.score += 1;
+            score += 1;
+            session.setAttribute(SESSION_SCORE, score);
             model.addAttribute("correctAnswer", "You got it correct! +10 Blooms");
         }
-        this.roundNumber += 1;
-        model.addAttribute("score", this.score);
+        roundNumber += 1;
+        session.setAttribute(SESSION_ROUND, roundNumber);
+        model.addAttribute("score", score);
 
         boolean answerSubmitted = false;
         boolean gameOver = false;
 
-        if (roundNumber < 10) {
+        if (roundNumber < NUM_ROUNDS) {
             answerSubmitted = true;
         } else {
-            currentUser.setBloomBalance(currentBloomBalance + 100 + (this.score*10));
+            currentUser.setBloomBalance(currentBloomBalance + BLOOM_BONUS + (score*NUM_ROUNDS));
             userRepository.save(currentUser);
             model.addAttribute("bloomBalance", currentUser.getBloomBalance());
             gameOver = true;
-            this.roundNumber = 0;
-            this.score = 0;
+            resetRound(session);
         }
         model.addAttribute("answerSubmitted", answerSubmitted);
         model.addAttribute("gameOver", gameOver);
         return "plantGuesserTemplate";
     }
 
-    public void playGameRound(Model model, PlantData plant) {
+    public void playGameRound(Model model, PlantData plant, HttpSession session) {
         String plantName = null;
         String plantScientificName = null;
         String plantImage = null;
@@ -159,6 +163,8 @@ public class PlantGuesserController {
         List<String> quizOptions = new ArrayList<>();
         int listSize = 0;
         int attempt = 0;
+        int score = (int) session.getAttribute(SESSION_SCORE);
+        int roundNumber = (int) session.getAttribute(SESSION_ROUND);
 
         while (listSize != NUM_OPTIONS && attempt < MAX_TRIES) {
             plantName = plant.common_name;
@@ -208,12 +214,12 @@ public class PlantGuesserController {
         model.addAttribute("quizOptions", splitQuizOptions);
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit + " via Trefle");
-        model.addAttribute("roundNumber", this.roundNumber + 1);
+        model.addAttribute("roundNumber", roundNumber);
         model.addAttribute("correctOption", correctOption);
         model.addAttribute("selectedOption", -1);
         model.addAttribute("answerSubmitted", false);
         model.addAttribute("gameOver", false);
-        model.addAttribute("score", this.score);
+        model.addAttribute("score", score);
 
     }
 }
