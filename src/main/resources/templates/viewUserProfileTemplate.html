@@ -92,7 +92,7 @@
                 <button onclick="showTable()">Back</button>
             </div>
 
-            <nav aria-label="Page navigation">
+            <nav aria-label="Page navigation" th:id="pagination-wrapper">
                 <ul class="pagination">
                     <li th:class="${!hasPrevious} ? 'page-item disabled' : 'page-item'">
                         <a class="page-link" th:href="@{/view-user-profile(page=${currentPage} - 1)}">Previous</a>

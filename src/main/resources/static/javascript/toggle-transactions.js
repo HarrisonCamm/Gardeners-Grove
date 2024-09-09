@@ -12,6 +12,7 @@ function showDetails(row) {
 
     // Hide the table
     document.querySelector('table').style.display = 'none';
+    document.getElementById('pagination-wrapper').style.display = 'none';
 
     // Show the details section
     document.getElementById('transactionDetails').style.display = 'block';
@@ -30,4 +31,6 @@ function showTable() {
 
     // Show the table
     document.querySelector('table').style.display = 'table';
+    document.getElementById('pagination-wrapper').style.display = 'block';
+
 }
