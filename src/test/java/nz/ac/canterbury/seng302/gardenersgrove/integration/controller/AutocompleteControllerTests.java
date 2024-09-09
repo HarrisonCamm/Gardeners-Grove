@@ -28,6 +28,7 @@ import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
+import java.util.Random;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -41,6 +42,9 @@ public class AutocompleteControllerTests {
 
     @MockBean
     private VerificationTokenService verificationTokenService;
+
+    @MockBean
+    private PlantGuesserService plantGuesserService;
 
     @MockBean
     private AuthorityService authorityService;
@@ -95,6 +99,9 @@ public class AutocompleteControllerTests {
 
     @MockBean
     private MessagesController messagesController;
+
+    @MockBean
+    private Random random;
 
     AutocompleteController autocompleteController;
 

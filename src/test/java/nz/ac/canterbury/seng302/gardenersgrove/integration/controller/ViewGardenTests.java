@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Optional;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
@@ -94,7 +95,13 @@ public class ViewGardenTests {
     private AlertService alertService;
 
     @MockBean
+    private PlantGuesserService plantGuesserService;
+
+    @MockBean
     private MessagesController messagesController;
+
+    @MockBean
+    private Random random;
 
     private User testUser;
 
