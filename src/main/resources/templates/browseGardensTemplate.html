@@ -36,6 +36,7 @@
                 <div class="input-group mb-3">
                     <input th:name="q"
                            th:value="${q}"
+                           maxlength="256"
                            type="search"
                            class="form-control"
                            placeholder="Browse public gardens">
@@ -44,6 +45,7 @@
                     <input th:name="tagsInput"
                            th:value="${tagsInput}"
                            type="text"
+                           maxlength="256"
                            class="form-control"
                            placeholder="Search by tags"/>
                     <div id="tags-list"></div> <!-- For displaying selected tags -->
