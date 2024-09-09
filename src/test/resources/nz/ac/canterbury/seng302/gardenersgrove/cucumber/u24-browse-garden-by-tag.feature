@@ -3,6 +3,8 @@ Feature: U24 - Browsing gardens by tag
 
   Background: User is logged in
     Given I am logged in with email "inaya@email.com" and password "Password1!"
+    And there are public gardens with tags available
+    And I am on the browse gardens page
 
   Scenario: AC1 - Browse by multiple tags
     Given I am browsing gardens
@@ -13,27 +15,35 @@ Feature: U24 - Browsing gardens by tag
     When I start typing the tag
     Then tags matching my input are shown
 
-  Scenario: AC3 - Clicking on tag from autocomplete
-    Given I am viewing autocomplete suggestions for my input
+  Scenario Outline: AC3 - Clicking on tag from autocomplete
+    Given I am viewing autocomplete suggestions for my input <input>
     When I click on a suggestion
-    Then the tag is added to my current selection
+    Then the tag <input> is added to my current selection
     And the text field is cleared
+    Examples:
+      | input              |
+      | "tagAutocomplete"  |
 
-  Scenario: AC4 - Typing tag that exists
-    Given I type out a tag that already exists
-    When I press the enter key
-    Then the tag is added to my current selection
+  Scenario Outline: AC4 - Typing tag that exists
+    Given I type out a tag <input> that already exists
+    When I press the enter key with <input>
+    Then the tag <input> is added to my current selection
     And the text field is cleared
+    Examples:
+      | input         |
+      | "tagValid"    |
+      |"inaya garden" |
+
 
   Scenario Outline: AC5 - Typing tag that does not exist
-    Given I type out a tag that does not exist
-    When I press the enter key
-    Then no tag is added to my current selection
+    Given I type out a tag <input> that does not exist
+    When I press the enter key with <input>
+    Then no tag <input> is added to my current selection
     And the text field is not cleared
     And an error message tells me No tag matching <input>
     Examples:
-    | input  |
-    | "tag"  |
+    | input         |
+    | "tagInvalid"  |
 
   Scenario: AC6 - Submit search form
     Given I submit the search form as detailed in U17

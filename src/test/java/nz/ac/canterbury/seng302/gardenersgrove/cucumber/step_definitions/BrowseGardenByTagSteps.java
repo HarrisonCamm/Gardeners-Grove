@@ -1,15 +1,140 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
+import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.TagService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 
 public class BrowseGardenByTagSteps {
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private GardenService gardenService;
+
+    @MockBean
+    private static TagService tagService;
+
+    private MockMvc mockMvc;
+    private MvcResult mvcResult;
+    private static Location location;
+
+
+    private List<Tag> existingTags = new ArrayList<>();
+
+    private ResultActions resultActions;
+    private static Garden ownedGarden1;
+
+    private static Garden ownedGarden2;
+
+
+    @Before
+    public void setup() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        location = new Location("Test Location", "Test Address", "Test City", "1234", "Test Postcode");
+
+        tagService = Mockito.mock(TagService.class);
+
+
+
+        existingTags = tagService.getTags();
+    }
 
     @Given("I am browsing gardens")
     public void i_am_browsing_gardens() {
         // not yet implemented
+    }
+
+    @And("there are public gardens with tags available")
+    public void there_are_public_gardens_with_tags_available() throws Exception {
+        resultActions = mockMvc.perform(post("/create-garden")
+                .param("name", "Test Garden 1")
+                .param("location.streetAddress", location.getStreetAddress())
+                .param("location.suburb", location.getSuburb())
+                .param("location.city", location.getCity())
+                .param("location.postcode", location.getPostcode())
+                .param("location.country", location.getCountry())
+                .param("size", "10")
+                .with(csrf())); // Add CSRF token
+
+        mockMvc.perform(post("/create-garden")
+                .param("name", "Test Garden 2")
+                .param("location.streetAddress", location.getStreetAddress())
+                .param("location.suburb", location.getSuburb())
+                .param("location.city", location.getCity())
+                .param("location.postcode", location.getPostcode())
+                .param("location.country", location.getCountry())
+                .param("size", "10")
+                .with(csrf())); // Add CSRF token
+
+        ArrayList<Garden> gardens = (ArrayList<Garden>) gardenService.getOwnedGardens(userService.getAuthenticatedUser().getUserId());
+        ownedGarden1 = gardens.get(gardens.size() - 2);
+        ownedGarden2 = gardens.get(gardens.size() - 1);
+
+        resultActions = mockMvc.perform(post("/add-tag")
+                        .param("gardenID", ownedGarden1.getId().toString())
+                        .param("tag", "tagValid") //match what is in the feature file examples
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                // Check that page redirects to a view garden of ANY number
+                .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
+
+        resultActions = mockMvc.perform(post("/add-tag")
+                        .param("gardenID", ownedGarden2.getId().toString())
+                        .param("tag", "inaya garden") //match what is in the feature file examples
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                // Check that page redirects to a view garden of ANY number
+                .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
+
+        // MockMvc doesn't do the redirect, so we need to get the garden again
+        resultActions = mockMvc.perform(get("/view-garden")
+                        .param("gardenID", ownedGarden1.getId().toString())
+                        .with(csrf())) // Add CSRF token
+                .andExpect(status().isOk());
+
+        existingTags = tagService.getTags();
+    }
+
+    @And("I am on the browse gardens page")
+    public void i_am_on_the_browse_gardens_page() throws Exception {
+        mvcResult = mockMvc.perform(get("/browse-gardens"))
+                .andExpect(status().isOk())
+                .andReturn();
     }
 
     @Then("I can select any number of tags to filter by")
@@ -32,8 +157,8 @@ public class BrowseGardenByTagSteps {
         // not yet implemented
     }
 
-    @Given("I am viewing autocomplete suggestions for my input")
-    public void i_am_viewing_autocomplete_suggestions_for_my_input() {
+    @Given("I am viewing autocomplete suggestions for my input {string}")
+    public void i_am_viewing_autocomplete_suggestions_for_my_input(String input) {
         // not yet implemented
     }
 
@@ -42,8 +167,8 @@ public class BrowseGardenByTagSteps {
         // not yet implemented
     }
 
-    @Then("the tag is added to my current selection")
-    public void the_tag_is_added_to_my_current_selection() {
+    @Then("the tag {string} is added to my current selection")
+    public void the_tag_is_added_to_my_current_selection(String input) {
         // not yet implemented
     }
 
@@ -52,23 +177,26 @@ public class BrowseGardenByTagSteps {
         // not yet implemented
     }
 
-    @Given("I type out a tag that already exists")
-    public void i_type_out_a_tag_that_already_exists() {
+    @Given("I type out a tag {string} that already exists")
+    public void i_type_out_a_tag_that_already_exists(String existingTagName) {
+        Assertions.assertAll(
+                () -> Assertions.assertNotNull(tagService.getTagByName(existingTagName)),
+                () -> Assertions.assertTrue(existingTags.stream().anyMatch(eachTag -> eachTag.getName().equals(existingTagName)))
+        );
+    }
+
+    @When("I press the enter key with {string}")
+    public void i_press_the_enter_key(String input) {
         // not yet implemented
     }
 
-    @When("I press the enter key")
-    public void i_press_the_enter_key() {
+    @Given("I type out a tag {string} that does not exist")
+    public void i_type_out_a_tag_that_does_not_exist(String input) {
         // not yet implemented
     }
 
-    @Given("I type out a tag that does not exist")
-    public void i_type_out_a_tag_that_does_not_exist() {
-        // not yet implemented
-    }
-
-    @Then("no tag is added to my current selection")
-    public void no_tag_is_added_to_my_current_selection() {
+    @Then("no tag {string} is added to my current selection")
+    public void no_tag_is_added_to_my_current_selection(String input) {
         // not yet implemented
     }
 
