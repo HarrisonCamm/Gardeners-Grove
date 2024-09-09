@@ -57,11 +57,11 @@ public class BrowseGardenController {
                     tagIds.add(tag.getId());
                 }
             }else {
-                model.addAttribute("tagNotFoundError", "No matching tags found");
+                model.addAttribute("tagNotFoundError", "No tag matching " + tagName);
             }
         }
 
-        displayTags(query, page, model);
+        displayTags(query, page, model, tagName);
 
 
         return "browseGardensTemplate";
@@ -84,11 +84,11 @@ public class BrowseGardenController {
         displayedSearchTags.remove(tagToRemove);
         tagIds.remove(tagToRemove.getId());
 
-        displayTags(query, page, model);
+        displayTags(query, page, model, tagName);
         return "browseGardensTemplate";
     }
 
-    public String displayTags(String query, int page, Model model) {
+    public String displayTags(String query, int page, Model model, String tagName) {
         Page<Garden> gardenPage;
         if (!query.isEmpty() && !displayedSearchTags.isEmpty()) { //query and tag entered
             gardenPage = gardenService.searchPublicGardensBySearchAndTags(query, page-1, tagIds);
@@ -106,7 +106,12 @@ public class BrowseGardenController {
         }
         model.addAttribute("gardenPage", gardenPage);
         model.addAttribute("q", query);
-        model.addAttribute("tagsInput", "");
+
+        if (model.containsAttribute("tagNotFoundError")) {
+            model.addAttribute("tagsInput", tagName); //text field not cleared if tag doesn't exist
+        } else {
+            model.addAttribute("tagsInput", "");
+        }
         model.addAttribute("searchTags", displayedSearchTags);
 
         return query;
