@@ -19,3 +19,5 @@ Feature: Games Page
       | game            |
       | "/plant-guesser" |
       | "/daily-spin"    |
+#note that in this branch the step "my total blooms are displayed" is empty, but it has been implemented in the actual-gameplay branch
+#I have tested this step in this AC with that code and it works, but don't want to pull it into here because it hasn't been reviewed etc.
