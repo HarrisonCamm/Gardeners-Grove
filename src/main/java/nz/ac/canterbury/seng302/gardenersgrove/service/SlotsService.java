@@ -121,16 +121,17 @@ public class SlotsService {
 
             // Find the most frequent emoji in this row (ignoring sets of less than 3)
             for (int emoji = 1; emoji < emojiCounts.length; emoji++) { // Starts from 1 to avoid the 0 index
-                if (emojiCounts[emoji] >= 3) { // Only consider sets of 3 or more
-                    // Check if this row has a better result (higher count or higher emoji value in case of a tie)
-                    if (emojiCounts[emoji] > bestCount ||
-                            (emojiCounts[emoji] == bestCount && WIN_AMOUNTS[emoji] > WIN_AMOUNTS[bestEmoji])) {
-                        bestRow = row;
-                        bestCount = emojiCounts[emoji];
-                        bestEmoji = emoji;
-                    }
+                // Only consider sets of 3 or more and check if this row has a better result
+                // (higher count or higher emoji value in case of a tie)
+                if (emojiCounts[emoji] >= 3 &&
+                        (emojiCounts[emoji] > bestCount ||
+                                (emojiCounts[emoji] == bestCount && WIN_AMOUNTS[emoji] > WIN_AMOUNTS[bestEmoji]))) {
+                    bestRow = row;
+                    bestCount = emojiCounts[emoji];
+                    bestEmoji = emoji;
                 }
             }
+
         }
 
         // Calculate the win amount based on the best row
