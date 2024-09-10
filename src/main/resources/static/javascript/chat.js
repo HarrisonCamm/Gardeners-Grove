@@ -8,9 +8,30 @@ function getDeploymentContextPath(url) {
         return '';
 }
 
+// To send to, updated when a chat is opened
+let to = null;
 let stompClient = null;
-let to;
-let from;
+const dataset = document.getElementById('chat-container').dataset;
+let from = dataset.from;
+const gardenID = dataset.gardenId;
+
+/**
+ * Recursively keep requesting the contacts until it's updated to include the expected contact/email,
+ *     then reload the page
+ * @param url the link to fetch the contacts
+ * @param contact the expected contact
+ */
+function getContact(url, contact) {
+    fetch(url)
+        .then(response => response.json())
+        .then(messages => {
+            if (messages.includes(contact)) {
+                window.location.reload();
+            } else {
+                getContact(url, contact);
+            }
+        });
+}
 
 function showMessage(message) {
 
@@ -84,9 +105,16 @@ function connect() {
     stompClient.connect({}, function(frame) {
         console.log('Connected: ' + frame);
 
-        // Subscribe to the user's queue to receive messages
-        stompClient.subscribe('/user/queue/reply', function(messageOutput) {
-            showMessage(JSON.parse(messageOutput.body));
+        //Subscribe to the user's queue to receive messages
+        stompClient.subscribe('/user/queue/reply', function (messageOutput) {
+            const message = JSON.parse(messageOutput.body);
+            const contactEmails = JSON.parse(dataset.contactEmails);
+            const unknownSender = !contactEmails.includes(message.sender);
+            if (unknownSender) {
+                getContact(deployPath + '/contacts', message.sender, 10)
+            }
+            // Show the message in the chat area
+            showMessage(message);
         });
     });
 }
@@ -133,15 +161,18 @@ function sendMessage(userId) {
 }
 
 function showChatUI(userId, firstName, lastName, email) {
-    to = { id: userId, email: email };
+    to = {id: userId, email: email};
 
+    // Hide the welcome message and other chat UIs
     const welcome = document.getElementById('welcomeMessage');
     welcome.setAttribute('style', 'display: none !important;');
 
+    // Hide all chat UIs
     document.querySelectorAll('[id^="chatUI-"]').forEach(chatUI =>
         chatUI.setAttribute('style', 'display: none !important;')
     );
 
+    //Show the current UI
     const currChat = document.getElementById('chatUI-' + userId);
     currChat.setAttribute('style', 'display: flex !important;');
 
@@ -152,9 +183,11 @@ function showChatUI(userId, firstName, lastName, email) {
     document.getElementById('friendImage-' + userId).src = deployPath + '/get-image?view-user-profile=true&userID=' + userId;
 
     const messageInput = document.getElementById('message-input-' + userId);
+    // document.getElementById('message-input-' + userId).focus();
     messageInput.focus();
     messageLength(messageInput);
 
+    // Get all the past chats from the backend
     fetch(deployPath + '/chat/' + to.email)
         .then(response => response.json())
         .then(messages => {
@@ -186,9 +219,10 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    // Make hitting enter send the current message
     document.querySelectorAll('[id^="message-input-"]').forEach(input => {
         input.addEventListener('keydown', function(event) {
-            if (event.keyCode === 13) {
+            if (event.key === 'Enter') {
                 event.preventDefault();
                 const userId = this.dataset.userId;
                 sendMessage(userId);
