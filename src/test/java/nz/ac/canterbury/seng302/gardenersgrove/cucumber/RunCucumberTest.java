@@ -119,16 +119,6 @@ public class RunCucumberTest {
             mockedNullCityWeather = objectMapper.readValue(jsonNullCityResponse, WeatherResponse.class);
             mockedNullCityForecast = objectMapper.readValue(jsonNullCityResponse, ForecastResponse.class);
 
-//            // Has rained in the last two days
-//            mockedValidHistoricForcastWeatherHasRain = objectMapper.readValue(historicWeatherJsonString, Boolean.class);
-//            // Has not rained in the last two days
-//            mockedValidHistoricForcastWeatherNoRain = objectMapper.readValue(historicWeatherNoRainJsonString, Boolean.class);
-//
-//            // Is currently raining
-//            mockedValidCurrentWeatherIsRaining = objectMapper.readValue(currentWeatherRainJsonString, Boolean.class);
-//            // Is not currently raining
-//            mockedValidCurrentWeatherNotRaining = objectMapper.readValue(currentWeatherJsonString, Boolean.class);
-
             //To mock plant api
             PlantGuesserList mockedPlantPage = objectMapper.readValue(plantPageJsonString, PlantGuesserList.class);
             List<PlantData> plantList = new ArrayList<>(Arrays.stream(mockedPlantPage.getPlantGuesserList()).toList());
@@ -235,6 +225,13 @@ public class RunCucumberTest {
             }
             return null;
         });
+
+        when(plantGuesserService.getMultichoicePlantNames(plant1.family, plant1.common_name, plant1.getCommonAndScientificName()))
+                .thenReturn(fourOptions1);
+
+        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName()))
+                .thenReturn(fourOptions2);
+
 
         // WebSocketStompClient mocks
         CompletableFuture<StompSession> sessionFuture = new CompletableFuture<>();
