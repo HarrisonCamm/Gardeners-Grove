@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
 import com.zaxxer.hikari.SQLExceptionOverride;
 import io.cucumber.java.Before;
+import io.cucumber.java.BeforeAll;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -50,14 +51,14 @@ public class BrowsePublicGardensSteps {
 
     private User gardenOwner;
 
+    @Before
+    public void setup() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
+
     @Before("@SingleGarden")
     public void setupSingleGarden() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-
-        // Check if gardens already exist, to prevent re-adding
-        if (gardenService.getGardens().size() >= 1) {
-            return;  // Skip adding gardens if they already exist
-        }
 
         // Create a test garden owner
         User gardenOwner = new User(
@@ -97,12 +98,6 @@ public class BrowsePublicGardensSteps {
     @Before("@MultipleGardens")
     public void setupMultipleGardens() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-
-        // Check if gardens already exist, to prevent re-adding
-        if (gardenService.getGardens().size() > 2) {
-            // Skip adding gardens if they already exist
-            return;
-        }
 
         // Create a test garden owner
         User gardenOwner = new User(
