@@ -19,7 +19,7 @@
     <div class="row justify-content-center mb-4">
         <div class="col-12 col-md-8">
 
-            <!-- Display selected tags -->
+            <!-- Selected tags display -->
             <form th:action="@{/browse-gardens}" method="post" novalidate >
                 <div class="row" th:if="${searchTags != null and searchTags.size() > 0}">
                     <div class="col d-flex flex-wrap">
@@ -56,8 +56,9 @@
                            maxlength="256"
                            class="form-control"
                            placeholder="Search by tags"/>
-                    <div class="container tag-input rounded-bottom" id="autocompleteList"></div>
-<!--                    <div id="tags-list"></div> &lt;!&ndash; For displaying selected tags (maybe not needed) &ndash;&gt;-->
+
+                    <!-- Autocomplete tags -->
+                    <div class="container tag-input rounded-bottom dropdown-menu w-100" id="autocompleteList"></div>
                 </div>
 
                 <!-- Tag Error Message -->

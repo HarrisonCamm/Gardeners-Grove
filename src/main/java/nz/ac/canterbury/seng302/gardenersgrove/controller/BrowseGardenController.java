@@ -88,9 +88,13 @@ public class BrowseGardenController {
                 .filter(i -> displayedSearchTags.get(i).getName().equals(tagNameToRemove))
                 .findFirst()
                 .orElse(-1);
-        Tag tagToRemove = displayedSearchTags.get(tagIndex);
-        displayedSearchTags.remove(tagToRemove);
-        tagIds.remove(tagToRemove.getId());
+
+        // Prevent -1 index out of range error
+        if (!displayedSearchTags.isEmpty()) {
+            Tag tagToRemove = displayedSearchTags.get(tagIndex);
+            displayedSearchTags.remove(tagToRemove);
+            tagIds.remove(tagToRemove.getId());
+        }
 
         displayTags(query, page, model, tagName);
         return "browseGardensTemplate";
