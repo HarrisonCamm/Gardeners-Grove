@@ -38,6 +38,8 @@ Feature: U6006 Daily Spin / Photosyntheslots
     Then 50 blooms is deducted from my account balance
 
   Scenario: AC7 – Exiting the game while running
-    Given I have already started a spin
+    Given The randomisation seed is 1
+    And I haven't used the daily spin today
+    And I have already started a spin
     When I leave the page
     Then the spin outcome is still processed and the blooms are still added to my balance

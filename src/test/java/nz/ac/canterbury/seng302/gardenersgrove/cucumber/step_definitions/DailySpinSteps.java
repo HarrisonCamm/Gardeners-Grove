@@ -219,6 +219,8 @@ public class DailySpinSteps {
         bloomBalance = userService.getAuthenticatedUser().getBloomBalance();
 
         mockMvc.perform(get("/daily-spin").session(session));
+        mockMvc.perform(get("/daily-spin").session(session));
+
         mvcResult = mockMvc.perform(post("/daily-spin").session(session)
                         .param("buttonAction", "FREE_SPINNING"))
                 .andExpect(status().isOk())
