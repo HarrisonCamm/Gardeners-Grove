@@ -1,19 +1,16 @@
 package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * User class that contains all the values a user should have
  */
-
-
-
 @Entity
 @Table(name = "USERS") //revise later, ask tutor about style
 public class User {
@@ -51,6 +48,14 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
     private List<User> friends = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "User_NonFriendContacts",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "contact_id")
+    )
+    private List<User> nonFriendContacts = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn
@@ -219,6 +224,9 @@ public class User {
      * @param acceptedFriend the user to add as a friend
      */
     public void addFriend(User acceptedFriend) {
+        if (nonFriendContacts.contains(acceptedFriend)) {
+            this.removeContact(acceptedFriend);
+        }
         friends.add(acceptedFriend);
     }
 
@@ -227,9 +235,7 @@ public class User {
      * @param friendToRemove The user to be removed from the friends list.
      */
     public void removeFriend(User friendToRemove) {
-
         friends.removeIf(friend -> friend.equals(friendToRemove));
-
     }
 
     public void removeAllFriends() {
@@ -240,26 +246,52 @@ public class User {
         return friends;
     }
 
+    /**
+     * Adds a non-friend contact
+     * @param contact the contact
+     * @return true if added, false if already contained
+     */
+    public boolean addContact(User contact) {
+        if (!nonFriendContacts.contains(contact)) {
+            nonFriendContacts.add(contact);
+            return true;
+        }
+        return false;
+    }
 
+    /**
+     * Removes a non-friend contact
+     * @param contact the contact
+     */
+    public void removeContact(User contact) {
+        nonFriendContacts.removeIf(c -> c.equals(contact));
+    }
+
+
+    /**
+     * Gets an immutable list of non-friend contacts
+     * @return the list of contacts
+     */
+    public List<User> getNonFriendContacts() {
+        return nonFriendContacts;
+    }
+
+    public List<User> getAllContacts() {
+        List<User> contacts = new ArrayList<>(getFriends());
+        contacts.addAll(getNonFriendContacts());
+        return contacts;
+    }
+
+    @Override
+    public boolean equals(Object user) {
+        if (!(user instanceof User)) {
+            return false;
+        }
+        return this.email.equals(((User) user).email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email, firstName, lastName);
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
