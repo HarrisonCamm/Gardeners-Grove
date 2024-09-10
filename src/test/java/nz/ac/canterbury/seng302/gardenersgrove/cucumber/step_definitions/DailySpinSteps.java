@@ -7,7 +7,6 @@ import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.SlotsService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
-import org.hibernate.validator.internal.IgnoreForbiddenApisErrors;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
@@ -81,7 +80,7 @@ public class DailySpinSteps {
     //AC2 - daily spin animation
     @Then("I am taken to the Daily Spin Page")
     public void i_am_taken_to_the_daily_spin_page() {
-        String viewName = mvcResult.getModelAndView().getViewName();
+        String viewName = Objects.requireNonNull(mvcResult.getModelAndView()).getViewName();
         Assertions.assertEquals("dailySpinTemplate", viewName, "Expected to be on the Daily Spin Page, but was not.");
 
         int status = mvcResult.getResponse().getStatus();
@@ -176,14 +175,14 @@ public class DailySpinSteps {
     //AC4
     @Then("I am shown a message that says, {string}")
     public void i_am_shown_a_message_that_says(String expectedMessage) {
-        String message = (String) mvcResult.getModelAndView().getModel().get("message");
+        String message = (String) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("message");
         Assertions.assertEquals(expectedMessage, message);
     }
 
     //AC5
     @Then("The {int} cost is displayed on the spin button.")
     public void the_cost_is_displayed_on_the_spin_button(Integer expectedCost) {
-        String buttonText = (String) mvcResult.getModelAndView().getModel().get("buttonText");
+        String buttonText = (String) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("buttonText");
         String expectedButtonText = expectedCost.toString();
         Assertions.assertTrue(buttonText.contains(expectedButtonText));
     }
@@ -204,7 +203,7 @@ public class DailySpinSteps {
                 .andExpect(view().name("dailySpinTemplate"))
                 .andReturn();
 
-        amountWon = (int) mvcResult.getModelAndView().getModel().get("amountWon");
+        amountWon = (int) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("amountWon");
     }
 
     //AC6
@@ -225,7 +224,7 @@ public class DailySpinSteps {
                 .andExpect(status().isOk())
                 .andExpect(view().name("dailySpinTemplate"))
                 .andReturn();
-        amountWon = (int) mvcResult.getModelAndView().getModel().get("amountWon");
+        amountWon = (int) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("amountWon");
     }
 
     //AC7
