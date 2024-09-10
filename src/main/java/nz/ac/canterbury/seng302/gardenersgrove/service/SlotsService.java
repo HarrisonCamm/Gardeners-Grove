@@ -48,6 +48,12 @@ public class SlotsService {
             WEIGHT_1 + WEIGHT_2 + WEIGHT_3 + WEIGHT_4 + WEIGHT_5
     };
 
+    private static Random random = new Random();
+
+    public static void setCustomRandom(Random customRandom) {
+        SlotsService.random = customRandom;
+    }
+
     /**
      * Randomly assigns which emoji will be added to the slot machine column
      * (Chooses one of the 5 emojis randomly)
@@ -59,7 +65,6 @@ public class SlotsService {
      * @return The chosen number (slot machine emoji) as an int, between 1 and 5.
      */
     private static int chooseEmoji() {
-        Random random = new Random();
         int randomValue = random.nextInt(TOTAL_WEIGHT) + 1;
 
         if (randomValue <= cumulativeWeights[0]) return 1;                          // Range of emoji 1, 💧

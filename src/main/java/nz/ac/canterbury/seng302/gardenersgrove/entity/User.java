@@ -251,6 +251,9 @@ public class User {
         lastFreeSpinUsed = new Date();
     }
 
+    public void resetLastFreeSpinUsed() {
+        lastFreeSpinUsed = null;
+    }
 
 }
 
