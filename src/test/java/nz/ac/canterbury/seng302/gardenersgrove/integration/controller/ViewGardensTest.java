@@ -85,7 +85,11 @@ public class ViewGardensTest {
     private PlantFamilyService plantFamilyService;
 
     @MockBean
+    private TransactionService transactionService;
+
+    @MockBean
     private MessagesController messagesController;
+
 
     @MockBean
     private Random random;

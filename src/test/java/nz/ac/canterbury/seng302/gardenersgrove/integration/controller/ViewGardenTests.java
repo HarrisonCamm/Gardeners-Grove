@@ -74,6 +74,9 @@ public class ViewGardenTests {
     private MailService mailService;
 
     @MockBean
+    private TransactionService transactionService;
+
+    @MockBean
     private ImageService imageService;
 
     @MockBean
@@ -87,6 +90,8 @@ public class ViewGardenTests {
 
     @MockBean
     private WeatherService weatherService;
+
+
 
     @MockBean
     private ModerationService moderationService;
