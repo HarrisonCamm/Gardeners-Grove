@@ -111,8 +111,10 @@ public class PlantGuesserController {
         String[] quizOptions = {quizOption1, quizOption2, quizOption3, quizOption4};
         List<String[]> splitQuizOptions = new ArrayList<>();
         for (String option: quizOptions) {
-            String[] options = option.split(",");
-            splitQuizOptions.add(options);
+            if (option.contains(",")) {
+                String[] options = option.split(",");
+                splitQuizOptions.add(options);
+            }
         }
 
         model.addAttribute("plantFamily", plantFamily);
