@@ -51,9 +51,9 @@ public class AddTagSteps {
 
     private static Location location;
 
-    private static Garden ownedGarden1;
+    public static Garden ownedGarden1;
 
-    private static Garden ownedGarden2;
+    public static Garden ownedGarden2;
 
     private static String typedTag;
 

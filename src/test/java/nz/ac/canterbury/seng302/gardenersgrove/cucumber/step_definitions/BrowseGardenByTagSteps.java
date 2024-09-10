@@ -62,6 +62,10 @@ public class BrowseGardenByTagSteps {
     private static Garden ownedGarden2;
 
     private ModelAndView modelAndView;
+    private static final String TAG_1 = "tagValid";
+    private static final String TAG_2 = "tagAutocomplete";
+    private static final String TAG_3 = "inaya garden";
+    private static final String TAG_4 = "herbal";
 
 
 
@@ -72,72 +76,14 @@ public class BrowseGardenByTagSteps {
 
     }
 
-    @Given("I am browsing gardens")
-    public void i_am_browsing_gardens() {
-        // not yet implemented
-    }
-
     @And("there are public gardens with tags available")
     public void there_are_public_gardens_with_tags_available() throws Exception {
-        resultActions = mockMvc.perform(post("/create-garden")
-                .param("name", "Test Garden 1")
-                .param("location.streetAddress", location.getStreetAddress())
-                .param("location.suburb", location.getSuburb())
-                .param("location.city", location.getCity())
-                .param("location.postcode", location.getPostcode())
-                .param("location.country", location.getCountry())
-                .param("size", "10")
-                .with(csrf())); // Add CSRF token
-
-        mockMvc.perform(post("/create-garden")
-                .param("name", "Test Garden 2")
-                .param("location.streetAddress", location.getStreetAddress())
-                .param("location.suburb", location.getSuburb())
-                .param("location.city", location.getCity())
-                .param("location.postcode", location.getPostcode())
-                .param("location.country", location.getCountry())
-                .param("size", "10")
-                .with(csrf())); // Add CSRF token
-
-        ArrayList<Garden> gardens = (ArrayList<Garden>) gardenService.getOwnedGardens(userService.getAuthenticatedUser().getUserId());
-        ownedGarden1 = gardens.get(gardens.size() - 2);
-        ownedGarden2 = gardens.get(gardens.size() - 1);
-
-        resultActions = mockMvc.perform(post("/add-tag")
-                        .param("gardenID", ownedGarden1.getId().toString())
-                        .param("tag", "tagValid") //match what is in the feature file examples
-                        .with(csrf()))
-                .andDo(print())
-                .andExpect(status().is3xxRedirection())
-                // Check that page redirects to a view garden of ANY number
-                .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
-
-        resultActions = mockMvc.perform(post("/add-tag")
-                        .param("gardenID", ownedGarden1.getId().toString())
-                        .param("tag", "tagAutocomplete") //match what is in the feature file examples
-                        .with(csrf()))
-                .andDo(print())
-                .andExpect(status().is3xxRedirection())
-                // Check that page redirects to a view garden of ANY number
-                .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
-
-        resultActions = mockMvc.perform(post("/add-tag")
-                        .param("gardenID", ownedGarden2.getId().toString())
-                        .param("tag", "inaya garden") //match what is in the feature file examples
-                        .with(csrf()))
-                .andDo(print())
-                .andExpect(status().is3xxRedirection())
-                // Check that page redirects to a view garden of ANY number
-                .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
-
-        resultActions = mockMvc.perform(post("/add-tag")
-                        .param("gardenID", ownedGarden2.getId().toString())
-                        .param("tag", "herbal") //match what is in the feature file examples
-                        .with(csrf()))
-                .andDo(print())
-                .andExpect(status().is3xxRedirection())
-                // Check that page redirects to a view garden of ANY number
-                .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
+        ownedGarden1 = AddTagSteps.ownedGarden1;
+        ownedGarden2 = AddTagSteps.ownedGarden2;
+        add_tag_to_garden(TAG_1, ownedGarden1);
+        add_tag_to_garden(TAG_2, ownedGarden1);
+        add_tag_to_garden(TAG_3, ownedGarden2);
+        add_tag_to_garden(TAG_4, ownedGarden2);
 
         // MockMvc doesn't do the redirect, so we need to get the garden again
         resultActions = mockMvc.perform(get("/view-garden")
@@ -156,8 +102,17 @@ public class BrowseGardenByTagSteps {
     }
 
     @Then("I can select any number of tags to filter by")
-    public void i_can_select_any_number_of_tags_to_filter_by() {
-        // not yet implemented
+    public void i_can_select_any_number_of_tags_to_filter_by() throws Exception {
+
+        search_valid_tag(TAG_1);
+        search_valid_tag(TAG_2);
+        search_valid_tag(TAG_3);
+
+        modelAndView = mvcResult.getModelAndView();
+        List<Tag> displayedTags = (List<Tag>) modelAndView.getModel().get("searchTags");
+        Assertions.assertTrue(displayedTags.size() > 1);
+
+
     }
 
     @Given("I want to browse for a tag")
@@ -291,5 +246,22 @@ public class BrowseGardenByTagSteps {
                 .andExpect(status().is2xxSuccessful());
 
         mvcResult = resultActions.andReturn();
+    }
+
+    public void add_tag_to_garden(String tag, Garden garden) throws Exception {
+        resultActions = mockMvc.perform(post("/add-tag")
+                        .param("gardenID", garden.getId().toString())
+                        .param("tag", tag) //match what is in the feature file examples
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                // Check that page redirects to a view garden of ANY number
+                .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
+    }
+
+    private void search_valid_tag(String tagName) throws Exception {
+        mvcResult = mockMvc.perform(get("/browse-gardens")
+                        .param("tagsInput", tagName))
+                .andExpect(status().isOk())
+                .andReturn();
     }
 }

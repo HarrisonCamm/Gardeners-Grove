@@ -3,11 +3,11 @@ Feature: U24 - Browsing gardens by tag
 
   Background: User is logged in
     Given I am logged in with email "inaya@email.com" and password "Password1!"
+    And I am a garden owner
     And there are public gardens with tags available
     And I am on the browse gardens page
 
   Scenario: AC1 - Browse by multiple tags
-    Given I am browsing gardens
     Then I can select any number of tags to filter by
 
   Scenario: AC2 - Tag autocomplete
