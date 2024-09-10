@@ -21,7 +21,7 @@ Feature: U20 - Browsing public gardens
   Scenario: AC4 - Search results when pressing Enter
     Given I enter a search string "TestPlant" into the search box
     When I press the Enter key
-    Then the results are shown as if I clicked the search button
+    Then I am shown only gardens whose names or plants include "TestPlant"
 
   Scenario: AC5 - No matching gardens found
     Given I enter a search string "unknown" that has no matches
