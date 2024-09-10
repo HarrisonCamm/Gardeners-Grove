@@ -9,6 +9,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.TransactionService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.junit.jupiter.api.Assertions;
@@ -24,6 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -31,8 +33,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class BloomTransactionSteps {
@@ -52,6 +53,9 @@ public class BloomTransactionSteps {
     private ImageService imageService;
 
     @Autowired
+    private TransactionService transactionService;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
@@ -61,13 +65,14 @@ public class BloomTransactionSteps {
 
     private MockMvc mockMvc;
     private MvcResult mvcResult;
+    private ResultActions resultActions;
 
     private User currentUser;
 
 
     @Before
     public void setUp() {
-        userProfileController = new UserProfileController(userService, userRepository, imageService);
+        userProfileController = new UserProfileController(userService, userRepository, imageService, transactionService);
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         mockMvcUserProfile = MockMvcBuilders.standaloneSetup(userProfileController).build();
     }
@@ -84,7 +89,7 @@ public class BloomTransactionSteps {
 
     //AC1, AC2
     @Then("I can see my Bloom balance displayed prominently in the header or a dedicated section")
-    public void i_can_see_my_bloom_balance_displayed_prominently_in_the_header_or_a_dedicated_section() throws UnsupportedEncodingException {
+    public void i_can_see_my_bloom_balance_displayed_prominently_in_the_header_or_a_dedicated_section() throws Exception {
 
         currentUser = userService.getAuthenticatedUser();
         Integer balance = currentUser.getBloomBalance();
@@ -97,22 +102,14 @@ public class BloomTransactionSteps {
         Assertions.assertNotNull(currentUser.getBloomBalance(), "Expected bloom balance to be a number, but it was null");
 
         Assertions.assertTrue(hasBloomBalance, "Expected to find a bloom balance icon and number on the page.");
-
     }
 
-    //AC2
-    @Given("I am logged into the system")
-    public void i_am_logged_into_the_system() {
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("liam@email.com", "Password1!");
-        var authentication = authenticationManager.authenticate(token);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
 
 
     //AC2
     @When("I navigate to my profile page")
     public void i_navigate_to_my_profile_page() throws Exception {
-        this.mvcResult = mockMvcUserProfile.perform(get("/view-user-profile")).andExpect(status()
+        this.mvcResult = mockMvc.perform(get("/view-user-profile")).andExpect(status()
                 .isOk())
                 .andExpect(view().name("viewUserProfileTemplate"))
                 .andReturn();
@@ -132,12 +129,12 @@ public class BloomTransactionSteps {
         Integer totalPages = (Integer) mvcResult.getModelAndView().getModel().get("totalPages");
         Integer pageSize = (Integer) mvcResult.getModelAndView().getModel().get("pageSize");
 
-        Assertions.assertEquals(pageSize, PAGE_SIZE);
+        Assertions.assertEquals(PAGE_SIZE, pageSize);
         if(transactionCount > PAGE_SIZE) {
             Assertions.assertEquals((int) Math.floor(transactionCount / PAGE_SIZE)+1, totalPages);
         }
         else {
-            Assertions.assertEquals(totalPages, 0);
+            Assertions.assertEquals(0, totalPages);
         }
     }
 
@@ -159,15 +156,15 @@ public class BloomTransactionSteps {
     //AC3
     @Then("I should see a message indicating that no transaction history is available")
     public void i_should_see_a_message_indicating_that_no_transaction_history_is_available() {
-        Object noTransactionsText = mvcResult.getModelAndView().getModel().get("noTransactionsText");
-        Assertions.assertEquals("No Transactions to Display", noTransactionsText);
+        Object noTransactionsMessage = mvcResult.getModelAndView().getModel().get("noTransactionsText");
+        Assertions.assertEquals("No Transactions to Display", noTransactionsMessage);
     }
 
     //AC3
     @Then("I should see a brief description of how to earn or spend Blooms")
     public void i_should_see_a_brief_description_of_how_to_earn_or_spend_blooms() {
         Object earnBloomsText = mvcResult.getModelAndView().getModel().get("earnBloomsText");
-        Assertions.assertEquals("You can earn Blooms by: Selling plants, playing games, recieving tips from other users", earnBloomsText);
+        Assertions.assertEquals("You can earn Blooms by: Selling plants, playing games, receiving tips from other users", earnBloomsText);
 
         Object noTransactionsText = mvcResult.getModelAndView().getModel().get("spendBloomsText");
         Assertions.assertEquals("You can spend Blooms by: Tipping other people's gardens, playing games, buying plants for your gardens", noTransactionsText);

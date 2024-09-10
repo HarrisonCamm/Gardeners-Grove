@@ -7,20 +7,20 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.TransactionService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.slf4j.Logger;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.data.web.PageableDefault;
 
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -35,16 +35,20 @@ public class UserProfileController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private TransactionService transactionService;
+
 
 
     private final UserRepository userRepository;
     private final ImageService imageService;
 
     @Autowired
-    public UserProfileController(UserService newUserService, UserRepository newUserRepository, ImageService imageService) {
+    public UserProfileController(UserService newUserService, UserRepository newUserRepository, ImageService imageService, TransactionService transactionService) {
         this.userService = newUserService;
         this.userRepository = newUserRepository;
         this.imageService = imageService;
+        this.transactionService = transactionService;
     }
 
     /**
@@ -59,7 +63,7 @@ public class UserProfileController {
         RedirectService.addEndpoint("/view-user-profile");
         User currentUser = userService.getAuthenticatedUser();
 
-        Page<Transaction> transactionsPage = userService.findTransactionsByUser(currentUser, page, PAGE_SIZE);
+        Page<Transaction> transactionsPage = transactionService.findTransactionsByUser(currentUser, page, PAGE_SIZE);
 
         logger.info("User retrieved from session: " + currentUser);
 
@@ -89,7 +93,7 @@ public class UserProfileController {
 
             //For the purposes of tests
             model.addAttribute("noTransactionsText", "No Transactions to Display");
-            model.addAttribute("earnBloomsText", "You can earn Blooms by: Selling plants, playing games, recieving tips from other users");
+            model.addAttribute("earnBloomsText", "You can earn Blooms by: Selling plants, playing games, receiving tips from other users");
             model.addAttribute("spendBloomsText", "You can spend Blooms by: Tipping other people's gardens, playing games, buying plants for your gardens");
 
             return "viewUserProfileTemplate";
@@ -100,6 +104,17 @@ public class UserProfileController {
     }
 
 
+    @PostMapping("/transactions/add")
+    public String addTransaction(@RequestParam int amount,
+                                 @RequestParam String notes,
+                                 @RequestParam Date transactionDate,
+                                 @RequestParam String transactionType,
+                                 @RequestParam Long receiverId,
+                                 @RequestParam(required = false) Long senderId,
+                                 @RequestParam(required = false) Long plantId) {
+        transactionService.addTransaction(amount, notes, transactionDate, transactionType, receiverId, senderId, plantId);
+        return "redirect:/transactions";
+    }
 
 
     /**

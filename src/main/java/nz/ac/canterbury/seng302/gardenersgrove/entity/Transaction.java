@@ -93,6 +93,7 @@ public class Transaction {
         this.receiver = receiver;
     }
 
+    public void setPlant(Plant plant) {this.plant = plant; }
 
     public void setAmount(Integer amount) {
         this.amount = amount;

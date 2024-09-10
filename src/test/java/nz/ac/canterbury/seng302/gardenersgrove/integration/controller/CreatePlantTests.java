@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Optional;
+import java.util.Random;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -74,6 +75,9 @@ public class CreatePlantTests {
     private WeatherService weatherService;
 
     @MockBean
+    private TransactionService transactionService;
+
+    @MockBean
     private UserRelationshipService userRelationshipService;
 
     @MockBean
@@ -83,7 +87,16 @@ public class CreatePlantTests {
     private AlertService alertService;
 
     @MockBean
+    private PlantGuesserService plantGuesserService;
+
+    @MockBean
+    private PlantFamilyService plantFamilyService;
+
+    @MockBean
     private MessagesController messagesController;
+
+    @MockBean
+    private Random random;
 
     private Garden testGarden;
     private Location testLocation;

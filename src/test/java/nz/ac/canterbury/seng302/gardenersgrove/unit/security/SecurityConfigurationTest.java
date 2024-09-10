@@ -101,6 +101,9 @@ public class SecurityConfigurationTest {
     @MockBean
     private AlertService alertService;
 
+    @MockBean
+    private TransactionService transactionService;
+
     @BeforeEach
     void setUp() {
         // Create new user

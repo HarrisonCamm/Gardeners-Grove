@@ -38,6 +38,8 @@
                             <br/>
                             <label th:text="'Date of birth: ' + ${dateOfBirth}"></label>
                         </div>
+                        <br/>
+                        <label th:text="'Blooms: ' + ${bloomBalance}"></label>
                     </div>
                     <br/>
                     <div class="buttons-centre">
@@ -114,10 +116,10 @@
                 <div th:class="text-center">
                     <h4 th:class="text-center" th:text="${noTransactionsText}"></h4>
                     <div th:class="p-5">
-                        <p th:text="${earnBloomsText}">You can earn Blooms by: Selling plants, playing games, recieving tips from other users</p>
+                        <p th:text="${earnBloomsText}"></p>
                     </div>
                     <div th:class="p-2">
-                        <p th:text="${spendBloomsText}">You can spend Blooms by: Tipping other people's gardens, playing games, buying plants for your gardens</p>
+                        <p th:text="${spendBloomsText}"></p>
                     </div>
                 </div>
             </div>
