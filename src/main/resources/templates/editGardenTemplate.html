@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Edit Garden</title>
-        <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
-        <link th:href="@{/css/navBar.css}" rel="stylesheet">
-        <script th:src="@{/javascript/hover-enter.js}"></script>
-        <script th:src="@{/javascript/autocomplete.js}"></script>
-        <script th:src="@{/javascript/prevent-enter-submit.js}"></script>
-        <script th:src="@{/javascript/description-length.js}"></script>
-    </head>
-
+<!-- Head fragment holding all the style sheets-->
+<head th:replace="fragments/head :: head(title='Edit Garden')">
+</head>
+<script th:src="@{/javascript/hover-enter.js}"></script>
+<script th:src="@{/javascript/autocomplete.js}"></script>
+<script th:src="@{/javascript/prevent-enter-submit.js}"></script>
+<script th:src="@{/javascript/description-length.js}"></script>
 <body>
     <!-- Navigation Bar Fragment -->
     <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 
-<div class="wrapper">
+<div class="appBody wrapper">
     <!-- Garden Side Navigation Bar -->
     <div class="sideBarColour">
         <table class="sideBar">

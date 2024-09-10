@@ -10,22 +10,24 @@
     </head>
     <body>
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-        <div class="content">
-            <div>
-                <h1>Upload Image</h1>
-                <p class="garden-header">Includes .png, .jpg, .svg, less than 10Mb</p>
-                <br/>
-                <img class="image" th:data-plant-id="${id}" th:data-picture="${picture}" alt="">
-                <br/>
-                <div class="buttons-right">
-                    <input hidden th:value="imagePath" class="file-input" type="file" name="file" id="file">
-                    <label for="file" class="button">Choose file</label>
-                </div>
-                <div class="buttons-right">
-                    <button type="submit">Save</button>
-                    <a th:href="@{${lastEndpoint}}" id="cancel">
-                        <button type="button">Cancel</button>
-                    </a>
+        <div class="appBody">
+            <div class="content">
+                <div>
+                    <h1>Upload Image</h1>
+                    <p class="garden-header">Includes .png, .jpg, .svg, less than 10Mb</p>
+                    <br/>
+                    <img class="image" th:data-plant-id="${id}" th:data-picture="${picture}" alt="">
+                    <br/>
+                    <div class="buttons-right">
+                        <input hidden th:value="imagePath" class="file-input" type="file" name="file" id="file">
+                        <label for="file" class="button">Choose file</label>
+                    </div>
+                    <div class="buttons-right">
+                        <button type="submit">Save</button>
+                        <a th:href="@{${lastEndpoint}}" id="cancel">
+                            <button type="button">Cancel</button>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

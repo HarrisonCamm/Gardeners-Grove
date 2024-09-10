@@ -8,7 +8,6 @@
 
 body {
     margin: 0;
-    background: #BEE186; /* $med */
     user-select: none;
 }
 
@@ -24,7 +23,7 @@ body {
 .container .title {
     font-family: "Fredoka One", cursive;
     font-size: 3rem;
-    color: #edfaf9; /* $textCol */
+    color: #BEE186; /* $textCol */
     text-decoration: underline;
 }
 
@@ -33,7 +32,7 @@ body {
     margin-bottom: 0.5rem;
     margin-right: 15rem;
     font-family: "Roboto", sans-serif;
-    color: #edfaf9; /* $textCol */
+    color: #BEE186; /* $textCol */
 }
 
 .container .money-container .changes {

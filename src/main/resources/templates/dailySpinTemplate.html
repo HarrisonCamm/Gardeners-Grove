@@ -3,62 +3,64 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Gardener's Grove</title>
-    <!-- Navbar styling -->
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
     <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
     <link th:href="@{/css/slot.css}" rel="stylesheet"/>
 </head>
 <body>
     <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-    <div class="content">
-        <div>
-            <h1>Daily Spin</h1>
-            <br/>
-        </div>
-    </div>
-
-    <script th:inline="javascript"> let slots = /*[[${slots}]]*/ [[]];</script>
-
-    <div class="container" >
-        <div class="money-container">
-            <div id="money" th:value="*{money}">100</div>
-            <div class="changes"> </div>
-            <button id="infoButton" class="info-button">i</button>
-        </div>
-
-        <div class="play-area">
-            <div class="reel-container"></div>
-            <div class="reel-container"></div>
-            <div class="reel-container"></div>
-            <div class="reel-container"></div>
-            <div class="reel-container"></div>
-        </div>
-        <br>
-        <button class="spin-button" onclick="startSpin()">SPIN</button>
-        <div class="info">
-            <div class="instructions">
-                Press to spin the reels.<br/> Each spin costs 1 💰<br/> Match at least three on any row to win!<br/>
+    <div class="appBody">
+        <div class="content">
+            <div>
+                <h1>Daily Spin</h1>
+                <br/>
             </div>
         </div>
-    </div>
 
-    <!-- Modal Structure -->
-    <div id="prizeModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 class="rewards-centre">Rewards Table</h2>
-            <div class="prize-table">
-                <div class="triples">
-                </div>
-                <div class="quadruples">
-                </div>
-                <div class="quintuples">
+        <script th:inline="javascript"> let slots = /*[[${slots}]]*/ [[]];</script>
+
+        <div class="container" >
+            <div class="money-container">
+                <div id="money" th:value="*{money}">100</div>
+                <div class="changes"> </div>
+                <button id="infoButton" class="info-button">i</button>
+            </div>
+
+            <div class="play-area">
+                <div class="reel-container"></div>
+                <div class="reel-container"></div>
+                <div class="reel-container"></div>
+                <div class="reel-container"></div>
+                <div class="reel-container"></div>
+            </div>
+            <br>
+            <button class="spin-button" onclick="startSpin()">SPIN</button>
+            <div class="info">
+                <div class="instructions">
+                    Press to spin the reels.<br/> Each spin costs 1 💰<br/> Match at least three on any row to win!<br/>
                 </div>
             </div>
         </div>
+
+        <!-- Modal Structure -->
+        <div id="prizeModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 class="rewards-centre">Rewards Table</h2>
+                <div class="prize-table">
+                    <div class="triples">
+                    </div>
+                    <div class="quadruples">
+                    </div>
+                    <div class="quintuples">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
-
-
     <script th:src="@{/javascript/slot-machine.js}"></script>
 
 </body>

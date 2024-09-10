@@ -1,5 +1,8 @@
 body {
     background-color: floralwhite;
+}
+.appBody {
+    background-color: floralwhite;
     font-family: Verdana, sans-serif;
 }
 .content {

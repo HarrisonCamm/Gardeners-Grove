@@ -1,8 +1,9 @@
 body {
     background-color: floralwhite;
+}
+.appBody {
+    background-color: floralwhite;
     font-family: Verdana, sans-serif;
-    height: 100vh; /* Full height of the viewport */
-    width: 100vw; /* Full width of the viewport */
 }
 .content {
     display: flex;
@@ -40,6 +41,8 @@ body {
     outline: 1px solid #BEE186;
 }
 .form-control:focus {
+    background-color: #E2F1CA;
+    border: 1px solid #3D7B36;
     outline: 2px solid #3D7B36;
 }
 

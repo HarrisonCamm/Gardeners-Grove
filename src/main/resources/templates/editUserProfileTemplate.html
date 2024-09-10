@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Edit profile</title>
-        <!-- Navbar styling -->
-        <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
-        <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
-        <script th:src="@{javascript/edit-user-profile.js}"></script>
-        <script th:src="@{javascript/enter-date.js}"></script>
-        <script th:src="@{javascript/prevent-enter-submit.js}"></script>
-        <script th:src="@{javascript/last-name-box.js}"></script>
-        <script th:src="@{/javascript/image-handling.js}"></script>
-    </head>
+<!-- Head fragment holding all the style sheets-->
+<head th:replace="fragments/head :: head(title='Edit profile')">
+</head>
+
+<script th:src="@{javascript/edit-user-profile.js}"></script>
+<script th:src="@{javascript/enter-date.js}"></script>
+<script th:src="@{javascript/prevent-enter-submit.js}"></script>
+<script th:src="@{javascript/last-name-box.js}"></script>
+<script th:src="@{/javascript/image-handling.js}"></script>
     <body>
         <!-- Navigation Bar Fragment -->
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-        <div class="content">
+        <div class="appBody content">
             <div>
                 <h2>Edit Profile</h2>
                 <div class="image-icon-div">

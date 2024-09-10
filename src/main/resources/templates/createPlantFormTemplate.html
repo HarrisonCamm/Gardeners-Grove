@@ -3,8 +3,9 @@
     <head>
         <meta charset="UTF-8">
         <title>Create Plant</title>
-        <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
-        <link th:href="@{/css/navBar.css}" rel="stylesheet">
+        <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
+        <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
+        <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
         <script th:src="@{javascript/enter-date.js}"></script>
         <script th:src="@{javascript/prevent-enter-submit.js}"></script>
         <script th:src="@{/javascript/image-handling.js}"></script>
@@ -12,7 +13,7 @@
     <body>
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
         <br/>
-        <div class="form">
+        <div class="appBody form">
             <h2>Create Plant</h2>
             <div class="image-icon-div">
                 <div class="image-upload">
