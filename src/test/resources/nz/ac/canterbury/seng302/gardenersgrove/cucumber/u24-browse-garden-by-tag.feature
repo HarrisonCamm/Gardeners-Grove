@@ -33,6 +33,7 @@ Feature: U24 - Browsing gardens by tag
       | input         |
       | "tagValid"    |
       |"inaya garden" |
+      | "herbal"      |
     #note the above input examples match the tags added in the
     # 'there_are_public_gardens_with_tags_available' step def, as Background can't have examples
 
