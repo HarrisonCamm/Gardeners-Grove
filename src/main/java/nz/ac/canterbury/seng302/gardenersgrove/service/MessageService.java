@@ -20,12 +20,9 @@ public class MessageService {
 
     /**
      * Save a message to the database
-     * @param sender The sender of the message
-     * @param recipient The recipient of the message
-     * @param content The content of the message
+     * @param message The message to save
      */
-    public void saveMessage(String sender, String recipient, String content) {
-        Message message = new Message(sender, recipient, content, new Date());
+    public void saveMessage(Message message) {
         messageRepository.save(message);
     }
 

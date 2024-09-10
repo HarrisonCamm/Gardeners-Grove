@@ -16,6 +16,8 @@ public class Message {
     @Column
     private String content;
     @Column
+    private String status;
+    @Column
     private Date timestamp;
 
     public Message() {
@@ -51,6 +53,14 @@ public class Message {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Date getTimestamp() {
