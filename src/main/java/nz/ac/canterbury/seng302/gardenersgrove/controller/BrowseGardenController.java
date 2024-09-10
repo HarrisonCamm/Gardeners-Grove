@@ -40,8 +40,7 @@ public class BrowseGardenController {
     public String browseGardens(HttpSession session,
                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
                          @RequestParam(value = "q", required = false, defaultValue = "") String query,
-                         Model model,
-                         HttpServletResponse response) {
+                         Model model) {
 
         logger.info("GET /browse-gardens");
         RedirectService.addEndpoint("/browse-gardens");

@@ -17,6 +17,8 @@ weather.api.key=YOUR_OPENWEATHERMAP_API_KEY
 weather.api.url=https://api.openweathermap.org/data/2.5/
 azure.api.key=YOUR_AZURE_API_KEY
 azure.api.url=https://gardeners-grove-600.cognitiveservices.azure.com/
+trefle.api.key=YOUR_TREFLE_TOKEN
+trefle.api.url=https://trefle.io/api/v1/plants
 ```
 See below for instructions for getting an API key
 
@@ -43,6 +45,13 @@ See below for instructions for getting an API key
 - Sign in to the Azure Portal (https://portal.azure.com/).
 - Navigate to your Cognitive Services resource.
 - Copy the API key and the endpoint URL provided for your service.
+- Copy and paste the API key into the application-dev.properties file (see above).
+
+## Trefle API Key
+
+- Sign up for Trefle from (https://trefle.io/users/sign_up)
+- Navigate to your account
+- Copy the Access token and the endpoint URL provided here: (https://trefle.io/api/v1/plants)
 - Copy and paste the API key into the application-dev.properties file (see above).
 
 

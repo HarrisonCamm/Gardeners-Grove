@@ -26,7 +26,7 @@ public interface GardenRepository extends CrudRepository<Garden, Long> {
     Page<Garden> findPublicGardens(Pageable pageable);
 
     @Query("SELECT g FROM Garden g LEFT JOIN Plant p ON p.garden = g " +
-            "WHERE g.isPublic = TRUE AND (g.name LIKE %:search% OR p.name LIKE %:search%) " +
+            "WHERE g.isPublic = TRUE AND (LOWER(g.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
             "ORDER BY COALESCE(g.created, '1970-01-01') DESC, g.id DESC")
     Page<Garden> findPublicGardensBySearch(String search, Pageable pageable);
 
