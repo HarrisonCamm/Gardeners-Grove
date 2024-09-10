@@ -42,12 +42,26 @@ Feature: U24 - Browsing gardens by tag
     Given I type out a tag <input> that does not exist
     When I press the enter key with <input>
     Then no tag <input> is added to my current selection
-    And the text field is not cleared
+    And the text field contains <input> and is not cleared
     And an error message tells me No tag matching <input>
     Examples:
     | input         |
     | "tagInvalid"  |
+    | "blah blah"   |
 
   Scenario: AC6 - Submit search form
     Given I submit the search form as detailed in U17
     Then only gardens that match the other search requirements and any of the tags I selected are shown in the results
+
+  Scenario Outline: Removing a tag
+    Given I press the enter key with <input>
+    And the tag <input> is added to my current selection
+    When I click the x button on the tag <input>
+    Then no tag <input> is added to my current selection
+    Examples:
+      | input         |
+      | "tagValid"    |
+      |"inaya garden" |
+      | "herbal"      |
+    #note the above input examples match the tags added in the
+    # 'there_are_public_gardens_with_tags_available' step def, as Background can't have examples

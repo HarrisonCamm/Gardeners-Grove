@@ -228,6 +228,8 @@ public class BrowseGardenByTagSteps {
                 .param("q", "")
                 .param("tagsInput", typedTag))
                 .andExpect(status().is2xxSuccessful());
+
+        mvcResult = resultActions.andReturn();
     }
 
     @Given("I type out a tag {string} that does not exist")
@@ -249,21 +251,27 @@ public class BrowseGardenByTagSteps {
         List<Tag> displayedTags = uncheckedTags.stream()
                 .filter(element -> element instanceof Tag)
                 .map(element -> (Tag) element)
-                .collect(Collectors.toList());
+                .toList();
 
-        Assertions.assertAll(
-                () -> Assertions.assertTrue(displayedTags.stream().noneMatch(eachTag -> eachTag.getName().equals(nonExistentTagName)))
-        );
+        Assertions.assertTrue(displayedTags.stream().noneMatch(eachTag -> eachTag.getName().equals(nonExistentTagName)));
     }
 
-    @And("the text field is not cleared")
-    public void the_text_field_is_not_cleared() {
-        // not yet implemented
+    @And("the text field contains {string} and is not cleared")
+    public void the_text_field_is_not_cleared(String nonExistentTagName) {
+        modelAndView = mvcResult.getModelAndView();
+        String textFieldValue = (String) Objects.requireNonNull(modelAndView).getModel().get("tagsInput");
+        Assertions.assertEquals(nonExistentTagName, textFieldValue);
     }
 
     @And("an error message tells me No tag matching {string}")
-    public void an_error_message_tells_me_no_tag_matching_input(String input) {
-        // not yet implemented
+    public void an_error_message_tells_me_no_tag_matching_input(String nonExistentTagName) {
+        modelAndView = mvcResult.getModelAndView();
+        String errorMessage = (String) Objects.requireNonNull(modelAndView).getModel().get("tagNotFoundError");
+
+        Assertions.assertAll(
+                () -> Assertions.assertNotNull(errorMessage),
+                () -> Assertions.assertEquals("No tag matching " + nonExistentTagName, errorMessage)
+        );
     }
 
     @Given("I submit the search form as detailed in U17")
@@ -274,5 +282,14 @@ public class BrowseGardenByTagSteps {
     @Then("only gardens that match the other search requirements and any of the tags I selected are shown in the results")
     public void only_gardens_that_match_the_other_search_requirements_and_any_of_the_tags_i_selected_are_shown_in_the_results() {
         // not yet implemented
+    }
+
+    @When("I click the x button on the tag {string}")
+    public void i_click_the_X_button_on_the_tag_input(String tagName) throws Exception {
+        resultActions = mockMvc.perform(post("/browse-gardens")
+                        .param("tagToRemove", tagName))
+                .andExpect(status().is2xxSuccessful());
+
+        mvcResult = resultActions.andReturn();
     }
 }
