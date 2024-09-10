@@ -294,6 +294,10 @@ public class User {
         return contacts;
     }
 
+    public void setFriends(List<User> friends) {
+        this.friends = friends;
+    }
+
     @Override
     public boolean equals(Object user) {
         if (!(user instanceof User)) {

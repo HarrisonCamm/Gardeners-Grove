@@ -5,14 +5,7 @@
     <body>
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 
-        <div id="chat-container" class="container-fluid chat-container"
-             th:data-from="${from}"
-             th:data-garden-id="${gardenID}"
-             th:data-owner-id="${ownerID}"
-             th:data-first-name="${firstName}"
-             th:data-last-name="${lastName}"
-             th:data-email="${email}"
-             th:data-contact-emails="${contactEmails}">
+        <div id="chat-container" class="container-fluid chat-container" th:data-from="${from}">
             <div class="row h-100">
 
                 <!-- Friends Chat Area -->
@@ -24,13 +17,13 @@
 
                     <!-- Display Friends -->
                     <div>
-                        <div th:if="${#lists.isEmpty(contacts)}">
+                        <div th:if="${#lists.isEmpty(friends)}">
                             <p>Your friends will be shown here</p>
                         </div>
 
-                        <div th:if="${!#lists.isEmpty(contacts)}">
+                        <div th:if="${!#lists.isEmpty(friends)}">
                             <ul class="list-unstyled">
-                                <li th:each="friend, iterStat : ${contacts}">
+                                <li th:each="friend, iterStat : ${friends}">
                                     <a href="#"
                                        th:data-user-id="${friend.userId}"
                                        th:data-first-name="${friend.firstName}"
@@ -61,14 +54,13 @@
                     </div>
 
                     <!-- Display actual conversation when friends clicked -->
-                    <div th:each="friend : ${contacts}" th:id="'chatUI-' + ${friend.userId}" class="d-flex flex-column h-100" style="display:none !important;">
+                    <div th:each="friend : ${friends}" th:id="'chatUI-' + ${friend.userId}" class="d-flex flex-column h-100" style="display:none !important;">
                         <div class="p-3 border-bottom">
                             <div class="d-flex align-items-center">
                                 <img th:id="'friendImage-' + ${friend.userId}" class="image-small me-3" src="" alt="">
                                 <div>
                                     <h5 th:id="'friendName-' + ${friend.userId}" class="mb-0"></h5>
-                                    <small th:if="${#lists.contains(friends, friend)}" class="text-muted">Verified</small>
-                                    <small th:if="${!#lists.contains(friends, friend)}" class="text-muted">Unverified</small>
+                                    <small class="text-muted">Verified</small>
                                 </div>
                             </div>
                         </div>
@@ -90,12 +82,14 @@
                                           oninput="messageLength(this)"
                                           rows="1"
                                 ></textarea>
-                                <button th:id="'send-button-' + ${friend.userId}"
+                                <button id="send-button-${friend.userId}"
                                         class="btn btn-primary rounded-pill"
                                         type="button"
-                                        th:data-user-id="${friend.userId}"
-                                        th:attr="onclick=|sendMessage(${friend.userId})|"
-                                        style="padding-left: 20px; padding-right: 20px;">Send</button>
+                                        data-user-id="${friend.userId}"
+                                        th:attr="onclick=|sendMessage('${friend.userId}')|"
+                                        style="padding-left: 20px; padding-right: 20px;">
+                                    Send
+                                </button>
                             </div>
 
                             <!-- Input size counter -->
