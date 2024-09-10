@@ -51,11 +51,13 @@
                 <div class="input-group mb-3">
                     <input th:name="tagsInput"
                            th:value="${tagsInput}"
+                           id="tagInput"
                            type="text"
                            maxlength="256"
                            class="form-control"
                            placeholder="Search by tags"/>
-                    <div id="tags-list"></div> <!-- For displaying selected tags (maybe not needed) -->
+                    <div class="container tag-input rounded-bottom" id="autocompleteList"></div>
+<!--                    <div id="tags-list"></div> &lt;!&ndash; For displaying selected tags (maybe not needed) &ndash;&gt;-->
                 </div>
 
                 <!-- Tag Error Message -->
@@ -134,3 +136,39 @@
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 </body>
 </html>
+
+<script th:inline="javascript">
+    window.addEventListener('DOMContentLoaded', () => {
+        const allTags = [[${allTags}]];
+        const tagInput = document.getElementById('tagInput');
+        const autocompleteList = document.getElementById('autocompleteList');
+        const form = tagInput.closest('form');  // Get the parent form
+
+        tagInput.addEventListener('input', function() {
+            let input = this.value;
+            autocompleteList.innerHTML = '';
+
+            if (input.trim() !== '') {
+                let suggestions = allTags.filter(tag => tag.name.toLowerCase().startsWith(input.toLowerCase()));
+
+                suggestions.forEach(tag => {
+                    let item = document.createElement('button');
+                    item.className = 'dropdown-item autocomplete-tag-item';
+                    item.textContent = tag.name;
+                    item.addEventListener('click', function(event) {
+                        event.preventDefault(); // Prevent default form submit (if necessary)
+                        tagInput.value = this.textContent;  // Set the input value to the selected tag
+                        autocompleteList.innerHTML = '';  // Clear the autocomplete list
+                        form.submit();  // Submit the form
+                    });
+                    autocompleteList.appendChild(item);
+                });
+
+                autocompleteList.style.display = suggestions.length > 0 ? 'block' : 'none';
+            } else {
+                autocompleteList.style.display = 'none';
+            }
+        });
+    });
+</script>
+

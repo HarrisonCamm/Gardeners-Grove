@@ -44,6 +44,10 @@ public class BrowseGardenController {
         logger.info("GET /browse-gardens");
         RedirectService.addEndpoint("/browse-gardens");
 
+        // Fetch and add allTags to the model for autocomplete
+        List<Tag> allTags = tagService.getTagsByEvaluated(true);
+        model.addAttribute("allTags", allTags);
+
         if (page < 1) {
             return "redirect:/browse-gardens";
         }
@@ -75,6 +79,10 @@ public class BrowseGardenController {
                                 Model model) {
         logger.info("POST /browse-gardens");
         RedirectService.addEndpoint("/browse-gardens");
+
+        // Fetch and add allTags to the model for autocomplete
+        List<Tag> allTags = tagService.getTagsByEvaluated(true);
+        model.addAttribute("allTags", allTags);
 
         int tagIndex = IntStream.range(0, displayedSearchTags.size())
                 .filter(i -> displayedSearchTags.get(i).getName().equals(tagNameToRemove))
