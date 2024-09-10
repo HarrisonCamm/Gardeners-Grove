@@ -18,6 +18,8 @@
     <!-- Search Section -->
     <div class="row justify-content-center mb-4">
         <div class="col-12 col-md-8">
+
+            <!-- Display selected tags -->
             <form th:action="@{/browse-gardens}" method="post" novalidate >
                 <div class="row" th:if="${searchTags != null and searchTags.size() > 0}">
                     <div class="col d-flex flex-wrap">
@@ -32,7 +34,10 @@
                     </div>
                 </div>
             </form>
+
+            <!-- Search Area-->
             <form th:action="@{/browse-gardens}" method="get" novalidate>
+                <!-- Text search -->
                 <div class="input-group mb-3">
                     <input th:name="q"
                            th:value="${q}"
@@ -41,6 +46,8 @@
                            class="form-control"
                            placeholder="Browse public gardens">
                 </div>
+
+                <!-- Tag Search -->
                 <div class="input-group mb-3">
                     <input th:name="tagsInput"
                            th:value="${tagsInput}"
@@ -48,10 +55,13 @@
                            maxlength="256"
                            class="form-control"
                            placeholder="Search by tags"/>
-                    <div id="tags-list"></div> <!-- For displaying selected tags -->
+                    <div id="tags-list"></div> <!-- For displaying selected tags (maybe not needed) -->
                 </div>
+
+                <!-- Tag Error Message -->
                 <p th:if="${tagNotFoundError}" class="error-message" th:text="${tagNotFoundError}"></p>
 
+                <!-- Search Button -->
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary">Search</button>
                 </div>
