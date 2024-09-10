@@ -87,6 +87,12 @@ public class GardenersGroveApplication {
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}
+			if (!userService.emailExists("gardenersgrove@email.com")) {
+				Image image = new Image(imageBytes, "png", false);
+				User user = new User("Gardeners Grove", "Inc", false, "gardenersgrove@email.com", "Password1!", "", image);
+				user.grantAuthority("ROLE_USER");
+				userService.addUser(user);
+			}
 		};
 	}
 }

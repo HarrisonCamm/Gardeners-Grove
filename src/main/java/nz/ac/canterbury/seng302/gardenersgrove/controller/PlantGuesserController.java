@@ -37,12 +37,14 @@ public class PlantGuesserController {
     private final UserRepository userRepository;
     private Random random;
     private static final int NUM_OPTIONS = 4;
-    private static final int NUM_ROUNDS = 10;
+    private static final int NUM_ROUNDS = 4;
     private static final int BLOOM_BONUS = 100;
     private static final int MAX_TRIES = 5;
     private static final String PAGE_URL = "/plant-guesser";
     private static final String SESSION_SCORE = "plantGuesserScore";
     private static final String SESSION_ROUND = "plantGuesserRound";
+
+    private User gardenersGroveUser; //represents the sender for transactions from games
 
     @Autowired
     public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, TransactionService transactionService, UserService userService, UserRepository userRepository, Random random) {
@@ -51,7 +53,6 @@ public class PlantGuesserController {
         this.transactionService = transactionService;
         this.userService = userService;
         this.userRepository = userRepository;
-
         this.random = random;
     }
     public void setRandom(Random random) {
@@ -150,7 +151,9 @@ public class PlantGuesserController {
             userRepository.save(currentUser);
             model.addAttribute("bloomBalance", currentUser.getBloomBalance());
             Integer bloomsToAdd = BLOOM_BONUS + (score*NUM_ROUNDS);
-            transactionService.addTransaction(bloomsToAdd, "Plant guesser game.","type", currentUser.getUserId(), 1L,1L);
+
+            gardenersGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
+            transactionService.addTransaction(bloomsToAdd, "Plant guesser game.","type", currentUser.getUserId(), gardenersGroveUser.getUserId());
             gameOver = true;
             resetRound(session);
         }

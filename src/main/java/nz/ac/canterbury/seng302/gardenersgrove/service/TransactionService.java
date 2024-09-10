@@ -36,6 +36,13 @@ public class TransactionService {
     }
 
 
+    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId) {
+        return addTransaction(amount, notes, transactionType, receiverId, null, null);
+    }
+
+    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId) {
+        return addTransaction(amount, notes, transactionType, receiverId, senderId, null);
+    }
 
     public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId, Long plantId) {
         Transaction transaction = new Transaction();
@@ -55,7 +62,6 @@ public class TransactionService {
         }
 
         if (plantId != null) {
-            // Assuming you have a PlantRepository for handling plant entities.
             Plant plant = plantRepository.findById(plantId)
                     .orElseThrow(() -> new EntityNotFoundException("Plant not found"));
             transaction.setPlant(plant);
