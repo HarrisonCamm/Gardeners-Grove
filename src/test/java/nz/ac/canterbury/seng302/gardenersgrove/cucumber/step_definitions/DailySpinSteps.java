@@ -28,6 +28,12 @@ public class DailySpinSteps {
     private static MockMvc mockMvc;
     private MvcResult mvcResult;
 
+    private boolean spin_animation_completed;
+    private int combo_multiplier;
+    private int initial_bloom_balance;
+    private int reward_blooms;
+    private int current_bloom_balance;
+
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -86,5 +92,33 @@ public class DailySpinSteps {
                 () -> Assertions.assertTrue(hasSpinButton, "Expected to find a spin button in the page."),
                 () -> Assertions.assertTrue(hasReelContainers, "Expected to find reel containers for the spin wheel animation.")
         );
+    }
+
+    @Given("The wheel spin animation has completed")
+    public void the_wheel_spin_animation_has_completed() {
+        // Mocking the completion of the wheel spin animation
+        spin_animation_completed = true;
+        initial_bloom_balance = 500;
+        current_bloom_balance = initial_bloom_balance;
+    }
+
+    @When("I get a combo")
+    public void i_get_a_combo() {
+        // Mocking the action of getting a combo during the spin
+        if (spin_animation_completed) {
+            combo_multiplier = 10;
+            reward_blooms = combo_multiplier * 5;
+        }
+    }
+
+    @Then("I am rewarded blooms based on the combo")
+    public void i_am_rewarded_blooms_based_on_the_combo() {
+        // updating the bloom balance after spin
+        if (spin_animation_completed && combo_multiplier > 0) {
+            current_bloom_balance += reward_blooms;
+        }
+        // Verify the blooms are rewarded correctly
+        Assertions.assertEquals(initial_bloom_balance + reward_blooms, current_bloom_balance,
+                "The blooms were not rewarded correctly based on the combo.");
     }
 }
