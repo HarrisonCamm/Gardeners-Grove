@@ -113,6 +113,15 @@ public class BrowseGardenByTagSteps {
                 .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
 
         resultActions = mockMvc.perform(post("/add-tag")
+                        .param("gardenID", ownedGarden1.getId().toString())
+                        .param("tag", "tagAutocomplete") //match what is in the feature file examples
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                // Check that page redirects to a view garden of ANY number
+                .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
+
+        resultActions = mockMvc.perform(post("/add-tag")
                         .param("gardenID", ownedGarden2.getId().toString())
                         .param("tag", "inaya garden") //match what is in the feature file examples
                         .with(csrf()))
@@ -171,9 +180,12 @@ public class BrowseGardenByTagSteps {
         // not yet implemented
     }
 
-    @When("I click on a suggestion")
-    public void i_click_on_a_suggestion() {
+    @When("I click on a suggestion {string}")
+    public void i_click_on_a_suggestion(String suggestion) throws Exception {
         // not yet implemented
+        i_press_the_enter_key(suggestion);
+        //TODO fix this, only putting this here because related step defs in AC3 are used in AC4
+
     }
 
     @Then("the tag {string} is added to my current selection")
