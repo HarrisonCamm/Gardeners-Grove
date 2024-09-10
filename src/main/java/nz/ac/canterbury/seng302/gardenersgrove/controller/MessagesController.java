@@ -126,16 +126,18 @@ public class MessagesController {
      */
     @MessageMapping("/chat.send/{recipientEmail}")
     public void sendMessage(@DestinationVariable String recipientEmail, Message message) {
-        messageService.saveMessage(message);
-        messagingTemplate.convertAndSendToUser(recipientEmail, "/queue/reply", message);
+        if (message.getStatus().equals("sent")) {
+            messageService.saveMessage(message);
+            messagingTemplate.convertAndSendToUser(recipientEmail, "/queue/reply", message);
 
-        User sender = userService.getUserByEmail(message.getSender());
-        User recipient = userService.getUserByEmail(recipientEmail);
-        if (!sender.getFriends().contains(recipient) && sender.addContact(recipient)) {
-            userService.addUser(sender);
-        }
-        if (!recipient.getFriends().contains(sender) && recipient.addContact(sender)) {
-            userService.addUser(recipient);
+            User sender = userService.getUserByEmail(message.getSender());
+            User recipient = userService.getUserByEmail(recipientEmail);
+            if (!sender.getFriends().contains(recipient) && sender.addContact(recipient)) {
+                userService.addUser(sender);
+            }
+            if (!recipient.getFriends().contains(sender) && recipient.addContact(sender)) {
+                userService.addUser(recipient);
+            }
         }
     }
 

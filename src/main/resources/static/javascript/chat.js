@@ -54,16 +54,16 @@ function showMessage(message) {
     // Determine the background color based on the message status
     let backgroundColor;
     switch (message.status) {
-        case 'blocked':
-            backgroundColor = 'bg-danger error'; // Red for blocked messages
-            message.content = 'Message contains inappropriate language language or is too long';
+        case 'sent':
+            backgroundColor = isSender ? 'background' : 'bg-light'; // Green if sender or gray if received
             break;
         case 'evaluating':
             backgroundColor = 'bg-warning'; // Yellow for pending messages
             message.content = 'Message is being evaluated by the system';
             break;
         default:
-            backgroundColor = isSender ? 'background' : 'bg-light'; // Green if sender or gray if received
+            backgroundColor = 'bg-danger error'; // Red for blocked messages
+            message.content = 'Message contains inappropriate language language or is too long';
             break;
     }
 
