@@ -231,13 +231,29 @@ public class BrowseGardenByTagSteps {
     }
 
     @Given("I type out a tag {string} that does not exist")
-    public void i_type_out_a_tag_that_does_not_exist(String input) {
-        // not yet implemented
+    public void i_type_out_a_tag_that_does_not_exist(String nonExistentTagName) {
+        Assertions.assertAll(
+                () -> Assertions.assertNull(tagService.getTagByName(nonExistentTagName)),
+                () -> Assertions.assertTrue(existingTags.stream().noneMatch(eachTag -> eachTag.getName().equals(nonExistentTagName)))
+        );
     }
 
     @Then("no tag {string} is added to my current selection")
-    public void no_tag_is_added_to_my_current_selection(String input) {
-        // not yet implemented
+    public void no_tag_is_added_to_my_current_selection(String nonExistentTagName) {
+        modelAndView = mvcResult.getModelAndView();
+        List<?> uncheckedTags = (List<?>) Objects.requireNonNull(modelAndView).getModel().get("searchTags");
+
+        Assertions.assertTrue(uncheckedTags.stream().allMatch(element -> element instanceof Tag));
+
+        // Filter the list to contain only elements of type Tag to avoid unchecked cast error
+        List<Tag> displayedTags = uncheckedTags.stream()
+                .filter(element -> element instanceof Tag)
+                .map(element -> (Tag) element)
+                .collect(Collectors.toList());
+
+        Assertions.assertAll(
+                () -> Assertions.assertTrue(displayedTags.stream().noneMatch(eachTag -> eachTag.getName().equals(nonExistentTagName)))
+        );
     }
 
     @And("the text field is not cleared")
