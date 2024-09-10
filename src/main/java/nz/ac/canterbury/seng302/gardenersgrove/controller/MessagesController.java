@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 @Controller
 public class MessagesController {
@@ -145,12 +146,15 @@ public class MessagesController {
 
     @GetMapping("/contacts")
     public @ResponseBody List<String> getContacts(@RequestParam(value = "email", required = false) String email) {
-        logger.info("GET /contacts" + (email != null ? "  waiting for " + email : ""));
+        logger.info("GET /contacts");
 
         List<String> contacts = userService.getAuthenticatedUser().getAllContacts().stream().map(User::getEmail).toList();
         if (email != null && !contacts.contains(email)) {
             try {
                 Thread.sleep(250);
+            } catch (InterruptedException ie) {
+                logger.error("interrupted while waiting for contact to be added");
+                Thread.currentThread().interrupt();
             } catch (Exception e) {
                 logger.error("exception occurred while waiting for contact to be added");
             }
