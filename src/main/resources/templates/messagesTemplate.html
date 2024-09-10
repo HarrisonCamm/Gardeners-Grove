@@ -1,106 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-<head th:replace="fragments/head :: head(title='Messaging App')"> </head>
-<body>
-<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+    <head th:replace="fragments/head :: head(title='Messaging App')"> </head>
 
-<div id="chat-container" class="container-fluid chat-container" th:data-from="${from}">
-    <div class="row h-100">
+    <body>
+        <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 
-        <!-- Friends Chat Area -->
-        <div id="friends-chat-area" class="col-md-3 col-sm-4 p-4 bg-light chat-side-bar">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4>Chats</h4>
-            </div>
-            <input type="text" class="form-control mb-4" placeholder="Search">
+        <div id="chat-container" class="container-fluid chat-container"
+             th:data-from="${from}"
+             th:data-garden-id="${gardenID}"
+             th:data-owner-id="${ownerID}"
+             th:data-first-name="${firstName}"
+             th:data-last-name="${lastName}"
+             th:data-email="${email}"
+             th:data-contact-emails="${contactEmails}">
+            <div class="row h-100">
 
-            <!-- Display Friends -->
-            <div>
-                <div th:if="${#lists.isEmpty(friends)}">
-                    <p>Your friends will be shown here</p>
-                </div>
+                <!-- Friends Chat Area -->
+                <div id="friends-chat-area" class="col-md-3 col-sm-4 p-4 bg-light chat-side-bar">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Chats</h4>
+                    </div>
+                    <input type="text" class="form-control mb-4" placeholder="Search">
 
-                <div th:if="${!#lists.isEmpty(friends)}">
-                    <ul class="list-unstyled">
-                        <li th:each="friend, iterStat : ${friends}">
-                            <a href="#"
-                               th:data-user-id="${friend.userId}"
-                               th:data-first-name="${friend.firstName}"
-                               th:data-last-name="${friend.lastName}"
-                               th:data-email="${friend.email}"
-                               class="text-decoration-none chat-link">
-                                <div class="background p-2 mb-2">
-                                    <div class="d-flex align-items-center">
-                                        <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
-                                        <div class="ms-3">
-                                            <h6 class="mb-0" th:text="${friend.firstName + ' ' + friend.lastName}"></h6>
-                                            <!-- Last message sent or received-->
-                                            <small th:id="'friend-last-message-' + ${friend.email}" class="text-muted" th:text="${lastMessages[iterStat.index]}"></small>
+                    <!-- Display Friends -->
+                    <div>
+                        <div th:if="${#lists.isEmpty(contacts)}">
+                            <p>Your friends will be shown here</p>
+                        </div>
+
+                        <div th:if="${!#lists.isEmpty(contacts)}">
+                            <ul class="list-unstyled">
+                                <li th:each="friend, iterStat : ${contacts}">
+                                    <a href="#"
+                                       th:data-user-id="${friend.userId}"
+                                       th:data-first-name="${friend.firstName}"
+                                       th:data-last-name="${friend.lastName}"
+                                       th:data-email="${friend.email}"
+                                       class="text-decoration-none chat-link">
+                                        <div class="background p-2 mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
+                                                <div class="ms-3">
+                                                    <h6 class="mb-0" th:text="${friend.firstName + ' ' + friend.lastName}"></h6>
+                                                    <!-- Last message sent or received-->
+                                                    <small th:id="'friend-last-message-' + ${friend.email}" class="text-muted" th:text="${lastMessages[iterStat.index]}"></small>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Chat Area -->
-        <div id="chat-main-area" class="chat-main-area col-md-9 col-sm-8 bg-white">
-            <div id="welcomeMessage" class="d-flex align-items-center justify-content-center h-100">
-                <h2 class="text-dark">Welcome to Sprout</h2>
-            </div>
-
-            <!-- Display actual conversation when friends clicked -->
-            <div th:each="friend : ${friends}" th:id="'chatUI-' + ${friend.userId}" class="d-flex flex-column h-100" style="display:none !important;">
-                <div class="p-3 border-bottom">
-                    <div class="d-flex align-items-center">
-                        <img th:id="'friendImage-' + ${friend.userId}" class="image-small me-3" src="" alt="">
-                        <div>
-                            <h5 th:id="'friendName-' + ${friend.userId}" class="mb-0"></h5>
-                            <small class="text-muted">Verified</small>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-                <div th:id="'chatArea-' + ${friend.email}" class="chat-content p-3 d-flex flex-column">
-                    <p class="text-muted text-center">Today</p>
-                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
-                        <p id="no-messages-text" class="text-muted">No messages yet. Start the conversation!</p>
-                    </div>
-                </div>
 
-                <!-- Message Input and Send Button -->
-                <div id="sending-area" class="border-top p-3 sending-area">
-                    <div class="d-flex">
-                <textarea th:id="'message-input-' + ${friend.userId}"
-                          class="rounded-pill flex-grow-1 me-2 form-control"
-                          placeholder="Aa"
-                          aria-label="Message"
-                          oninput="messageLength(this)"
-                          rows="1"
-                ></textarea>
-                        <button th:id="'send-button-' + ${friend.userId}"
-                                class="btn btn-primary rounded-pill"
-                                type="button"
-                                th:data-user-id="${friend.userId}"
-                                style="padding-left: 20px; padding-right: 20px;">Send</button>
+                <!-- Chat Area -->
+                <div id="chat-main-area" class="chat-main-area col-md-9 col-sm-8 bg-white">
+                    <div id="welcomeMessage" class="d-flex align-items-center justify-content-center h-100">
+                        <h2 class="text-dark">Welcome to Sprout</h2>
                     </div>
 
-                    <!-- Input size counter -->
-                    <div class="d-flex justify-content-end mt-1">
-                        <span th:id="messageLengthCounter" th:text="'0/255'"></span>
+                    <!-- Display actual conversation when friends clicked -->
+                    <div th:each="friend : ${contacts}" th:id="'chatUI-' + ${friend.userId}" class="d-flex flex-column h-100" style="display:none !important;">
+                        <div class="p-3 border-bottom">
+                            <div class="d-flex align-items-center">
+                                <img th:id="'friendImage-' + ${friend.userId}" class="image-small me-3" src="" alt="">
+                                <div>
+                                    <h5 th:id="'friendName-' + ${friend.userId}" class="mb-0"></h5>
+                                    <small th:if="${#lists.contains(friends, friend)}" class="text-muted">Verified</small>
+                                    <small th:if="${!#lists.contains(friends, friend)}" class="text-muted">Unverified</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:id="'chatArea-' + ${friend.email}" class="chat-content p-3 d-flex flex-column">
+                            <p class="text-muted text-center">Today</p>
+                            <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                                <p id="no-messages-text" class="text-muted">No messages yet. Start the conversation!</p>
+                            </div>
+                        </div>
+
+                        <!-- Message Input and Send Button -->
+                        <div id="sending-area" class="border-top p-3 sending-area">
+                            <div class="d-flex">
+                                <textarea th:id="'message-input-' + ${friend.userId}"
+                                          class="rounded-pill flex-grow-1 me-2 form-control"
+                                          placeholder="Aa"
+                                          aria-label="Message"
+                                          th:data-user-id="${friend.userId}"
+                                          oninput="messageLength(this)"
+                                          rows="1"
+                                ></textarea>
+                                <button th:id="'send-button-' + ${friend.userId}"
+                                        class="btn btn-primary rounded-pill"
+                                        type="button"
+                                        th:data-user-id="${friend.userId}"
+                                        th:attr="onclick=|sendMessage(${friend.userId})|"
+                                        style="padding-left: 20px; padding-right: 20px;">Send</button>
+                            </div>
+
+                            <!-- Input size counter -->
+                            <div class="d-flex justify-content-end mt-1">
+                                <span th:id="'message-length-counter-' + ${friend.userId}" th:text="'0/255'"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<div th:replace="~{fragments/scripts :: scripts}"></div>
-<script th:src="@{/webjars/stomp-websocket/2.3.4/stomp.min.js}"></script>
-<script th:src="@{/javascript/description-length.js}"></script>
-<script th:src="@{/javascript/chat.js}"></script>
+        <div th:replace="~{fragments/scripts :: scripts}"></div>
+        <script th:src="@{/webjars/stomp-websocket/2.3.4/stomp.min.js}"></script>
+        <script th:src="@{/javascript/description-length.js}"></script>
+        <script th:src="@{/javascript/chat.js}"></script>
 
-</body>
+    </body>
 </html>

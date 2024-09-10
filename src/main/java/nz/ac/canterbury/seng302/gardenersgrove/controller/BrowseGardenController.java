@@ -44,6 +44,10 @@ public class BrowseGardenController {
         logger.info("GET /browse-gardens");
         RedirectService.addEndpoint("/browse-gardens");
 
+        // Fetch and add allTags to the model for autocomplete
+        List<Tag> allTags = tagService.getTagsByEvaluated(true);
+        model.addAttribute("allTags", allTags);
+
         if (page < 1) {
             return "redirect:/browse-gardens";
         }
@@ -76,13 +80,21 @@ public class BrowseGardenController {
         logger.info("POST /browse-gardens");
         RedirectService.addEndpoint("/browse-gardens");
 
+        // Fetch and add allTags to the model for autocomplete
+        List<Tag> allTags = tagService.getTagsByEvaluated(true);
+        model.addAttribute("allTags", allTags);
+
         int tagIndex = IntStream.range(0, displayedSearchTags.size())
                 .filter(i -> displayedSearchTags.get(i).getName().equals(tagNameToRemove))
                 .findFirst()
                 .orElse(-1);
-        Tag tagToRemove = displayedSearchTags.get(tagIndex);
-        displayedSearchTags.remove(tagToRemove);
-        tagIds.remove(tagToRemove.getId());
+
+        // Prevent -1 index out of range error
+        if (!displayedSearchTags.isEmpty()) {
+            Tag tagToRemove = displayedSearchTags.get(tagIndex);
+            displayedSearchTags.remove(tagToRemove);
+            tagIds.remove(tagToRemove.getId());
+        }
 
         displayTags(query, page, model, tagName);
         return "browseGardensTemplate";
