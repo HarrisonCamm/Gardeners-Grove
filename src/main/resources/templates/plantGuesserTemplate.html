@@ -13,9 +13,14 @@
 <!-- Navigation Bar Fragment -->
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 <div>
-    <div class="centre">
-        <br/>
-        <div class="card w-auto centre plant-card">
+    <br/>
+    <div class="row">
+        <div class="col">
+            <a th:hidden="${gameOver}" th:href="@{/games}">
+                <button type="button" class="button" id="backButton">◄ Games</button>
+            </a>
+        </div>
+        <div class="col card w-auto centre plant-card">
             <div>
                 <label class="pt-4 ps-4 pe-4" th:text="'Image source: ' + ${imageCredit}"></label>
             </div>
@@ -26,23 +31,72 @@
                 <h4 class="p-2" th:text="'Family: ' + ${plantFamily}"> </h4>
             </div>
         </div>
-        <br/>
+        <div class="col">
+        </div>
     </div>
+    <br/>
     <div class="centre">
-        <div>
-            <h2>What plant is this?</h2>
-            <br/>
+        <form th:action="@{/plant-guesser}" method="post" novalidate>
+            <div>
+                <h2>What plant is this?</h2>
+                <br/>
+                <div th:if="${incorrectAnswer}" class="ps-2 text-danger" th:text="${incorrectAnswer}"></div>
+                <div th:if="${correctAnswer}" class="ps-2 text-success" th:text="${correctAnswer}"></div>
+                <div th:if="${gameOver}" class="ps-2 text-success" th:text="'Congratulations on guessing! You have gained ' + ${bloomBonus} + ' Blooms for playing.'"></div>
+                <div th:if="${gameOver}" class="ps-2 text-success" th:text="'Total score: ' + ${score} + '/10'"></div>
+            </div>
+<!--            These hidden fields are for passing data back to the model to be used in the post mapping-->
+            <input type="hidden" name="plantFamily" th:value="${plantFamily}"/>
+            <input type="hidden" name="quizOption1" th:value="${quizOptions[0][0]} + ',' + ${quizOptions[0][1]}"/>
+            <input type="hidden" name="quizOption2" th:value="${quizOptions[1][0]} + ',' + ${quizOptions[1][1]}"/>
+            <input type="hidden" name="quizOption3" th:value="${quizOptions[2][0]} + ',' + ${quizOptions[2][1]}"/>
+            <input type="hidden" name="quizOption4" th:value="${quizOptions[3][0]} + ',' + ${quizOptions[3][1]}"/>
+            <input type="hidden" name="plantImage" th:value="${plantImage}"/>
+            <input type="hidden" name="imageCredit" th:value="${imageCredit}"/>
+            <input type="hidden" name="roundNumber" th:value="${roundNumber}"/>
+            <input type="hidden" name="correctOption" th:value="${correctOption}"/>
+            <input type="hidden" name="score" th:value="${score}"/>
+            <div class="content p-2">
+                <button id = "option1" class="quiz-option-button"
+                        type="submit" name="selectedOption" value="0"
+                        th:classappend="${0 == selectedOption ? 'clicked ' : ''}
+                        + ${0 == correctOption ? 'correct' : ''}"
+                        th:disabled="${answerSubmitted}"
+                        th:text="${quizOptions[0][0]} + ${quizOptions[0][1]}"> </button>
+                <div class="pe-4"></div>
+                <button id = "option2" class="quiz-option-button"
+                        type="submit" name="selectedOption" value="1"
+                        th:classappend="${1 == selectedOption ? 'clicked ' : ''}
+                        + ${1 == correctOption ? 'correct' : ''}"
+                        th:disabled="${answerSubmitted}"
+                        th:text="${quizOptions[1][0]} + ${quizOptions[1][1]}"> </button>
+            </div>
+            <div class="content p-2">
+                <button id = "option3" class="quiz-option-button"
+                        type="submit" name="selectedOption" value="2"
+                        th:classappend="${2 == selectedOption ? 'clicked ' : ''}
+                        + ${2 == correctOption ? 'correct' : ''}"
+                        th:disabled="${answerSubmitted}"
+                        th:text="${quizOptions[2][0]} + ${quizOptions[2][1]}"> </button>
+                <div class="pe-4"></div>
+                <button id = "option4" class="quiz-option-button"
+                        type="submit" name="selectedOption" value="3"
+                        th:classappend="${3 == selectedOption ? 'clicked ' : ''}
+                        + ${3 == correctOption ? 'correct' : ''}"
+                        th:disabled="${answerSubmitted}"
+                        th:text="${quizOptions[3][0]} + ${quizOptions[3][1]}"> </button>
+            </div>
+        </form>
+        <form id="next-question" th:hidden="${!answerSubmitted}" th:action="@{/plant-guesser}" method="get">
+            <div>
+                <button type="submit" class="button">Next Question</button>
+            </div>
+        </form>
+        <div th:hidden="${!gameOver}">
+            <a th:href="@{/games}">
+                <button type="button" class="button">Back to games</button>
+            </a>
         </div>
-        <div class="content p-2">
-            <button class="quiz-option-button" th:text="${quizOptions[0][0]} + ${quizOptions[0][1]}"> </button>
-            <div class="pe-4"></div>
-            <button class="quiz-option-button" th:text="${quizOptions[1][0]} + ${quizOptions[1][1]}"> </button>
-        </div>
-       <div class="content p-2">
-           <button class="quiz-option-button" th:text="${quizOptions[2][0]} + ${quizOptions[2][1]}"> </button>
-           <div class="pe-4"></div>
-           <button class="quiz-option-button" th:text="${quizOptions[3][0]} + ${quizOptions[3][1]}"> </button>
-       </div>
         <label th:text="'Plant ' + ${roundNumber} + '/10'"></label>
     </div>
 </div>

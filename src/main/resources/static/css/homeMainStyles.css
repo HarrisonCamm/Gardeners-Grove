@@ -36,7 +36,12 @@ body {
     background-color: #72543C;
     cursor: pointer;
 }
-.quiz-option-button {
+
+button#backButton {
+    margin-left: 30px;
+    margin-top: 30px;
+}
+.quiz-option-button, .quiz-option-button.correct {
     height: 120px;
     width: 300px;
     border-radius: 5px;
@@ -49,9 +54,23 @@ body {
 
 }
 
-.quiz-option-button:hover {
+.quiz-option-button:hover, .quiz-option-button.correct:hover {
     background-color: #574536;
     cursor: pointer;
+}
+.quiz-option-button:hover:disabled, .quiz-option-button.correct:hover:disabled {
+    background-color: #72543C;;
+    cursor: default;
+}
+
+.quiz-option-button.clicked, .quiz-option-button.clicked:hover {
+    background-color: darkred;
+    cursor: default;
+}
+
+.quiz-option-button.clicked.correct, .quiz-option-button.clicked.correct:hover {
+    background-color: #4CAF50;
+    cursor: default;
 }
 
 .logout-button {

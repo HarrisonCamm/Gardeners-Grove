@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.cucumber.junit.platform.engine.Constants;
 import nz.ac.canterbury.seng302.gardenersgrove.GardenersGroveApplication;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ForecastResponse;
@@ -54,9 +55,10 @@ public class RunCucumberTest {
     private static ForecastResponse mockedValidForecast;
     private static WeatherResponse mockedNullCityWeather;
     private static ForecastResponse mockedNullCityForecast;
-
-    private static PlantData plant;
-    private static List<String> fourOptions;
+    private static PlantData plant1;
+    private static PlantData plant2;
+    private static List<String> fourOptions1;
+    private static List<String> fourOptions2;
     private static String Rained;
     private static String NotRained;
     private static String Raining;
@@ -83,6 +85,15 @@ public class RunCucumberTest {
 
             String plantPageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
             String plantFamilyPageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
+
+
+            // Parse the combined JSON
+            JsonNode combinedData = objectMapper.readTree(plantFamilyPageJsonString);
+
+            // Extract "pine_family" and "brassicaceae_family" as separate strings
+            String plantFamily1PageJsonString = combinedData.get("plant1_family").toString();
+            String plantFamily2PageJsonString = combinedData.get("plant2_family").toString();
+
 
             Rained = "Rained";
             NotRained = "NotRained";
@@ -111,21 +122,37 @@ public class RunCucumberTest {
             //To mock plant api
             PlantGuesserList mockedPlantPage = objectMapper.readValue(plantPageJsonString, PlantGuesserList.class);
             List<PlantData> plantList = new ArrayList<>(Arrays.stream(mockedPlantPage.getPlantGuesserList()).toList());
-            plant = plantList.get(0);
+            plant1 = plantList.get(0);
+            plant2 = plantList.get(1);
 
 
-            PlantGuesserList mockedPlantFamilyPage = objectMapper.readValue(plantFamilyPageJsonString, PlantGuesserList.class);
-            PlantData[] plantFamilyMembers = Arrays.stream(mockedPlantFamilyPage.getPlantGuesserList()).toList()
+            PlantGuesserList mockedPlantFamilyPage1 = objectMapper.readValue(plantFamily1PageJsonString, PlantGuesserList.class);
+            PlantData[] plantFamilyMembers1 = Arrays.stream(mockedPlantFamilyPage1.getPlantGuesserList()).toList()
                     .stream()
-                    .filter(plant_i -> !Objects.equals(plant_i.common_name, plant.common_name))
+                    .filter(eachPlant -> !Objects.equals(eachPlant.common_name, plant1.common_name))
                     .toArray(PlantData[]::new);
-            List<String> multichoicePlantNames = new ArrayList<>(Arrays.stream(plantFamilyMembers).toList()
+            List<String> multichoicePlantNames1 = new ArrayList<>(Arrays.stream(plantFamilyMembers1).toList()
                     .stream()
                     .map(PlantData::getCommonAndScientificName)
                     .toList());
 
-            List<String> correctOption = Collections.singletonList(plant.getCommonAndScientificName());
-            fourOptions = Stream.concat(multichoicePlantNames.subList(0,3).stream(), correctOption.stream())
+            List<String> correctOption1 = Collections.singletonList(plant1.getCommonAndScientificName());
+            fourOptions1 = Stream.concat(multichoicePlantNames1.subList(0,3).stream(), correctOption1.stream())
+                    .collect(Collectors.toList());
+
+
+            PlantGuesserList mockedPlantFamilyPage2 = objectMapper.readValue(plantFamily2PageJsonString, PlantGuesserList.class);
+            PlantData[] plantFamilyMembers2 = Arrays.stream(mockedPlantFamilyPage2.getPlantGuesserList()).toList()
+                    .stream()
+                    .filter(eachPlant -> !Objects.equals(eachPlant.common_name, plant2.common_name))
+                    .toArray(PlantData[]::new);
+            List<String> multichoicePlantNames2 = new ArrayList<>(Arrays.stream(plantFamilyMembers2).toList()
+                    .stream()
+                    .map(PlantData::getCommonAndScientificName)
+                    .toList());
+
+            List<String> correctOption2 = Collections.singletonList(plant2.getCommonAndScientificName());
+            fourOptions2 = Stream.concat(multichoicePlantNames2.subList(0,3).stream(), correctOption2.stream())
                     .collect(Collectors.toList());
 
         } catch (Exception e) {
@@ -184,7 +211,21 @@ public class RunCucumberTest {
         when(moderationService.isContentAppropriate("InappropriateEvaluated")).thenReturn(false);
 
 
-        when(plantGuesserService.getPlant()).thenReturn(plant);
-        when(plantGuesserService.getMultichoicePlantNames(plant.family, plant.common_name, plant.getCommonAndScientificName())).thenReturn(fourOptions);
+        when(plantGuesserService.getPlant(anyInt())).thenAnswer(invocation -> {
+            int argument = invocation.getArgument(0);
+            if (argument == 0) {
+                return plant1;
+            } else if (argument >= 1) {
+                return plant2;
+            }
+            return null;
+        });
+
+        when(plantGuesserService.getMultichoicePlantNames(plant1.family, plant1.common_name, plant1.getCommonAndScientificName()))
+                .thenReturn(fourOptions1);
+
+        when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName()))
+                .thenReturn(fourOptions2);
+
     }
 }
