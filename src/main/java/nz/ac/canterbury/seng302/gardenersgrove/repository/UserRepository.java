@@ -41,11 +41,6 @@ public interface UserRepository extends CrudRepository<User, Long>{
     List<FriendRequest> getSentFriendRequests(Long userId);
 
 
-    @Query("SELECT t FROM Transaction t WHERE t.sender = :user OR t.receiver = :user")
-    Page<Transaction> findAllByUser(@Param("user") User user, Pageable pageable);
-
-
-
     @Query("SELECT r from FriendRequest r WHERE r.receiver.userId = :userId and r.status = 'Pending'")
     List<FriendRequest> getPendingFriendRequests(Long userId);
 

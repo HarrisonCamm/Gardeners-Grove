@@ -9,6 +9,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.TransactionService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.junit.jupiter.api.Assertions;
@@ -52,6 +53,9 @@ public class BloomTransactionSteps {
     private ImageService imageService;
 
     @Autowired
+    private TransactionService transactionService;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
@@ -68,7 +72,7 @@ public class BloomTransactionSteps {
 
     @Before
     public void setUp() {
-        userProfileController = new UserProfileController(userService, userRepository, imageService);
+        userProfileController = new UserProfileController(userService, userRepository, imageService, transactionService);
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         mockMvcUserProfile = MockMvcBuilders.standaloneSetup(userProfileController).build();
     }

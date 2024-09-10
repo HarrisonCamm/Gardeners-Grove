@@ -72,10 +72,14 @@ public class EditGardenTests {
     private AuthorityService authorityService;
 
     @MockBean
+    private TransactionService transactionService;
+
+    @MockBean
     private MailService mailService;
 
     @MockBean
     private ImageService imageService;
+
 
     @MockBean
     private FriendRequestService friendRequestService;

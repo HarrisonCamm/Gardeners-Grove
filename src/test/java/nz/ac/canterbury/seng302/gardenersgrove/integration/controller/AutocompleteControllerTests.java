@@ -50,6 +50,9 @@ public class AutocompleteControllerTests {
     private AuthorityService authorityService;
 
     @MockBean
+    private TransactionService transactionService;
+
+    @MockBean
     private MailService mailService;
 
     @MockBean

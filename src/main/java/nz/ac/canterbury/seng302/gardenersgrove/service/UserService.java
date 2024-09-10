@@ -187,9 +187,5 @@ public class UserService {
         userRepository.incrementInappropriateTagCount(userId);
     }
 
-    public Page<Transaction> findTransactionsByUser(User currentUser, int page, int size) {
-        return userRepository.findAllByUser(currentUser, PageRequest.of(page, size));
-    }
-
 
 }
