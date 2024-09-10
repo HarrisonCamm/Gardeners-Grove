@@ -10,11 +10,9 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.ModerationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessageType;
+
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 @Controller
 public class MessagesController {
@@ -53,7 +50,7 @@ public class MessagesController {
     public MessagesController(UserService userService,
                               SimpMessagingTemplate messagingTemplate,
                               MessageService messageService,
-                              ModerationService moderationService
+                              ModerationService moderationService,
                               GardenService gardenService) {
         this.userService = userService;
         this.gardenService = gardenService;
@@ -129,7 +126,7 @@ public class MessagesController {
      */
     @MessageMapping("/chat.send/{recipientEmail}")
     public void sendMessage(@DestinationVariable String recipientEmail, Message message) {
-        messageService.saveMessage(message.getSender(), recipientEmail, message.getContent());
+        messageService.saveMessage(message);
         messagingTemplate.convertAndSendToUser(recipientEmail, "/queue/reply", message);
 
         User sender = userService.getUserByEmail(message.getSender());

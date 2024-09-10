@@ -73,7 +73,7 @@ public class SecurityConfiguration {
                         .permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .requestMatchers("/", "/register-form", "/sign-in-form", "/home", "/confirm-registration").hasRole("UNVERIFIED")
-                        .requestMatchers("/main", "/view-user-profile", "/edit-user-profile", "/create-garden", "/view-garden", "/view-gardens", "/create-plant", "/edit-plant", "/upload-image", "/manage-friends", "/add-tag").hasRole("USER")
+                        .requestMatchers("/main", "/view-user-profile", "/edit-user-profile", "/create-garden", "/view-garden", "/view-gardens", "/create-plant", "/edit-plant", "/upload-image", "/manage-friends", "/add-tag", "/contacts").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
