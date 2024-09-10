@@ -44,9 +44,6 @@ public class BrowsePublicGardensSteps {
     @Autowired
     private PlantService plantService;
 
-    @Autowired
-    private LocationService locationService;
-
     private MockMvc mockMvc;
 
     private Garden publicGarden;
@@ -56,6 +53,11 @@ public class BrowsePublicGardensSteps {
     @Before("@SingleGarden")
     public void setupSingleGarden() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+
+        // Check if gardens already exist, to prevent re-adding
+        if (gardenService.getGardens().size() >= 1) {
+            return;  // Skip adding gardens if they already exist
+        }
 
         // Create a test garden owner
         User gardenOwner = new User(
@@ -96,6 +98,12 @@ public class BrowsePublicGardensSteps {
     public void setupMultipleGardens() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
+        // Check if gardens already exist, to prevent re-adding
+        if (gardenService.getGardens().size() > 2) {
+            // Skip adding gardens if they already exist
+            return;
+        }
+
         // Create a test garden owner
         User gardenOwner = new User(
                 "inaya@email.com",  // Email
@@ -109,7 +117,8 @@ public class BrowsePublicGardensSteps {
         // Save user to a database
         userService.addUser(gardenOwner);
 
-        IntStream.rangeClosed(1, 20).forEach(i -> {
+        // Use 19 as already 1 in database
+        IntStream.rangeClosed(1, 19).forEach(i -> {
             // NOTE: If not done, get a detached entity problem.
             // NOTE: Tried persisting location to database did not fix
             // Create a new unique location for each garden
@@ -484,6 +493,4 @@ public class BrowsePublicGardensSteps {
                 // Verify the text showing results is correctly rendered
                 .andExpect(MockMvcResultMatchers.content().string(containsString(expectedText)));
     }
-
 }
-
