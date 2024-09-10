@@ -179,8 +179,11 @@ public class BrowseGardenByTagSteps {
     }
 
     @When("I press the enter key with {string}")
-    public void i_press_the_enter_key(String input) {
-        // not yet implemented
+    public void i_press_the_enter_key(String typedTag) throws Exception {
+        resultActions = mockMvc.perform(post("/browse-gardens")
+                .param("q", "")
+                .param("tagsInput", typedTag))
+                .andExpect(status().is2xxSuccessful());
     }
 
     @Given("I type out a tag {string} that does not exist")
