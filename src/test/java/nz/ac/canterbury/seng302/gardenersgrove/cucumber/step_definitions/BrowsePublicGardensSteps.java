@@ -51,99 +51,53 @@ public class BrowsePublicGardensSteps {
 
     private User gardenOwner;
 
+    // General setup for MockMvc and user
     @Before
-    public void setup() {
+    public void setupMockMvc() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
-    @Before("@SingleGarden")
-    public void setupSingleGarden() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-
-        // Create a test garden owner
-        User gardenOwner = new User(
-                "inaya@email.com",  // Email
-                "Inaya",                    // First name
-                true,                       // No last name
-                "",                         // Empty last name
-                "Password1!",               // Password
-                "1990-01-01"                // Date of birth
-        );
-
-        // Save user to a database
-        userService.addUser(gardenOwner);
-
-        // Create test location
-        Location location = new Location("Test Street", "Test Suburb", "Test City", "1234", "Country");
-
-        // Create a test garden
-        publicGarden = new Garden("Public Test Garden", location, "100", gardenOwner, "A public garden");
-
-        // Mark the garden as public
-        publicGarden.setIsPublic(true);
-
-        // Save garden to a database
-        gardenService.addGarden(publicGarden);
-
-        // Create and add plants to the garden
-        Plant testPlant = new Plant(publicGarden, "TestPlant", "5", "Testy plant", "2024-09-05");
-
-        // Save plants to the database
-        plantService.addPlant(testPlant);
-
-        // Save garden to a database
-        gardenService.addGarden(publicGarden);
+    // Parameterized setup for gardens
+    @Before("@SingleGarden or @MultipleGardens")
+    public void setupGardens(io.cucumber.java.Scenario scenario) {
+        int numberOfGardens = scenario.getSourceTagNames().contains("@MultipleGardens") ? 19 : 1;
+        createGardens(numberOfGardens);
     }
 
-    @Before("@MultipleGardens")
-    public void setupMultipleGardens() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    private void createGardens(int count) {
+        // Check if the gardenOwner already exists, if not create it
+        if (gardenOwner == null) {
+            gardenOwner = new User("inaya@email.com", "Inaya", true, "", "Password1!", "1990-01-01");
+            userService.addUser(gardenOwner);
+        }
 
-        // Create a test garden owner
-        User gardenOwner = new User(
-                "inaya@email.com",  // Email
-                "Inaya",                    // First name
-                true,                       // No last name
-                "",                         // Empty last name
-                "Password1!",               // Password
-                "1990-01-01"                // Date of birth
-        );
-
-        // Save user to a database
-        userService.addUser(gardenOwner);
-
-        // Use 19 as already 1 in database
-        IntStream.rangeClosed(1, 19).forEach(i -> {
-            // NOTE: If not done, get a detached entity problem.
-            // NOTE: Tried persisting location to database did not fix
+        // Create gardens
+        IntStream.rangeClosed(1, count).forEach(i -> {
             // Create a new unique location for each garden
             Location location = new Location("Test Street " + i, "Test Suburb", "Test City", "1234", "Country");
 
-            String gardenName = "Public Test Garden " + i;
-            Garden garden = new Garden(gardenName, location, "100", gardenOwner, "A public garden " + i);
+            String gardenName = "Public Test Garden" + (count == 1 ? "" : i);
+            Garden garden = new Garden(gardenName, location, "100", gardenOwner, "A public garden " + (count == 1 ? "" : i));
 
             // Mark the garden as public
             garden.setIsPublic(true);
-
-            // Save garden to a database
             gardenService.addGarden(garden);
 
             // Create and add plants to the garden
-            Plant testPlant = new Plant(garden, "TestPlant " + i, "5", "Testy plant " + i, "2024-09-05");
-
-            // Save plants to the database
+            Plant testPlant = new Plant(garden, "TestPlant" + (count == 1 ? "" : i), "5", "Testy plant" + (count == 1 ? "" : i), "2024-09-05");
             plantService.addPlant(testPlant);
+
+            // Set the publicGarden to the current garden if this is a single garden setup
+            if (i == count) {
+                publicGarden = garden;
+            }
         });
     }
 
     // AC1
     @Given("a garden has been marked as public")
     public void gardenMarkedAsPublic() {
-        // Set garden public
-        publicGarden.setIsPublic(true);
-
-        // Save garden change to a database
-        gardenService.addGarden(publicGarden);
+        // This is done in setup
     }
 
     // AC1
@@ -164,6 +118,7 @@ public class BrowsePublicGardensSteps {
                 .andExpect(model().attribute("plants", hasItem(
                         allOf(
                                 hasProperty("name", is("TestPlant")),
+                                // Number of plants
                                 hasProperty("count", is("5")),
                                 hasProperty("description", is("Testy plant")),
                                 hasProperty("datePlanted", is("2024-09-05"))
