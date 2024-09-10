@@ -17,7 +17,7 @@ Feature: U24 - Browsing gardens by tag
 
   Scenario Outline: AC3 - Clicking on tag from autocomplete
     Given I am viewing autocomplete suggestions for my input <input>
-    When I click on a suggestion
+    When I click on a suggestion <input>
     Then the tag <input> is added to my current selection
     And the text field is cleared
     Examples:
@@ -33,6 +33,9 @@ Feature: U24 - Browsing gardens by tag
       | input         |
       | "tagValid"    |
       |"inaya garden" |
+      | "herbal"      |
+    #note the above input examples match the tags added in the
+    # 'there_are_public_gardens_with_tags_available' step def, as Background can't have examples
 
 
   Scenario Outline: AC5 - Typing tag that does not exist

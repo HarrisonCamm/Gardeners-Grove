@@ -18,10 +18,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -56,6 +60,9 @@ public class BrowseGardenByTagSteps {
     private static Garden ownedGarden1;
 
     private static Garden ownedGarden2;
+
+    private ModelAndView modelAndView;
+
 
 
     @Before
@@ -106,8 +113,26 @@ public class BrowseGardenByTagSteps {
                 .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
 
         resultActions = mockMvc.perform(post("/add-tag")
+                        .param("gardenID", ownedGarden1.getId().toString())
+                        .param("tag", "tagAutocomplete") //match what is in the feature file examples
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                // Check that page redirects to a view garden of ANY number
+                .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
+
+        resultActions = mockMvc.perform(post("/add-tag")
                         .param("gardenID", ownedGarden2.getId().toString())
                         .param("tag", "inaya garden") //match what is in the feature file examples
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                // Check that page redirects to a view garden of ANY number
+                .andExpect(header().string("Location", Matchers.matchesPattern("/view-garden\\?gardenID=\\d+")));
+
+        resultActions = mockMvc.perform(post("/add-tag")
+                        .param("gardenID", ownedGarden2.getId().toString())
+                        .param("tag", "herbal") //match what is in the feature file examples
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection())
@@ -155,19 +180,38 @@ public class BrowseGardenByTagSteps {
         // not yet implemented
     }
 
-    @When("I click on a suggestion")
-    public void i_click_on_a_suggestion() {
+    @When("I click on a suggestion {string}")
+    public void i_click_on_a_suggestion(String suggestion) throws Exception {
         // not yet implemented
+        i_press_the_enter_key(suggestion);
+        //TODO fix this, only putting this here because related step defs in AC3 are used in AC4
+
     }
 
     @Then("the tag {string} is added to my current selection")
     public void the_tag_is_added_to_my_current_selection(String input) {
-        // not yet implemented
+        modelAndView = mvcResult.getModelAndView();
+        List<?> uncheckedTags = (List<?>) Objects.requireNonNull(modelAndView).getModel().get("searchTags");
+
+        Assertions.assertTrue(uncheckedTags.stream().allMatch(element -> element instanceof Tag));
+
+        // Filter the list to contain only elements of type Tag to avoid unchecked cast error
+        List<Tag> displayedTags = uncheckedTags.stream()
+                .filter(element -> element instanceof Tag)
+                .map(element -> (Tag) element)
+                .collect(Collectors.toList());
+
+        Assertions.assertAll(
+                () -> Assertions.assertNotNull(displayedTags),
+                () -> Assertions.assertTrue(displayedTags.stream().anyMatch(eachTag -> eachTag.getName().equals(input)))
+        );
     }
 
     @And("the text field is cleared")
     public void the_text_field_is_cleared() {
-        // not yet implemented
+        modelAndView = mvcResult.getModelAndView();
+        String textFieldValue = (String) Objects.requireNonNull(modelAndView).getModel().get("tagsInput");
+        Assertions.assertEquals("", textFieldValue);
     }
 
     @Given("I type out a tag {string} that already exists")
@@ -179,18 +223,37 @@ public class BrowseGardenByTagSteps {
     }
 
     @When("I press the enter key with {string}")
-    public void i_press_the_enter_key(String input) {
-        // not yet implemented
+    public void i_press_the_enter_key(String typedTag) throws Exception {
+        resultActions = mockMvc.perform(get("/browse-gardens")
+                .param("q", "")
+                .param("tagsInput", typedTag))
+                .andExpect(status().is2xxSuccessful());
     }
 
     @Given("I type out a tag {string} that does not exist")
-    public void i_type_out_a_tag_that_does_not_exist(String input) {
-        // not yet implemented
+    public void i_type_out_a_tag_that_does_not_exist(String nonExistentTagName) {
+        Assertions.assertAll(
+                () -> Assertions.assertNull(tagService.getTagByName(nonExistentTagName)),
+                () -> Assertions.assertTrue(existingTags.stream().noneMatch(eachTag -> eachTag.getName().equals(nonExistentTagName)))
+        );
     }
 
     @Then("no tag {string} is added to my current selection")
-    public void no_tag_is_added_to_my_current_selection(String input) {
-        // not yet implemented
+    public void no_tag_is_added_to_my_current_selection(String nonExistentTagName) {
+        modelAndView = mvcResult.getModelAndView();
+        List<?> uncheckedTags = (List<?>) Objects.requireNonNull(modelAndView).getModel().get("searchTags");
+
+        Assertions.assertTrue(uncheckedTags.stream().allMatch(element -> element instanceof Tag));
+
+        // Filter the list to contain only elements of type Tag to avoid unchecked cast error
+        List<Tag> displayedTags = uncheckedTags.stream()
+                .filter(element -> element instanceof Tag)
+                .map(element -> (Tag) element)
+                .collect(Collectors.toList());
+
+        Assertions.assertAll(
+                () -> Assertions.assertTrue(displayedTags.stream().noneMatch(eachTag -> eachTag.getName().equals(nonExistentTagName)))
+        );
     }
 
     @And("the text field is not cleared")
