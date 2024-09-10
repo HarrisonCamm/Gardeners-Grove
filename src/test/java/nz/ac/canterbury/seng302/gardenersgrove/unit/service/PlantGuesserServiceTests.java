@@ -44,7 +44,7 @@ class PlantGuesserServiceTests {
     @BeforeAll
     static void  jsonSetup() throws Exception {
         //read json example file
-        plantFamilyResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
+        plantFamilyResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getSinglePlantFamilyResponse.json"));
         plantsResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
         invalidTokenPlantsResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsNoTokenResponse.json"));
         invalidPlantIdResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantInvalidIdResponse.json"));
@@ -73,10 +73,10 @@ class PlantGuesserServiceTests {
         Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserList);
 
         int pageNum = 1;
-        PlantGuesserList plantGuesserList = plantGuesserService.getPlantPage(pageNum);
-        Assertions.assertNotNull(plantGuesserList);
+        PlantGuesserList tempPlantGuesserList = plantGuesserService.getPlantPage(pageNum);
+        Assertions.assertNotNull(tempPlantGuesserList);
 
-        PlantData[] plantGuesserItems = plantGuesserList.getPlantGuesserList();
+        PlantData[] plantGuesserItems = tempPlantGuesserList.getPlantGuesserList();
         String plantItemCommonName = Arrays.stream(plantGuesserItems).toList().get(0).common_name;
         Assertions.assertEquals("Benguet pine", plantItemCommonName);
     }
@@ -92,10 +92,10 @@ class PlantGuesserServiceTests {
     @Test
     void validFamilyRequest_ReturnsPlantGuesserList() {
         Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserFamilyList);
-        PlantGuesserList plantGuesserFamilyList = plantGuesserService.getPlantFamily("Pinaceae"); //same family as mocked json
-        Assertions.assertNotNull(plantGuesserFamilyList);
+        PlantGuesserList tempPlantGuesserFamilyList = plantGuesserService.getPlantFamily("Pinaceae"); //same family as mocked json
+        Assertions.assertNotNull(tempPlantGuesserFamilyList);
 
-        PlantData[] plantGuesserItems = plantGuesserFamilyList.getPlantGuesserList();
+        PlantData[] plantGuesserItems = tempPlantGuesserFamilyList.getPlantGuesserList();
         String plantItemCommonName = Arrays.stream(plantGuesserItems).toList().get(0).common_name;
         Assertions.assertEquals("Scotch pine", plantItemCommonName);
 
@@ -113,7 +113,7 @@ class PlantGuesserServiceTests {
     void getPlant_ReturnsValidPlant() {
         Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserList);
 
-        PlantData response = plantGuesserService.getPlant();
+        PlantData response = plantGuesserService.getPlant(0);
 
         Assertions.assertTrue(plantsResponseJsonString.contains(response.scientific_name));
 

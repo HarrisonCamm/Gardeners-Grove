@@ -44,9 +44,6 @@ public class AutocompleteControllerTests {
     private VerificationTokenService verificationTokenService;
 
     @MockBean
-    private PlantGuesserService plantGuesserService;
-
-    @MockBean
     private AuthorityService authorityService;
 
     @MockBean
@@ -96,6 +93,12 @@ public class AutocompleteControllerTests {
 
     @MockBean
     private AlertService alertService;
+
+    @MockBean
+    private PlantGuesserService plantGuesserService;
+
+    @MockBean
+    private PlantFamilyService plantFamilyService;
 
     @MockBean
     private MessagesController messagesController;
