@@ -148,6 +148,7 @@ function sendMessage(userId) {
                     }
 
                     messageInput.value = '';
+                    document.getElementById("message-length-counter-" +userId).innerText = "0/255"
                     let noMessagesText = document.getElementById("no-messages-text");
                     if (noMessagesText) {
                         noMessagesText.setAttribute('style', 'display: none !important;');
