@@ -107,7 +107,6 @@ public class UserProfileController {
     @PostMapping("/transactions/add")
     public String addTransaction(@RequestParam int amount,
                                  @RequestParam String notes,
-                                 @RequestParam Date transactionDate,
                                  @RequestParam String transactionType,
                                  @RequestParam Long receiverId,
                                  @RequestParam(required = false) Long senderId,

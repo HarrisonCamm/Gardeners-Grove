@@ -149,7 +149,8 @@ public class PlantGuesserController {
             currentUser.setBloomBalance(currentBloomBalance + BLOOM_BONUS + (score*NUM_ROUNDS));
             userRepository.save(currentUser);
             model.addAttribute("bloomBalance", currentUser.getBloomBalance());
-            transactionService.addTransaction(BLOOM_BONUS + (score*NUM_ROUNDS), "Plant guesser game.","type", currentUser.getUserId(), 1L,1L);
+            Integer bloomsToAdd = BLOOM_BONUS + (score*NUM_ROUNDS);
+            transactionService.addTransaction(bloomsToAdd, "Plant guesser game.","type", currentUser.getUserId(), 1L,1L);
             gameOver = true;
             resetRound(session);
         }
