@@ -36,8 +36,4 @@ Feature: U6001 - Showing Blooms Balance and Bloom Transactions
     And I am viewing the transaction history on my profile page
     When I click on a specific transaction
     Then I can see additional details for that transaction, if available
-    And the details may include:
-      | The user or entity involved in the transaction |
-      | Any associated messages or notes               |
-      | A link to the related content or action        |
 

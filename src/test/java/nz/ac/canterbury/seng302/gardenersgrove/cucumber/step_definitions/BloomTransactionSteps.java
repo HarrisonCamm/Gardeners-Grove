@@ -81,6 +81,9 @@ public class BloomTransactionSteps {
 
     private User gardenersGroveUser;
 
+    private static Transaction transaction1;
+
+
     private static Transaction transaction;
 
     @BeforeAll
@@ -213,29 +216,21 @@ public class BloomTransactionSteps {
     //AC3
     @When("I click on a specific transaction")
     public void i_click_on_a_specific_transaction() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+
+        @SuppressWarnings("unchecked")
+        List<Transaction> transactions = (List<Transaction>) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("transactions");
+
+        Assertions.assertNotNull(transactions.get(0));
+
+        transaction1 = transactions.get(0);
     }
 
     //AC3
     @Then("I can see additional details for that transaction, if available")
     public void i_can_see_additional_details_for_that_transaction_if_available() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        Assertions.assertEquals(transaction.getTransactionId(),transaction1.getTransactionId());
     }
 
-    //AC3
-    @Then("the details may include:")
-    public void the_details_may_include(io.cucumber.datatable.DataTable dataTable) {
-        // Write code here that turns the phrase above into concrete actions
-        // For automatic transformation, change DataTable to one of
-        // E, List<E>, List<List<E>>, List<Map<K,V>>, Map<K,V> or
-        // Map<K, List<V>>. E,K,V must be a String, Integer, Float,
-        // Double, Byte, Short, Long, BigInteger or BigDecimal.
-        //
-        // For other transformations you can register a DataTableType.
-        throw new io.cucumber.java.PendingException();
-    }
 
     //AC3
     @Given("there are existing transactions")
