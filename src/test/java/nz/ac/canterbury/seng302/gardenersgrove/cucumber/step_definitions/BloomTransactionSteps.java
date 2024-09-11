@@ -5,6 +5,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.UserProfileController;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,7 +31,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,6 +67,9 @@ public class BloomTransactionSteps {
     @Autowired
     private UserProfileController userProfileController;
 
+    @Autowired
+    private ResourceLoader resourceLoader;
+
     private static MockMvc mockMvcUserProfile;
 
     private MockMvc mockMvc;
@@ -69,6 +78,9 @@ public class BloomTransactionSteps {
 
     private User currentUser;
 
+    private User gardenersGroveUser;
+
+    private static Transaction transaction;
 
     @BeforeAll
     public static void globalSetup() {
@@ -77,10 +89,17 @@ public class BloomTransactionSteps {
 
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         userProfileController = new UserProfileController(userService, userRepository, imageService, transactionService);
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         mockMvcUserProfile = MockMvcBuilders.standaloneSetup(userProfileController).build();
+
+        Path path = Paths.get(resourceLoader.getResource("classpath:static/images/defaultUserImage.png").getURI());
+        byte[] imageBytes = Files.readAllBytes(path);
+
+        Image image = new Image(imageBytes, "png", false);
+        gardenersGroveUser = new User("Gardeners Grove", "Inc", false, "gardenersgrove@email.com", "Password1!", "", image);
+
     }
 
 
@@ -215,7 +234,10 @@ public class BloomTransactionSteps {
         throw new io.cucumber.java.PendingException();
     }
 
-
-
-
+    //AC3
+    @Given("there are existing transactions")
+    public void there_are_existing_transactions() {
+        User currentUser = userService.getAuthenticatedUser();
+        transaction = transactionService.addTransaction(100, "blooms from Gardener's Grove.","reward", currentUser.getUserId(), gardenersGroveUser.getUserId());
+    }
 }
