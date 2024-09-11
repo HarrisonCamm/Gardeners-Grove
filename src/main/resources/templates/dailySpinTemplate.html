@@ -5,6 +5,7 @@
     <title>Gardener's Grove</title>
     <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+    <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
     <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
     <link th:href="@{/css/slot.css}" rel="stylesheet"/>
 </head>
@@ -17,12 +18,9 @@
                 <br/>
             </div>
         </div>
-
-        <script th:inline="javascript"> let slots = /*[[${slots}]]*/ [[]];</script>
-
         <div class="container" >
             <div class="money-container">
-                <div id="money" th:value="*{money}">100</div>
+                <div id="money" th:text="${bloomBalance}"></div>
                 <div class="changes"> </div>
                 <button id="infoButton" class="info-button">i</button>
             </div>
@@ -34,11 +32,19 @@
                 <div class="reel-container"></div>
                 <div class="reel-container"></div>
             </div>
+            <br/>
+            <div>
+                <h3 th:text="${message}"></h3>
+            </div>
             <br>
-            <button class="spin-button" onclick="startSpin()">SPIN</button>
+            <form th:action="@{/daily-spin}" method="post">
+                <input type="hidden" name="buttonAction" th:value="${buttonAction}"/>
+                <button type="submit" class="spin-button" th:text="${buttonText}"></button>
+            </form>
+
             <div class="info">
                 <div class="instructions">
-                    Press to spin the reels.<br/> Each spin costs 1 💰<br/> Match at least three on any row to win!<br/>
+                    Press to spin the reels.<br/> Match at least three on any row to win!<br/>
                 </div>
             </div>
         </div>
@@ -58,10 +64,13 @@
                 </div>
             </div>
         </div>
-
-
     </div>
-    <script th:src="@{/javascript/slot-machine.js}"></script>
 
+
+
+
+    <script th:inline="javascript">let gameState = /*[[${gameState}]]*/""; let bloomBalance = /*[[${bloomBalance}]]*/0; let amountWon = /*[[${amountWon}]]*/0; let slots = /*[[${slots}]]*/ [[]]; let spinCost = /*[[${spinCost}]]*/0;</script>
+    <script th:src="@{/javascript/slot-machine.js}"></script>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
 </body>
 </html>

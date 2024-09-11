@@ -85,7 +85,7 @@ public class MessagesControllerWebSocketTests {
 
         assertThat(stompSession.isConnected()).isTrue();
 
-        stompSession.send("/app/chat.send/" + sendTo, chatMessage);
+        stompSession.send("/chat.send/" + sendTo, chatMessage);
 
         // Simulate the message being saved and sent to the recipient as it takes time
         Thread.sleep(500);
@@ -105,7 +105,7 @@ public class MessagesControllerWebSocketTests {
 
         assertThat(stompSession.isConnected()).isTrue();
 
-        stompSession.send("/app/chat.send/" + sendTo, chatMessage);
+        stompSession.send("/chat.send/" + sendTo, chatMessage);
 
         Thread.sleep(500);
 

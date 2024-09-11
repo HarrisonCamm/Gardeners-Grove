@@ -63,7 +63,7 @@ function showMessage(message) {
             break;
         default:
             backgroundColor = 'bg-danger error'; // Red for blocked messages
-            message.content = 'Message contains inappropriate language language or is too long';
+            message.content = 'Message contains inappropriate language or is too long';
             break;
     }
 
@@ -89,15 +89,9 @@ function showMessage(message) {
 
 
 function connect() {
-    // Determine the correct WebSocket URL based on the current environment
-    let socketUrl;
     const url = new URL(window.location.href);
     const deployPath = getDeploymentContextPath(url);
-    if (deployPath != null && deployPath.length > 0) {
-        socketUrl = 'https://csse-seng302-team600.canterbury.ac.nz' + deployPath + '/ws';
-    } else {
-        socketUrl = url.origin + '/ws';
-    }
+    const socketUrl = url.origin + deployPath + '/ws';
 
     // Create a WebSocket connection
     const socket = new WebSocket(socketUrl);
@@ -108,7 +102,7 @@ function connect() {
         //Subscribe to the user's queue to receive messages
         stompClient.subscribe('/user/queue/reply', function (messageOutput) {
             const message = JSON.parse(messageOutput.body);
-            const contactEmails = JSON.parse(dataset.contactEmails);
+            const contactEmails = JSON.parse(dataset.contactemails);
             const unknownSender = !contactEmails.includes(message.sender);
             if (unknownSender) {
                 getContact(deployPath + '/contacts', message.sender, 10)
@@ -133,8 +127,10 @@ function sendMessage(userId) {
         };
 
         let messageProcessed = false;
+        const url = new URL(window.location.href);
+        const deployPath = getDeploymentContextPath(url);
 
-        fetch('/message/status?content=' + encodeURIComponent(chatMessage.content), {
+        fetch(deployPath + '/message/status?content=' + encodeURIComponent(chatMessage.content), {
             method: 'GET',
         })
             .then(response => response.text())
@@ -144,7 +140,7 @@ function sendMessage(userId) {
                     messageProcessed = true;
 
                     if (chatMessage.status === "sent") {
-                        stompClient.send("/app/chat.send/" + to.email, {}, JSON.stringify(chatMessage));
+                        stompClient.send("/chat.send/" + to.email, {}, JSON.stringify(chatMessage));
                     }
 
                     messageInput.value = '';

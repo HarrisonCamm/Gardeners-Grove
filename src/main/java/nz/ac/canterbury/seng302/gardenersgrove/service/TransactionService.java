@@ -36,12 +36,19 @@ public class TransactionService {
     }
 
 
+    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId) {
+        return addTransaction(amount, notes, transactionType, receiverId, null, null);
+    }
 
-    public Transaction addTransaction(int amount, String notes, Date transactionDate, String transactionType, Long receiverId, Long senderId, Long plantId) {
+    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId) {
+        return addTransaction(amount, notes, transactionType, receiverId, senderId, null);
+    }
+
+    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId, Long plantId) {
         Transaction transaction = new Transaction();
         transaction.setAmount(amount);
         transaction.setNotes(notes);
-        transaction.setTransactionDate(transactionDate); // Use the provided transactionDate
+        transaction.setTransactionDate(new Date()); // Fill with current date of transaction
         transaction.setTransactionType(transactionType);
 
         User receiver = userRepository.findById(receiverId)
@@ -55,7 +62,6 @@ public class TransactionService {
         }
 
         if (plantId != null) {
-            // Assuming you have a PlantRepository for handling plant entities.
             Plant plant = plantRepository.findById(plantId)
                     .orElseThrow(() -> new EntityNotFoundException("Plant not found"));
             transaction.setPlant(plant);
