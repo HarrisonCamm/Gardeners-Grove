@@ -172,17 +172,16 @@ public class SlotsController {
 
     private void freeSpin(User user, int amountWon) {
         userService.addBlooms(user, amountWon);
-        transactionService.addTransaction(amountWon,"Free Daily Spin", "Game", user.getUserId(), gardenGroveUser.getUserId());
-
         userService.updateUserLastFreeSpinUsed(user);        //Only update method that just takes user as a parameter
+        if (gardenGroveUser != null) transactionService.addTransaction(amountWon,"Free Daily Spin", "Game", user.getUserId(), gardenGroveUser.getUserId());
     }
 
     private void payedSpin(User user, int amountWon) {
         userService.addBlooms(user, amountWon);
         userService.chargeBlooms(user, SPIN_COST);
-        transactionService.addTransaction((SPIN_COST),"Payed for Daily Spin", "Game", gardenGroveUser.getUserId(), user.getUserId());
 
-        transactionService.addTransaction((amountWon),"Awarded for Daily Spin combo", "Game", user.getUserId(), gardenGroveUser.getUserId());
+        if (gardenGroveUser != null) transactionService.addTransaction((SPIN_COST),"Payed for Daily Spin", "Game", gardenGroveUser.getUserId(), user.getUserId());
+        if (gardenGroveUser != null) transactionService.addTransaction((amountWon),"Awarded for Daily Spin combo", "Game", user.getUserId(), gardenGroveUser.getUserId());
     }
 
     private boolean isWithin24Hours(Date date) {
