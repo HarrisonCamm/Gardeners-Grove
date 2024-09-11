@@ -37,6 +37,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -204,7 +205,9 @@ public class BloomTransactionSteps {
                 .andExpect(view().name("viewUserProfileTemplate"))
                 .andReturn();
 
-        //TODO: get transaction history element from page.
+        Object transactions = Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("transactions");
+        int transactionCount = ((List<?>) transactions).size();
+        Assertions.assertTrue(transactionCount > 0);
     }
 
     //AC3
