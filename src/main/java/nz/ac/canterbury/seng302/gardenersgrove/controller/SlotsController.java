@@ -109,11 +109,6 @@ public class SlotsController {
         if (user.getBloomBalance() == null) {return "redirect:/games";}
         model.addAttribute("bloomBalance", user.getBloomBalance());
 
-        //This handles form resubmission:
-        if (session.getAttribute(SLOTS_ATTRIBUTE) == null) {
-            return REDIRECT_STR;
-        }
-
         int amountWon = processSlots(session, model);
 
         GameState buttonActionGameState;
