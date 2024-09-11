@@ -40,7 +40,8 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class BloomTransactionSteps {
@@ -124,9 +125,8 @@ public class BloomTransactionSteps {
         Integer balance = currentUser.getBloomBalance();
 
         String content = mvcResult.getResponse().getContentAsString();
-
         boolean hasBloomBalance = content.contains("<div class=\"balanceDisplay\"")
-                && content.contains("<span class=\"navBar-bloom-display\">" + balance.toString());
+                && content.contains("<span class=\"navBar-bloom-display\" id=\"bloomBalanceNavbar\">" + balance.toString());
 
         Assertions.assertNotNull(currentUser.getBloomBalance(), "Expected bloom balance to be a number, but it was null");
 

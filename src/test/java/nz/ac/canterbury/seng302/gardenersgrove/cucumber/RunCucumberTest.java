@@ -2,33 +2,47 @@ package nz.ac.canterbury.seng302.gardenersgrove.cucumber;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.cucumber.junit.platform.engine.Constants;
+import jakarta.servlet.annotation.MultipartConfig;
 import nz.ac.canterbury.seng302.gardenersgrove.GardenersGroveApplication;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ForecastResponse;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserList;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Message;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.WeatherResponse;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ModerationService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.WeatherService;
 import org.junit.platform.suite.api.*;
 import io.cucumber.spring.CucumberContextConfiguration;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.fasterxml.jackson.databind.ObjectMapper; // Weather service one
+import org.springframework.util.concurrent.SettableListenableFuture;
+import org.springframework.web.socket.client.WebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
 
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 import static java.lang.Math.min;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @Suite
@@ -48,6 +62,9 @@ import static org.mockito.Mockito.when;
 // Permanent api mocks
 @MockBean(ModerationService.class)
 @MockBean(WeatherService.class)
+@MockBean(WebSocketStompClient.class)
+@MockBean(StompSession.class)
+@MockBean(StompFrameHandler.class)
 @MockBean(PlantGuesserService.class)
 
 public class RunCucumberTest {
@@ -63,10 +80,8 @@ public class RunCucumberTest {
     private static String NotRained;
     private static String Raining;
     private static String NotRaining;
-
     private static final ObjectMapper objectMapper = new ObjectMapper();
-
-
+    final Message[] receivedMessage = new Message[1]; // Define receivedMessage here
 
     // Loads static variables when the class is first loaded
     static {
@@ -77,11 +92,6 @@ public class RunCucumberTest {
             String forecastWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/validForecast.json"));
 
             String jsonNullCityResponse = Files.readString(Paths.get("src/test/resources/json/invalidCityForcastWeatherResponse.json"));
-
-//            String historicWeatherJsonString = Files.readString(Paths.get("src/test/resources/json/validHistoricForcastWeather.json"));
-//            String historicWeatherNoRainJsonString = Files.readString(Paths.get("src/test/resources/json/validHistoricWeatherForcastNoRain.json"));
-//
-//            String currentWeatherRainJsonString = Files.readString(Paths.get("src/test/resources/json/validCurrentWeatherRain.json"));
 
             String plantPageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
             String plantFamilyPageJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantFamilyResponse.json"));
@@ -108,16 +118,6 @@ public class RunCucumberTest {
             // Invalid weather and forecast
             mockedNullCityWeather = objectMapper.readValue(jsonNullCityResponse, WeatherResponse.class);
             mockedNullCityForecast = objectMapper.readValue(jsonNullCityResponse, ForecastResponse.class);
-
-//            // Has rained in the last two days
-//            mockedValidHistoricForcastWeatherHasRain = objectMapper.readValue(historicWeatherJsonString, Boolean.class);
-//            // Has not rained in the last two days
-//            mockedValidHistoricForcastWeatherNoRain = objectMapper.readValue(historicWeatherNoRainJsonString, Boolean.class);
-//
-//            // Is currently raining
-//            mockedValidCurrentWeatherIsRaining = objectMapper.readValue(currentWeatherRainJsonString, Boolean.class);
-//            // Is not currently raining
-//            mockedValidCurrentWeatherNotRaining = objectMapper.readValue(currentWeatherJsonString, Boolean.class);
 
             //To mock plant api
             PlantGuesserList mockedPlantPage = objectMapper.readValue(plantPageJsonString, PlantGuesserList.class);
@@ -161,7 +161,12 @@ public class RunCucumberTest {
     }
 
     @Autowired
-    public RunCucumberTest(ModerationService moderationService, WeatherService weatherService, PlantGuesserService plantGuesserService)  {
+    public RunCucumberTest(ModerationService moderationService,
+                           WeatherService weatherService,
+                           StompSession stompSession,
+                           StompFrameHandler stompFrameHandler,
+                           PlantGuesserService plantGuesserService) {
+
         /*
          This constructor is run before every FEATURE, use it to set up mocks with their default behaviour.
          While the behaviour of the mocks can be adapted per test (see MockConfigurationSteps), creating the mocks
@@ -227,5 +232,59 @@ public class RunCucumberTest {
         when(plantGuesserService.getMultichoicePlantNames(plant2.family, plant2.common_name, plant2.getCommonAndScientificName()))
                 .thenReturn(fourOptions2);
 
+
+        // WebSocketStompClient mocks
+        CompletableFuture<StompSession> sessionFuture = new CompletableFuture<>();
+        sessionFuture.complete(stompSession);
+
+        stompFrameHandler = new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return Message.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessage[0] = (Message) payload;
+            }
+        };
+
+
+        when(stompSession.subscribe(anyString(), any(StompFrameHandler.class))).thenAnswer(invocation -> {
+            StompFrameHandler handler = invocation.getArgument(1);
+            StompHeaders headers = new StompHeaders();
+
+            // Simulate message delivery by calling the handler's handleFrame method
+            handler.handleFrame(headers, new Message("sarah@email.com", "inaya@email.com", "Hello", new Date()));
+
+            return null;
+        });
+
+        // Mock send method to simulate the sending of a message and calling handleFrame
+        StompFrameHandler finalStompFrameHandler = stompFrameHandler;
+
+        when(stompSession.send(anyString(), any())).thenAnswer(invocation -> {
+            Message sentMessage = invocation.getArgument(1);
+
+            // Simulate the message being processed and received by invoking handleFrame directly
+            StompHeaders headers = new StompHeaders();
+            finalStompFrameHandler.handleFrame(headers, sentMessage);
+
+            return null;
+        });
+    }
+
+    private WeatherResponse getMockedValidCurrentWeather() {
+        // Create and return mocked WeatherResponse object
+        return new WeatherResponse();  // Populate with necessary fields
+    }
+
+    private ForecastResponse getMockedValidForecast() {
+        // Create and return mocked ForecastResponse object
+        return new ForecastResponse();  // Populate with necessary fields
+    }
+
+    public Message getReceivedMessage() {
+        return receivedMessage[0];
     }
 }

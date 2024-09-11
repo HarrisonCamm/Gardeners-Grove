@@ -62,55 +62,48 @@ public class SecurityConfiguration {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth.requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll())
+        http
+                .authorizeHttpRequests(auth -> auth
+                        // Permit WebSocket connections
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll()
+                        .requestMatchers("/", "/register-form", SIGN_IN_FORM, "/home", "/confirm-registration", "/lost-password-form", "reset-password-form", "/tag", "/dismiss-alert")
+                        .permitAll()
+                        .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/javascript/**")
+                        .permitAll()
+                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/", "/register-form", "/sign-in-form", "/home", "/confirm-registration").hasRole("UNVERIFIED")
+                        .requestMatchers("/main", "/view-user-profile", "/edit-user-profile", "/create-garden", "/view-garden", "/view-gardens", "/create-plant", "/edit-plant", "/upload-image", "/manage-friends", "/add-tag", "/contacts").hasRole("USER")
+                        .anyRequest().authenticated()
+                )
+                .formLogin(formLogin -> formLogin
+                        .loginPage(SIGN_IN_FORM)
+                        .loginProcessingUrl(SIGN_IN_FORM)
+                        .defaultSuccessUrl("/main")
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl(SIGN_IN_FORM)
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                )
                 .headers(headers -> headers
                         .frameOptions(Customizer.withDefaults())
-//                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; img-src 'self' blob:; ..."))
                         .disable()
                 )
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/h2/**"))
+                        .ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/h2/**"), AntPathRequestMatcher.antMatcher("/ws/**")) // Disable CSRF protection for WebSocket
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
-                .authorizeHttpRequests(request ->
-                    // Allow "/", "/register", and "/login" to anyone (permitAll)
-                    // Authenticated and non-Authenticated users can access these pages
-                    request.requestMatchers("/", "/register-form", SIGN_IN_FORM, "/home", "/confirm-registration", "/lost-password-form", "reset-password-form", "/tag", "/dismiss-alert")
-                    .permitAll()
-                    // Could change .permitAll() to .anonymous() to give access to these pages only to non-Authenticated users
-
-                    // Allow static resources to be accessed by anyone
-                    .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/javascript/**")
-                    .permitAll()
-
-                    // Only allow admins to reach the "/admin" page
-                    .requestMatchers("/admin")
-                    .hasRole("ADMIN")
-
-                    // Only allow unverified users to reach the "/confirm-registration" page
-                    .requestMatchers("/", "/register-form", "/sign-in-form", "/home", "/confirm-registration")
-                    .hasRole("UNVERIFIED")
-
-                    // Increase access to authenticated users to reach the "/main", "/view-user-profile", "/edit-user-profile" pages
-                    .requestMatchers("/main", "/view-user-profile", "/edit-user-profile", "/create-garden", "/view-garden", "/view-gardens", "/create-plant", "/edit-plant", "/upload-image", "/manage-friends", "/add-tag", "/daily-spin", "/contacts", "/plant-guesser")
-                    .hasRole("USER")
-
-                    // Any other request requires authentication
-                    .anyRequest()
-                    .authenticated()
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                 )
-                // Define logging in, a POST "/login" endpoint now exists under the hood, after login redirect to user page
-                .formLogin(formLogin -> formLogin.loginPage(SIGN_IN_FORM).loginProcessingUrl(SIGN_IN_FORM).defaultSuccessUrl("/main"))
-                // Define logging out, a POST "/logout" endpoint now exists under the hood, redirect to "/login", invalidate session and remove cookie
-                .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl(SIGN_IN_FORM).invalidateHttpSession(true).deleteCookies("JSESSIONID"));
-                //ChatGPT code to redirect unverified user to confirm registration page if they enter a url they don't have permission for
-                http.exceptionHandling(exceptionHandling ->
+                .exceptionHandling(exceptionHandling ->
                         exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) -> {
                             if (request.isUserInRole("UNVERIFIED")) {
                                 response.sendRedirect("/confirm-registration");
                             }
                         })
                 );
+
         return http.build();
     }
 }

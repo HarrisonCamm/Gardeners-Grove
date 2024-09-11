@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,6 +38,9 @@ public class User {
 
     @Column(name = "dateOfBirth")
     private String dateOfBirth;
+
+    @Column
+    private Date lastFreeSpinUsed;
 
     @Column(name = "bloomBalance", nullable = false, columnDefinition = "integer default 500")
     private Integer bloomBalance = DEFAULT_BALANCE;
@@ -217,13 +221,6 @@ public class User {
         this.inappropriateTagCount = inappropriateTagCount;
     }
 
-
-
-
-
-
-
-
     @Override
     public String toString() {
         return String.format(
@@ -256,6 +253,18 @@ public class User {
 
     public List<User> getFriends() {
         return friends;
+    }
+
+    public Date getLastFreeSpinUsed() {
+        return lastFreeSpinUsed;
+    }
+
+    public void updateLastFreeSpinUsed() {
+        lastFreeSpinUsed = new Date();
+    }
+
+    public void resetLastFreeSpinUsed() {
+        lastFreeSpinUsed = null;
     }
 
     /**
@@ -292,6 +301,10 @@ public class User {
         List<User> contacts = new ArrayList<>(getFriends());
         contacts.addAll(getNonFriendContacts());
         return contacts;
+    }
+
+    public void setFriends(List<User> friends) {
+        this.friends = friends;
     }
 
     @Override
