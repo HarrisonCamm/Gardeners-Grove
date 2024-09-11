@@ -107,7 +107,8 @@ public class BrowseGardenController {
                 .orElse(-1);
 
         // Prevent -1 index out of range error
-        if (!displayedSearchTags.isEmpty()) {
+        if (!displayedSearchTags.isEmpty() &&
+                displayedSearchTags.stream().anyMatch(eachTag -> eachTag.getName().equals(tagNameToRemove))) {
             Tag tagToRemove = displayedSearchTags.get(tagIndex);
             displayedSearchTags.remove(tagToRemove);
             tagIds.remove(tagToRemove.getId());
