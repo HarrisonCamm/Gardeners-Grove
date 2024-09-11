@@ -63,7 +63,7 @@ function showMessage(message) {
             break;
         default:
             backgroundColor = 'bg-danger error'; // Red for blocked messages
-            message.content = 'Message contains inappropriate language language or is too long';
+            message.content = 'Message contains inappropriate language or is too long';
             break;
     }
 
