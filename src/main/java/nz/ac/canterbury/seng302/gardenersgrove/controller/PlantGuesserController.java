@@ -6,12 +6,10 @@ import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantFamilyService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantGuesserService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +31,8 @@ public class PlantGuesserController {
 
     private final PlantGuesserService plantGuesserService;
     private final PlantFamilyService plantFamilyService;
+
+    private final TransactionService transactionService;
     private final UserService userService;
     private final UserRepository userRepository;
     private Random random;
@@ -44,9 +44,13 @@ public class PlantGuesserController {
     private static final String SESSION_SCORE = "plantGuesserScore";
     private static final String SESSION_ROUND = "plantGuesserRound";
 
-    public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, UserService userService, UserRepository userRepository, Random random) {
+    private User gardenersGroveUser; //represents the sender for transactions from games
+
+    @Autowired
+    public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, TransactionService transactionService, UserService userService, UserRepository userRepository, Random random) {
         this.plantGuesserService = plantGuesserService;
         this.plantFamilyService = plantFamilyService;
+        this.transactionService = transactionService;
         this.userService = userService;
         this.userRepository = userRepository;
         this.random = random;
@@ -132,6 +136,7 @@ public class PlantGuesserController {
             score += 1;
             session.setAttribute(SESSION_SCORE, score);
             model.addAttribute("correctAnswer", "You got it correct! +10 Blooms");
+
         }
         session.setAttribute(SESSION_ROUND, roundNumber);
         model.addAttribute("score", score);
@@ -145,6 +150,10 @@ public class PlantGuesserController {
             currentUser.setBloomBalance(currentBloomBalance + BLOOM_BONUS + (score*NUM_ROUNDS));
             userRepository.save(currentUser);
             model.addAttribute("bloomBalance", currentUser.getBloomBalance());
+            Integer bloomsToAdd = BLOOM_BONUS + (score*NUM_ROUNDS);
+
+            gardenersGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
+            transactionService.addTransaction(bloomsToAdd, "Plant guesser game.","type", currentUser.getUserId(), gardenersGroveUser.getUserId());
             gameOver = true;
             resetRound(session);
         }
