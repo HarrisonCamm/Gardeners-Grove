@@ -19,6 +19,8 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
 @Controller
 public class SlotsController {
 
@@ -55,15 +57,20 @@ public class SlotsController {
         logger.info("GET /daily-spin");
 
         User user = userService.getAuthenticatedUser();
+
+        //If broken user bloom balance exits the game
+        if (user.getBloomBalance() == null) {return "redirect:/games";}
         model.addAttribute("bloomBalance", user.getBloomBalance());
 
         processSlots(session, model);
 
+        //Retrieves the previous game state or if none exists resits to start state (FREE_SPIN)D
         GameState gameState = session.getAttribute(GAME_STATE_ATTRIBUTE) == null ? GameState.FREE_SPIN : (GameState) session.getAttribute(GAME_STATE_ATTRIBUTE);
 
+        //Transition table to next state
         switch(gameState) {
             case FREE_SPIN:
-                if (isWithin24Hours(user.getLastFreeSpinUsed())) {
+                if (isWithin24Hours(user.getLastFreeSpinUsed())) {  //If free spin already used redirects and moves to payed spin state
                     session.setAttribute(GAME_STATE_ATTRIBUTE, GameState.PAYED_SPIN);
                     return REDIRECT_STR;
                 } else {
@@ -77,7 +84,7 @@ public class SlotsController {
                         GameState.PAYED_SPIN, GameState.PAYED_SPIN,
                         BUTTON_TEXT_PAYED, MESSAGE_PAYED, GameState.PAYED_SPINNING);
                 break;
-            default:
+            default:    //Safety resets to start state (FREE_SPIN)
                 session.setAttribute(GAME_STATE_ATTRIBUTE, GameState.FREE_SPIN);
                 return REDIRECT_STR;
         }
@@ -90,6 +97,9 @@ public class SlotsController {
         logger.info("POST /daily-spin");
 
         User user = userService.getAuthenticatedUser();
+
+        //If broken user bloom balance exits the game
+        if (user.getBloomBalance() == null) {return "redirect:/games";}
         model.addAttribute("bloomBalance", user.getBloomBalance());
 
         //This handles form resubmission:
@@ -102,7 +112,7 @@ public class SlotsController {
         GameState buttonActionGameState;
         try {
             buttonActionGameState = GameState.valueOf(buttonActionString);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {      //Form has been submitted with transition to a non existent state (most likely from modifying front end)
             logger.info("User tried to cheat");
             Thread.sleep(1000); // Punish user for trying to cheat
             return REDIRECT_STR;
@@ -119,7 +129,7 @@ public class SlotsController {
                             GameState.FREE_SPIN, GameState.FREE_SPINNING,
                             BUTTON_TEXT, MESSAGE, GameState.FREE_SPINNING);
 
-                    model.addAttribute("spinCost", 0);
+                    model.addAttribute("spinCost", 0);  //Cost is set to 0 for free spin
 
                     session.setAttribute(SLOTS_ATTRIBUTE, null); //Reset slots
                 }
@@ -155,8 +165,7 @@ public class SlotsController {
 
     private void freeSpin(User user, int amountWon) {
         userService.addBlooms(user, amountWon);
-        user.updateLastFreeSpinUsed();
-        userService.updateUserFriends(user);        //Only update method that just takes user as a parameter
+        userService.updateUserLastFreeSpinUsed(user);        //Only update method that just takes user as a parameter
     }
 
     private void payedSpin(User user, int amountWon) {
@@ -166,7 +175,7 @@ public class SlotsController {
 
     private boolean isWithin24Hours(Date date) {
         if (date == null) return false;
-        else return Duration.between(date.toInstant(), Instant.now()).toHours() < 24;
+        else return Duration.between(date.toInstant(), Instant.now()).toHours() < DAYS.getDuration().toHours();
     }
 
     /**

@@ -5,14 +5,14 @@
 //     The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
 //     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+document.addEventListener("DOMContentLoaded", function() {
     let reelContents = ["" ,"💧", "☀️", "🍄", "🌶️", "🌾"];
     let reelLength = 3;
     let reelContainers = document.querySelectorAll(".reel-container");
     let spinningReels = [];
     let spinning = false;
     let reelDelay = 100;
-    let money = bloomBalance;            //Todo set to blooms amount
+    let money = bloomBalance;
     let moneyToAdd = amountWon;     //Ensure this is updated to be model attribute "amountWon" at appropriate time
     let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let masterVolume = audioCtx.createGain();
@@ -77,6 +77,8 @@
     let updateMoney = change => {
         money += change;
         document.querySelector("#money").innerText = money;
+        document.querySelector("#bloomBalanceNavbar").innerText = money; // Update bloom balance
+
     };
     let setChange = change => {
         let changes = document.querySelector(".changes");
@@ -139,8 +141,6 @@
         if (count > 2) {
             win(count, emoji, row);
         }
-
-        //TODO add popup/ message for unsuccessful spin
 
     };
     let win = (amountMatching, symbol, rowNumber) => {
@@ -249,3 +249,8 @@
             modal.style.display = "none";
         }
     }
+
+    if (gameState === "FREE_SPINNING" || gameState === "PAYED_SPINNING") {
+        startSpin();
+    }
+});

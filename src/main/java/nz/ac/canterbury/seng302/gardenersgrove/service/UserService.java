@@ -1,12 +1,9 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -189,6 +186,11 @@ public class UserService {
 
     public void chargeBlooms(User user, int blooms) {
         user.setBloomBalance(user.getBloomBalance() - blooms);
+        userRepository.save(user);
+    }
+
+    public void updateUserLastFreeSpinUsed(User user) {
+        user.updateLastFreeSpinUsed();
         userRepository.save(user);
     }
 
