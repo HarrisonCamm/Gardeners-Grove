@@ -68,6 +68,8 @@
                     <div th:if="${tagError}" class="text-danger" th:text="${tagError}"></div>
                 </div>
             </div>
+
+            <!-- Auto complete tag code -->
             <div class="row mb-3 ps-5">
                 <div class="col d-flex flex-end">
                     <form class="tags" id="tagForm" th:action="@{/add-tag(gardenID=${gardenID})}" method="post">
@@ -82,6 +84,7 @@
                     </form>
                 </div>
             </div>
+
             <div class="row mb-3 ps-5">
                 <div class="col text-wrap text-break">
                     <br/>

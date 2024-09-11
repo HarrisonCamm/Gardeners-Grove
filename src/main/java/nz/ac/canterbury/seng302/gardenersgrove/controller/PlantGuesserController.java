@@ -39,7 +39,7 @@ public class PlantGuesserController {
     private static final int NUM_OPTIONS = 4;
     private static final int NUM_ROUNDS = 10;
     private static final int BLOOM_BONUS = 100;
-    private static final int MAX_TRIES = 15;
+    private static final int MAX_TRIES = 25;
     private static final String PAGE_URL = "/plant-guesser";
     private static final String SESSION_SCORE = "plantGuesserScore";
     private static final String SESSION_ROUND = "plantGuesserRound";
@@ -101,7 +101,6 @@ public class PlantGuesserController {
                                @RequestParam("quizOption4") String quizOption4,
                                @RequestParam("plantImage") String plantImage,
                                @RequestParam("imageCredit") String imageCredit,
-                               @RequestParam("roundNumber") int roundNumber,
                                @RequestParam("correctOption") int correctOption,
                                @RequestParam("score") int score,
                                HttpSession session,
@@ -111,6 +110,7 @@ public class PlantGuesserController {
         RedirectService.addEndpoint(PAGE_URL);
         User currentUser = userService.getAuthenticatedUser();
         int currentBloomBalance = currentUser.getBloomBalance();
+        int roundNumber = (int) session.getAttribute(SESSION_ROUND) + 1;
 
         String[] quizOptions = {quizOption1, quizOption2, quizOption3, quizOption4};
         List<String[]> splitQuizOptions = new ArrayList<>();

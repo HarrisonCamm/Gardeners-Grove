@@ -103,4 +103,13 @@ public class GardenService {
             throw new RuntimeException("Garden not found with id: " + gardenId);
         }
     }
+
+    public Page<Garden> searchPublicGardensByTags(List<Long> tagIds, Integer page) {
+        return gardenRepository.findPublicGardensByTags(tagIds, PageRequest.of(page, GARDENS_PER_PAGE));
+    }
+
+    public Page<Garden> searchPublicGardensBySearchAndTags(String search, Integer page, List<Long> tagIds) {
+        return gardenRepository.findPublicGardensBySearchAndTags(search, PageRequest.of(page, GARDENS_PER_PAGE), tagIds);
+    }
+
 }
