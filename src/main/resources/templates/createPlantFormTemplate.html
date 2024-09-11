@@ -37,7 +37,6 @@
                     <input type="text" class="form-control" id="plantName"
                            th:name="name" th:value="${name}"
                            th:classappend="${nameError} ? 'error' : 'form-control'" autofocus>
-                    <br/>
                     <div th:if="${nameError}" class="error-message" th:text="${nameError}"></div>
                     <br/>
                     <label for="plantCount"> Count: </label>
@@ -45,7 +44,6 @@
                     <input type="text" class="form-control" id="plantCount"
                            th:name="count" th:value="${count} "
                            th:classappend="${countError} ? 'error' : 'form-control'" autofocus>
-                    <br/>
                     <div id="plantCountValidation" th:if="${countError}" class="error-message" th:text="${countError}"></div>
                     <br/>
                     <label for="plantDescription"> Description: </label>
@@ -56,7 +54,6 @@
                               th:classappend="${descriptionError} ? 'error' : ''"
                               >
                             </textarea>
-                    <br/>
                     <div id="descriptionLengthValidation" class="error-message" th:text="${descriptionError}"></div>
                     <br/>
                     <label for="datePlanted"> Date Planted: </label>
@@ -67,7 +64,6 @@
                            data-cy="datePlanted"
                            oninput="formatDate(this)"
                            th:classappend="${dateError} ? 'error' : 'form-control'" autofocus>
-                    <br/>
                     <div th:if="${dateError}" class="error-message" th:text="${dateError}"></div>
                     <br/>
                     <div class="buttons-centre">
