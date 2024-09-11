@@ -39,7 +39,7 @@ public class PlantGuesserController {
     private static final int NUM_OPTIONS = 4;
     private static final int NUM_ROUNDS = 10;
     private static final int BLOOM_BONUS = 100;
-    private static final int MAX_TRIES = 5;
+    private static final int MAX_TRIES = 15;
     private static final String PAGE_URL = "/plant-guesser";
     private static final String SESSION_SCORE = "plantGuesserScore";
     private static final String SESSION_ROUND = "plantGuesserRound";
