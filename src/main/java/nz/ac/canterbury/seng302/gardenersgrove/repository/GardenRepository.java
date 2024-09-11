@@ -20,6 +20,10 @@ public interface GardenRepository extends CrudRepository<Garden, Long> {
     @Query("SELECT g FROM Garden g WHERE :tagId IN (SELECT t.id FROM g.tags t)")
     List<Garden> findGardensByTagId(Long tagId);
 
+    @Query("SELECT g FROM Garden g JOIN g.tags t WHERE t.id IN :tagIds AND g.isPublic = TRUE")
+    Page<Garden> findPublicGardensByTags(List<Long> tagIds, Pageable pageable);
+
+
     @Query("SELECT g FROM Garden g " +
             "WHERE g.isPublic = TRUE " +
             "ORDER BY COALESCE(g.created, '1970-01-01') DESC, g.id DESC")
@@ -29,5 +33,16 @@ public interface GardenRepository extends CrudRepository<Garden, Long> {
             "WHERE g.isPublic = TRUE AND (LOWER(g.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
             "ORDER BY COALESCE(g.created, '1970-01-01') DESC, g.id DESC")
     Page<Garden> findPublicGardensBySearch(String search, Pageable pageable);
+
+    @Query("SELECT g FROM Garden g " +
+            "LEFT JOIN Plant p ON p.garden = g " +
+            "JOIN g.tags t " +
+            "WHERE g.isPublic = TRUE " +
+            "AND (LOWER(g.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "AND t.id IN :tagIds " +
+            "ORDER BY COALESCE(g.created, '1970-01-01') DESC, g.id DESC")
+    Page<Garden> findPublicGardensBySearchAndTags(String search, Pageable pageable, List<Long> tagIds);
+
 
 }
