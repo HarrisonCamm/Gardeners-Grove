@@ -89,15 +89,9 @@ function showMessage(message) {
 
 
 function connect() {
-    // Determine the correct WebSocket URL based on the current environment
-    let socketUrl;
     const url = new URL(window.location.href);
     const deployPath = getDeploymentContextPath(url);
-    if (deployPath != null && deployPath.length > 0) {
-        socketUrl = 'https://csse-seng302-team600.canterbury.ac.nz' + deployPath + '/ws';
-    } else {
-        socketUrl = url.origin + '/ws';
-    }
+    const socketUrl = url.origin + deployPath + '/ws';
 
     // Create a WebSocket connection
     const socket = new WebSocket(socketUrl);
@@ -133,8 +127,10 @@ function sendMessage(userId) {
         };
 
         let messageProcessed = false;
+        const url = new URL(window.location.href);
+        const deployPath = getDeploymentContextPath(url);
 
-        fetch('/message/status?content=' + encodeURIComponent(chatMessage.content), {
+        fetch(deployPath + '/message/status?content=' + encodeURIComponent(chatMessage.content), {
             method: 'GET',
         })
             .then(response => response.text())
@@ -144,7 +140,7 @@ function sendMessage(userId) {
                     messageProcessed = true;
 
                     if (chatMessage.status === "sent") {
-                        stompClient.send("/app/chat.send/" + to.email, {}, JSON.stringify(chatMessage));
+                        stompClient.send("/chat.send/" + to.email, {}, JSON.stringify(chatMessage));
                     }
 
                     messageInput.value = '';
