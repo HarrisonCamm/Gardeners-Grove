@@ -5,7 +5,9 @@
     <body>
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 
-        <div id="chat-container" class="container-fluid chat-container" th:data-from="${from}">
+        <div id="chat-container" class="container-fluid chat-container"
+             th:data-from="${from}"
+             th:data-contactEmails="${contactEmails}">
             <div class="row h-100">
 
                 <!-- Friends Chat Area -->

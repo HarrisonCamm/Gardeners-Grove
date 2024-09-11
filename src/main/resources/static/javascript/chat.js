@@ -108,7 +108,7 @@ function connect() {
         //Subscribe to the user's queue to receive messages
         stompClient.subscribe('/user/queue/reply', function (messageOutput) {
             const message = JSON.parse(messageOutput.body);
-            const contactEmails = JSON.parse(dataset.contactEmails);
+            const contactEmails = JSON.parse(dataset.contactemails);
             const unknownSender = !contactEmails.includes(message.sender);
             if (unknownSender) {
                 getContact(deployPath + '/contacts', message.sender, 10)
