@@ -5,21 +5,39 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.UserProfileController;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.TransactionService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -51,6 +69,9 @@ public class BloomTransactionSteps {
     @Autowired
     private UserProfileController userProfileController;
 
+    @Autowired
+    private ResourceLoader resourceLoader;
+
     private static MockMvc mockMvcUserProfile;
 
     private MockMvc mockMvc;
@@ -59,12 +80,31 @@ public class BloomTransactionSteps {
 
     private User currentUser;
 
+    private User gardenersGroveUser;
+
+    private static Transaction transaction1;
+
+
+    private static Transaction transaction;
+
+    @BeforeAll
+    public static void globalSetup() {
+
+    }
+
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         userProfileController = new UserProfileController(userService, userRepository, imageService, transactionService);
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         mockMvcUserProfile = MockMvcBuilders.standaloneSetup(userProfileController).build();
+
+        Path path = Paths.get(resourceLoader.getResource("classpath:static/images/defaultUserImage.png").getURI());
+        byte[] imageBytes = Files.readAllBytes(path);
+
+        Image image = new Image(imageBytes, "png", false);
+        gardenersGroveUser = new User("Gardeners Grove", "Inc", false, "gardenersgrove@email.com", "Password1!", "", image);
+
     }
 
 
@@ -160,4 +200,42 @@ public class BloomTransactionSteps {
 
     }
 
+    //AC3
+    @Given("I am viewing the transaction history on my profile page")
+    public void i_am_viewing_the_transaction_history_on_my_profile_page() throws Exception {
+        this.mvcResult = mockMvcUserProfile.perform(get("/view-user-profile")).andExpect(status()
+                        .isOk())
+                .andExpect(view().name("viewUserProfileTemplate"))
+                .andReturn();
+
+        Object transactions = Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("transactions");
+        int transactionCount = ((List<?>) transactions).size();
+        Assertions.assertTrue(transactionCount > 0);
+    }
+
+    //AC3
+    @When("I click on a specific transaction")
+    public void i_click_on_a_specific_transaction() {
+
+        @SuppressWarnings("unchecked")
+        List<Transaction> transactions = (List<Transaction>) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("transactions");
+
+        Assertions.assertNotNull(transactions.get(0));
+
+        transaction1 = transactions.get(0);
+    }
+
+    //AC3
+    @Then("I can see additional details for that transaction, if available")
+    public void i_can_see_additional_details_for_that_transaction_if_available() {
+        Assertions.assertEquals(transaction.getTransactionId(),transaction1.getTransactionId());
+    }
+
+
+    //AC3
+    @Given("there are existing transactions")
+    public void there_are_existing_transactions() {
+        User currentUser = userService.getAuthenticatedUser();
+        transaction = transactionService.addTransaction(100, "blooms from Gardener's Grove.","reward", currentUser.getUserId(), gardenersGroveUser.getUserId());
+    }
 }

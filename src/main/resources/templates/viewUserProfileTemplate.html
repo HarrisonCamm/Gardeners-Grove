@@ -8,6 +8,7 @@
         <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
         <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
         <script th:src="@{/javascript/image-handling.js}"></script>
+        <script th:src="@{/javascript/toggle-transactions.js}"></script>
     </head>
     <body>
         <!-- Navigation Bar Fragment -->
@@ -53,46 +54,61 @@
         </div>
 
         <div th:if="${totalPages > 0}" class="transactions-display">
-            <div th:class="table-wrapper">
-                <h2 th:class="text-start">Transaction History</h2>
-                <table class="table table-striped table-bordered table-hover">
-                    <thead class="thead-dark">
-                    <tr>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Sender</th>
-                        <th th:class="table-description">Description</th>
-                        <th>Type</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="transaction : ${transactions}">
-                        <td th:text="${#dates.format(transaction.transactionDate, 'dd-MM-yyyy')}"></td>
-                        <td th:class="${transaction.sender != null && user.userId == transaction.sender.userId} ? 'text-danger' : 'text-success'"
-                            th:text="${transaction.sender != null && user.userId == transaction.sender.userId} ? '-' + ${transaction.amount} : '+' + ${transaction.amount}"></td>
-                        <td th:text="${transaction.sender != null ? transaction.sender.getFirstName() : 'Unknown Sender'}"></td>
-                        <td th:class="table-description" th:text="${transaction.notes}"></td>
-                        <td th:text="${transaction.transactionType}"></td>
-                    </tr>
-                    </tbody>
-                </table>
-                <div>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            <li th:class="${!hasPrevious} ? 'page-item disabled' : 'page-item'">
-                                <a class="page-link" th:href="@{/view-user-profile(page=${currentPage} - 1)}">Previous</a>
-                            </li>
+            <h2 th:class="text-start">Transactions</h2>
+            <table class="table table-striped table-bordered table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Sender</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="transaction : ${transactions}"
+                    th:with="data-date=${#dates.format(transaction.transactionDate, 'dd-MM-yyyy')}, data-description=${transaction.notes}"
+                    data-amount="${transaction.sender != null && user.userId == transaction.sender.userId ? '-' + transaction.amount : '+' + transaction.amount}"
+                    data-sender="${transaction.sender != null ? transaction.sender.getFirstName() : 'Unknown Sender'}"
+                    data-type="${transaction.transactionType}"
+                    onclick="showDetails(this)">
+                    <td th:text="${#dates.format(transaction.transactionDate, 'dd-MM-yyyy')}"></td>
+                    <td th:class="${transaction.sender != null && user.userId == transaction.sender.userId} ? 'text-danger' : 'text-success'"
+                        th:text="${transaction.sender != null && user.userId == transaction.sender.userId} ? '-' + ${transaction.amount} : '+' + ${transaction.amount}">
+                    </td>
+                    <td th:text="${transaction.sender != null ? transaction.sender.getFirstName() : 'Unknown Sender'}"></td>
+                    <td th:text="${transaction.notes}"></td>
+                    <td th:text="${transaction.transactionType}"></td>
+                </tr>
+                </tbody>
+            </table>
 
-                            <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:class="${i == currentPage} ? 'page-item active' : 'page-item'">
-                                <a class="page-link" th:href="@{/view-user-profile(page=${i})}" th:text="${i + 1}"></a>
-                            </li>
+            <!-- Details section, initially hidden -->
+            <div id="transactionDetails" style="display:none;">
+                <h3>Transaction Details</h3>
+                <p><strong>Date:</strong> <span id="detailDate" th:text="${detailDate}"></span></p>
+                <p><strong>Amount:</strong> <span id="detailAmount"></span></p>
+                <p><strong>Sender:</strong> <span id="detailSender"></span></p>
+                <p><strong>Description:</strong> <span id="detailDescription" th:text="${detailDescription}"></span></p>
+                <p><strong>Type:</strong> <span id="detailType"></span></p>
+                <button onclick="showTable()">Back</button>
+            </div>
 
-                            <li th:class="${!hasNext} ? 'page-item disabled' : 'page-item'">
-                                <a class="page-link" th:href="@{/view-user-profile(page=${currentPage} + 1)}">Next</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+            <nav aria-label="Page navigation" th:id="pagination-wrapper">
+                <ul class="pagination">
+                    <li th:class="${!hasPrevious} ? 'page-item disabled' : 'page-item'">
+                        <a class="page-link" th:href="@{/view-user-profile(page=${currentPage} - 1)}">Previous</a>
+                    </li>
+
+                    <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:class="${i == currentPage} ? 'page-item active' : 'page-item'">
+                        <a class="page-link" th:href="@{/view-user-profile(page=${i})}" th:text="${i + 1}"></a>
+                    </li>
+
+                    <li th:class="${!hasNext} ? 'page-item disabled' : 'page-item'">
+                        <a class="page-link" th:href="@{/view-user-profile(page=${currentPage} + 1)}">Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
 
         <div th:unless="${totalPages > 0}" th:class="no-transactions-display">
