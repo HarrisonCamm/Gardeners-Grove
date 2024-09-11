@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -30,7 +29,6 @@ import java.util.stream.Collectors;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -75,7 +73,7 @@ public class BrowseGardenByTagSteps {
         location = new Location("Test Location", "Test Address", "Test City", "1234", "Test Postcode");
 
     }
-
+    //Background
     @And("there are public gardens with tags available")
     public void there_are_public_gardens_with_tags_available() throws Exception {
         ownedGarden1 = AddTagSteps.ownedGarden1;
@@ -94,6 +92,7 @@ public class BrowseGardenByTagSteps {
         existingTags = tagService.getTags();
     }
 
+    //Background
     @And("I am on the browse gardens page")
     public void i_am_on_the_browse_gardens_page() throws Exception {
         mvcResult = mockMvc.perform(get("/browse-gardens"))
@@ -101,6 +100,7 @@ public class BrowseGardenByTagSteps {
                 .andReturn();
     }
 
+    //AC1
     @Then("I can select any number of tags to filter by")
     public void i_can_select_any_number_of_tags_to_filter_by() throws Exception {
 
@@ -109,17 +109,19 @@ public class BrowseGardenByTagSteps {
         search_valid_tag(TAG_3);
 
         modelAndView = mvcResult.getModelAndView();
+        @SuppressWarnings("unchecked")
         List<Tag> displayedTags = (List<Tag>) modelAndView.getModel().get("searchTags");
         Assertions.assertTrue(displayedTags.size() > 1);
 
 
     }
-
+    //AC2
     @Given("I want to browse for a tag")
     public void i_want_to_browse_for_a_tag() {
         // not yet implemented
     }
 
+    //AC2
     @When("I start typing the tag")
     public void i_start_typing_the_tag() {
         // not yet implemented
@@ -130,19 +132,19 @@ public class BrowseGardenByTagSteps {
         // not yet implemented
     }
 
+    //AC2
     @Given("I am viewing autocomplete suggestions for my input {string}")
     public void i_am_viewing_autocomplete_suggestions_for_my_input(String input) {
         // not yet implemented
     }
 
+    //AC3
     @When("I click on a suggestion {string}")
     public void i_click_on_a_suggestion(String suggestion) throws Exception {
-        // not yet implemented
         i_press_the_enter_key(suggestion);
-        //TODO fix this, only putting this here because related step defs in AC3 are used in AC4
-
     }
 
+    //AC3 and AC4
     @Then("the tag {string} is added to my current selection")
     public void the_tag_is_added_to_my_current_selection(String input) {
         modelAndView = mvcResult.getModelAndView();
@@ -162,6 +164,7 @@ public class BrowseGardenByTagSteps {
         );
     }
 
+    //AC3 and AC4
     @And("the text field is cleared")
     public void the_text_field_is_cleared() {
         modelAndView = mvcResult.getModelAndView();
@@ -169,6 +172,7 @@ public class BrowseGardenByTagSteps {
         Assertions.assertEquals("", textFieldValue);
     }
 
+    //AC4
     @Given("I type out a tag {string} that already exists")
     public void i_type_out_a_tag_that_already_exists(String existingTagName) {
         Assertions.assertAll(
@@ -177,6 +181,7 @@ public class BrowseGardenByTagSteps {
         );
     }
 
+    //AC4, AC5, Removing a tag
     @When("I press the enter key with {string}")
     public void i_press_the_enter_key(String typedTag) throws Exception {
         resultActions = mockMvc.perform(get("/browse-gardens")
@@ -187,6 +192,7 @@ public class BrowseGardenByTagSteps {
         mvcResult = resultActions.andReturn();
     }
 
+    //AC5
     @Given("I type out a tag {string} that does not exist")
     public void i_type_out_a_tag_that_does_not_exist(String nonExistentTagName) {
         Assertions.assertAll(
@@ -195,6 +201,7 @@ public class BrowseGardenByTagSteps {
         );
     }
 
+    //AC5 and Removing a tag
     @Then("no tag {string} is added to my current selection")
     public void no_tag_is_added_to_my_current_selection(String nonExistentTagName) {
         modelAndView = mvcResult.getModelAndView();
@@ -218,6 +225,7 @@ public class BrowseGardenByTagSteps {
         Assertions.assertEquals(nonExistentTagName, textFieldValue);
     }
 
+    //AC5
     @And("an error message tells me No tag matching {string}")
     public void an_error_message_tells_me_no_tag_matching_input(String nonExistentTagName) {
         modelAndView = mvcResult.getModelAndView();
@@ -239,6 +247,7 @@ public class BrowseGardenByTagSteps {
         // not yet implemented
     }
 
+    //Removing a tag
     @When("I click the x button on the tag {string}")
     public void i_click_the_X_button_on_the_tag_input(String tagName) throws Exception {
         resultActions = mockMvc.perform(post("/browse-gardens")

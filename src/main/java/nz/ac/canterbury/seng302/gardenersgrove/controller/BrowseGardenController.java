@@ -34,6 +34,14 @@ public class BrowseGardenController {
         this.tagService = tagService;
     }
 
+    /**
+     * Gets the gardens to be displayed
+     *
+     * @param page page number
+     * @param query the typed search string of a garden by a user
+     * @param tagName the tag selected or typed by the user to search for
+     * @return thymeleaf browseGardensTemplate
+     */
     @GetMapping("/browse-gardens")
     public String browseGardens(HttpSession session,
                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
@@ -71,6 +79,15 @@ public class BrowseGardenController {
         return "browseGardensTemplate";
     }
 
+    /**
+     * To process a tag that is to be removed from the selected search tags
+     *
+     * @param tagNameToRemove the name of the tag to be removed
+     * @param page page number
+     * @param query the typed search string of a garden by a user
+     * @param tagName the tag selected or typed by the user to search for
+     * @return thymeleaf browseGardensTemplate
+     */
     @PostMapping("/browse-gardens")
     public String browseGardens(@RequestParam(value="tagToRemove") String tagNameToRemove,
                                 @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
@@ -100,6 +117,13 @@ public class BrowseGardenController {
         return "browseGardensTemplate";
     }
 
+    /**
+     * Handles adding the relevant attributes to the model to display
+     * @param page page number
+     * @param query the typed search string of a garden by a user
+     * @param tagName the tag selected or typed by the user to search for
+     * @param model the model to be passed to the browse gardens view
+     */
     public String displayTags(String query, int page, Model model, String tagName) {
         Page<Garden> gardenPage;
         if (!query.isEmpty() && !displayedSearchTags.isEmpty()) { //query and tag entered
