@@ -5,15 +5,15 @@
 //     The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
 //     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+document.addEventListener("DOMContentLoaded", function() {
     let reelContents = ["" ,"💧", "☀️", "🍄", "🌶️", "🌾"];
     let reelLength = 3;
     let reelContainers = document.querySelectorAll(".reel-container");
     let spinningReels = [];
     let spinning = false;
     let reelDelay = 100;
-    let money = 100;            //Todo set to blooms amount
-    let moneyToAdd = 0;     //Ensure this is updated to be model attribute "amountWon" at appropriate time
+    let money = bloomBalance;
+    let moneyToAdd = amountWon;     //Ensure this is updated to be model attribute "amountWon" at appropriate time
     let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let masterVolume = audioCtx.createGain();
     masterVolume.gain.setValueAtTime(0.05, audioCtx.currentTime);
@@ -34,12 +34,14 @@
     let spinStarted = false; // This is very important and checks if you have spun already
 
     let startSpin = () => {
-        if (!spinStarted && !spinning && money > 0) {
+        if (!spinStarted && !spinning) {
             document.querySelectorAll(".prize-item.active").forEach(s => {
                 s.classList.remove("active");
             });
-            updateMoney(-1);
-            setChange(-1);
+            if (spinCost !== 0) {
+                updateMoney(-spinCost);
+                setChange(-spinCost);
+            }
             spinningReels = [0, 1, 2, 3, 4];  // Include all reels at once
             spinning = true;
             spinUpdate(11);     //This works out as working through the 15 increments of the reel
@@ -75,6 +77,8 @@
     let updateMoney = change => {
         money += change;
         document.querySelector("#money").innerText = money;
+        document.querySelector("#bloomBalanceNavbar").innerText = money; // Update bloom balance
+
     };
     let setChange = change => {
         let changes = document.querySelector(".changes");
@@ -138,8 +142,6 @@
             win(count, emoji, row);
         }
 
-        //TODO add popup/ message for unsuccessful spin
-
     };
     let win = (amountMatching, symbol, rowNumber) => {
         reelContainers.forEach(reel => {
@@ -147,15 +149,16 @@
         });
         let winAmount = reelContents.indexOf(symbol);
         playWinChime(winAmount);
-        if (amountMatching === 4) winAmount *= 10;
+        if (amountMatching === 3) winAmount *= 10;
+        if (amountMatching === 4) winAmount *= 30;
         if (amountMatching === 5) winAmount *= 100;
         setChange(winAmount);
         addToMoney(winAmount);
     };
-    let addToMoney = (amount, speed) => {
-        let changeAmount = Math.ceil(amount / 2);
+    let addToMoney = (amountWon, speed) => {
+        let changeAmount = Math.ceil(amountWon / 2);
         updateMoney(changeAmount);
-        let remainder = amount - changeAmount;
+        let remainder = amountWon - changeAmount;
         if (!speed) speed = 101;
         speed -= 5;
         if (speed < 10) speed = 10;
@@ -222,8 +225,8 @@
 
     reelContents.forEach((symbol, index) => {
         if (index !== 0) {
-            addToPrizeTable(`${symbol}`, index, "triples");
-            addToPrizeTable(`${symbol}`, (index) * 10, "quadruples");
+            addToPrizeTable(`${symbol}`, (index) * 10, "triples");
+            addToPrizeTable(`${symbol}`, (index) * 30, "quadruples");
             addToPrizeTable(`${symbol}`, (index) * 100, "quintuples");
         }
     });
@@ -246,3 +249,8 @@
             modal.style.display = "none";
         }
     }
+
+    if (gameState === "FREE_SPINNING" || gameState === "PAYED_SPINNING") {
+        startSpin();
+    }
+});

@@ -82,8 +82,8 @@ body {
     font-weight: bold;
 }
 
-.container .money-container #money:before {
-    content: "💰 ";
+.container .money-container #money:after {
+    content: "฿";
 }
 
 .container .play-area {

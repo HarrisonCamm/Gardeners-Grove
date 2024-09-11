@@ -362,7 +362,7 @@ public class PlantGuesserSteps {
         String content = mvcResult.getResponse().getContentAsString();  //repeated from bloom transaction step def but necessary as this is a different mvcResult
 
         boolean hasBloomBalance = content.contains("<div class=\"balanceDisplay\"")
-                && content.contains("<span class=\"navBar-bloom-display\">" + balance.toString());
+                && content.contains("<span class=\"navBar-bloom-display\" id=\"bloomBalanceNavbar\">" + balance.toString());
 
         Assertions.assertNotNull(currentUser.getBloomBalance(), "Expected bloom balance to be a number, but it was null");
 
