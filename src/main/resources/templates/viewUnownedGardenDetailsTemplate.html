@@ -51,6 +51,15 @@
                     <h5 th:text="${gardenDescription}"></h5>
                 </div>
             </div>
+
+            <div class="row mb-3 ps-5">
+                <div class="col">
+                    <a th:href="@{'/messages?gardenID=' + ${gardenID}}" class="btn btn-primary button">
+                        Message Owner
+                    </a>
+                </div>
+            </div>
+
         </div>
 
         <div class="col container pt-5">
