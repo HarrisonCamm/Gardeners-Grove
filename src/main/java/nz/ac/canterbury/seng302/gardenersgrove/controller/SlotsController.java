@@ -4,6 +4,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.SlotsService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.TransactionService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,12 +40,18 @@ public class SlotsController {
     private static final String SLOTS_ATTRIBUTE = "slots";
 
 
+
     Logger logger = LoggerFactory.getLogger(SlotsController.class);
     private final UserService userService;
+    private final TransactionService transactionService;
+
+    private final User gardenGroveUser;
 
     @Autowired
-    public SlotsController(UserService userService) {
+    public SlotsController(UserService userService, TransactionService transactionService) {
         this.userService = userService;
+        this.transactionService = transactionService;
+        this.gardenGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
     }
 
     /**
@@ -165,12 +172,17 @@ public class SlotsController {
 
     private void freeSpin(User user, int amountWon) {
         userService.addBlooms(user, amountWon);
+        transactionService.addTransaction(amountWon,"Free Daily Spin", "Game", user.getUserId(), gardenGroveUser.getUserId());
+
         userService.updateUserLastFreeSpinUsed(user);        //Only update method that just takes user as a parameter
     }
 
     private void payedSpin(User user, int amountWon) {
         userService.addBlooms(user, amountWon);
         userService.chargeBlooms(user, SPIN_COST);
+        transactionService.addTransaction((SPIN_COST),"Payed for Daily Spin", "Game", gardenGroveUser.getUserId(), user.getUserId());
+
+        transactionService.addTransaction((amountWon),"Awarded for Daily Spin combo", "Game", user.getUserId(), gardenGroveUser.getUserId());
     }
 
     private boolean isWithin24Hours(Date date) {
