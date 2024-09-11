@@ -20,15 +20,16 @@ const gardenID = dataset.gardenId;
  *     then reload the page
  * @param url the link to fetch the contacts
  * @param contact the expected contact
+ * @param furtherAttempts the number of further recursive attempts to make
  */
-function getContact(url, contact) {
-    fetch(url)
+function getContact(url, contact, furtherAttempts) {
+    fetch(url + `?email=${contact}`)
         .then(response => response.json())
         .then(messages => {
-            if (messages.includes(contact)) {
+            if (furtherAttempts <= 0 || messages.includes(contact)) {
                 window.location.reload();
             } else {
-                getContact(url, contact);
+                getContact(url, contact, furtherAttempts - 1);
             }
         });
 }
@@ -203,7 +204,13 @@ function showChatUI(userId, firstName, lastName, email) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    from = document.getElementById('chat-container').dataset.from;
+    if (gardenID != null) {
+        const userId = dataset.ownerId;
+        const firstName = dataset.firstName;
+        const lastName = dataset.lastName;
+        const email = dataset.email;
+        showChatUI(userId, firstName, lastName, email);
+    }
 
     document.querySelectorAll('.chat-link').forEach(link => {
         link.addEventListener('click', function(event) {
