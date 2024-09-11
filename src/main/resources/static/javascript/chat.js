@@ -63,7 +63,7 @@ function showMessage(message) {
             break;
         default:
             backgroundColor = 'bg-danger error'; // Red for blocked messages
-            message.content = 'Message contains inappropriate language language or is too long';
+            message.content = 'Message contains inappropriate language or is too long';
             break;
     }
 
@@ -108,7 +108,7 @@ function connect() {
         //Subscribe to the user's queue to receive messages
         stompClient.subscribe('/user/queue/reply', function (messageOutput) {
             const message = JSON.parse(messageOutput.body);
-            const contactEmails = JSON.parse(dataset.contactEmails);
+            const contactEmails = JSON.parse(dataset.contactemails);
             const unknownSender = !contactEmails.includes(message.sender);
             if (unknownSender) {
                 getContact(deployPath + '/contacts', message.sender, 10)
