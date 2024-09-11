@@ -5,6 +5,8 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.GardenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.Optional;
  */
 @Service
 public class GardenService {
+    private static final int GARDENS_PER_PAGE = 10;
     private GardenRepository gardenRepository;
 
     @Autowired
@@ -39,11 +42,26 @@ public class GardenService {
         return gardenRepository.findGardensByTagId(tag.getId());
     }
 
+    public Page<Garden> getPublicGardens(Integer page) {
+        return gardenRepository.findPublicGardens(PageRequest.of(page, GARDENS_PER_PAGE));
+    }
+
+    public Page<Garden> searchPublicGardens(String search, Integer page) {
+        if (search == null || search.isEmpty()) {
+            return getPublicGardens(page);
+        }
+        return gardenRepository.findPublicGardensBySearch(search, PageRequest.of(page, GARDENS_PER_PAGE));
+    }
+
     public Garden addGarden(Garden garden) {
         return gardenRepository.save(garden);
     }
-    public Garden updateGarden(Garden garden, String name, Location location, String size) {
-        garden.setValues(name, location, size);
+    public Garden updateGarden(Garden garden, String name, Location location, String size, Boolean isPublic, String description) {
+        garden.setName(name);
+        garden.setLocation(location);
+        garden.setSize(size);
+        garden.setIsPublic(isPublic);
+        garden.setDescription(description);
         return gardenRepository.save(garden);
     }
 
@@ -85,4 +103,13 @@ public class GardenService {
             throw new RuntimeException("Garden not found with id: " + gardenId);
         }
     }
+
+    public Page<Garden> searchPublicGardensByTags(List<Long> tagIds, Integer page) {
+        return gardenRepository.findPublicGardensByTags(tagIds, PageRequest.of(page, GARDENS_PER_PAGE));
+    }
+
+    public Page<Garden> searchPublicGardensBySearchAndTags(String search, Integer page, List<Long> tagIds) {
+        return gardenRepository.findPublicGardensBySearchAndTags(search, PageRequest.of(page, GARDENS_PER_PAGE), tagIds);
+    }
+
 }

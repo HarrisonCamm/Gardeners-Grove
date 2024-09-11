@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
 
+import nz.ac.canterbury.seng302.gardenersgrove.controller.MessagesController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Tag;
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Optional;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
@@ -72,6 +74,9 @@ public class ViewGardenTests {
     private MailService mailService;
 
     @MockBean
+    private TransactionService transactionService;
+
+    @MockBean
     private ImageService imageService;
 
     @MockBean
@@ -86,11 +91,25 @@ public class ViewGardenTests {
     @MockBean
     private WeatherService weatherService;
 
+
+
     @MockBean
     private ModerationService moderationService;
 
     @MockBean
     private AlertService alertService;
+
+    @MockBean
+    private PlantGuesserService plantGuesserService;
+
+    @MockBean
+    private PlantFamilyService plantFamilyService;
+
+    @MockBean
+    private MessagesController messagesController;
+
+    @MockBean
+    private Random random;
 
     private User testUser;
 
@@ -104,6 +123,8 @@ public class ViewGardenTests {
 
         // Mock unsuccessful moderation (profanity detected)
         when(moderationService.moderateText(eq("InappropriateTag"))).thenReturn("[{\"term\":\"InappropriateTerm\"}]");
+
+        when(moderationService.isContentAppropriate(null)).thenReturn(true);
     }
 
 

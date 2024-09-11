@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.controller.AutocompleteController;
+import nz.ac.canterbury.seng302.gardenersgrove.controller.MessagesController;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,7 @@ import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
+import java.util.Random;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -43,6 +45,9 @@ public class AutocompleteControllerTests {
 
     @MockBean
     private AuthorityService authorityService;
+
+    @MockBean
+    private TransactionService transactionService;
 
     @MockBean
     private MailService mailService;
@@ -91,6 +96,18 @@ public class AutocompleteControllerTests {
 
     @MockBean
     private AlertService alertService;
+
+    @MockBean
+    private PlantGuesserService plantGuesserService;
+
+    @MockBean
+    private PlantFamilyService plantFamilyService;
+
+    @MockBean
+    private MessagesController messagesController;
+
+    @MockBean
+    private Random random;
 
     AutocompleteController autocompleteController;
 

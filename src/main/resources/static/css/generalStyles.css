@@ -1,5 +1,8 @@
 body {
     background-color: floralwhite;
+}
+.appBody {
+    background-color: floralwhite;
     font-family: Verdana, sans-serif;
 }
 .content {
@@ -38,6 +41,8 @@ body {
     outline: 1px solid #BEE186;
 }
 .form-control:focus {
+    background-color: #E2F1CA;
+    border: 1px solid #3D7B36;
     outline: 2px solid #3D7B36;
 }
 
@@ -54,7 +59,36 @@ body {
 .required-input {
     color: #DE2929;
 }
-textarea {
+
+
+.table-wrapper {
+    max-width: 100%; /* Full width on smaller screens */
+    margin: 0 auto;
+    overflow-x: auto;
+}
+
+
+
+@media (min-width: 768px) {
+    .table-wrapper {
+        max-width: 1000px; /* Max width on medium or larger screens */
+    }
+}
+
+.transactions-display {
+    padding: 5%;
+}
+
+.table-description {
+    word-break: break-word; /* Breaks long words */
+    white-space: nowrap; /* Prevents wrapping */
+    overflow: hidden; /* Hides overflow */
+    text-overflow: ellipsis; /* Adds ellipsis (...) to long content */
+}
+
+
+/*Create Plant, Edit Plant Form*/
+.plantTextArea {
     min-width: 350px;
     max-width: 350px;
     font-size: 100%;
@@ -297,8 +331,7 @@ h2 {
     margin-left: 20px;
 }
 
-/* Disabled styles */
-.disabled {
+.invisible {
     opacity: 0;
 }
 
@@ -433,6 +466,34 @@ p {
     background-color: #BEE186;
     color: black;
     border-radius: 10px;
+    padding: 7px 10px 7px 10px;
+    margin: 5px;
+    font-weight: normal;
+    cursor: default;
+    font-size: small;
+}
+.clickable-x, .clickable-x:hover {
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: black;
+    font-size: inherit;
+}
+
+.public-tag-colour {
+    background-color: #008c03;
+    color: #ffffff;
+    border-radius: 10px;
+    padding: 5px 10px 5px 10px;
+    margin: 5px;
+    font-weight: normal;
+}
+.private-tag-colour {
+    background-color: #c1c1c1;
+    color: #000000;
+    border-radius: 10px;
     padding: 5px 10px 5px 10px;
     margin: 5px;
     font-weight: normal;
@@ -469,6 +530,21 @@ p {
 hr {
     margin: 2px 0 2px 0;
 }
+
+.friend-name {
+    font-size: 120%;
+    text-align: center;
+}
+
+[id^="message-input-"] {
+    line-height: 2.5rem;
+    height: 2.5rem;
+    padding: 0 1rem;
+    box-sizing: border-box;
+    overflow: hidden;
+    resize: none;
+}
+
 
 @media only screen and (orientation: portrait) {
     h2 {
@@ -575,3 +651,112 @@ hr {
         font-size: 200%;
     }
 }
+
+/* Chat content area */
+.chat-content {
+    flex-grow: 1;
+    overflow-y: auto; /* Allow scrolling */
+    max-height: calc(100vh - 300px); /* Set a maximum height */
+    padding-bottom: 10px; /* Ensure no white space below the last message */
+}
+/* Ensure the main container uses Flexbox */
+.chat-container {
+    height: 100vh; /* Full height of the viewport */
+    width: 100vw; /* Full width of the viewport */
+    overflow: hidden; /* Prevent overflow */
+}
+
+/* Chat sidebar styles */
+.chat-side-bar {
+    background-color: #f8f9fa; /* Matches Bootstrap's light background */
+    min-width: 400px; /* Minimum width for the sidebar */
+    max-width: 400px; /* Maximum width for the sidebar */
+    flex: 0 0 300px; /* Fixed width for the sidebar */
+    overflow-y: auto; /* Scroll if content overflows */
+}
+
+.chat-main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden; /* Prevent overflow */
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+/* Games Page Styles */
+.container {
+    padding: 20px;
+    margin-top: 20px;
+}
+
+h2 {
+    color: #0A3407;
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    font-size: 1.5rem;
+    color: #3D7B36;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #4a4a4a;
+    line-height: 1.6;
+}
+
+.btn-primary {
+    background-color: #3D7B36;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #2a5a25;
+    transform: scale(1.05);
+}
+
+.img-fluid {
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.mt-4 {
+    margin-top: 1.5rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+
+

@@ -5,7 +5,7 @@
         <title>Home</title>
         <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
     </head>
-    <body>
+    <body class="appBody">
         <div class="content">
             <div>
                 <h1>Welcome to Gardener's Grove</h1>
@@ -13,13 +13,13 @@
                 <div class="centre">
                     <div>
                         <a th:href="@{/sign-in-form}">
-                            <button type="button">Sign In</button>
+                            <button type="button" class="button">Sign In</button>
                         </a>
                     </div>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <div>
                         <a th:href="@{/register-form}">
-                            <button type="button">Register</button>
+                            <button type="button" class="button">Register</button>
                         </a>
                     </div>
                 </div>

@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Edit Plant</title>
-    <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
-    <link th:href="@{/css/navBar.css}" rel="stylesheet">
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
+    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
     <script th:src="@{javascript/enter-date.js}"></script>
     <script th:src="@{javascript/prevent-enter-submit.js}"></script>
     <script th:src="@{/javascript/image-handling.js}"></script>
-    <script th:src="@{/javascript/description-length.js}"></script>
 </head>
 <body>
 <!-- Navigation Bar Fragment -->
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 <br/>
-<div class="form">
+<div class="appBody form">
     <h2>Edit Plant</h2>
     <div class="image-icon-div">
         <div class="image-upload">
@@ -37,7 +37,6 @@
                     <span class="required-input"> * </span>
                 </label>
                 <br/>
-                <!--                todo maxlength will need to be update along with plant validator and plant class sql string length for the defined limit from Fabian-->
                 <input type="text" class="form-control" id="plantName"
                        maxlength="1028" th:value="*{name}" th:field="*{name}"
                        th:classappend="${nameError} ? 'error' : 'form-control'">
@@ -57,12 +56,12 @@
                 <label for="plantDescription"> Description: </label>
 
                 <br/>
-                <textarea maxlength="1028" id="plantDescription"
+                <textarea class="plantTextArea" maxLength="1028" id="plantDescription"
                           th:value="*{description}"
                           th:field="*{description}"
                           th:classappend="${descriptionError} ? 'error' : ''"
                           oninput="descriptionLength(this)">
-                        </textarea>
+                </textarea>
             </div>
             <div id="descriptionLengthValidation" class="error-message" th:text="${descriptionError}"></div>
             <br/>

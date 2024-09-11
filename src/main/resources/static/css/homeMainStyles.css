@@ -1,5 +1,8 @@
 body {
     background-color: floralwhite;
+}
+.appBody {
+    background-color: floralwhite;
     font-family: Verdana, sans-serif;
 }
 .content {
@@ -11,9 +14,19 @@ body {
 .centre {
     justify-content: center;
     display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.image {
+    max-height: 350px;
+    height: 350px;
+    max-width: fit-content;
+}
+.plant-card {
+    background-color: #E2F1CA;
 }
 
-button {
+.button {
     font-size: 150%;
     background-color: #3D7B36;
     color: floralwhite;
@@ -22,9 +35,45 @@ button {
     padding: 5px 10px 5px 10px;
     margin: 2px;
 }
-button:hover {
+.button:hover {
     background-color: #72543C;
     cursor: pointer;
+}
+
+button#backButton {
+    margin-left: 30px;
+    margin-top: 30px;
+}
+.quiz-option-button, .quiz-option-button.correct {
+    height: 120px;
+    width: 300px;
+    border-radius: 5px;
+    border-width: 0;
+    background-color: #72543C;
+    color: floralwhite;
+    font-size: 120%;
+    font-weight: bold;
+    white-space: pre-wrap;
+
+}
+
+.quiz-option-button:hover, .quiz-option-button.correct:hover {
+    background-color: #574536;
+    cursor: pointer;
+}
+.quiz-option-button:hover:disabled, .quiz-option-button.correct:hover:disabled {
+    background-color: #72543C;;
+    cursor: default;
+}
+
+.quiz-option-button.clicked, .quiz-option-button.clicked:hover {
+    background-color: darkred;
+    cursor: default;
+}
+
+.quiz-option-button.clicked.correct, .quiz-option-button.clicked.correct:hover {
+    background-color: #4CAF50;
+    cursor: default;
 }
 
 .logout-button {
@@ -37,6 +86,13 @@ button:hover {
     font-size: 140%;
 }
 h1 {
+    font-size: 200%;
+    text-align: center;
+    margin: 0;
+    color: #0A3407;
+}
+
+h2 {
     font-size: 200%;
     text-align: center;
     margin: 0;

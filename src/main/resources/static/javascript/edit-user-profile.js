@@ -1,4 +1,4 @@
-function getDeployPath(url) {
+function getDeploymentContextPath(url) {
     if (url == null)
         url = new URL(window.location.href);
     const deployPath = url.pathname.split('/')[1];
@@ -43,7 +43,7 @@ function toggleChangePasswordForm(showForm) {
 
 function changePassword() {
     let editProfileForm = document.getElementById('editProfileForm');
-    editProfileForm.action = getDeployPath() + '/edit-user-profile-password';
+    editProfileForm.action = getDeploymentContextPath() + '/edit-user-profile-password';
     editProfileForm.submit();
 }
 

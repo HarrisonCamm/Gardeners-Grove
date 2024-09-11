@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Head fragment holding all the style sheets-->
+<head th:replace="fragments/head :: head(title='View Garden')"> </head>
+<body>
+<!-- NavBar Fragment -->
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<div class="appBody">
+    <div class="wrapper">
+        <!-- Garden Side Navigation Bar Fragment -->
+        <div th:insert="~{fragments/sideBar.html :: sideBar}"></div>
+
+        <!-- View Garden Page Content -->
+        <div class="row">
+            <div>
+                <div id="publicBadge" class="col" th:hidden="${!gardenIsPublic}">
+                    <span class="badge me-2 mb-2 public-tag-colour">Public Garden</span>
+                </div>
+            </div>
+
+
+            <div class="col gardenDetails container">
+                <div class="row mb-3 ps-5">
+                    <div class="col">
+                        <br/>
+                        <h3 th:text="${gardenName}"></h3>
+                    </div>
+                </div>
+                <div class="row mb-3 ps-5">
+                    <div class="col">
+                        <h3 th:text="${gardenLocation}">  </h3>
+                    </div>
+                </div>
+                <div th:if="${gardenSize!=''}" class="row mb-3 ps-5" th:classappend="${gardenSize == '' ? 'invisible' : ''}">
+                    <div class="col">
+                        <h3 th:utext="${gardenSize} + ' m<sup>2</sup>'"></h3>
+                    </div>
+                </div>
+
+                <div class="row mb-3 ps-5" th:if="${gardenTags != null and gardenTags.size() > 0}">
+                    <div class="col d-flex flex-wrap">
+                        <th:block th:each="tag : ${gardenTags}">
+                            <span class="badge me-2 mb-2 tag-colour" th:text="${tag.name}"></span>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div class="row mb-3 ps-5">
+                    <div class="col text-wrap text-break">
+                        <br/>
+                        <h5 th:text="${gardenDescription}"></h5>
+                    </div>
+                </div>
+
+                <div class="row mb-3 ps-5">
+                    <div class="col">
+                        <a th:href="@{'/messages?gardenID=' + ${gardenID}}" class="btn btn-primary button">
+                            Message Owner
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col container pt-5">
+                <div class="row">
+                    <div class="col">
+                        <div id="imageError" class="text-danger"></div>
+                    </div>
+                </div>
+                <div class="plantContainer table-responsive bg-white" style="max-height: calc(97px * 6); overflow-y: auto;">
+                    <table class="table">
+                        <thead>
+                        <tr class="garden-table">
+                            <th>Picture</th>
+                            <th>Plant Name</th>
+                            <th>Count</th>
+                            <th>Description</th>
+                            <th>Date Planted</th>
+                        </tr>
+                        </thead>
+                        <tbody class="table-bordered">
+                        <tr th:each="plant : ${plants}" class="plant-row border-0">
+                            <td class="border-0" >
+                                <div class="image-icon-div-small">
+                                    <div class="image-upload">
+                                        <img class="image-small"
+                                             th:id="${plant.id}" th:data-plant-id="${plant.id}"
+                                             th:src="@{/get-image?view-garden=true(plantID=${plant.id})}" alt="">
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-2 plant-name-width" th:text="${plant.name}"></td>
+                            <td class="p-2 border-0" th:text="${plant.count}"></td>
+                            <td class="p-2 plant-description-width" th:text="${plant.description}"></td>
+                            <td class="p-2 border-0" th:text="${plant.datePlanted}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Weather Section -->
+            <div class="col container-fluid" th:if="${forecastResponse != null}">
+                <div class="row p-5 overflow-scroll">
+                    <!-- Garden Weather Warnings and Alerts Placeholder -->
+
+                    <div class="col py-2" th:each="weatherResponse, iterStat: ${forecastResponse.weatherResponses}"
+                         th:classappend="${iterStat.first ? 'col-12' : 'col-6'}">
+                        <div class="container bg-success bg-gradient shadow rounded-4 p-4 z-3 position-relative"
+                             th:classappend="${iterStat.first ? '' : 'pb-0'}">
+                            <div th:if="${weatherResponse != null}">
+                                          <span th:if="${iterStat.first}"
+                                                class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-secondary">
+                                              Today
+                                          </span>
+                                <h4>
+                                    <strong>
+                                        <span th:text="${weatherResponse.dayOfWeek.substring(0,3)}"></span>
+                                    </strong>
+                                    <img th:if="${iterStat.first}"
+                                         th:src="@{'https://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@4x.png'}"
+                                         class="position-absolute top-0 end-0 img-fluid w-200" alt="Weather Icon" />
+                                </h4>
+                                <p><span th:text="${weatherResponse.date}"></span></p>
+                                <p><span th:text="${weatherResponse.description}"></span></p>
+                                <p><span th:text="${weatherResponse.temperature}"></span>&#8451;</p>
+                                <p>Humidity: <span th:text="${weatherResponse.humidity}"></span>%</p>
+
+                                <img th:if="!${iterStat.first}"
+                                     th:src="@{'https://openweathermap.org/img/wn/' + ${weatherResponse.icon} + '@2x.png'}"
+                                     class="img-fluid w-200" alt="Weather Icon" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${forecastResponse == null}" class="col container-fluid pt-5">
+                <div class="row p-5 overflow-scroll">
+                    <div class="container bg-danger bg-opacity-75 bg-gradient shadow rounded-4 p-4 z-3 position-relative">
+                        <div th:text="${weatherErrorMessage}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts fragment, contains bootstrap scripts -->
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>
+
+<script th:inline="javascript">
+    window.addEventListener('DOMContentLoaded', () => {
+        const allTags = [[${allTags}]];
+        const plantContainer = document.querySelector('.plantContainer');
+        const gardenDetails = document.querySelector('.gardenDetails');
+        const clearButton = document.getElementById('clearButton');
+        const tagInput = document.getElementById('tagInput');
+        const autocompleteList = document.getElementById('autocompleteList');
+
+        function adjustWidth() {
+            const width = plantContainer.offsetWidth;
+            gardenDetails.style.width = `${width}px`;
+        }
+
+        // Adjust width of gardenDetails initially
+        adjustWidth();
+
+        // Adjust width of gardenDetails when window is resized
+        window.addEventListener('resize', adjustWidth);
+
+        clearButton.addEventListener('click', () => {
+            tagInput.value = '';
+        });
+
+        tagInput.addEventListener('keydown', (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                document.getElementById('tagForm').submit();
+            }
+        });
+
+        // This code is AI generated :)
+        tagInput.addEventListener('input', function() {
+            // Get the current input
+            let input = this.value;
+
+            // Clear the autocomplete list
+            autocompleteList.innerHTML = '';
+
+            // Only proceed if the input is not empty
+            if (input.trim() !== '') {
+                // Filter the tags
+                let suggestions = allTags.filter(function(tag) {
+                    return tag.name.toLowerCase().startsWith(input.toLowerCase());
+                });
+
+                // Create an autocomplete item for each suggestion
+                suggestions.forEach(function(tag, index) {
+                    let item = document.createElement('button');
+                    item.className = 'dropdown-item autocomplete-tag-item'; // Bootstrap class
+                    //Abbreviate the tag name if it is too long to fit within a reasonable width (20 characters)
+                    item.textContent = tag.name;
+                    item.addEventListener('click', function() {
+                        // Set the input value to the clicked item's text
+                        tagInput.value = this.textContent;
+
+                        // Clear the autocomplete list
+                        autocompleteList.innerHTML = '';
+                        autocompleteList.style.display = 'none'; // Hide the list
+
+                        // Submit the form
+                        document.getElementById('tagForm').submit();
+                    });
+                    autocompleteList.appendChild(item);
+
+                    // Add a horizontal line after each item, except the last one
+                    if (index !== suggestions.length - 1) {
+                        let hr = document.createElement('hr');
+                        autocompleteList.appendChild(hr);
+                    }
+                });
+
+                if (suggestions.length > 0) {
+                    console.log(suggestions);
+                    autocompleteList.style.display = 'block'; // Show the list
+                } else {
+                    autocompleteList.style.display = 'none'; // Hide the list if no suggestions
+                }
+            } else {
+                autocompleteList.style.display = 'none'; // Hide the list if input is empty
+            }
+        });
+    });
+
+</script>

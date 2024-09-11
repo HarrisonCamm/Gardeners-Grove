@@ -1,4 +1,4 @@
-function getDeployPath(url) {
+function getDeploymentContextPath(url) {
     if (url == null)
         url = new URL(window.location.href);
     const deployPath = url.pathname.split('/')[1];
@@ -48,7 +48,7 @@ function addressAutocomplete(containerElement, callback, options) {
 
         /* Create a new promise and send geocoding request to the backend */
         const promise = new Promise((resolve, reject) => {
-            const deployPath = getDeployPath(null);
+            const deployPath = getDeploymentContextPath(null);
             const url = `${deployPath}/getAutocompleteResults?inputString=${currentValue}`; //We create the getAutocompleteResults endpoint Java side
             fetch(url)
                 .then(response => {

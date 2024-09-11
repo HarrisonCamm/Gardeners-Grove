@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Head fragment holding all the style sheets-->
+<head th:replace="fragments/head :: head(title='Browse Gardens')">
+</head>
+<body>
+<!-- NavBar Fragment -->
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<div class="appBody">
+    <div class="container mt-5">
+        <!-- Public Gardens Title -->
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8">
+                <h2 class="browse-gardens-title">Explore Public Gardens</h2>
+            </div>
+        </div>
+
+    <!-- Search Section -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-12 col-md-8">
+
+            <!-- Selected tags display -->
+            <form th:action="@{/browse-gardens}" method="post" novalidate >
+                <div class="row" th:if="${searchTags != null and searchTags.size() > 0}">
+                    <div class="col d-flex flex-wrap">
+                        <th:block th:each="eachTag : ${searchTags}">
+                            <span class="badge me-2 mb-2 tag-colour">
+                                <span th:text="${eachTag.name}"></span>&nbsp;&nbsp;&nbsp;
+                                <button type="submit" th:name="tagToRemove" th:value="${eachTag.name}" class="clickable-x">
+                                    ✕
+                                </button>
+                            </span>
+                        </th:block>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Search Area-->
+            <form th:action="@{/browse-gardens}" method="get" novalidate>
+                <!-- Text search -->
+                <div class="input-group mb-3">
+                    <input th:name="q"
+                           th:value="${q}"
+                           maxlength="256"
+                           type="search"
+                           class="form-control"
+                           placeholder="Browse public gardens">
+                </div>
+
+                <!-- Tag Search -->
+                <div class="input-group mb-3">
+                    <input th:name="tagsInput"
+                           th:value="${tagsInput}"
+                           id="tagInput"
+                           type="text"
+                           maxlength="256"
+                           class="form-control"
+                           placeholder="Search by tags"/>
+
+                    <!-- Autocomplete tags -->
+                    <div class="container tag-input rounded-bottom dropdown-menu w-100" id="autocompleteList"></div>
+                </div>
+
+                <!-- Tag Error Message -->
+                <p th:if="${tagNotFoundError}" class="error-message" th:text="${tagNotFoundError}"></p>
+
+                <!-- Search Button -->
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- No Results Message -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8">
+            <div th:if="${noResults}" class="alert alert-danger text-center" th:text="${noResults}"></div>
+        </div>
+    </div>
+    <!-- Gardens List -->
+    <div class="row justify-content-center">
+        <div th:unless="${noResults}" class="col-12 col-md-8">
+            <ul class="list-group">
+                <li th:each="garden : ${gardenPage.content}" class="list-group-item d-flex justify-content-between align-items-center">
+                    <a th:href="@{'/view-garden?gardenID=' + ${garden.id}}" class="text-decoration-none">
+                        <h3 class="h5 mb-0" th:text="${garden.name}"></h3>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div th:unless="${noResults}" class="container mt-4">
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <!-- First Page Button -->
+            <li class="page-item">
+                <a class="page-link" th:href="@{'/browse-gardens?page=1' + '&q=' + ${q}}">First</a>
+            </li>
+            <!-- Previous Page Button -->
+            <li class="page-item" th:classappend="${!gardenPage.hasPrevious() ? 'disabled' : ''}">
+                <a class="page-link" th:href="@{'/browse-gardens?page=' + ${gardenPage.number + 0} + '&q=' + ${q}}">Previous</a>
+            </li>
+            <!-- Page Numbers -->
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(-1, 3)}"
+                th:classappend="${i == 1} ? 'active' : ''"
+                th:if="${gardenPage.number + i >= 1 && gardenPage.number + i <= gardenPage.totalPages}">
+                <a th:if="${i != 1}"
+                   class="page-link"
+                   th:text="${gardenPage.number + i}"
+                   th:href="@{'/browse-gardens?page=' + ${gardenPage.number + i} + '&q=' + ${q}}">
+                </a>
+                <span th:if="${i == 1}"
+                      class="page-link"
+                      th:text="${gardenPage.number + 1}">
+                </span>
+            </li>
+            <!-- Next Page Button -->
+            <li class="page-item" th:classappend="${!gardenPage.hasNext() ? 'disabled' : ''}">
+                <a class="page-link" th:href="@{'/browse-gardens?page=' + ${gardenPage.number + 2} + '&q=' + ${q}}">Next</a>
+            </li>
+            <!-- Last Page Button -->
+            <li class="page-item">
+                <a class="page-link" th:href="@{'/browse-gardens?page=' + ${gardenPage.totalPages} + '&q=' + ${q}}">Last</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- Text showing number of results -->
+    <div class="text-center" th:unless="${noResults}" th:text="${'Showing results ' + ((gardenPage.number * 10) + 1) + ' to ' + ((gardenPage.number * 10) + gardenPage.numberOfElements) + ' of ' + gardenPage.totalElements}"></div>
+</div>
+
+<!-- Scripts fragment, contains bootstrap scripts -->
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>
+
+<script th:inline="javascript">
+    window.addEventListener('DOMContentLoaded', () => {
+        const allTags = [[${allTags}]];
+        const tagInput = document.getElementById('tagInput');
+        const autocompleteList = document.getElementById('autocompleteList');
+        const form = tagInput.closest('form');  // Get the parent form
+
+        tagInput.addEventListener('input', function() {
+            let input = this.value;
+            autocompleteList.innerHTML = '';
+
+            if (input.trim() !== '') {
+                let suggestions = allTags.filter(tag => tag.name.toLowerCase().startsWith(input.toLowerCase()));
+
+                suggestions.forEach(tag => {
+                    let item = document.createElement('button');
+                    item.className = 'dropdown-item autocomplete-tag-item';
+                    item.textContent = tag.name;
+                    item.addEventListener('click', function(event) {
+                        event.preventDefault(); // Prevent default form submit (if necessary)
+                        tagInput.value = this.textContent;  // Set the input value to the selected tag
+                        autocompleteList.innerHTML = '';  // Clear the autocomplete list
+                        form.submit();  // Submit the form
+                    });
+                    autocompleteList.appendChild(item);
+                });
+
+                autocompleteList.style.display = suggestions.length > 0 ? 'block' : 'none';
+            } else {
+                autocompleteList.style.display = 'none';
+            }
+        });
+    });
+</script>
+

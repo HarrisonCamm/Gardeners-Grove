@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Edit profile</title>
-        <!-- Navbar styling -->
-        <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
-        <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
-        <script th:src="@{javascript/edit-user-profile.js}"></script>
-        <script th:src="@{javascript/enter-date.js}"></script>
-        <script th:src="@{javascript/prevent-enter-submit.js}"></script>
-        <script th:src="@{javascript/last-name-box.js}"></script>
-        <script th:src="@{/javascript/image-handling.js}"></script>
-    </head>
+<!-- Head fragment holding all the style sheets-->
+<head th:replace="fragments/head :: head(title='Edit profile')">
+</head>
+
+<script th:src="@{javascript/edit-user-profile.js}"></script>
+<script th:src="@{javascript/enter-date.js}"></script>
+<script th:src="@{javascript/prevent-enter-submit.js}"></script>
+<script th:src="@{javascript/last-name-box.js}"></script>
+<script th:src="@{/javascript/image-handling.js}"></script>
     <body>
         <!-- Navigation Bar Fragment -->
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-        <div class="content">
+        <div class="appBody content">
             <div>
                 <h2>Edit Profile</h2>
                 <div class="image-icon-div">
@@ -38,7 +35,6 @@
                         <input type="text" class="form-control" id="firstName"
                                th:name="firstName" th:value="${firstName}" data-cy="firstName"
                                th:classappend="${firstNameError != null ? 'error' : 'form-control'}" autofocus>
-                        <br/>
                         <div th:if="${firstNameError}" class="error-message" th:text="${firstNameError}"></div>
                         <br/>
                         <label for="lastName"> Last Name:
@@ -48,7 +44,6 @@
                         <input type="text" class="form-control" id="lastName"
                                th:name="lastName" th:value="${lastName}" th:disabled="${noLastName}" data-cy="lastName"
                                th:classappend="${lastNameError != null ? 'error' : 'form-control'}" autofocus>
-                        <br/>
                         <div th:if="${lastNameError}" class="error-message" th:text="${lastNameError}"></div>
                         <label for="noLastName">I have no surname</label>
                         <input type="checkbox" class="checkbox" id="noLastName" th:name="noLastName" th:value="${noLastName}"
@@ -62,7 +57,6 @@
                         <input type="text" class="form-control" id="email"
                                th:name="email" th:value="${email}" data-cy="email"
                                th:classappend="${registrationEmailError != null ? 'error' : 'form-control'}" autofocus>
-                        <br/>
                         <!-- Display an error message if there is an error with the email existing-->
                         <div th:if="${registrationEmailError}" class="error-message" th:text="${registrationEmailError}"></div>
                         <br/>
@@ -90,7 +84,6 @@
                                    th:value="${oldPassword}"
                                    th:classappend="${oldPasswordError != null ? 'error' : ''}">
                             <!-- Placeholder for Incorrect Old Password Error -->
-                            <br/>
                             <div class="password-error-message" th:if="${oldPasswordError}" th:text="${oldPasswordError}"></div>
                             <br/>
 
@@ -103,7 +96,6 @@
                                    th:value="${newPassword}"
                                    th:classappend="${newPasswordError != null ? 'error' : ''}">
                             <!-- Placeholder for New Password Validation Error -->
-                            <br/>
                             <div class="password-error-message" th:if="${newPasswordError}" th:text="${newPasswordError}"></div>
                             <br/>
 
@@ -116,16 +108,13 @@
                                    th:value="${retypePassword}"
                                    th:classappend="${passwordMatchError != null ? 'error' : ''}">
                             <!-- Placeholder for Password Match Error -->
-                            <br/>
                             <div class="password-error-message" th:if="${passwordMatchError}" th:text="${passwordMatchError}"></div>
-<!--                            <br/>-->
 
                             <div class="password-error-message" th:if="${emailError}" th:text="${emailError}"></div>
                             <br/>
 
                             <!-- Submit Changed Password and Cancel Change Password Buttons -->
                             <div class="buttons-centre">
-<!--                                    <button type="submit" id="submitNewPasswordButton">Change Password</button>-->
                                 <button type="button" onclick="changePassword()" id="submitNewPasswordButton">Change Password</button>
                                 &nbsp
                                 <button type="button" onclick="toggleChangePasswordForm(false)">Cancel</button>
@@ -143,7 +132,6 @@
                                th:classappend="${ageError != null ? 'error' : 'form-control'}"
                                data-cy="dateOfBirth" autofocus
                                oninput="formatDate(this)">
-                        <br/>
                         <div th:if="${ageError}" class="error-message" th:text="${ageError}"></div>
                         <br/>
                         <div class="buttons-centre">

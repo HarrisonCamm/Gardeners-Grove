@@ -5,6 +5,14 @@ stages:
   - sonarqube
   - deploy
 
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
 tag-checker:
   stage: tagChecking
   script:
@@ -26,7 +34,7 @@ junit:
 sonarqube-report:
   stage: sonarqube
   script:
-    ./gradlew sonarqube    
+    ./gradlew sonarqube
 
 # builds all branches, except dev and main
 branch-build:
@@ -52,6 +60,8 @@ deploy-staging:
     - chmod u+x /home/gitlab-runner/staging.sh
     - echo "export AZURE_API_KEY=${AZURE_API_KEY}" > /home/gitlab-runner/staging/.env
     - echo "export AZURE_API_URL=${AZURE_API_URL}" >> /home/gitlab-runner/staging/.env
+    - echo "export TREFLE_API_KEY=${TREFLE_API_KEY}" >> /home/gitlab-runner/staging/.env
+    - echo "export TREFLE_API_URL=${TREFLE_API_URL}" >> /home/gitlab-runner/staging/.env
     - echo "export SONARQUBE_TOKEN=${SONARQUBE_TOKEN}" >> /home/gitlab-runner/staging/.env
     - echo "export WEATHER_API_KEY=${WEATHER_API_KEY}" >> /home/gitlab-runner/staging/.env
     - echo "export WEATHER_API_URL=${WEATHER_API_URL}" >> /home/gitlab-runner/staging/.env
@@ -82,6 +92,8 @@ deploy-production:
     - chmod u+x /home/gitlab-runner/production.sh
     - echo "export AZURE_API_KEY=${AZURE_API_KEY}" > /home/gitlab-runner/production/.env
     - echo "export AZURE_API_URL=${AZURE_API_URL}" >> /home/gitlab-runner/production/.env
+    - echo "export TREFLE_API_KEY=${TREFLE_API_KEY}" >> /home/gitlab-runner/production/.env
+    - echo "export TREFLE_API_URL=${TREFLE_API_URL}" >> /home/gitlab-runner/production/.env
     - echo "export SONARQUBE_TOKEN=${SONARQUBE_TOKEN}" >> /home/gitlab-runner/production/.env
     - echo "export WEATHER_API_KEY=${WEATHER_API_KEY}" >> /home/gitlab-runner/production/.env
     - echo "export WEATHER_API_URL=${WEATHER_API_URL}" >> /home/gitlab-runner/production/.env

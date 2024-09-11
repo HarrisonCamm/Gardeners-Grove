@@ -3,8 +3,9 @@
     <head>
         <meta charset="UTF-8">
         <title>Create Plant</title>
-        <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
-        <link th:href="@{/css/navBar.css}" rel="stylesheet">
+        <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
+        <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
+        <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
         <script th:src="@{javascript/enter-date.js}"></script>
         <script th:src="@{javascript/prevent-enter-submit.js}"></script>
         <script th:src="@{/javascript/image-handling.js}"></script>
@@ -12,7 +13,7 @@
     <body>
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
         <br/>
-        <div class="form">
+        <div class="appBody form">
             <h2>Create Plant</h2>
             <div class="image-icon-div">
                 <div class="image-upload">
@@ -36,7 +37,6 @@
                     <input type="text" class="form-control" id="plantName"
                            th:name="name" th:value="${name}"
                            th:classappend="${nameError} ? 'error' : 'form-control'" autofocus>
-                    <br/>
                     <div th:if="${nameError}" class="error-message" th:text="${nameError}"></div>
                     <br/>
                     <label for="plantCount"> Count: </label>
@@ -44,18 +44,16 @@
                     <input type="text" class="form-control" id="plantCount"
                            th:name="count" th:value="${count} "
                            th:classappend="${countError} ? 'error' : 'form-control'" autofocus>
-                    <br/>
                     <div id="plantCountValidation" th:if="${countError}" class="error-message" th:text="${countError}"></div>
                     <br/>
                     <label for="plantDescription"> Description: </label>
                     <br/>
-                    <textarea id="plantDescription"
+                    <textarea class="plantTextArea" id="plantDescription"
                               th:name="description"
                               th:text="${description}"
                               th:classappend="${descriptionError} ? 'error' : ''"
                               >
                             </textarea>
-                    <br/>
                     <div id="descriptionLengthValidation" class="error-message" th:text="${descriptionError}"></div>
                     <br/>
                     <label for="datePlanted"> Date Planted: </label>
@@ -66,7 +64,6 @@
                            data-cy="datePlanted"
                            oninput="formatDate(this)"
                            th:classappend="${dateError} ? 'error' : 'form-control'" autofocus>
-                    <br/>
                     <div th:if="${dateError}" class="error-message" th:text="${dateError}"></div>
                     <br/>
                     <div class="buttons-centre">

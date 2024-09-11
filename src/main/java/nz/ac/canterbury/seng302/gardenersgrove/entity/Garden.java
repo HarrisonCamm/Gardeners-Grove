@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -32,6 +33,15 @@ public class Garden {
     )
     private List<Tag> tags = new ArrayList<>();
 
+    @Column
+    private Boolean isPublic;
+
+    @Column(length = 512)
+    private String description;
+
+    @Column
+    private Date created;
+
 
     /**
      * Required constructor
@@ -56,17 +66,19 @@ public class Garden {
      * @param owner owner
      */
     public Garden(String name, Location location, String size, User owner) {
+        this(name, location, size, owner, "");
+    }
+
+    public Garden(String name, Location location, String size, User owner, String description) {
         this.name = name;
         this.location = location;
         this.size = size;
         this.owner = owner;
+        this.isPublic = false;
+        this.description = description;
+        this.created = new Date();
     }
-    public Garden setValues(String name, Location location, String size) {
-        this.name = name;
-        this.location = location;
-        this.size = size;
-        return this;
-    }
+
     // Getter for id
     public Long getId() {
         return id;
@@ -74,6 +86,12 @@ public class Garden {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getDescription(){return description;}
+
+    public void setDescription(String description){
+        this.description = description;
     }
 
     public String getName() {
@@ -114,5 +132,15 @@ public class Garden {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    public boolean getIsPublic() {
+        if (isPublic == null)
+            return false;
+        return isPublic;
+    }
+
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
     }
 }

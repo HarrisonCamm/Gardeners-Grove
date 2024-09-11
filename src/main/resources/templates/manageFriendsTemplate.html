@@ -3,17 +3,18 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Manage Friends</title>
-        <!-- Navbar styling -->
-        <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
         <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+        <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
         <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
+        <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+        <link th:href="@{/css/messageFriends.css}" rel="stylesheet"/>
         <script th:src="@{javascript/prevent-enter-submit.js}"></script>
         <script th:src="@{/javascript/hover-enter.js}"></script>
         <script th:src="@{/javascript/manage-friends.js}"></script>
     </head>
     <body>
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-        <div>
+        <div class="appBody">
             <div class="manage-friends-page">
                 <div>
                     <div class="friends-container">

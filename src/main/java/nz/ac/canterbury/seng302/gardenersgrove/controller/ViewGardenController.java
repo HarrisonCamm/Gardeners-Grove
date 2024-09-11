@@ -9,9 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,23 +61,24 @@ public class ViewGardenController {
         response.setDateHeader("Expires", 0); // Proxies
 
 
-
         logger.info("GET /view-garden");
         RedirectService.addEndpoint("/view-garden?gardenID=" + gardenID);
 
         Image.removeTemporaryImage(session, imageService);
         session.removeAttribute("imageFile");
 
-        Optional<Garden> garden = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenticatedUser();
-        if (garden.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
-        else if (!garden.get().getOwner().equals(currentUser))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
+        Garden garden = authoriseAction(gardenID, currentUser, true);
+        boolean isOwner = garden.getOwner().equals(currentUser);
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
         session.removeAttribute("tagEvaluationError");
-        return "viewGardenDetailsTemplate";
+
+        if (isOwner) {
+            return "viewGardenDetailsTemplate";
+        } else {
+            return "viewUnownedGardenDetailsTemplate";
+        }
     }
 
     /**
@@ -93,12 +96,8 @@ public class ViewGardenController {
                                   Model model) {
         logger.info("POST /view-garden");
 
-        Optional<Garden> garden = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenticatedUser();
-        if (garden.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
-        else if (!garden.get().getOwner().equals(currentUser))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
+        authoriseAction(gardenID, currentUser, false);
 
         Optional<Plant> foundPlant = plantService.findPlant(plantID);
         if (foundPlant.isEmpty())
@@ -123,6 +122,22 @@ public class ViewGardenController {
         return "redirect:/view-garden?gardenID=" + gardenID;
     }
 
+    @PatchMapping("/view-garden")
+    public ResponseEntity<Void> changePublicity(@RequestParam("gardenID") Long gardenID,
+                                          @RequestParam("isPublic") Boolean isPublic,
+                                          Model model,
+                                          HttpSession session){
+        logger.info("PATCH /view-garden");
+
+        User currentUser = userService.getAuthenticatedUser();
+        Garden garden = authoriseAction(gardenID, currentUser, false);
+
+        garden.setIsPublic(isPublic);
+        gardenService.addGarden(garden);
+
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/add-tag")
     public String addTag(@RequestParam("gardenID") Long gardenID,
                          @RequestParam("tag") String tag,
@@ -130,15 +145,12 @@ public class ViewGardenController {
                          HttpSession session) {
         logger.info("POST /add-tag");
 
-        Optional<Garden> garden = gardenService.findGarden(gardenID);
+//        Optional<Garden> garden = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenticatedUser();
-        if (garden.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
-        else if (!garden.get().getOwner().equals(currentUser))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
+        Garden garden = authoriseAction(gardenID, currentUser, false);
 
         // Get weather information
-        WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.get().getLocation().getCity(), garden.get().getLocation().getCountry());
+        WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.getLocation().getCity(), garden.getLocation().getCountry());
         model.addAttribute("weatherResponse", weatherResponse);
         if (tag.isEmpty()) {
             return "redirect:/view-garden?gardenID=" + gardenID;
@@ -201,16 +213,39 @@ public class ViewGardenController {
     public String dismissAlert(@RequestParam("alertType") String alertType,
                                @RequestParam("gardenID") Long gardenID,
                                HttpSession session) {
+
         User currentUser = userService.getAuthenticatedUser();
+        Garden garden = authoriseAction(gardenID, null, false);
 
-        Optional<Garden> garden = gardenService.findGarden(gardenID);
-        if (garden.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
-        }
-
-        alertService.dismissAlert(currentUser, garden.get(), alertType);
+        alertService.dismissAlert(currentUser, garden, alertType);
 
         return "redirect:/view-garden?gardenID=" + gardenID;
+    }
+
+    /**
+     * Checks if garden exists, then if the given user is the owner
+     * @param gardenID the ID of the garden
+     * @param currentUser the logged-in user
+     * @return the garden if it exists
+     */
+    private Garden authoriseAction(Long gardenID, User currentUser, boolean onlyViewing) {
+        final Optional<Garden> garden = gardenService.findGarden(gardenID);
+        if (garden.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " not present");
+
+        if (currentUser != null) {
+            final boolean isOwner = garden.get().getOwner().equals(currentUser);
+            if (!isOwner) {
+                if (onlyViewing) {
+                    if (!garden.get().getIsPublic())
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot view this garden.");
+                } else {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot perform the requested action on this garden.");
+                }
+            }
+        }
+
+        return garden.get();
     }
 
     private void addAttributes(User owner, Long gardenID, Model model, PlantService plantService, GardenService gardenService, HttpSession session) {
@@ -225,8 +260,10 @@ public class ViewGardenController {
             model.addAttribute("tagInput", "");
             model.addAttribute("gardenName", garden.get().getName());
             model.addAttribute("gardenLocation", garden.get().getLocation().toString());
+            model.addAttribute("gardenDescription", garden.get().getDescription());
             model.addAttribute("gardenSize", garden.get().getSize());
             model.addAttribute("gardenTags", gardenService.getEvaluatedTags(gardenID));
+            model.addAttribute("gardenIsPublic", garden.get().getIsPublic());
             model.addAttribute("allTags", tagService.getTagsByEvaluated(true));
             model.addAttribute("tagError", session.getAttribute("tagEvaluationError"));
 
@@ -251,8 +288,12 @@ public class ViewGardenController {
                 boolean isRainingDismissed = alertService.isAlertDismissed(owner, garden.get(), "isRaining");
 
                 // If forecastResponse is null, because API does not find weather at that location
-                if (forecastResponse == null) {
+                User currentUser = userService.getAuthenticatedUser();
+                User gardenOwner = garden.get().getOwner();
+                if (forecastResponse == null && currentUser.equals(gardenOwner)) {
                     model.addAttribute("weatherErrorMessage", "Location not found, please update your location to see the weather");
+                } else if (forecastResponse == null && !currentUser.equals(gardenOwner)) {
+                    model.addAttribute("weatherErrorMessage", "Location not found, please contact the garden owner for more information");
                 } else {
                     // Null current weather check (for tests)
                     if (currentWeather != null) {

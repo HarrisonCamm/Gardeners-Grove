@@ -5,15 +5,18 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * User class that contains all the values a user should have
  */
-
 @Entity
 @Table(name = "USERS") //revise later, ask tutor about style
 public class User {
+
+    public static final Integer DEFAULT_BALANCE = 500;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //research how this works
@@ -36,6 +39,12 @@ public class User {
     @Column(name = "dateOfBirth")
     private String dateOfBirth;
 
+    @Column
+    private Date lastFreeSpinUsed;
+
+    @Column(name = "bloomBalance", nullable = false, columnDefinition = "integer default 500")
+    private Integer bloomBalance = DEFAULT_BALANCE;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "User_Friends",
@@ -43,6 +52,14 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
     private List<User> friends = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "User_NonFriendContacts",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "contact_id")
+    )
+    private List<User> nonFriendContacts = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn
@@ -52,6 +69,11 @@ public class User {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private List<Authority> userRoles;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Transaction> transactions = new ArrayList<>();
+
+
 
     @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer inappropriateTagCount = 0;
@@ -75,6 +97,7 @@ public class User {
     public User(Long id, String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth) {
         this.userId = id;
         this.password = password;
+        this.bloomBalance = DEFAULT_BALANCE;
         this.setValues(firstName, lastName, noLastName, email, dateOfBirth);
     }
 
@@ -86,6 +109,7 @@ public class User {
         this.password = password;
         this.dateOfBirth = dateOfBirth;
         this.image = image;
+        this.bloomBalance = DEFAULT_BALANCE;
     }
 
     public User setValues(String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
@@ -94,6 +118,7 @@ public class User {
         this.noLastName = noLastName;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
+        this.bloomBalance = DEFAULT_BALANCE;
         return this;
     }
 
@@ -165,6 +190,10 @@ public class User {
         return dateOfBirth;
     }
 
+    public Integer getBloomBalance() { return bloomBalance; }
+
+    public void setBloomBalance(Integer bloomBalance) { this.bloomBalance = bloomBalance; }
+
     public String setPassword(String newPassword) {
         return this.password = newPassword;
     }
@@ -204,6 +233,9 @@ public class User {
      * @param acceptedFriend the user to add as a friend
      */
     public void addFriend(User acceptedFriend) {
+        if (nonFriendContacts.contains(acceptedFriend)) {
+            this.removeContact(acceptedFriend);
+        }
         friends.add(acceptedFriend);
     }
 
@@ -212,9 +244,7 @@ public class User {
      * @param friendToRemove The user to be removed from the friends list.
      */
     public void removeFriend(User friendToRemove) {
-
         friends.removeIf(friend -> friend.equals(friendToRemove));
-
     }
 
     public void removeAllFriends() {
@@ -225,26 +255,68 @@ public class User {
         return friends;
     }
 
+    public Date getLastFreeSpinUsed() {
+        return lastFreeSpinUsed;
+    }
 
+    public void updateLastFreeSpinUsed() {
+        lastFreeSpinUsed = new Date();
+    }
+
+    public void resetLastFreeSpinUsed() {
+        lastFreeSpinUsed = null;
+    }
+
+    /**
+     * Adds a non-friend contact
+     * @param contact the contact
+     * @return true if added, false if already contained
+     */
+    public boolean addContact(User contact) {
+        if (!nonFriendContacts.contains(contact)) {
+            nonFriendContacts.add(contact);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes a non-friend contact
+     * @param contact the contact
+     */
+    public void removeContact(User contact) {
+        nonFriendContacts.removeIf(c -> c.equals(contact));
+    }
+
+
+    /**
+     * Gets an immutable list of non-friend contacts
+     * @return the list of contacts
+     */
+    public List<User> getNonFriendContacts() {
+        return nonFriendContacts;
+    }
+
+    public List<User> getAllContacts() {
+        List<User> contacts = new ArrayList<>(getFriends());
+        contacts.addAll(getNonFriendContacts());
+        return contacts;
+    }
+
+    public void setFriends(List<User> friends) {
+        this.friends = friends;
+    }
+
+    @Override
+    public boolean equals(Object user) {
+        if (!(user instanceof User)) {
+            return false;
+        }
+        return this.email.equals(((User) user).email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email, firstName, lastName);
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
