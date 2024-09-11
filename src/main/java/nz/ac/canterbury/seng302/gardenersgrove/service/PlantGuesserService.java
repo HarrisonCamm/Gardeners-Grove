@@ -32,7 +32,7 @@ public class PlantGuesserService {
     private Random random = new Random();
     private static final String PLANT_PAGE_FILTERS = "&filter_not[common_name]=null&filter_not[image_url]=null&token=";
     private static final String PLANT_FAMILY_PAGE_FILTERS = "&filter_not[common_name]=null&token=";
-    private static final int MAX_PAGE_NUM = 747;
+    private static final int MAX_PAGE_NUM = 740;
     private static final int NUM_FAMILY_OPTIONS = 3;
 
     @Autowired
