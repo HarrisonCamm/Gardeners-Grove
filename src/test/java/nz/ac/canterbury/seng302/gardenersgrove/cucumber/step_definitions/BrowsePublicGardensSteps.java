@@ -341,10 +341,9 @@ public class BrowsePublicGardensSteps {
 
         // Test navigating beyond the last page
         mockMvc.perform(get("/browse-gardens")
-                        // Beyond the last page (in this test context)
                         .param("page", "3"))
-                // Redirect to the last page
-                .andExpect(status().is3xxRedirection());
+                    .andExpect(model().attributeDoesNotExist("gardenPage"))
+                    .andExpect(status().is3xxRedirection());
     }
 
     // AC10
