@@ -44,9 +44,7 @@ li {
 }
 
 .svg {
-    margin: auto;
-    padding-top: 15px;
-    padding-right: 5px;
+    padding-right: 1px;
     width: 50px;
 }
 
@@ -67,6 +65,7 @@ li {
 .navBar-centre {
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-grow: 1;
 }
 

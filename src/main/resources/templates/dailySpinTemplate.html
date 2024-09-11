@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Gardener's Grove</title>
-    <!-- Navbar styling -->
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
     <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
     <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
@@ -11,54 +11,56 @@
 </head>
 <body>
     <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-    <div class="content">
-        <div>
-            <h1>Daily Spin</h1>
-            <br/>
-        </div>
-    </div>
-    <div class="container" >
-        <div class="money-container">
-            <div id="money" th:text="${bloomBalance}"></div>
-            <div class="changes"> </div>
-            <button id="infoButton" class="info-button">i</button>
-        </div>
-
-        <div class="play-area">
-            <div class="reel-container"></div>
-            <div class="reel-container"></div>
-            <div class="reel-container"></div>
-            <div class="reel-container"></div>
-            <div class="reel-container"></div>
-        </div>
-        <br/>
-        <div>
-            <h3 th:text="${message}"></h3>
-        </div>
-        <br>
-        <form th:action="@{/daily-spin}" method="post">
-            <input type="hidden" name="buttonAction" th:value="${buttonAction}"/>
-            <button type="submit" class="spin-button" th:text="${buttonText}"></button>
-        </form>
-
-        <div class="info">
-            <div class="instructions">
-                Press to spin the reels.<br/> Match at least three on any row to win!<br/>
+    <div class="appBody">
+        <div class="content">
+            <div>
+                <h1>Daily Spin</h1>
+                <br/>
             </div>
         </div>
-    </div>
+        <div class="container" >
+            <div class="money-container">
+                <div id="money" th:text="${bloomBalance}"></div>
+                <div class="changes"> </div>
+                <button id="infoButton" class="info-button">i</button>
+            </div>
 
-    <!-- Modal Structure -->
-    <div id="prizeModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 class="rewards-centre">Rewards Table</h2>
-            <div class="prize-table">
-                <div class="triples">
+            <div class="play-area">
+                <div class="reel-container"></div>
+                <div class="reel-container"></div>
+                <div class="reel-container"></div>
+                <div class="reel-container"></div>
+                <div class="reel-container"></div>
+            </div>
+            <br/>
+            <div>
+                <h3 th:text="${message}"></h3>
+            </div>
+            <br>
+            <form th:action="@{/daily-spin}" method="post">
+                <input type="hidden" name="buttonAction" th:value="${buttonAction}"/>
+                <button type="submit" class="spin-button" th:text="${buttonText}"></button>
+            </form>
+
+            <div class="info">
+                <div class="instructions">
+                    Press to spin the reels.<br/> Match at least three on any row to win!<br/>
                 </div>
-                <div class="quadruples">
-                </div>
-                <div class="quintuples">
+            </div>
+        </div>
+
+        <!-- Modal Structure -->
+        <div id="prizeModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 class="rewards-centre">Rewards Table</h2>
+                <div class="prize-table">
+                    <div class="triples">
+                    </div>
+                    <div class="quadruples">
+                    </div>
+                    <div class="quintuples">
+                    </div>
                 </div>
             </div>
         </div>

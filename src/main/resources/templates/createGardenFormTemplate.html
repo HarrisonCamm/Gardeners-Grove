@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Create Garden</title>
-        <link th:href="@{/css/generalStyles.css}" rel="stylesheet">
-        <link th:href="@{/css/navBar.css}" rel="stylesheet">
-        <script th:src="@{/javascript/hover-enter.js}"></script>
-        <script th:src="@{/javascript/autocomplete.js}"></script>
-        <script th:src="@{javascript/prevent-enter-submit.js}"></script>
-        <script th:src="@{javascript/description-length.js}"></script>
-    </head>
+<!-- Head fragment holding all the style sheets-->
+<head th:replace="fragments/head :: head(title='Create Garden')">
+</head>
+<script th:src="@{/javascript/hover-enter.js}"></script>
+<script th:src="@{/javascript/autocomplete.js}"></script>
+<script th:src="@{javascript/prevent-enter-submit.js}"></script>
+<script th:src="@{javascript/description-length.js}"></script>
     <body>
         <!-- Navigation Bar Fragment -->
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 
-        <div class="wrapper">
+        <div class="appBody wrapper">
             <!-- Garden Side Navigation Bar -->
             <div class="sideBarColour">
                 <table class="sideBar">
@@ -55,7 +52,7 @@
                         </div>
                         <br/>
                         <div>
-                            <label for="gardenDescription"> Description: </label>
+                            <label class="pt-2" for="gardenDescription"> Description: </label>
                             <br/>
                             <textarea class="plantTextArea" maxlength="1024" id="gardenDescription"
                                       th:field="*{description}"
@@ -68,9 +65,9 @@
                             </div>
                             <p th:if="${descriptionError}" class="error-message" th:text="${descriptionError}"></p>
                         </div>
+                        <br/>
                         <div class="locationTable" id="locationContainer">
                             <div>
-                                <br/>
                                 <div id="autocompleteContainer"></div>
                                 <ul class="suggestions" id="suggestions"></ul>
                                 <br/>
@@ -80,7 +77,7 @@
                                        th:name="location.streetAddress"
                                        th:value="*{location.streetAddress}"
                                        th:classappend="${location_streetAddressError} ? 'error' : 'form-control'">
-                                <br/>
+
                                 <p th:if="${location_streetAddressError}" class="error-message" th:text="${location_streetAddressError}"></p>
                                 <br/>
                                 <label for="suburb" id="suburbLabel">Suburb: </label>
@@ -89,7 +86,7 @@
                                        th:name="location.suburb"
                                        th:value="*{location.suburb}"
                                        th:classappend="${location_suburbError} ? 'error' : 'form-control'">
-                                <br/>
+
                                 <p th:if="${location_suburbError}" class="error-message" th:text="${location_suburbError}"></p>
                                 <br/>
                                 <label for="city" id="cityLabel">City:
@@ -100,7 +97,6 @@
                                        th:name="location.city"
                                        th:value="*{location.city}"
                                        th:classappend="${location_cityError} ? 'error' : 'form-control'">
-                                <br/>
                                 <p th:if="${location_cityError}" class="error-message" th:text="${location_cityError}"></p>
                                 <br/>
                                 <label for="postcode" id="postcodeLabel">Postcode: </label>
@@ -109,7 +105,7 @@
                                        th:name="location.postcode"
                                        th:value="*{location.postcode}"
                                        th:classappend="${location_postcodeError} ? 'error' : 'form-control'">
-                                <br/>
+
                                 <p th:if="${location_postcodeError}" class="error-message" th:text="${location_postcodeError}"></p>
                                 <br/>
                                 <label for="country" id="countryLabel">Country:
@@ -120,9 +116,8 @@
                                        th:name="location.country"
                                        th:value="*{location.country}"
                                        th:classappend="${location_countryError} ? 'error' : 'form-control'">
-                                <br/>
+
                                 <p th:if="${location_countryError}" class="error-message" th:text="${location_countryError}"></p>
-                                <br/>
                             </div>
                         </div>
                         <br/>
