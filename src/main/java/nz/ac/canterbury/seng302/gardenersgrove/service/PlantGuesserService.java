@@ -78,6 +78,11 @@ public class PlantGuesserService {
         Collections.shuffle(plantList);
         return plantList.get(i);
     }
+    public List<PlantData> getPlantRound() {
+        List<PlantData> plantList= new ArrayList<>(Arrays.stream(getPlants()).toList());
+        Collections.shuffle(plantList);
+        return plantList;
+    }
 
     public PlantData[] getFamilyPlants(String family, String plantName) {
         PlantData[] plantList = getPlantFamily(family).getPlantGuesserList();
