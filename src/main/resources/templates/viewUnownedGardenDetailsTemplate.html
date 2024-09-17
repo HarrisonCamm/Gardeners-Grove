@@ -54,12 +54,35 @@
 
                 <div class="row mb-3 ps-5">
                     <div class="col">
-                        <a th:href="@{'/messages?gardenID=' + ${gardenID}}" class="btn btn-primary button">
+                        <a th:href="@{'/messages?gardenID=' + ${gardenID}}" class="btn btn-primary">
                             Message Owner
                         </a>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tipBloomsModal">
+                            Tip Blooms
+                        </button>
                     </div>
                 </div>
 
+                <!-- Tip Blooms Modal -->
+                <div class="modal fade" id="tipBloomsModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" >Tip Blooms</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="bloomsInput" class="form-label">Blooms To Tip Owner</label>
+                                    <input type="number" min="0" class="form-control" id="bloomsInput" placeholder="Enter amount">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="col container pt-5">
