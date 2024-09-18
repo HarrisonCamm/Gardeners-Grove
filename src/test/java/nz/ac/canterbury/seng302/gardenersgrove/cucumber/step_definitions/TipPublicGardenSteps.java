@@ -41,8 +41,8 @@ public class TipPublicGardenSteps {
 
     private MockMvc mockMvc;
     private MvcResult mvcResult;
-    private static Garden testOwnedGarden;
-    private User gardenOwner = null;
+    private Garden testOwnedGarden;
+
 
 
 
@@ -50,27 +50,25 @@ public class TipPublicGardenSteps {
     public void setUp() throws IOException {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
-        if (gardenOwner == null) {
-            gardenOwner = new User("inaya@email.com", "Inaya", true, "", "Password1!", "1990-01-01");
-            userService.addUser(gardenOwner);
-        }
-
         // Create a new unique location for each garden
         Location location = new Location("Test Street", "Test Suburb", "Test City", "1234", "Country");
 
         String gardenName = "Public Test Garden";
-        testOwnedGarden = new Garden(gardenName, location, "100", gardenOwner, "A public garden");
+        testOwnedGarden = new Garden(gardenName, location, "100");
 
         // Mark the garden as public
         testOwnedGarden.setIsPublic(true);
-        gardenService.addGarden(testOwnedGarden);
     }
 
-    @Given("I am on the garden details page for a garden I do not own")
-    public void i_am_on_the_garden_details_page_for_a_garden_i_do_not_own() throws Exception {
+    @Given("I am on the garden details page for a garden I own for tips")
+    public void i_am_on_the_garden_details_page_for_a_garden_i_own_for_tips() throws Exception {
+        User loggedInUser = userService.getAuthenticatedUser();
+        testOwnedGarden.setOwner(loggedInUser);
+        gardenService.addGarden(testOwnedGarden);
+
         mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + testOwnedGarden.getId()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("viewUnownedGardenDetailsTemplate"))
+                .andExpect(view().name("viewGardenDetailsTemplate"))
                 .andReturn();
     }
 

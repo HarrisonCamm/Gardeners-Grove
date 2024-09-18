@@ -6,7 +6,7 @@ Feature: U6002 Tipping public garden
 
 
   Scenario: AC6 - View total tipped Blooms
-    Given I am on the garden details page for a garden I do not own
+    Given I am on the garden details page for a garden I own for tips
     Then I can see the total number of Blooms the garden has received as tips
 
   Scenario: AC7 -  Claim Blooms button
