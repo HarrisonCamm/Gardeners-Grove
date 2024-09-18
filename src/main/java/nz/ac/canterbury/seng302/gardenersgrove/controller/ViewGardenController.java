@@ -248,6 +248,22 @@ public class ViewGardenController {
         return garden.get();
     }
 
+    private Model addTipAttributes(Model model, Optional<Garden> garden, User currentUser) {
+        //new code added to get Blooms tipped
+        Integer totalBloomsTipped = garden.get().getTotalBloomTips();
+        model.addAttribute("totalBloomsTippedMessage", "Total Blooms tipped: " + totalBloomsTipped);
+        boolean isOwner = garden.get().getOwner().equals(currentUser);
+        if (isOwner) {
+            Integer unclaimedBlooms = garden.get().getUnclaimedBlooms();
+            boolean hasBloomsToClaim = unclaimedBlooms > 0;
+            model.addAttribute("hasBloomsToClaim", hasBloomsToClaim);
+            if (hasBloomsToClaim) {
+                model.addAttribute("unclaimedBloomsMessage", "You have " + unclaimedBlooms + " Blooms to claim!");
+            }
+        }
+        return model;
+    }
+
     private void addAttributes(User owner, Long gardenID, Model model, PlantService plantService, GardenService gardenService, HttpSession session) {
         List<Plant> plants = plantService.getGardenPlant(gardenID);
         List<Garden> gardens = gardenService.getOwnedGardens(owner.getUserId());
@@ -267,19 +283,8 @@ public class ViewGardenController {
             model.addAttribute("allTags", tagService.getTagsByEvaluated(true));
             model.addAttribute("tagError", session.getAttribute("tagEvaluationError"));
 
-            //new code added to get Blooms tipped
-            Integer totalBloomsTipped = garden.get().getTotalBloomTips();
-            model.addAttribute("totalBloomsTippedMessage", "Total Blooms tipped: " + totalBloomsTipped);
             User currentUser = userService.getAuthenticatedUser();
-            boolean isOwner = garden.get().getOwner().equals(currentUser);
-            if (isOwner) {
-                Integer unclaimedBlooms = garden.get().getUnclaimedBlooms();
-                boolean hasBloomsToClaim = unclaimedBlooms > 0;
-                model.addAttribute("hasBloomsToClaim", hasBloomsToClaim);
-                if (hasBloomsToClaim) {
-                    model.addAttribute("unclaimedBloomsMessage", "You have " + unclaimedBlooms + " Blooms to claim!");
-                }
-            }
+            model = addTipAttributes(model, garden, currentUser);
 
             // New Code Added to get weather
             String gardenCity = garden.get().getLocation().getCity();

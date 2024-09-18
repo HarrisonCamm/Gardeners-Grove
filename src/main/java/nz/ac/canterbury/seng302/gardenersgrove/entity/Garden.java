@@ -46,7 +46,7 @@ public class Garden {
     private Integer totalBloomTips;
 
     @Column
-    private Integer unclaimedBlooms;
+    private Integer unclaimedBloomTips;
 
 
     /**
@@ -84,7 +84,7 @@ public class Garden {
         this.description = description;
         this.created = new Date();
         this.totalBloomTips = 0;
-        this.unclaimedBlooms = 0;
+        this.unclaimedBloomTips = 0;
     }
 
     // Getter for id
@@ -164,13 +164,13 @@ public class Garden {
     }
 
     public Integer getUnclaimedBlooms() {
-        if (unclaimedBlooms == null) {
-            unclaimedBlooms = 0;
+        if (unclaimedBloomTips == null) {
+            unclaimedBloomTips = 0;
         }
-        return unclaimedBlooms;
+        return unclaimedBloomTips;
     }
 
     public void setUnclaimedBlooms(Integer unclaimedBlooms) {
-        this.unclaimedBlooms = unclaimedBlooms;
+        this.unclaimedBloomTips = unclaimedBlooms;
     }
 }

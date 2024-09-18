@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
 import io.cucumber.java.Before;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -20,9 +21,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -49,8 +47,11 @@ public class TipPublicGardenSteps {
     @Before
     public void setUp() throws IOException {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
 
-        // Create a new unique location for each garden
+    @And("I have a public garden")
+    public void i_have_a_public_garden() {
+        // Create a new unique location for garden
         Location location = new Location("Test Street", "Test Suburb", "Test City", "1234", "Country");
 
         String gardenName = "Public Test Garden";
@@ -58,13 +59,14 @@ public class TipPublicGardenSteps {
 
         // Mark the garden as public
         testOwnedGarden.setIsPublic(true);
+
+        User loggedInUser = userService.getAuthenticatedUser();
+        testOwnedGarden.setOwner(loggedInUser);
+        gardenService.addGarden(testOwnedGarden);
     }
 
     @Given("I am on the garden details page for a garden I own for tips")
     public void i_am_on_the_garden_details_page_for_a_garden_i_own_for_tips() throws Exception {
-        User loggedInUser = userService.getAuthenticatedUser();
-        testOwnedGarden.setOwner(loggedInUser);
-        gardenService.addGarden(testOwnedGarden);
 
         mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + testOwnedGarden.getId()))
                 .andExpect(status().isOk())
