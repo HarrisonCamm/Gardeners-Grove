@@ -74,34 +74,40 @@ public class TipPublicGardenSteps {
 
     @Then("I can see the total number of Blooms the garden has received as tips")
     public void i_can_see_the_total_number_of_blooms_the_garden_has_received_as_tips() throws UnsupportedEncodingException {
-        String content = mvcResult.getResponse().getContentAsString(); //getting the html content
         String totalBloomsTippedMessage = (String) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("totalBloomsTippedMessage");
 
         Long gardenId = (Long) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("gardenID");
         Optional<Garden> garden = gardenService.findGarden(gardenId);
 
-        boolean foundTotalBlooms = content.contains("<");
         Integer totalBloomsTipped = garden.get().getTotalBloomTips();
         Assertions.assertAll(
                 () -> Assertions.assertNotNull(garden),
-                () -> Assertions.assertEquals("Total Blooms tipped: " + totalBloomsTipped, totalBloomsTippedMessage),
-                () -> Assertions.assertTrue(foundTotalBlooms)
+                () -> Assertions.assertEquals("Total Blooms tipped: " + totalBloomsTipped, totalBloomsTippedMessage)
         );
     }
 
-    @Given("I have received tips for my garden")
-    public void i_have_received_tips_for_my_garden() {
-        // Write code here that turns the phrase above into concrete actions
-    }
-
-    @When("I navigate to my garden's details page")
-    public void i_navigate_to_my_garden_s_details_page() {
-        // Write code here that turns the phrase above into concrete actions
+    @Given("I have received tips for my garden for {int} blooms")
+    public void i_have_received_tips_for_my_garden(Integer tipAmount) {
+        testOwnedGarden.setTotalBloomTips(tipAmount);
+        testOwnedGarden.setUnclaimedBlooms(tipAmount);
+        //TODO once functionality implemented, use the controller to set tips
     }
 
     @Then("I see a claim blooms button to add the amount of unclaimed bloom tips of the garden to my balance")
-    public void i_see_a_claim_blooms_button_to_add_the_amount_of_unclaimed_bloom_tips_of_the_garden_to_my_balance() {
-        // Write code here that turns the phrase above into concrete actions
-    }
+    public void i_see_a_claim_blooms_button_to_add_the_amount_of_unclaimed_bloom_tips_of_the_garden_to_my_balance() throws UnsupportedEncodingException {
+        boolean hasBloomsToClaim = (boolean) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("hasBloomsToClaim");
+        String unclaimedBloomsMessage = (String) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("unclaimedBloomsMessage");
 
+        Long gardenId = (Long) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("gardenID");
+        Optional<Garden> garden = gardenService.findGarden(gardenId);
+        Integer totalBloomsUnclaimed = garden.get().getUnclaimedBlooms();
+
+        Integer actualBloomsUnclaimed = testOwnedGarden.getUnclaimedBlooms();
+        Assertions.assertAll(
+                () -> Assertions.assertNotNull(garden),
+                () -> Assertions.assertTrue(hasBloomsToClaim),
+                () -> Assertions.assertEquals(actualBloomsUnclaimed, totalBloomsUnclaimed),
+                () -> Assertions.assertEquals("You have " + actualBloomsUnclaimed + " Blooms to claim!", unclaimedBloomsMessage)
+                );
+    }
 }
