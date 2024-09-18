@@ -42,6 +42,12 @@ public class Garden {
     @Column
     private Date created;
 
+    @Column
+    private Integer totalBloomTips;
+
+    @Column
+    private Integer unclaimedBlooms;
+
 
     /**
      * Required constructor
@@ -77,6 +83,8 @@ public class Garden {
         this.isPublic = false;
         this.description = description;
         this.created = new Date();
+        this.totalBloomTips = 0;
+        this.unclaimedBlooms = 0;
     }
 
     // Getter for id
@@ -142,5 +150,27 @@ public class Garden {
 
     public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
+    }
+
+    public Integer getTotalBloomTips() {
+        if (totalBloomTips == null) {
+            totalBloomTips = 0;
+        }
+        return totalBloomTips;
+    }
+
+    public void setTotalBloomTips(Integer totalBloomTips) {
+        this.totalBloomTips = totalBloomTips;
+    }
+
+    public Integer getUnclaimedBlooms() {
+        if (unclaimedBlooms == null) {
+            unclaimedBlooms = 0;
+        }
+        return unclaimedBlooms;
+    }
+
+    public void setUnclaimedBlooms(Integer unclaimedBlooms) {
+        this.unclaimedBlooms = unclaimedBlooms;
     }
 }

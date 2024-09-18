@@ -267,6 +267,20 @@ public class ViewGardenController {
             model.addAttribute("allTags", tagService.getTagsByEvaluated(true));
             model.addAttribute("tagError", session.getAttribute("tagEvaluationError"));
 
+            //new code added to get Blooms tipped
+            Integer totalBloomsTipped = garden.get().getTotalBloomTips();
+            model.addAttribute("totalBloomsTippedMessage", "Total Blooms tipped: " + totalBloomsTipped);
+            User currentUser = userService.getAuthenticatedUser();
+            boolean isOwner = garden.get().getOwner().equals(currentUser);
+            if (isOwner) {
+                Integer unclaimedBlooms = garden.get().getUnclaimedBlooms();
+                boolean hasBloomsToClaim = unclaimedBlooms > 0;
+                model.addAttribute("hasBloomsToClaim", hasBloomsToClaim);
+                if (hasBloomsToClaim) {
+                    model.addAttribute("unclaimedBloomsMessage", "You have " + unclaimedBlooms + " Blooms to claim!");
+                }
+            }
+
             // New Code Added to get weather
             String gardenCity = garden.get().getLocation().getCity();
             String gardenCountry = garden.get().getLocation().getCountry();
@@ -288,7 +302,6 @@ public class ViewGardenController {
                 boolean isRainingDismissed = alertService.isAlertDismissed(owner, garden.get(), "isRaining");
 
                 // If forecastResponse is null, because API does not find weather at that location
-                User currentUser = userService.getAuthenticatedUser();
                 User gardenOwner = garden.get().getOwner();
                 if (forecastResponse == null && currentUser.equals(gardenOwner)) {
                     model.addAttribute("weatherErrorMessage", "Location not found, please update your location to see the weather");

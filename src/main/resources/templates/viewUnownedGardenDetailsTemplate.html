@@ -61,6 +61,9 @@
                             Tip Blooms
                         </button>
                     </div>
+                    <div class="col">
+                        <p th:text="${totalBloomsTippedMessage}"></p>
+                    </div>
                 </div>
 
                 <!-- Tip Blooms Modal -->
@@ -79,10 +82,15 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                 <button type="button" class="btn btn-primary">Confirm</button>
+<!--                                TODO in another task: implement logic for starting the transaction and updating total blooms tipped-->
                             </div>
                         </div>
                     </div>
                 </div>
+
+<!--                <div class="row mb-3 ps-5">-->
+<!--                    -->
+<!--                </div>-->
             </div>
 
             <div class="col container pt-5">
