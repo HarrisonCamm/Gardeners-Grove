@@ -248,6 +248,22 @@ public class ViewGardenController {
         return garden.get();
     }
 
+    private Model addTipAttributes(Model model, Garden garden, User currentUser) {
+        //new code added to get Blooms tipped
+        Integer totalBloomsTipped = garden.getTotalBloomTips();
+        model.addAttribute("totalBloomsTippedMessage", "Total Blooms tipped: " + totalBloomsTipped);
+        boolean isOwner = garden.getOwner().equals(currentUser);
+        if (isOwner) {
+            Integer unclaimedBlooms = garden.getUnclaimedBlooms();
+            boolean hasBloomsToClaim = unclaimedBlooms > 0;
+            model.addAttribute("hasBloomsToClaim", hasBloomsToClaim);
+            if (hasBloomsToClaim) {
+                model.addAttribute("unclaimedBloomsMessage", "You have " + unclaimedBlooms + " Blooms to claim!");
+            }
+        }
+        return model;
+    }
+
     private void addAttributes(User owner, Long gardenID, Model model, PlantService plantService, GardenService gardenService, HttpSession session) {
         List<Plant> plants = plantService.getGardenPlant(gardenID);
         List<Garden> gardens = gardenService.getOwnedGardens(owner.getUserId());
@@ -266,6 +282,9 @@ public class ViewGardenController {
             model.addAttribute("gardenIsPublic", garden.get().getIsPublic());
             model.addAttribute("allTags", tagService.getTagsByEvaluated(true));
             model.addAttribute("tagError", session.getAttribute("tagEvaluationError"));
+
+            User currentUser = userService.getAuthenticatedUser();
+            model = addTipAttributes(model, garden.get(), currentUser);
 
             // New Code Added to get weather
             String gardenCity = garden.get().getLocation().getCity();
@@ -288,7 +307,6 @@ public class ViewGardenController {
                 boolean isRainingDismissed = alertService.isAlertDismissed(owner, garden.get(), "isRaining");
 
                 // If forecastResponse is null, because API does not find weather at that location
-                User currentUser = userService.getAuthenticatedUser();
                 User gardenOwner = garden.get().getOwner();
                 if (forecastResponse == null && currentUser.equals(gardenOwner)) {
                     model.addAttribute("weatherErrorMessage", "Location not found, please update your location to see the weather");
