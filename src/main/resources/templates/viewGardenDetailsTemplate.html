@@ -92,9 +92,10 @@
                 </div>
             </div>
 
-            <div class="row mb-3 ps-5">
+            <div id="bloomTipsGardenInfo" class="row mb-3 ps-5">
                 <div class="col">
                     <p th:text="${totalBloomsTippedMessage}"></p>
+                    <p id="makeGardenPublicMessage" th:if="${!hasBloomsToClaim}">Make your garden public to get tips!</p>
                     <button type="button" th:if="${hasBloomsToClaim}" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#claimBloomsModal">
                         Claim Bloom Tips
                     </button>
