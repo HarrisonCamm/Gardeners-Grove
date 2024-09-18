@@ -67,23 +67,26 @@
                 </div>
 
                 <!-- Tip Blooms Modal -->
-                <div class="modal fade" id="tipBloomsModal" tabindex="-1" aria-hidden="true">
+                <div class="modal fade" id="tipBloomsModal" tabindex="-1">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" >Tip Blooms</h5>
                             </div>
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label for="bloomsInput" class="form-label">Blooms To Tip Owner</label>
-                                    <input type="number" min="0" class="form-control-tips" id="bloomsInput" placeholder="Enter amount">
+                            <form id="tipBloomsForm" th:action="@{/tip-blooms(gardenID=${gardenID})}" method="post">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="bloomsInput" class="form-label">Blooms To Tip Owner</label>
+                                        <input type="number" class="form-control-tips" id="bloomsInput" placeholder="Enter amount" name="tipAmount" th:value="${tipInput}">
+                                        <div th:if="${tipAmountError}" class="text-danger" th:text="${tipAmountError}"></div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-primary">Confirm</button>
-<!--                                TODO in another task: implement logic for starting the transaction and updating total blooms tipped-->
-                            </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary" id="confirmTipButton" onClick="showModal()">Confirm</button>
+    <!--                                TODO in another task: implement logic for starting the transaction and updating total blooms tipped-->
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -186,6 +189,7 @@
         const clearButton = document.getElementById('clearButton');
         const tagInput = document.getElementById('tagInput');
         const autocompleteList = document.getElementById('autocompleteList');
+        const confirmTipButton = document.getElementById('confirmTipButton');
 
         function adjustWidth() {
             const width = plantContainer.offsetWidth;
@@ -208,6 +212,24 @@
                 document.getElementById('tagForm').submit();
             }
         });
+
+        // confirmTipButton.addEventListener('click', (event) => {
+        //    event.preventDefault();
+        // });
+        function showModal() {
+            $("tipBloomsForm").on("submit", function (event) {
+                event.preventDefault();
+                // $.ajax({
+                //     url: "yoururl",
+                //     type: "POST",
+                //     data: yourData,
+                //     success: function (result) {
+                //         console.log(result)
+                //     }
+                // });
+            })
+        }
+
 
         // This code is AI generated :)
         tagInput.addEventListener('input', function() {

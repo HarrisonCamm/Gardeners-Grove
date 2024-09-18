@@ -22,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Optional;
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.TagValidator.*;
+import static nz.ac.canterbury.seng302.gardenersgrove.validation.TipValidator.doTipValidations;
 
 @Controller
 public class ViewGardenController {
@@ -136,6 +137,26 @@ public class ViewGardenController {
         gardenService.addGarden(garden);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/tip-blooms")
+    public String addTip(@RequestParam("gardenID") Long gardenID,
+                         @RequestParam(defaultValue = "0") Integer tipAmount,
+                         Model model,
+                         HttpSession session) {
+        logger.info("POST /tip-blooms");
+        logger.info(String.valueOf(gardenID));
+        logger.info(tipAmount + " tip amount"); //TODO remove logs
+
+        User currentUser = userService.getAuthenticatedUser();
+
+        doTipValidations(model, tipAmount, currentUser);
+
+        addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
+
+
+//        return "redirect:/view-garden?gardenID=" + gardenID;
+        return "viewUnownedGardenDetailsTemplate";
     }
 
     @PostMapping("/add-tag")
@@ -282,9 +303,11 @@ public class ViewGardenController {
             model.addAttribute("gardenIsPublic", garden.get().getIsPublic());
             model.addAttribute("allTags", tagService.getTagsByEvaluated(true));
             model.addAttribute("tagError", session.getAttribute("tagEvaluationError"));
+            model.addAttribute("tipInput", "");
+
 
             User currentUser = userService.getAuthenticatedUser();
-            model = addTipAttributes(model, garden.get(), currentUser);
+            addTipAttributes(model, garden.get(), currentUser);
 
             // New Code Added to get weather
             String gardenCity = garden.get().getLocation().getCity();
