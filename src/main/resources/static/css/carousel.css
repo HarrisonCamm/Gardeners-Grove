@@ -1,0 +1,48 @@
+.carousel-container {
+    position: relative;
+    width: 80%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.carousel {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-item {
+    min-width: 25%;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.carousel-item img {
+    max-width: 100%;
+    height: auto;
+}
+
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+}
+
+.carousel-control.left {
+    left: 10px;
+}
+
+.carousel-control.right {
+    right: 10px;
+}
+
+.carousel-control:focus {
+    outline: none;
+}

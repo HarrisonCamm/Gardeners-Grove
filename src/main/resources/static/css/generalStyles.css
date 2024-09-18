@@ -60,7 +60,6 @@ body {
     color: #DE2929;
 }
 
-
 .table-wrapper {
     max-width: 100%; /* Full width on smaller screens */
     margin: 0 auto;
@@ -85,6 +84,16 @@ body {
     overflow: hidden; /* Hides overflow */
     text-overflow: ellipsis; /* Adds ellipsis (...) to long content */
 }
+
+
+
+
+
+
+
+
+
+
 
 
 /*Create Plant, Edit Plant Form*/

@@ -8,13 +8,46 @@
     <!-- Navbar styling -->
     <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
     <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+    <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
+    <script th:src="@{/javascript/carousel.js}"></script>
+    <!-- Bootstrap JS (for carousel functionality) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 <div class="content appBody">
     <div>
-        <h1>Shop Page</h1>
-        <br/>
+        <div id="itemCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="row">
+                        <!-- Thymeleaf loop to iterate through items and render 4 items per slide -->
+                        <div class="col-lg-3" th:each="item : ${items}">
+                            <div class="card h-100 text-center">
+                                <img th:src="@{${item.imageUrl}}" class="card-img-top" alt="Item image">
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${item.title}"></h5>
+                                    <p class="card-text" th:text="${item.description}"></p>
+                                    <p class="card-text fw-bold" th:text="${item.price}"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- More carousel items (you can add another set of items for the next slide if needed) -->
+                <!-- Carousel items will repeat using Thymeleaf pagination -->
+            </div>
+
+            <!-- Carousel controls (previous/next) -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#itemCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon bg-dark rounded-circle" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#itemCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon bg-dark rounded-circle" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
     </div>
 </div>
 </body>
