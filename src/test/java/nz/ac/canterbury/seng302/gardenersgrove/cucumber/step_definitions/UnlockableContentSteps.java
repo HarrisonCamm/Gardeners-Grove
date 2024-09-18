@@ -6,7 +6,12 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @SuppressWarnings({"unchecked", "SpringJavaInjectionPointsAutowiringInspection"})
 public class UnlockableContentSteps {
@@ -15,10 +20,13 @@ public class UnlockableContentSteps {
     private MockMvc mockMvc;
 
     private ResultActions resultActions;
+    private MvcResult mvcResult;
 
     @When("I click Inventory")
-    public void i_click_inventory() {
-        // TODO: Implement logic for clicking the inventory
+    public void i_click_inventory() throws Exception {
+        resultActions = mockMvc.perform(get("/inventory"));
+        mvcResult = resultActions.andExpect(status().isOk())
+                .andReturn();
     }
 
     @Then("I am shown my inventory of items")
