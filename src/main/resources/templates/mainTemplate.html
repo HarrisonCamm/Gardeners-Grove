@@ -1,42 +1,49 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Gardener's Grove</title>
-        <!-- Bootstrap CSS -->
-        <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
-        <!-- Navbar styling -->
-        <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
-        <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
-    </head>
-    <body>
-        <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-        <div class="content appBody">
-            <div class="container mt-4">
-                <h2 class="text-center mb-3">Leaderboard</h2>
-                <div class="table-responsive">
-                    <table class="table table-hover table-bordered text-center">
-                        <thead class="bg-dark text-white">
-                        <tr>
-                            <th>Ranking</th>
-                            <th>Username</th>
-                            <th>Blooms</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <!-- Updated to use topUsers as per the controller's model attribute -->
-                        <tr th:each="user, index : ${topUsers}">
-                            <td th:text="${index.index + 1}"></td>
-                            <td th:text="${user.firstName}"></td> <!-- Assuming the username is stored in firstName -->
-                            <td th:text="${user.bloomBalance}"></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            </div>
-
-
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Gardener's Grove</title>
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Navbar styling -->
+    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+    <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+</head>
+<body>
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<div class="content appBody">
+    <div class="container mt-4">
+        <div class="leaderboard-container">
+            <div class="leaderboard-header">Leaderboard</div>
+            <table class="leaderboard-table">
+                <thead>
+                <tr>
+                    <th>Ranking</th>
+                    <th>Profile & Name</th>
+                    <th>
+                        <span class="icon-text">
+                            <div class="svg">
+                                <div class="svg-fragment" th:replace="~{fragments/iconFragment.html :: iconFragment}"></div>
+                            </div>
+                            Blooms
+                        </span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user, index : ${topUsers}">
+                    <td th:text="${index.index + 1}"></td>
+                    <td class="profile-info">
+                        <img class="leaderboard-image"
+                             th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="Profile Picture">
+                        <span class="profile-name" th:text="${user.firstName} + ' ' + ${user.lastName}"></span>
+                    </td>
+                    <td th:text="${user.bloomBalance}"></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
-    </body>
+    </div>
+</div>
+</body>
 </html>
