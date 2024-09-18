@@ -545,6 +545,12 @@ hr {
     resize: none;
 }
 
+.item-price {
+    position: absolute;
+    right: 7.5%;
+    top: 7.5%;
+}
+
 
 @media only screen and (orientation: portrait) {
     h2 {
