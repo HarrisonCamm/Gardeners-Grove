@@ -43,8 +43,6 @@ public class PlantGuesserController {
     private static final String SESSION_SCORE = "plantGuesserScore";
     private static final String SESSION_ROUND = "plantGuesserRound";
 
-    private User gardenersGroveUser; //represents the sender for transactions from games
-
     @Autowired
     public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, TransactionService transactionService, UserService userService, UserRepository userRepository, Random random) {
         this.plantGuesserService = plantGuesserService;
@@ -149,7 +147,7 @@ public class PlantGuesserController {
             model.addAttribute("bloomBalance", currentUser.getBloomBalance());
             int bloomsToAdd = BLOOM_BONUS + (score*NUM_ROUNDS);
 
-            gardenersGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
+            User gardenersGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
             transactionService.addTransaction(bloomsToAdd, "Plant guesser game.","Game", currentUser.getUserId(), gardenersGroveUser.getUserId());
             gameOver = true;
             resetRound(session);
