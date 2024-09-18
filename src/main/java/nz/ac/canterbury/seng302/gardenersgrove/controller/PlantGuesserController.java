@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -57,7 +56,7 @@ public class PlantGuesserController {
     }
     public void setRandom(Random random) {
         // This is used for testing purposes, so the shuffling of the answers in not random and can stay consistent for testing
-        // This setter is so it can be set to a fixed random during testing, otherwise it is always truly random
+        // This setter is, so it can be set to a fixed random during testing, otherwise it is always truly random
         this.random = random;
     }
     public void resetRound(HttpSession session) {
@@ -70,7 +69,6 @@ public class PlantGuesserController {
      */
     @GetMapping("/plant-guesser")
     public String getTemplate(HttpSession session,
-                              HttpServletRequest request,
                               Model model) {
         logger.info("GET /plant-guesser");
         if (!Objects.equals(RedirectService.getPreviousPage(), PAGE_URL)) {
@@ -104,7 +102,6 @@ public class PlantGuesserController {
                                @RequestParam("correctOption") int correctOption,
                                @RequestParam("score") int score,
                                HttpSession session,
-                               HttpServletRequest request,
                               Model model) {
         logger.info("POST /plant-guesser");
         RedirectService.addEndpoint(PAGE_URL);
@@ -150,10 +147,10 @@ public class PlantGuesserController {
             currentUser.setBloomBalance(currentBloomBalance + BLOOM_BONUS + (score*NUM_ROUNDS));
             userRepository.save(currentUser);
             model.addAttribute("bloomBalance", currentUser.getBloomBalance());
-            Integer bloomsToAdd = BLOOM_BONUS + (score*NUM_ROUNDS);
+            int bloomsToAdd = BLOOM_BONUS + (score*NUM_ROUNDS);
 
             gardenersGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
-            transactionService.addTransaction(bloomsToAdd, "Plant guesser game.","type", currentUser.getUserId(), gardenersGroveUser.getUserId());
+            transactionService.addTransaction(bloomsToAdd, "Plant guesser game.","Game", currentUser.getUserId(), gardenersGroveUser.getUserId());
             gameOver = true;
             resetRound(session);
         }
@@ -204,7 +201,7 @@ public class PlantGuesserController {
 
         Collections.shuffle(quizOptions, random); // set random while testing, otherwise true random
 
-        // The quiz options list has a string that contains both the common and scientific name of a plant so they can be shuffled together, then they need to be split up to display the scientific name on a new line
+        // The quiz options list has a string that contains both the common and scientific name of a plant, so they can be shuffled together, then they need to be split up to display the scientific name on a new line
         List<String[]> splitQuizOptions = new ArrayList<>();
         for (String option: quizOptions) {
             String[] options = option.split(",");
