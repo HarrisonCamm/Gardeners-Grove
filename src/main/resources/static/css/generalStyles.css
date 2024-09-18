@@ -56,6 +56,23 @@ body {
     -webkit-box-shadow: 0 0 0 1000px #E2F1CA inset;
 }
 
+.form-control-tips {
+    font-size: 180%;
+    border: 2px solid #BEE186;
+    background-color: #E2F1CA;
+    padding: 5px;
+    border-radius: 4px;
+    outline: 1px solid #BEE186;
+}
+.form-control-tips:focus {
+    outline: 4px solid #3D7B36;
+    background-color: #E2F1CA;
+    border: 1px solid #3D7B36;
+}
+.form-control-tips:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #E2F1CA inset;
+}
+
 .required-input {
     color: #DE2929;
 }
@@ -576,6 +593,24 @@ hr {
     }
     .form-control:disabled {
         border: 2px solid #C4C3C1;
+    }
+
+    .form-control-tips {
+        font-size: 180%;
+        /*width: 540px;*/
+        border: 2px solid #BEE186;
+        background-color: #E2F1CA;
+        padding: 5px;
+        border-radius: 4px;
+        outline: 1px solid #BEE186;
+    }
+    .form-control-tips:focus {
+        outline: 4px solid #3D7B36;
+        background-color: #E2F1CA;
+        border: 1px solid #3D7B36;
+    }
+    .form-control-tips:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 1000px #E2F1CA inset;
     }
 
     textarea {
