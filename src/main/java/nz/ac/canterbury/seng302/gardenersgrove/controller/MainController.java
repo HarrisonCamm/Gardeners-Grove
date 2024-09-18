@@ -41,7 +41,9 @@ public class MainController {
         User currentUser = (User) request.getSession().getAttribute("user");
         logger.info("GET /main");
         RedirectService.addEndpoint("/main");
+        List<User> topUsers = userService.getTop10UsersByBloomBalance();
 
+        model.addAttribute("topUsers", topUsers);
         model.addAttribute("name", name);
         model.addAttribute("user", currentUser);
         return "mainTemplate";

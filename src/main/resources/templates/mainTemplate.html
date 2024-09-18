@@ -12,10 +12,31 @@
     <body>
         <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
         <div class="content appBody">
-            <div>
-                <h1>Main Page</h1>
-                <br/>
+            <div class="container mt-4">
+                <h2 class="text-center mb-3">Leaderboard</h2>
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered text-center">
+                        <thead class="bg-dark text-white">
+                        <tr>
+                            <th>Ranking</th>
+                            <th>Username</th>
+                            <th>Blooms</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- Updated to use topUsers as per the controller's model attribute -->
+                        <tr th:each="user, index : ${topUsers}">
+                            <td th:text="${index.index + 1}"></td>
+                            <td th:text="${user.firstName}"></td> <!-- Assuming the username is stored in firstName -->
+                            <td th:text="${user.bloomBalance}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            </div>
+
+
         </div>
     </body>
 </html>

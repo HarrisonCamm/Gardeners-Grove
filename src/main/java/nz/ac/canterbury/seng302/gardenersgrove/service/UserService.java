@@ -199,5 +199,14 @@ public class UserService {
         userRepository.incrementInappropriateTagCount(userId);
     }
 
+    /**
+     * Retrieves the top 10 users based on their bloom balance.
+     *
+     * @return A list of the top 10 users sorted by bloom balance in descending order.
+     */
+    public List<User> getTop10UsersByBloomBalance() {
+        return userRepository.findTop10ByOrderByBloomBalanceDesc();
+    }
+
 
 }
