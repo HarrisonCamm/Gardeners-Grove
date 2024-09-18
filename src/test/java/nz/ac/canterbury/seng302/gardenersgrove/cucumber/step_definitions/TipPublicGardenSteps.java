@@ -21,6 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -49,8 +50,8 @@ public class TipPublicGardenSteps {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
-    @And("I have a public garden")
-    public void i_have_a_public_garden() {
+    @And("I have a public garden with {int} blooms tipped")
+    public void i_have_a_public_garden(Integer numBloomsTip) {
         // Create a new unique location for garden
         Location location = new Location("Test Street", "Test Suburb", "Test City", "1234", "Country");
 
@@ -62,6 +63,8 @@ public class TipPublicGardenSteps {
 
         User loggedInUser = userService.getAuthenticatedUser();
         testOwnedGarden.setOwner(loggedInUser);
+        testOwnedGarden.setTotalBloomTips(numBloomsTip);
+        testOwnedGarden.setUnclaimedBlooms(numBloomsTip);
         gardenService.addGarden(testOwnedGarden);
     }
 
@@ -96,7 +99,13 @@ public class TipPublicGardenSteps {
     }
 
     @Then("I see a claim blooms button to add the amount of unclaimed bloom tips of the garden to my balance")
-    public void i_see_a_claim_blooms_button_to_add_the_amount_of_unclaimed_bloom_tips_of_the_garden_to_my_balance() throws UnsupportedEncodingException {
+    public void i_see_a_claim_blooms_button_to_add_the_amount_of_unclaimed_bloom_tips_of_the_garden_to_my_balance() throws Exception {
+        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + testOwnedGarden.getId()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("viewGardenDetailsTemplate"))
+                .andReturn();
+
+        Map model =  mvcResult.getModelAndView().getModel();
         boolean hasBloomsToClaim = (boolean) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("hasBloomsToClaim");
         String unclaimedBloomsMessage = (String) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("unclaimedBloomsMessage");
 

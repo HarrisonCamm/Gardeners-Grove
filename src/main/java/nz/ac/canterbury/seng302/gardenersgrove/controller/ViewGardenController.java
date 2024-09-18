@@ -248,13 +248,13 @@ public class ViewGardenController {
         return garden.get();
     }
 
-    private Model addTipAttributes(Model model, Optional<Garden> garden, User currentUser) {
+    private Model addTipAttributes(Model model, Garden garden, User currentUser) {
         //new code added to get Blooms tipped
-        Integer totalBloomsTipped = garden.get().getTotalBloomTips();
+        Integer totalBloomsTipped = garden.getTotalBloomTips();
         model.addAttribute("totalBloomsTippedMessage", "Total Blooms tipped: " + totalBloomsTipped);
-        boolean isOwner = garden.get().getOwner().equals(currentUser);
+        boolean isOwner = garden.getOwner().equals(currentUser);
         if (isOwner) {
-            Integer unclaimedBlooms = garden.get().getUnclaimedBlooms();
+            Integer unclaimedBlooms = garden.getUnclaimedBlooms();
             boolean hasBloomsToClaim = unclaimedBlooms > 0;
             model.addAttribute("hasBloomsToClaim", hasBloomsToClaim);
             if (hasBloomsToClaim) {
@@ -284,7 +284,7 @@ public class ViewGardenController {
             model.addAttribute("tagError", session.getAttribute("tagEvaluationError"));
 
             User currentUser = userService.getAuthenticatedUser();
-            model = addTipAttributes(model, garden, currentUser);
+            model = addTipAttributes(model, garden.get(), currentUser);
 
             // New Code Added to get weather
             String gardenCity = garden.get().getLocation().getCity();

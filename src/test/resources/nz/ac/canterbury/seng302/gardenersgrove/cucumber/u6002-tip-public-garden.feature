@@ -2,7 +2,7 @@ Feature: U6002 Tipping public garden
 
   Background: User is logged in
     Given I am logged in with email "inaya@email.com" and password "Password1!"
-    And I have a public garden
+    And I have a public garden with 100 blooms tipped
 
 
 
