@@ -30,5 +30,10 @@ public class TipValidator {
         } else if (!isValidTip(tipAmount, currentUser)) {
             model.addAttribute("tipAmountError", "Insufficient Bloom balance");
         }
+        // If there is an error, add a flag to keep the modal open
+        if (model.containsAttribute("tipAmountError")) {
+            model.addAttribute("showTipModal", true);
+        }
+        model.addAttribute("tipInput", tipAmount);
     }
 }

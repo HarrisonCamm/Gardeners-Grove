@@ -303,7 +303,6 @@ public class ViewGardenController {
             model.addAttribute("gardenIsPublic", garden.get().getIsPublic());
             model.addAttribute("allTags", tagService.getTagsByEvaluated(true));
             model.addAttribute("tagError", session.getAttribute("tagEvaluationError"));
-            model.addAttribute("tipInput", "");
 
 
             User currentUser = userService.getAuthenticatedUser();

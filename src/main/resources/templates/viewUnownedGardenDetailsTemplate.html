@@ -67,7 +67,7 @@
                 </div>
 
                 <!-- Tip Blooms Modal -->
-                <div class="modal fade" id="tipBloomsModal" tabindex="-1">
+                <div class="modal fade" id="tipBloomsModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -77,8 +77,11 @@
                                 <div class="modal-body">
                                     <div class="mb-3">
                                         <label for="bloomsInput" class="form-label">Blooms To Tip Owner</label>
-                                        <input type="number" class="form-control-tips" id="bloomsInput" placeholder="Enter amount" name="tipAmount" th:value="${tipInput}">
-                                        <div th:if="${tipAmountError}" class="text-danger" th:text="${tipAmountError}"></div>
+                                        <input type="number" class="form-control-tips"
+                                               th:classappend="${tipAmountError != null ? 'error' : 'form-control-tips'}"
+                                               autofocus id="bloomsInput" placeholder="Enter amount" name="tipAmount"
+                                               th:value="${tipInput}">
+                                        <div th:if="${tipAmountError}" class="text-danger pt-2" th:text="${tipAmountError}"></div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -189,7 +192,14 @@
         const clearButton = document.getElementById('clearButton');
         const tagInput = document.getElementById('tagInput');
         const autocompleteList = document.getElementById('autocompleteList');
-        const confirmTipButton = document.getElementById('confirmTipButton');
+
+        //Check if the server set the "showTipModal" attribute
+        let showTipModal = /*[[${showTipModal}]]*/ false;
+        if (showTipModal) {
+            // Open the modal
+            let tipBloomsModal = new bootstrap.Modal(document.getElementById('tipBloomsModal'));
+            tipBloomsModal.show();
+        }
 
         function adjustWidth() {
             const width = plantContainer.offsetWidth;
@@ -212,24 +222,6 @@
                 document.getElementById('tagForm').submit();
             }
         });
-
-        // confirmTipButton.addEventListener('click', (event) => {
-        //    event.preventDefault();
-        // });
-        function showModal() {
-            $("tipBloomsForm").on("submit", function (event) {
-                event.preventDefault();
-                // $.ajax({
-                //     url: "yoururl",
-                //     type: "POST",
-                //     data: yourData,
-                //     success: function (result) {
-                //         console.log(result)
-                //     }
-                // });
-            })
-        }
-
 
         // This code is AI generated :)
         tagInput.addEventListener('input', function() {
