@@ -49,6 +49,12 @@ public interface UserRepository extends CrudRepository<User, Long>{
     @Query("UPDATE User u SET u.inappropriateTagCount = u.inappropriateTagCount + 1 WHERE u.userId = :userId")
     void incrementInappropriateTagCount(@Param("userId") Long userId);
 
-    @Query("SELECT u FROM User u ORDER BY u.bloomBalance DESC")
+
+    // Finds the top 10 users by bloom balance and limits the results to 10
+    @Query("SELECT u FROM User u ORDER BY u.bloomBalance DESC LIMIT 10")
     List<User> findTop10ByOrderByBloomBalanceDesc();
+
+    @Query("SELECT COUNT(u) + 1 FROM User u WHERE u.bloomBalance > (SELECT bloomBalance FROM User WHERE userId = :userId)")
+    Integer findUserRank(@Param("userId") Long userId);
+
 }

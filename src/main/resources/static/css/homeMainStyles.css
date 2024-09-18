@@ -240,22 +240,22 @@ h2 {
 /* Specific borders for top 3 users */
 .leaderboard-table tbody tr:nth-child(1) .leaderboard-image {
     border-color: gold;
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
 
 }
 
 .leaderboard-table tbody tr:nth-child(2) .leaderboard-image {
     border-color: silver;
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
 
 }
 
 .leaderboard-table tbody tr:nth-child(3) .leaderboard-image {
     border-color: #cd7f32;
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
 
 }
 

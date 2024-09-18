@@ -38,7 +38,7 @@ public class MainController {
     public String getTemplate(HttpServletRequest request,
                               @RequestParam(name="name", required = false, defaultValue = "") String name,
                               Model model) {
-        User currentUser = (User) request.getSession().getAttribute("user");
+        User currentUser = userService.getAuthenticatedUser();
         logger.info("GET /main");
         RedirectService.addEndpoint("/main");
         List<User> topUsers = userService.getTop10UsersByBloomBalance();
@@ -46,6 +46,7 @@ public class MainController {
         model.addAttribute("topUsers", topUsers);
         model.addAttribute("name", name);
         model.addAttribute("user", currentUser);
+        model.addAttribute("userRank", userService.getUserRank(currentUser.getUserId()));
         return "mainTemplate";
     }
 }
