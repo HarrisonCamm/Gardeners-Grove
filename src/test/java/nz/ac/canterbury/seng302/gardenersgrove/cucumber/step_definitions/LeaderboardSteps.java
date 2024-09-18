@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
 import io.cucumber.java.Before;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import org.junit.jupiter.api.Assertions;
@@ -23,12 +24,10 @@ public class LeaderboardSteps {
 
     private static MockMvc mockMvc;
     private MvcResult mvcResult;
-    private MockHttpSession session;
 
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        session = new MockHttpSession();
     }
 
 
@@ -66,8 +65,24 @@ public class LeaderboardSteps {
         Assertions.assertTrue(content.contains("<th>Profile & Name</th>"), "Expected the second column to be 'Profile & Name'");
     }
 
+    @Then("the third column is the number of blooms")
+    public void the_third_column_is_the_blooms() throws Exception {
+        String content = mvcResult.getResponse().getContentAsString();
+        Assertions.assertTrue(content.contains("<div class=\"svg\">"), "Expected the third column to be 'Blooms'");
+    }
+
     @Then("I can see my placing on the table at the bottom with my ranking out of all the users")
     public void i_can_see_my_placing_on_the_table_at_the_bottom() throws Exception {
+        String content = mvcResult.getResponse().getContentAsString();
+        Assertions.assertFalse(content.contains("Your Rank:"), "Expected the current user placement to be displayed outside the top 10");
+    }
+
+    @And("I am not in the top 10, when I view the leaderboard table")
+    public void iAmNotInTheTopWhenIViewTheLeaderboardTable() throws Exception {
+        mvcResult = mockMvc.perform(get("/main"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("mainTemplate"))
+                .andReturn();
         String content = mvcResult.getResponse().getContentAsString();
         Assertions.assertFalse(content.contains("Your Rank:"), "Expected the current user placement to be displayed outside the top 10");
     }
