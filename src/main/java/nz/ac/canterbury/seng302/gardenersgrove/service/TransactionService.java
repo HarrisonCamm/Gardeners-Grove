@@ -62,7 +62,15 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
+    /**
+     * Retrieves a Users transactions history sorted by newest first
+     * @param currentUser User to retrieve transactions from
+     * @param page  Selected page for pagination
+     * @param size  How many transactions per page
+     * @return All user transactions sorted by transactionDate the newest first
+     */
     public Page<Transaction> findTransactionsByUser(User currentUser, int page, int size) {
+        //Sorted after retrieved from repository before pagination
         return transactionRepository.findAllByUser(currentUser, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "transactionDate")));
     }
 
