@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 
 @Entity
 public class ColourScheme extends AbstractItem {
+    public ColourScheme() {
+    }
 
     public ColourScheme(String name, Integer price, boolean isSellable) {
         super(name, price, isSellable);

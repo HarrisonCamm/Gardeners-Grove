@@ -12,7 +12,7 @@ public class Shop {
     private Long id;
 
     @OneToMany(mappedBy = "shop")
-    private List<Item> items;
+    private List<AbstractItem> items;
 
     // Getter for id
     public Long getId() {
@@ -25,12 +25,12 @@ public class Shop {
     }
 
     // Getter for items
-    public List<Item> getItems() {
+    public List<AbstractItem> getItems() {
         return items;
     }
 
     // Setter for items
-    public void setItems(List<Item> items) {
+    public void setItems(List<AbstractItem> items) {
         this.items = items;
     }
 }
