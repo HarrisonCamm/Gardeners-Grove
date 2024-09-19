@@ -30,7 +30,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="user, index : ${topUsers}">
+                <tr th:each="user, index : ${topUsers}"
+                    th:classappend="${user.userId == currentUserId} ? 'highlight-user' : ''">
                     <td th:text="${index.index + 1}"></td>
                     <td class="profile-info">
                         <img class="leaderboard-image"
@@ -41,8 +42,9 @@
                 </tr>
                 </tbody>
 
+
             </table>
-            <div class="user-rank-container">
+            <div th:if="${userRank > 10}" class="user-rank-container">
                 <h4>Your Ranking</h4>
                 <p th:text="'You are ranked ' + ${userRank} + ' out of all users.'"></p>
             </div>

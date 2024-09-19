@@ -43,6 +43,7 @@ public class MainController {
         RedirectService.addEndpoint("/main");
         List<User> topUsers = userService.getTop10UsersByBloomBalance();
 
+        model.addAttribute("currentUserId", currentUser.getUserId());
         model.addAttribute("topUsers", topUsers);
         model.addAttribute("name", name);
         model.addAttribute("user", currentUser);

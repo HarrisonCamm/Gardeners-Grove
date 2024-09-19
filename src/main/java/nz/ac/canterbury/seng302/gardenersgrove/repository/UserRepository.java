@@ -50,11 +50,23 @@ public interface UserRepository extends CrudRepository<User, Long>{
     void incrementInappropriateTagCount(@Param("userId") Long userId);
 
 
-    // Finds the top 10 users by bloom balance and limits the results to 10
+    /**
+     * Finds the top 10 users by bloom balance, ordered from highest to lowest.
+     *
+     * @return a list of the top 10 users sorted by their bloom balance in descending order.
+     */
     @Query("SELECT u FROM User u ORDER BY u.bloomBalance DESC LIMIT 10")
     List<User> findTop10ByOrderByBloomBalanceDesc();
 
+    /**
+     * Finds the rank of a user based on their bloom balance.
+     * The rank is determined by counting how many users have a higher bloom balance.
+     *
+     * @param userId the ID of the user whose rank is to be determined.
+     * @return the rank of the user, where the rank is 1 for the highest bloom balance.
+     */
     @Query("SELECT COUNT(u) + 1 FROM User u WHERE u.bloomBalance > (SELECT bloomBalance FROM User WHERE userId = :userId)")
     Integer findUserRank(@Param("userId") Long userId);
+
 
 }
