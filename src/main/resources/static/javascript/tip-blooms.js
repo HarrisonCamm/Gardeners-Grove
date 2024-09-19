@@ -5,14 +5,18 @@ function checkTipInput(input) {
     let tipAmount = parseInt(input.value);
 
     let tipErrorMessage = document.getElementById('tipAmountErrorMessage');
+    let confirmTipButton = document.getElementById('confirmTipButton');
 
     if (tipAmount <= 0 || isNaN(tipAmount)) {
         tipErrorMessage.textContent = "Tip amount must be a positive number";
         tipErrorMessage.style.color = "red";
+        confirmTipButton.disabled = true; // Disable the button
     } else if (tipAmount > userBloomBalance) {
         tipErrorMessage.textContent = "Insufficient Bloom balance";
+        confirmTipButton.disabled = true; // Disable the button
         tipErrorMessage.style.color = "red";
     } else {
         tipErrorMessage.textContent = "";
+        confirmTipButton.disabled = false // Enable the button
     }
 }

@@ -83,13 +83,12 @@
                                                th:value="${tipInput}"
                                                th:data-tip-input="${userBloomBalance}"
                                                oninput="checkTipInput(this)">
-                                        <span class="text-danger mt-1 d-block" id="tipAmountErrorMessage"></span>
-<!--                                        <div th:if="${tipAmountError}" class="text-danger pt-2" th:text="${tipAmountError}"></div>-->
+                                        <span class="text-danger d-block" id="tipAmountErrorMessage"></span>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-primary" id="confirmTipButton" onClick="showModal()">Confirm</button>
+                                    <button type="submit" class="btn btn-primary" id="confirmTipButton">Confirm</button>
     <!--                                TODO in another task: implement logic for starting the transaction and updating total blooms tipped-->
                                 </div>
                             </form>
