@@ -3,7 +3,8 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 import jakarta.persistence.*;
 
 // Abstract class for shared properties
-//@MappedSuperclass
+@Inheritance(strategy = InheritanceType.JOINED)
+@Entity
 public abstract class AbstractItem implements Purchasable {
 
     @Id

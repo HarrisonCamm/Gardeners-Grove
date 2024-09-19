@@ -65,6 +65,9 @@ public class User {
     @JoinColumn
     private Image image;
 
+    @OneToOne(mappedBy = "inventory", cascade = CascadeType.ALL)
+    private Inventory inventory;
+
     @Column()
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
@@ -119,6 +122,7 @@ public class User {
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.bloomBalance = DEFAULT_BALANCE;
+        this.inventory =
         return this;
     }
 
@@ -182,6 +186,16 @@ public class User {
         return email;
     }
 
+    // Getter for inventory
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    // Setter for inventory
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+    }
+
     public void setDateOfBirth(String newDateOfBirth) {
         this.dateOfBirth = newDateOfBirth;
     }
@@ -208,6 +222,7 @@ public class User {
     public Image getImage() {
         return image;
     }
+
 
     public List<FriendRequest> getSentFriendRequests() {
         return null;
@@ -305,6 +320,15 @@ public class User {
 
     public void setFriends(List<User> friends) {
         this.friends = friends;
+    }
+
+    public boolean canAfford(AbstractItem item) {
+        return this.bloomBalance >= item.getPrice();
+    }
+
+
+    public void decreaseBloomBalance(Integer amount) {
+        this.bloomBalance = bloomBalance - amount;
     }
 
     @Override

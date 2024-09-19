@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -11,8 +12,8 @@ public class Shop {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "shop")
-    private List<AbstractItem> items;
+    @OneToOne(mappedBy = "inventory", cascade = CascadeType.ALL)
+    private Inventory inventory;
 
     // Getter for id
     public Long getId() {
@@ -24,13 +25,31 @@ public class Shop {
         this.id = id;
     }
 
-    // Getter for items
+    // Delegate the getItems() call to the inventory
     public List<AbstractItem> getItems() {
-        return items;
+        if (inventory != null) {
+            return inventory.getItems();
+        } else {
+            return new ArrayList<>(); // Return an empty list if no inventory exists
+        }
     }
 
-    // Setter for items
-    public void setItems(List<AbstractItem> items) {
-        this.items = items;
+    // Getter for inventory
+    public Inventory getInventory() {
+        return inventory;
     }
+
+    // Setter for inventory
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+    }
+
+    // Method to check if the shop contains a specific item
+    public boolean contains(AbstractItem item) {
+        if (inventory != null && item != null) {
+            return inventory.getItems().contains(item);
+        }
+        return false;
+    }
+
 }

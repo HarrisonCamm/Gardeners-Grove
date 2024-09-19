@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.AbstractItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.ItemRepository;
@@ -15,7 +16,7 @@ public class ItemService {
         this.itemRepository = itemRepository;
     }
 
-    public void saveItem(Item item) {
+    public void saveItem(AbstractItem item) {
         itemRepository.save(item);
     }
 

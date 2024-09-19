@@ -2,11 +2,13 @@ package nz.ac.canterbury.seng302.gardenersgrove.service;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.AbstractItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Shop;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ShopService {
@@ -46,5 +48,11 @@ public class ShopService {
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new IllegalArgumentException("Shop not found"));
         return shop.getItems();
     }
-
+    public void purchaseItem(User user, Shop shop, AbstractItem item) {
+        if (shop.getInventory().contains(item) && user.canAfford(item)) {
+            shop.getInventory().removeItem(item);
+            user.getInventory().addItem(item);
+            user.decreaseBloomBalance(item.getPrice());
+        }
+    }
 }
