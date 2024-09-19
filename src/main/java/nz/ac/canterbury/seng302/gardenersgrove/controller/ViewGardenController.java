@@ -282,6 +282,7 @@ public class ViewGardenController {
                 model.addAttribute("unclaimedBloomsMessage", "You have " + unclaimedBlooms + " Blooms to claim!");
             }
         }
+        model.addAttribute("userBloomBalance", currentUser.getBloomBalance());
         return model;
     }
 

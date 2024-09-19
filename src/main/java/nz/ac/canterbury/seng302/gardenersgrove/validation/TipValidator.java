@@ -33,7 +33,7 @@ public class TipValidator {
         // If there is an error, add a flag to keep the modal open
         if (model.containsAttribute("tipAmountError")) {
             model.addAttribute("showTipModal", true);
+            model.addAttribute("tipInput", tipAmount);
         }
-        model.addAttribute("tipInput", tipAmount);
     }
 }

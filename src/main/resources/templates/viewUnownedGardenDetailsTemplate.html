@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <!-- Head fragment holding all the style sheets-->
 <head th:replace="fragments/head :: head(title='View Garden')"> </head>
 <body>
@@ -77,11 +77,14 @@
                                 <div class="modal-body">
                                     <div class="mb-3">
                                         <label for="bloomsInput" class="form-label">Blooms To Tip Owner</label>
-                                        <input type="number" class="form-control-tips"
+                                        <input type="number" class="form-control-tips mb-2"
                                                th:classappend="${tipAmountError != null ? 'error' : 'form-control-tips'}"
                                                autofocus id="bloomsInput" placeholder="Enter amount" name="tipAmount"
-                                               th:value="${tipInput}">
-                                        <div th:if="${tipAmountError}" class="text-danger pt-2" th:text="${tipAmountError}"></div>
+                                               th:value="${tipInput}"
+                                               th:data-tip-input="${userBloomBalance}"
+                                               oninput="checkTipInput(this)">
+                                        <span class="text-danger mt-1 d-block" id="tipAmountErrorMessage"></span>
+<!--                                        <div th:if="${tipAmountError}" class="text-danger pt-2" th:text="${tipAmountError}"></div>-->
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -181,6 +184,7 @@
 
 <!-- Scripts fragment, contains bootstrap scripts -->
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+<script th:src="@{/javascript/tip-blooms.js}"></script>
 </body>
 </html>
 
