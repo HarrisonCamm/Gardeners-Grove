@@ -7,4 +7,4 @@
 - [ ] **Documentation**: Verify that all new features or changes are properly documented. E.g. in a commit message, in the README, in the wiki, etc
 - [ ] **Code Artifacts**: Ensure debugging code and irrelevant files are removed.
 - [ ] **SonarQube**: Ensure the merge request meets our SonarQube requirments
-- [ ] **[UI Standards and Consistencies](UI Standards and Consistencies)**: Ensure that the UI meets our team's [standards](UI Standards and Consistencies)
+- [ ] **[UI Standards and Consistencies](https://eng-git.canterbury.ac.nz/seng302-2024/team-600/-/wikis/UI%20Standards%20and%20Consistencies)**: Ensure that the UI meets our team's [standards](https://eng-git.canterbury.ac.nz/seng302-2024/team-600/-/wikis/UI%20Standards%20and%20Consistencies)
