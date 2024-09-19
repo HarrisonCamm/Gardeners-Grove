@@ -11,12 +11,15 @@ function checkTipInput(input) {
         tipErrorMessage.textContent = "Tip amount must be a positive number";
         tipErrorMessage.style.color = "red";
         confirmTipButton.disabled = true; // Disable the button
+        input.classList.add('error'); // Add the error class to the input
     } else if (tipAmount > userBloomBalance) {
         tipErrorMessage.textContent = "Insufficient Bloom balance";
         confirmTipButton.disabled = true; // Disable the button
         tipErrorMessage.style.color = "red";
+        input.classList.add('error'); // Add the error class to the input
     } else {
         tipErrorMessage.textContent = "";
         confirmTipButton.disabled = false // Enable the button
+        input.classList.remove('error'); // Add the error class to the input
     }
 }

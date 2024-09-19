@@ -150,7 +150,7 @@ public class ViewGardenController {
 
         User currentUser = userService.getAuthenticatedUser();
 
-        doTipValidations(model, tipAmount, currentUser);
+//        doTipValidations(model, tipAmount, currentUser);
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
 
