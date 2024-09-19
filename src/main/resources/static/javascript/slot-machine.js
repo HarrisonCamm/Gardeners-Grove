@@ -152,8 +152,8 @@ document.addEventListener("DOMContentLoaded", function() {
         if (amountMatching === 3) winAmount *= 10;
         if (amountMatching === 4) winAmount *= 30;
         if (amountMatching === 5) winAmount *= 100;
-        setChange(winAmount);
-        addToMoney(winAmount);
+        setChange(amountWon);
+        addToMoney(amountWon);
     };
     let addToMoney = (amountWon, speed) => {
         let changeAmount = Math.ceil(amountWon / 2);
