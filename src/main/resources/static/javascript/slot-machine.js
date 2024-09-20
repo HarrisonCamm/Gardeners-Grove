@@ -206,8 +206,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let setPrizeTableHeaders = (target) => {
         let pt = document.querySelector(`.prize-table .${target}`);
         let heading = document.createElement("div");
-        let comboType = getComboType(target);
-        heading.innerHTML = comboType;
+        heading.innerHTML = getComboType(target);
         pt.append(heading);
     }
 
@@ -218,10 +217,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     reelContents.forEach((symbol, index) => {
-        if (index !== 0) {
-            addToPrizeTable(`${symbol}`, (index) * 10, "triples");
-            addToPrizeTable(`${symbol}`, (index) * 30, "quadruples");
-            addToPrizeTable(`${symbol}`, (index) * 100, "quintuples");
+        if (index !== 0 && index < 5) {
+            addToPrizeTable(`${symbol}`, (index) * 15, "triples");
+            addToPrizeTable(`${symbol}`, (index) * 50, "quadruples");
+            addToPrizeTable(`${symbol}`, (index) * 1000, "quintuples");
+        } else if (index !== 0) {
+            addToPrizeTable(`${symbol}`, 10 * 15, "triples");
+            addToPrizeTable(`${symbol}`, 10 * 50, "quadruples");
+            addToPrizeTable(`${symbol}`, 10 * 1000, "quintuples");
         }
     });
 
@@ -239,7 +242,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     window.onclick = function(event) {
-        if (event.target == modal) {
+        if (event.target === modal) {
             modal.style.display = "none";
         }
     }
