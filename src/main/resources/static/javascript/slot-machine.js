@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", function() {
     let spinning = false;
     let reelDelay = 100;
     let money = bloomBalance;
-    let moneyToAdd = amountWon;     //Ensure this is updated to be model attribute "amountWon" at appropriate time
     let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let masterVolume = audioCtx.createGain();
     masterVolume.gain.setValueAtTime(0.05, audioCtx.currentTime);
@@ -147,11 +146,6 @@ document.addEventListener("DOMContentLoaded", function() {
         reelContainers.forEach(reel => {
             if (reel.children[rowNumber].innerText === symbol) reel.children[rowNumber].classList.add("win");
         });
-        let winAmount = reelContents.indexOf(symbol);
-        playWinChime(winAmount);
-        if (amountMatching === 3) winAmount *= 10;
-        if (amountMatching === 4) winAmount *= 30;
-        if (amountMatching === 5) winAmount *= 100;
         setChange(amountWon);
         addToMoney(amountWon);
     };
@@ -250,7 +244,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    if (gameState === "FREE_SPINNING" || gameState === "PAYED_SPINNING") {
+    if (gameState === "FREE_SPINNING" || gameState === "PAID_SPINNING") {
         startSpin();
     }
 });

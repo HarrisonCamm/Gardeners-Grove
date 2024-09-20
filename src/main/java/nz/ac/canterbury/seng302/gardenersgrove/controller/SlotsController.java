@@ -26,14 +26,16 @@ import static java.time.temporal.ChronoUnit.DAYS;
 public class SlotsController {
 
     enum GameState {
-        FREE_SPIN, FREE_SPINNING, PAYED_SPIN, PAYED_SPINNING, SPINNING
+        FREE_SPIN, FREE_SPINNING, PAID_SPIN, PAID_SPINNING, SPINNING
     }
 
     private static final int SPIN_COST = 50;
     private static final String BUTTON_TEXT = "SPIN";
     private static final String MESSAGE = "You have a free spin available!";
-    private static final String BUTTON_TEXT_PAYED = "SPIN for " + SPIN_COST + "฿";
-    private static final String MESSAGE_PAYED = "You've already spun today! Spend " + SPIN_COST + "฿ to spin again?";
+    private static final String BUTTON_TEXT_PAID = "SPIN for " + SPIN_COST + "฿";
+    private static final String MESSAGE_PAID = "You've already spun today! Spend " + SPIN_COST + "฿ to spin again?";
+    private static final String MESSAGE_INSUFFICIENT_BALANCE = "Insufficient balance! You need " + SPIN_COST + "฿ to spin again";
+
     private static final String REDIRECT_STR = "redirect:/daily-spin";
 
     private static final String GAME_STATE_ATTRIBUTE = "gameState";
@@ -77,8 +79,8 @@ public class SlotsController {
         //Transition table to next state
         switch(gameState) {
             case FREE_SPIN:
-                if (isWithin24Hours(user.getLastFreeSpinUsed())) {  //If free spin already used redirects and moves to payed spin state
-                    session.setAttribute(GAME_STATE_ATTRIBUTE, GameState.PAYED_SPIN);
+                if (isWithin24Hours(user.getLastFreeSpinUsed())) {  //If free spin already used redirects and moves to paid spin state
+                    session.setAttribute(GAME_STATE_ATTRIBUTE, GameState.PAID_SPIN);
                     return REDIRECT_STR;
                 } else {
                     setSessionModelAttributes(session, model,
@@ -86,10 +88,10 @@ public class SlotsController {
                             BUTTON_TEXT, MESSAGE, GameState.FREE_SPINNING);
                     break;
                 }
-            case PAYED_SPIN:
+            case PAID_SPIN:
                 setSessionModelAttributes(session, model,
-                        GameState.PAYED_SPIN, GameState.PAYED_SPIN,
-                        BUTTON_TEXT_PAYED, MESSAGE_PAYED, GameState.PAYED_SPINNING);
+                        GameState.PAID_SPIN, GameState.PAID_SPIN,
+                        BUTTON_TEXT_PAID, MESSAGE_PAID, GameState.PAID_SPINNING);
                 break;
             default:    //Safety resets to start state (FREE_SPIN)
                 session.setAttribute(GAME_STATE_ATTRIBUTE, GameState.FREE_SPIN);
@@ -109,12 +111,12 @@ public class SlotsController {
         if (user.getBloomBalance() == null) {return "redirect:/games";}
         model.addAttribute("bloomBalance", user.getBloomBalance());
 
-        int amountWon = processSlots(session, model);
+        int amountWon = processSlots(session, model);   //Generates new slots and calculate amount won from them
 
         GameState buttonActionGameState;
         try {
             buttonActionGameState = GameState.valueOf(buttonActionString);
-        } catch (IllegalArgumentException e) {      //Form has been submitted with transition to a non existent state (most likely from modifying front end)
+        } catch (IllegalArgumentException e) {      //Form has been submitted with transition to a non-existent state (most likely from modifying front end)
             logger.info("User tried to cheat");
             Thread.sleep(1000); // Punish user for trying to cheat
             return REDIRECT_STR;
@@ -123,7 +125,7 @@ public class SlotsController {
         switch (buttonActionGameState) {
             case FREE_SPINNING:
                 if (isWithin24Hours(user.getLastFreeSpinUsed())) {
-                    session.setAttribute(GAME_STATE_ATTRIBUTE, GameState.PAYED_SPIN);
+                    session.setAttribute(GAME_STATE_ATTRIBUTE, GameState.PAID_SPIN);
                     return REDIRECT_STR;
                 } else {
                     freeSpin(user, amountWon);
@@ -136,11 +138,16 @@ public class SlotsController {
                     session.setAttribute(SLOTS_ATTRIBUTE, null); //Reset slots
                 }
                 break;
-            case PAYED_SPINNING:
-                payedSpin(user, amountWon);
+            case PAID_SPINNING:
+                if (!paidSpin(user, amountWon)) {      //Attempts to charge user if insufficient balance returns to PAID_SPIN state with warning message
+                    setSessionModelAttributes(session, model,
+                            GameState.PAID_SPIN, GameState.PAID_SPIN,
+                            BUTTON_TEXT_PAID, MESSAGE_INSUFFICIENT_BALANCE, GameState.PAID_SPINNING);
+                    return "dailySpinTemplate";
+                }
                 setSessionModelAttributes(session, model,
-                        GameState.PAYED_SPIN, GameState.PAYED_SPINNING,
-                        BUTTON_TEXT_PAYED, MESSAGE_PAYED, GameState.PAYED_SPINNING);
+                        GameState.PAID_SPIN, GameState.PAID_SPINNING,
+                        BUTTON_TEXT_PAID, MESSAGE_PAID, GameState.PAID_SPINNING);
 
                 model.addAttribute("spinCost", SPIN_COST);
 
@@ -171,12 +178,16 @@ public class SlotsController {
         if (gardenGroveUser != null) transactionService.addTransaction(amountWon,"Free Daily Spin", "Game", user.getUserId(), gardenGroveUser.getUserId());
     }
 
-    private void payedSpin(User user, int amountWon) {
+    private boolean paidSpin(User user, int amountWon) {
+        if (user.getBloomBalance() < SPIN_COST) {
+            return false;
+        }
         userService.addBlooms(user, amountWon);
         userService.chargeBlooms(user, SPIN_COST);
 
-        if (gardenGroveUser != null) transactionService.addTransaction((SPIN_COST),"Payed for Daily Spin", "Game", gardenGroveUser.getUserId(), user.getUserId());
+        if (gardenGroveUser != null) transactionService.addTransaction((SPIN_COST),"PaId for Daily Spin", "Game", gardenGroveUser.getUserId(), user.getUserId());
         if (gardenGroveUser != null) transactionService.addTransaction((amountWon),"Awarded for Daily Spin combo", "Game", user.getUserId(), gardenGroveUser.getUserId());
+        return true;
     }
 
     private boolean isWithin24Hours(Date date) {
