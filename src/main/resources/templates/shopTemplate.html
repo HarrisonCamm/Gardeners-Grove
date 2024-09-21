@@ -17,6 +17,12 @@
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 <div class="content appBody">
     <div>
+        <ul>
+            <li th:each="item : ${availableItems}">
+                <span th:text="${item.name}">Item Name</span> -
+                <span th:text="${item.price}">Item Price</span>
+            </li>
+        </ul>
         <div id="itemCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">

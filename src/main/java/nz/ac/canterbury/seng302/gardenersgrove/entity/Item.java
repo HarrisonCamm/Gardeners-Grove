@@ -112,7 +112,7 @@ public abstract class Item implements Purchasable {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(name = "owner_id", nullable = false)
+    @Column(name = "owner_id")
     private Long ownerId;  // Add the @Column annotation here
 
     @Column(nullable = false)
