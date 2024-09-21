@@ -3,7 +3,9 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Shop {
@@ -12,47 +14,44 @@ public class Shop {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "inventory_id")
-    private Inventory inventory;
+    @ManyToMany
+    @JoinTable(
+            name = "shop_items",
+            joinColumns = @JoinColumn(name = "shop_id"),
+            inverseJoinColumns = @JoinColumn(name = "item_id")
+    )
+    private Set<Item> availableItems = new HashSet<>();
 
-    // Getter for id
+
+    // Getters
     public Long getId() {
         return id;
     }
 
-    // Setter for id
+    public Set<Item> getAvailableItems() {
+        return availableItems;
+    }
+
+    // Setters
     public void setId(Long id) {
         this.id = id;
     }
 
-    // Delegate the getItems() call to the inventory
-    public List<Item> getItems() {
-        if (inventory != null) {
-            return inventory.getItems();
-        } else {
-            return new ArrayList<>(); // Return an empty list if no inventory exists
-        }
+    public void setAvailableItems(Set<Item> availableItems) {
+        this.availableItems = availableItems;
     }
 
 
-
-    // Getter for inventory
-    public Inventory getInventory() {
-        return inventory;
+    public void addItem(Item item) {
+        availableItems.add(item);
     }
 
-    // Setter for inventory
-    public void setInventory(Inventory inventory) {
-        this.inventory = inventory;
+    public void removeItem(Item item) {
+        availableItems.remove(item);
     }
 
-    // Method to check if the shop contains a specific item
-    public boolean contains(Item item) {
-        if (inventory != null && item != null) {
-            return inventory.getItems().contains(item);
-        }
-        return false;
+    public boolean hasItem(Item item) {
+        return availableItems.contains(item);
     }
 
 }

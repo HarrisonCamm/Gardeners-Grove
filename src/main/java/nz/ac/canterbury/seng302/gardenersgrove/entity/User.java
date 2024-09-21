@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * User class that contains all the values a user should have
@@ -65,8 +62,11 @@ public class User {
     @JoinColumn
     private Image image;
 
-    @OneToOne(mappedBy = "inventory", cascade = CascadeType.ALL)
-    private Inventory inventory;
+    @ElementCollection
+    @CollectionTable(name = "user_inventory", joinColumns = @JoinColumn(name = "user_id"))
+    @MapKeyJoinColumn(name = "item_id")
+    @Column(name = "quantity")
+    private Map<Item, Integer> inventory = new HashMap<>();
 
     @Column()
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -186,12 +186,12 @@ public class User {
     }
 
     // Getter for inventory
-    public Inventory getInventory() {
+    public Map<Item, Integer> getInventory() {
         return inventory;
     }
 
     // Setter for inventory
-    public void setInventory(Inventory inventory) {
+    public void setInventory(Map<Item, Integer> inventory) {
         this.inventory = inventory;
     }
 
@@ -337,9 +337,28 @@ public class User {
         }
         return this.email.equals(((User) user).email);
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(email, firstName, lastName);
     }
+
+
+    public void addItem(Item item, int quantity) {
+        inventory.put(item, inventory.getOrDefault(item, 0) + quantity);
+    }
+
+    public void removeItem(Item item, int quantity) throws Exception {
+        if (!hasItem(item, quantity)) {
+            throw new Exception("Insufficient quantity.");
+        }
+        inventory.put(item, inventory.get(item) - quantity);
+        if (inventory.get(item) <= 0) {
+            inventory.remove(item);
+        }
+    }
+
+    public boolean hasItem(Item item, int quantity) {
+        return inventory.getOrDefault(item, 0) >= quantity;
+    }
+
 }

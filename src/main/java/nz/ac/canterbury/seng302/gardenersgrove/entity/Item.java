@@ -112,6 +112,9 @@ public abstract class Item implements Purchasable {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(name = "owner_id", nullable = false)
+    private Long ownerId;  // Add the @Column annotation here
+
     @Column(nullable = false)
     private Integer price;
 
