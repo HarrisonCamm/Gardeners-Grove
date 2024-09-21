@@ -14,7 +14,7 @@ public class BadgeItem extends Item {
     }
 
     public BadgeItem(String name, boolean equipable, int price, String badge) {
-        super(name, equipable, price);
+        super(name, price);
         this.badge = badge;
     }
 

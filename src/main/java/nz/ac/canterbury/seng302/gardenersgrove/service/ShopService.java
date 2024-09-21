@@ -1,5 +1,5 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.AbstractItem;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Shop;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -30,7 +30,7 @@ public class ShopService {
         this.itemRepository = itemRepository;
     }
 
-    public void addItemToShop(Long shopId, AbstractItem item) {
+    public void addItemToShop(Long shopId, Item item) {
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new IllegalArgumentException("Shop not found"));
         shop.getItems().add(item);
         itemRepository.save(item); // Save item first if necessary
@@ -39,16 +39,16 @@ public class ShopService {
 
     public void removeItemFromShop(Long shopId, Long itemId) {
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new IllegalArgumentException("Shop not found"));
-        AbstractItem item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("Item not found"));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("Item not found"));
         shop.getItems().remove(item);
         itemRepository.delete(item);
         shopRepository.save(shop);
     }
-    public List<AbstractItem> getItemsInShop(Long shopId) {
+    public List<Item> getItemsInShop(Long shopId) {
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new IllegalArgumentException("Shop not found"));
         return shop.getItems();
     }
-    public void purchaseItem(User user, Shop shop, AbstractItem item) {
+    public void purchaseItem(User user, Shop shop, Item item) {
         if (shop.getInventory().contains(item) && user.canAfford(item)) {
             shop.getInventory().removeItem(item);
             user.getInventory().addItem(item);

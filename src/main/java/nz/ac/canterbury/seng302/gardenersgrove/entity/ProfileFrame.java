@@ -4,7 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
 @Entity
-public class ProfileFrame extends AbstractItem implements Equipable {
+public class ProfileFrame extends Item implements Equipable {
 
     @Column(nullable = false)
     private boolean isEquipped;
@@ -12,8 +12,8 @@ public class ProfileFrame extends AbstractItem implements Equipable {
     public ProfileFrame() {
     }
 
-    public ProfileFrame(String name, Integer price, boolean isSellable) {
-        super(name, price, isSellable);
+    public ProfileFrame(String name, Integer price) {
+        super(name, price);
         this.isEquipped = false;
     }
 

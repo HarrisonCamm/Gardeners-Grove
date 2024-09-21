@@ -12,8 +12,8 @@ public class ImageItem extends Item {
     protected ImageItem() {
     }
 
-    public ImageItem(String name, boolean equipable, int price, Image image) {
-        super(name, equipable, price);
+    public ImageItem(String name, int price, Image image) {
+        super(name, price);
         this.image = image;
     }
 

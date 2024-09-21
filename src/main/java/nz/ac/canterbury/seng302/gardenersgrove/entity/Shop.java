@@ -12,7 +12,8 @@ public class Shop {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "inventory", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "inventory_id")
     private Inventory inventory;
 
     // Getter for id
@@ -26,13 +27,15 @@ public class Shop {
     }
 
     // Delegate the getItems() call to the inventory
-    public List<AbstractItem> getItems() {
+    public List<Item> getItems() {
         if (inventory != null) {
             return inventory.getItems();
         } else {
             return new ArrayList<>(); // Return an empty list if no inventory exists
         }
     }
+
+
 
     // Getter for inventory
     public Inventory getInventory() {
@@ -45,7 +48,7 @@ public class Shop {
     }
 
     // Method to check if the shop contains a specific item
-    public boolean contains(AbstractItem item) {
+    public boolean contains(Item item) {
         if (inventory != null && item != null) {
             return inventory.getItems().contains(item);
         }

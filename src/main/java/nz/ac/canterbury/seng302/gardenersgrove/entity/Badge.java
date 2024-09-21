@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 
 // Badge class implementing Purchasable and Equipable
 @Entity
-public class Badge extends AbstractItem implements Equipable {
+public class Badge extends Item implements Equipable {
 
     @Column(nullable = false)
     private boolean isEquipped;
@@ -13,8 +13,8 @@ public class Badge extends AbstractItem implements Equipable {
     public Badge() {
     }
 
-    public Badge(String name, Integer price, boolean isSellable) {
-        super(name, price, isSellable);
+    public Badge(String name, Integer price) {
+        super(name, price);
         this.isEquipped = false;
     }
 

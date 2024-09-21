@@ -1,6 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.repository;
 
-import nz.ac.canterbury.seng302.gardenersgrove.entity.AbstractItem;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import org.jetbrains.annotations.NotNull;
@@ -14,13 +14,13 @@ import java.util.Optional;
 
 
 @Repository
-public interface ItemRepository extends JpaRepository<AbstractItem, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    // Find items by their name (applies to any subclass of AbstractItem)
-    List<AbstractItem> findByName(String name);
+    // Find items by their name (applies to any subclass of Item)
+    List<Item> findByName(String name);
 
     // Find all items by owner ID (works for any type of item)
-    List<AbstractItem> findByOwnerId(Long ownerId);
+    List<Item> findByOwnerId(Long ownerId);
 }
 
 

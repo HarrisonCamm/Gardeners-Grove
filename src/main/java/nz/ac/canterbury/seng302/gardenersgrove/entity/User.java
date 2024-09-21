@@ -122,7 +122,6 @@ public class User {
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.bloomBalance = DEFAULT_BALANCE;
-        this.inventory =
         return this;
     }
 
@@ -322,7 +321,7 @@ public class User {
         this.friends = friends;
     }
 
-    public boolean canAfford(AbstractItem item) {
+    public boolean canAfford(Item item) {
         return this.bloomBalance >= item.getPrice();
     }
 

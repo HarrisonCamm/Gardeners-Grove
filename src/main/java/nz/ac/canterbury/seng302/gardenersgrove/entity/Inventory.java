@@ -14,7 +14,14 @@ public class Inventory {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_id")
-    private List<AbstractItem> items;
+    private List<Item> items;
+
+    @OneToOne
+    @JoinColumn(name = "shop_id")
+    private Shop shop;  // Add this field for the bidirectional relationship
+
+
+
 
     public Inventory() {
         // Default constructor
@@ -24,25 +31,27 @@ public class Inventory {
         return id;
     }
 
-    public List<AbstractItem> getItems() {
+    public List<Item> getItems() {
         return items;
     }
 
-    public void addItem(AbstractItem item) {
+    public void addItem(Item item) {
         items.add(item);
     }
 
-    public void removeItem(AbstractItem item) {
+    public void removeItem(Item item) {
         items.remove(item);
     }
 
-    public boolean contains(AbstractItem item) {
+    public boolean contains(Item item) {
         return items.contains(item);
     }
-
-    public void setItems(List<AbstractItem> items) {
+    public void setItems(List<Item> items) {
         this.items = items;
     }
+
+
+
 
 }
 
