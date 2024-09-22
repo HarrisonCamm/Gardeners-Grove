@@ -187,6 +187,7 @@ public class SlotsController {
 
         if (gardenGroveUser != null) transactionService.addTransaction((SPIN_COST),"Payed for Daily Spin", "Game", gardenGroveUser.getUserId(), user.getUserId());
         if (gardenGroveUser != null && amountWon > 0) transactionService.addTransaction((amountWon),"Awarded for Daily Spin combo", "Game", user.getUserId(), gardenGroveUser.getUserId());
+        return true;
     }
 
     private boolean isWithin24Hours(Date date) {
