@@ -562,18 +562,21 @@ hr {
     resize: none;
 }
 
+/*Used to style item quantity for inventory item cards*/
 .item-quantity {
     position: absolute;
     right: 7.5%;
     top: 7.5%;
 }
 
+/*Used to style item title for inventory item cards*/
 .inventory-card-title {
     background-color: #BEE186;
     border-radius: 10px;
     border: solid black 1px;
 }
 
+/*Used to style item use button for inventory item cards*/
 .item-use-button {
     position: absolute;
     right: 7.5%;
