@@ -1,49 +1,39 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <head>
-        <style>
-            table td{
-                vertical-align:top;
-                border:solid 1px #888;
-                padding:10px;
-            }
-
-        </style>
-        <title></title>
-    </head>
-    <body>
-        <h1>Basic Thymeleaf Error Page (You may want to make something better)</h1>
-        <table>
-            <tr>
-                <td>Date</td>
-                <td th:text="${timestamp}"/>
-            </tr>
-            <tr>
-                <td>Path</td>
-                <td th:text="${path}"/>
-            </tr>
-            <tr>
-                <td>Error</td>
-                <td th:text="${error}"/>
-            </tr>
-            <tr>
-                <td>Status</td>
-                <td th:text="${status}"/>
-            </tr>
-            <tr>
-                <td>Message</td>
-                <td th:text="${message}"/>
-            </tr>
-            <tr>
-                <td>Exception</td>
-                <td th:text="${exception}"/>
-            </tr>
-            <tr>
-                <td>Trace</td>
-                <td>
-                    <pre th:text="${trace}"/>
-                </td>
-            </tr>
-        </table>
-    </body>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Gardener's Grove</title>
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+    <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
+    <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+</head>
+<body>
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<div class="container centre">
+    <h1 class="text-center my-4">Error</h1>
+    <table class="table table-striped">
+        <tr>
+            <td>Date</td>
+            <td th:text="${timestamp}"/>
+        </tr>
+        <tr>
+            <td>Path</td>
+            <td th:text="${path}"/>
+        </tr>
+        <tr>
+            <td>Error</td>
+            <td th:text="${error}"/>
+        </tr>
+        <tr>
+            <td>Status</td>
+            <td th:text="${status}"/>
+        </tr>
+        <tr>
+            <td>Message</td>
+            <td th:text="${message}"/>
+        </tr>
+    </table>
+</div>
+</body>
 </html>
