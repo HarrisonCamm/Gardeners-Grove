@@ -1,10 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<head th:replace="fragments/head :: head(title='Inventory')">
 </head>
 <body>
-
+    <!-- Navigation Bar Fragment -->
+    <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+    <div class="appBody">
+        <div class="container p-0">
+<!--            This row will display the user's badge items they have-->
+            <div class="row mt-5">
+                <h3 class="mb-3">Badges</h3>
+<!--                Iterate through the badgeItems list and display each badge item-->
+<!--                NOTE: item indexes are [quantity, image, name] and are subject to change-->
+                <div class="col content card ms-2 me-2" th:each="item: ${badgeItems}">
+                    <div class="h-25 w-100 mt-3 inventory-card-title">
+                        <h3 class="p-2" th:text="${item[2]}"></h3>
+                        <p class="item-quantity" th:text="${item[0]}"></p>
+                    </div>
+                    <div class="mb-5" >
+                        <img type="gif" class="image mt-5" th:src="@{'images/' + ${item[1]}}">
+                        <button class="item-use-button button">Use</button>
+                    </div>
+                </div>
+            </div>
+<!--                NOTE: item indexes are [quantity, image, name] and are subject to change-->
+            <div class="row mt-5">
+                <h3 class="mb-3 mt-5">Profile Pictures</h3>
+                <div class="col content card ms-2 me-2" th:each="item: ${gifItems}">
+                    <div class="h-25 w-100 mt-3 inventory-card-title">
+                        <h3 class="p-2" th:text="${item[2]}"></h3>
+                        <p class="item-quantity" th:text="${item[0]}"></p>
+                    </div>
+                    <div class="mb-5" >
+                        <img type="gif" class="image mt-5" th:src="@{'images/' + ${item[1]}}">
+                        <button class="item-use-button button">Use</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

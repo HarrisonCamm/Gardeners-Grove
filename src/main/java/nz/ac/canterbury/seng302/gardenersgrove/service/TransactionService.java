@@ -10,20 +10,17 @@ import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Date;
 
 
 @Service
 public class TransactionService {
-    private TransactionRepository transactionRepository;
-    private UserRepository userRepository;
-    private PlantService Plant;
-    private PlantRepository plantRepository;
+    private final TransactionRepository transactionRepository;
+    private final UserRepository userRepository;
+    private final PlantRepository plantRepository;
 
 
     @Autowired
@@ -33,11 +30,6 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
         this.userRepository = userRepository;
         this.plantRepository = plantRepository;
-    }
-
-
-    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId) {
-        return addTransaction(amount, notes, transactionType, receiverId, null, null);
     }
 
     public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId) {
@@ -70,9 +62,16 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-
+    /**
+     * Retrieves a Users transactions history sorted by newest first
+     * @param currentUser User to retrieve transactions from
+     * @param page  Selected page for pagination
+     * @param size  How many transactions per page
+     * @return All user transactions sorted by transactionDate the newest first
+     */
     public Page<Transaction> findTransactionsByUser(User currentUser, int page, int size) {
-        return transactionRepository.findAllByUser(currentUser, PageRequest.of(page, size));
+        //Sorted after retrieved from repository before pagination
+        return transactionRepository.findAllByUser(currentUser, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "transactionDate")));
     }
 
 }

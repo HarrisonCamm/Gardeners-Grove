@@ -1,29 +1,63 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings({"unchecked", "SpringJavaInjectionPointsAutowiringInspection"})
 public class UnlockableContentSteps {
-
+    @Autowired
+    private WebApplicationContext webApplicationContext;
     @Autowired
     private MockMvc mockMvc;
-
+    @Autowired
+    private UserService userService;
     private ResultActions resultActions;
+    private MvcResult mvcResult;
+    private User currentUser;
+
+    @Before
+    public void setup() throws IOException {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        User currentUser = userService.getAuthenticatedUser();
+    }
 
     @When("I click Inventory")
-    public void i_click_inventory() {
-        // TODO: Implement logic for clicking the inventory
+    public void i_click_inventory() throws Exception {
+        resultActions = mockMvc.perform(get("/inventory"));
+        mvcResult = resultActions.andExpect(status().isOk())
+                .andReturn();
     }
 
     @Then("I am shown my inventory of items")
     public void i_am_shown_my_inventory_of_items() {
-        // TODO: Implement logic for displaying inventory of items
+        List<String[]> badgeItems = (List<String[]>) mvcResult.getModelAndView().getModel().get("badgeItems");
+//        List<String[]> ownedBadgeItems = currentUser.getBadgeItems(); todo
+        List<String[]> ownedBadgeItems = new ArrayList<>();
+        List<String[]> gifItems = (List<String[]>) mvcResult.getModelAndView().getModel().get("gifItems");
+//        List<String[]> ownedGifItems = currentUser.getBadgeItems(); todo
+        List<String[]> ownedGifItems = new ArrayList<>();
+        Assertions.assertEquals(ownedBadgeItems, badgeItems);
+        Assertions.assertEquals(ownedGifItems, gifItems);
+
     }
 
     @When("I click Shop")
