@@ -10,12 +10,24 @@ public class Badge extends Item implements Equipable {
     @Column(nullable = false)
     private boolean isEquipped;
 
+    @Column(nullable = false)
+    private String emoji;
+
     public Badge() {
     }
 
-    public Badge(String name, Integer price) {
+    public Badge(String name, Integer price, String emoji) {
         super(name, price);
+        this.emoji = emoji;
         this.isEquipped = false;
+    }
+
+    public String getEmoji() {
+        return emoji;
+    }
+
+    public void setEmoji(String emoji) {
+        this.emoji = emoji;
     }
 
     @Override

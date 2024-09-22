@@ -17,33 +17,24 @@
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 <div class="content appBody">
     <div>
-        <ul>
-            <li th:each="item : ${availableItems}">
-                <span th:text="${item.name}">Item Name</span> -
-                <span th:text="${item.price}">Item Price</span>
-            </li>
-        </ul>
         <div id="itemCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
                     <div class="row">
                         <!-- Thymeleaf loop to iterate through items and render 4 items per slide -->
-                        <div class="col-lg-3" th:each="item : ${items}">
+                        <div class="col-lg-3" th:each="item : ${availableItems}">
                             <div class="card h-100 text-center">
-                                <img th:src="@{${item.imageUrl}}" class="card-img-top" alt="Item image">
+                                <p class="card-title" th:text="${item.emoji}"></p>
                                 <div class="card-body">
-                                    <h5 class="card-title" th:text="${item.title}"></h5>
-                                    <p class="card-text" th:text="${item.description}"></p>
+                                    <h5 class="card-title" th:text="${item.name}"></h5>
                                     <p class="card-text fw-bold" th:text="${item.price}"></p>
+                                    <button type="submit" class="button mt-2 mb-2">Buy</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- More carousel items (you can add another set of items for the next slide if needed) -->
-                <!-- Carousel items will repeat using Thymeleaf pagination -->
             </div>
-
             <!-- Carousel controls (previous/next) -->
             <button class="carousel-control-prev" type="button" data-bs-target="#itemCarousel" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon bg-dark rounded-circle" aria-hidden="true"></span>
