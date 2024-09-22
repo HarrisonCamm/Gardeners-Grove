@@ -8,18 +8,30 @@
     <div class="appBody">
         <div class="container p-0">
             <div class="row mt-5">
-                <div th:each="item: ${badgeItems}" class="col content card ms-2 me-2">
-                    <p class="item-price" th:text="${item[0]}"></p>
-                    <img type="gif" class="image mt-5" th:src="@{'images/' + ${item[1]}}">
-                    <p class="p-5" th:text="${item[2]}"></p>
+                <h3 class="mb-3">Badges</h3>
+                <div class="col content card ms-2 me-2" th:each="item: ${badgeItems}">
+                    <div class="h-25 w-100 mt-3 inventory-card-title">
+                        <h3 class="p-2" th:text="${item[2]}"></h3>
+                        <p class="item-quantity" th:text="${item[0]}"></p>
+                    </div>
+                    <div class="mb-5" >
+                        <img type="gif" class="image mt-5" th:src="@{'images/' + ${item[1]}}">
+                        <button class="item-use-button button">Use</button>
+                    </div>
                 </div>
             </div>
             <div class="row mt-5">
-                    <div th:each="item: ${gifItems}" class="col content card ms-2 me-2">
-                        <p class="item-price" th:text="${item[0]}"></p>
-                        <img type="gif" class="image mt-5" th:src="@{'images/' + ${item[1]}}">
-                        <p class="p-5" th:text="${item[2]}"></p>
+                <h3 class="mb-3 mt-5">Profile Pictures</h3>
+                <div class="col content card ms-2 me-2" th:each="item: ${gifItems}">
+                    <div class="h-25 w-100 mt-3 inventory-card-title">
+                        <h3 class="p-2" th:text="${item[2]}"></h3>
+                        <p class="item-quantity" th:text="${item[0]}"></p>
                     </div>
+                    <div class="mb-5" >
+                        <img type="gif" class="image mt-5" th:src="@{'images/' + ${item[1]}}">
+                        <button class="item-use-button button">Use</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
