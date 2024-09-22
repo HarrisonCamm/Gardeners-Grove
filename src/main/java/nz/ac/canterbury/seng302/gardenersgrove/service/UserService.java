@@ -212,5 +212,15 @@ public class UserService {
         userRepository.incrementInappropriateTagCount(userId);
     }
 
+    //Find the top 10 users by bloom balance and returns them like a list
+    public List<User> getTop10UsersByBloomBalance() {
+        return userRepository.findTop10ByOrderByBloomBalanceDesc();
+    }
+
+    public Integer getUserRank(Long userId) {
+        return userRepository.findUserRank(userId);
+    }
+
+
 
 }
