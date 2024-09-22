@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.controller.MessagesController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.ShopRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,6 +50,16 @@ public class EditGardenTests {
 
     @MockBean
     private UserService userService;
+
+
+    @MockBean
+    private ItemService itemService;
+
+    @MockBean
+    private ShopService shopService;
+
+    @MockBean
+    private ShopRepository shopRepository;
 
     @MockBean
     private UserRepository userRepository;
