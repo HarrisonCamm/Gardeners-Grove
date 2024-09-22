@@ -15,7 +15,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "USERS") //revise later, ask tutor about style
 public class User {
-
     public static final Integer DEFAULT_BALANCE = 500;
 
     @Id
@@ -97,7 +96,6 @@ public class User {
     public User(Long id, String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth) {
         this.userId = id;
         this.password = password;
-        this.bloomBalance = DEFAULT_BALANCE;
         this.setValues(firstName, lastName, noLastName, email, dateOfBirth);
     }
 
@@ -109,7 +107,6 @@ public class User {
         this.password = password;
         this.dateOfBirth = dateOfBirth;
         this.image = image;
-        this.bloomBalance = DEFAULT_BALANCE;
     }
 
     public User setValues(String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
@@ -118,7 +115,6 @@ public class User {
         this.noLastName = noLastName;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
-        this.bloomBalance = DEFAULT_BALANCE;
         return this;
     }
 

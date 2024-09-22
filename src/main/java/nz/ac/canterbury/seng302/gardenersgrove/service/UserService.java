@@ -17,6 +17,7 @@ import java.util.Optional;
 public class UserService {
     private UserRepository userRepository;
     private BCryptPasswordEncoder passwordEncoder;
+    public static final Integer DEFAULT_BALANCE = 500;
 
     @Autowired
     public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
@@ -31,6 +32,13 @@ public class UserService {
      * @return the User entity
      */
     public User addUser(User user) {
+
+        // Give user stating balance
+        if (user.getBloomBalance() == null) {
+            // Initialize balance only for new users
+            user.setBloomBalance(User.DEFAULT_BALANCE);
+        }
+
         // Encodes the users password
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         // Updates users password to the encrypted one
@@ -81,6 +89,11 @@ public class UserService {
      * @return The updated and persisted user entity.
      */
     public User updateUser(User user, String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
+
+        // Preserve the existing bloom balance if it's not changed
+        user.setBloomBalance(user.getBloomBalance());
+
+        // Update other user fields
         user.setValues(firstName, lastName, noLastName, email, dateOfBirth);
         return userRepository.save(user);
     }
