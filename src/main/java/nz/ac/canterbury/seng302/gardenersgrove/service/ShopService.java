@@ -20,8 +20,9 @@ public class ShopService {
     private UserRepository userRepository;
     private PlantService Plant;
 
-    private ItemRepository itemRepository;
     private ShopRepository shopRepository;
+
+    private ItemRepository itemRepository;
 
     // Injecting EntityManager
     @PersistenceContext
@@ -30,10 +31,12 @@ public class ShopService {
     @Autowired
     public ShopService(TransactionRepository transactionRepository,
                               UserRepository userRepository,
-                              PlantRepository plantRepository, ItemRepository itemRepository) {
+                              PlantRepository plantRepository, ItemRepository itemRepository,
+                              ShopRepository shopRepository) {
         this.transactionRepository = transactionRepository;
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
+        this.shopRepository = shopRepository;
     }
 
     @Transactional

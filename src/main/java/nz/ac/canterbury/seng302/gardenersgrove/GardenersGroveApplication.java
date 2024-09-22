@@ -4,10 +4,8 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.ShopRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -41,6 +39,12 @@ public class GardenersGroveApplication {
 
 	@Autowired
 	private ItemService itemService;
+
+	@Autowired
+	private ShopService shopService;
+
+	@Autowired
+	private ShopRepository shopRepository;
 
 	/**
 	 * Main entry point, runs the Spring application
@@ -99,6 +103,9 @@ public class GardenersGroveApplication {
 				user.grantAuthority("ROLE_USER");
 				userService.addUser(user);
 			}
+
+			// Create default items
+			shopService.populateShopWithPredefinedItems();
 
 //			// Create default items
 //			if (!itemService.itemExists("Cat Fall")) {
