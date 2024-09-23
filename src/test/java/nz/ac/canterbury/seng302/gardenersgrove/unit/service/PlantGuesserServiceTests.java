@@ -146,4 +146,15 @@ class PlantGuesserServiceTests {
         Assertions.assertFalse(containsCorrectName);
     }
 
+    @Test
+    void excludePlantFamilies_IsOkay() {
+        try
+        {
+            plantGuesserService.excludePlantFamilies();
+            Assertions.assertTrue(true);
+        } catch (Exception e) {
+            Assertions.fail();
+        }
+    }
+
 }
