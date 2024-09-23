@@ -131,7 +131,7 @@ public class PlantGuesserService {
             excludedPlantFamilies = "&" + combinedString;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info("Excluded family error", e);
         }
     }
 
