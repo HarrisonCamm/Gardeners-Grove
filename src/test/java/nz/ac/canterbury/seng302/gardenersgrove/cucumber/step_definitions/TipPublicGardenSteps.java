@@ -121,4 +121,64 @@ public class TipPublicGardenSteps {
                 () -> Assertions.assertEquals("You have " + actualBloomsUnclaimed + " Blooms to claim!", unclaimedBloomsMessage)
                 );
     }
+
+    @Given("I am on the garden details page for a garden I do not own")
+    public void i_am_on_the_garden_details_page_for_a_garden_i_do_not_own() {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+
+    @When("I enter an invalid tip {int}")
+    public void i_enter_an_invalid_tip(Integer int1) {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+
+    @Then("I am shown an error message {string}")
+    public void i_am_shown_an_error_message(String string) {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+
+    @When("I enter an invalid tip {string}")
+    public void i_enter_an_invalid_tip(String string) {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+
+    @Given("I enter an valid tip {int}")
+    public void i_enter_an_valid_tip(Integer int1) {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+
+    @When("I confirm the transaction for {int} by clicking {string}")
+    public void i_confirm_the_transaction_for_by_clicking(Integer int1, String string) {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+
+    @Then("the Blooms are deducted from my account")
+    public void the_blooms_are_deducted_from_my_account() {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+
+    @Then("the garden's tip count is updated")
+    public void the_garden_s_tip_count_is_updated() {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+
+    @Given("I enter an valid tip {string}")
+    public void i_enter_an_valid_tip(String string) {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
+
+    @When("I confirm the transaction for {string} by clicking {string}")
+    public void i_confirm_the_transaction_for_by_clicking(String string, String string2) {
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
+    }
 }
