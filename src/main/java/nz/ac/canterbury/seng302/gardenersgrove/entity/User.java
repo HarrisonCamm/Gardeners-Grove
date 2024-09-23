@@ -80,6 +80,9 @@ public class User {
     @Column(name = "badgeURL")
     private String badgeURL;
 
+    @Column(name = "imageURL")
+    private String imageURL;
+
 
     public User() {
         // JPA empty constructor
@@ -123,6 +126,7 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.bloomBalance = DEFAULT_BALANCE;
         this.badgeURL = null;
+        this.imageURL = null;
         return this;
     }
 
@@ -213,12 +217,24 @@ public class User {
         return image;
     }
 
+
+    //TODO: Modify/Change the logic here to work with the Badge/Item classes that were implemented on U6007-AC2
     public void setBadgeURL(String newBadgeURL) {
         this.badgeURL = newBadgeURL;
     }
 
     public String getBadgeURL() {
         return badgeURL;
+    }
+
+
+    //TODO: Modify this code so it works with the logic for Image/GIF items in U6007-AC2
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    public String getImageURL() {
+        return imageURL;
     }
 
 

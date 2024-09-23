@@ -85,7 +85,6 @@ body {
 }
 
 
-
 @media (min-width: 768px) {
     .table-wrapper {
         max-width: 1000px; /* Max width on medium or larger screens */
@@ -132,6 +131,22 @@ textarea:focus {
     overflow-wrap: break-word;
     hyphens: auto;
 }
+
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.badge-image {
+    height: 1em; /* This matches the text height */
+    width: auto; /* Maintain aspect ratio */
+}
+
+
+
+
+
 
 .error {
     border: 1px solid #DE2929;

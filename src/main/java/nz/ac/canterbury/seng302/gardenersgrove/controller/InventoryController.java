@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ public class InventoryController {
 
     @Autowired
     private UserService userService;
+
 
     public InventoryController(UserService userService) {
         this.userService = userService;
@@ -67,6 +69,17 @@ public class InventoryController {
         userService.saveUser(user);
         return "redirect:/inventory";
     }
+
+    @PostMapping("/inventory/updateProfile")
+    public String updateUserProfile(@RequestParam Long userId, @RequestParam String imageURL) {
+        User user = userService.getUserByID(userId);
+
+        user.setImageURL(imageURL);
+        userService.saveUser(user);
+        return "redirect:/inventory";
+    }
+
+
 
 
 }
