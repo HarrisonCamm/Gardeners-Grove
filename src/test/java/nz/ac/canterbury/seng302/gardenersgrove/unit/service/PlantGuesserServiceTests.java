@@ -29,13 +29,8 @@ class PlantGuesserServiceTests {
     private static String plantsResponseJsonString;
     private static String invalidTokenPlantsResponseJsonString;
     private static String invalidPlantIdResponseJsonString;
-
-    private static String lessThanThreePlantsResponseJsonString;
-
-
     private static PlantGuesserList plantGuesserList;
     private static PlantGuesserList plantGuesserFamilyList;
-    private static PlantGuesserList shortPlantGuesserFamilyList;
 
 
 
@@ -48,15 +43,12 @@ class PlantGuesserServiceTests {
         plantsResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsResponse.json"));
         invalidTokenPlantsResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantsNoTokenResponse.json"));
         invalidPlantIdResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getPlantInvalidIdResponse.json"));
-        lessThanThreePlantsResponseJsonString = Files.readString(Paths.get("src/test/resources/json/getMultiChoicePlantsFewPlantsResponse.json"));
 
 
         ObjectMapper objectMapper = new ObjectMapper();
         plantGuesserList = objectMapper.readValue(plantsResponseJsonString, PlantGuesserList.class);
 
         plantGuesserFamilyList = objectMapper.readValue(plantFamilyResponseJsonString, PlantGuesserList.class);
-
-        shortPlantGuesserFamilyList = objectMapper.readValue(lessThanThreePlantsResponseJsonString, PlantGuesserList.class);
 
 
 
@@ -115,10 +107,21 @@ class PlantGuesserServiceTests {
 
         PlantData response = plantGuesserService.getPlant(0);
 
-        Assertions.assertTrue(plantsResponseJsonString.contains(response.scientific_name));
+        Assertions.assertTrue(plantsResponseJsonString.contains(response.common_name));
 
     }
 
+    @Test
+    void getPlantRound_ReturnsValidPlants() {
+        Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserList);
+
+        List<PlantData> response = plantGuesserService.getPlantRound();
+
+        for (PlantData plant: response) {
+            Assertions.assertTrue(plantsResponseJsonString.contains(plant.common_name));
+        }
+
+    }
     @Test
     void getFamilyPlants_ExcludesPlantOfSameName() {
         Mockito.when(restTemplate.getForObject(any(String.class), any())).thenReturn(plantGuesserFamilyList);
