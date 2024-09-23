@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.advice;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,17 @@ public class GlobalControllerAdvice {
         User authenticatedUser = userService.getAuthenticatedUser();
         if (authenticatedUser != null) {
             return authenticatedUser.getBloomBalance();
+        }
+        else {
+            return null;
+        }
+    }
+
+    @ModelAttribute("userBadge")
+    public String getUserBadge() {
+        User authenticatedUser = userService.getAuthenticatedUser();
+        if (authenticatedUser != null) {
+            return authenticatedUser.getBadgeImage();
         }
         else {
             return null;

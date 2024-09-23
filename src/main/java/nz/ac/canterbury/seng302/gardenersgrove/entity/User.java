@@ -209,6 +209,10 @@ public class User {
         return image;
     }
 
+    public String getBadgeImage() {
+        return
+    }
+
     public List<FriendRequest> getSentFriendRequests() {
         return null;
     }
