@@ -74,9 +74,12 @@ public class User {
     private List<Transaction> transactions = new ArrayList<>();
 
 
-
     @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer inappropriateTagCount = 0;
+
+    @Column(name = "badgeURL")
+    private String badgeURL;
+
 
     public User() {
         // JPA empty constructor
@@ -119,6 +122,7 @@ public class User {
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.bloomBalance = DEFAULT_BALANCE;
+        this.badgeURL = null;
         return this;
     }
 
@@ -209,9 +213,14 @@ public class User {
         return image;
     }
 
-    public String getBadgeImage() {
-        return
+    public void setBadgeURL(String newBadgeURL) {
+        this.badgeURL = newBadgeURL;
     }
+
+    public String getBadgeURL() {
+        return badgeURL;
+    }
+
 
     public List<FriendRequest> getSentFriendRequests() {
         return null;

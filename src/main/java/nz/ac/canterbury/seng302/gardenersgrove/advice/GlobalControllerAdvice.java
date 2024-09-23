@@ -24,14 +24,4 @@ public class GlobalControllerAdvice {
         }
     }
 
-    @ModelAttribute("userBadge")
-    public String getUserBadge() {
-        User authenticatedUser = userService.getAuthenticatedUser();
-        if (authenticatedUser != null) {
-            return authenticatedUser.getBadgeImage();
-        }
-        else {
-            return null;
-        }
-    }
 }

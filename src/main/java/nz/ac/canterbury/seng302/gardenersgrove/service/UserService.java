@@ -86,6 +86,19 @@ public class UserService {
     }
 
     /**
+     * Saves the provided user to the database.
+     *
+     * This method uses the UserRepository to persist the User entity.
+     * If the user already exists, it will be updated; otherwise, a new record will be created.
+     *
+     * @param user the User entity to be saved
+     */
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
+
+    /**
      * Updates User entity in the database.
      *
      * @param user the User entity to be updated

@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<head th:replace="fragments/head :: head(title='Inventory')">
+<head th:replace="~{fragments/head :: head(title='Inventory')}"></head>
 </head>
 <body>
     <!-- Navigation Bar Fragment -->
     <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
     <div class="appBody">
+        <div>
+            <img type="gif" class="image mt-5" th:src="${user.badgeURL}">
+        </div>
+
         <div class="container p-0">
 <!--            This row will display the user's badge items they have-->
             <div class="row mt-5">
@@ -19,7 +23,11 @@
                     </div>
                     <div class="mb-5" >
                         <img type="gif" class="image mt-5" th:src="@{'images/' + ${item[1]}}">
-                        <button class="item-use-button button">Use</button>
+                        <form th:action="@{/inventory/updateBadgeURL}" method="post">
+                            <input type="hidden" name="userId" th:value="${user.userId}">
+                            <input type="hidden" name="badgeURL" th:value="@{'images/' + ${item[1]}}">
+                            <button class="item-use-button button" type="submit">Use</button>
+                        </form>
                     </div>
                 </div>
             </div>
