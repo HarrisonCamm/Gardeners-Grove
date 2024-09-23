@@ -44,6 +44,7 @@ public class PlantGuesserController {
     private static final String SESSION_SCORE = "plantGuesserScore";
     private static final String SESSION_ROUND = "plantGuesserRound";
     private static final String SESSION_TRY = "plantGuesserTry";
+    private static final String CORRECT_OPTION = "correctOption";
 
     private User gardenersGroveUser; //represents the sender for transactions from games
 
@@ -105,7 +106,6 @@ public class PlantGuesserController {
                                @RequestParam("quizOption4") String quizOption4,
                                @RequestParam("plantImage") String plantImage,
                                @RequestParam("imageCredit") String imageCredit,
-                               @RequestParam("correctOption") int correctOption,
                                @RequestParam("score") int score,
                                HttpSession session,
                                HttpServletRequest request,
@@ -115,6 +115,7 @@ public class PlantGuesserController {
         User currentUser = userService.getAuthenticatedUser();
         int currentBloomBalance = currentUser.getBloomBalance();
         int roundNumber = (int) session.getAttribute(SESSION_ROUND) + 1;
+        int correctOption = (int) session.getAttribute(CORRECT_OPTION);
 
         String[] quizOptions = {quizOption1, quizOption2, quizOption3, quizOption4};
         List<String[]> splitQuizOptions = new ArrayList<>();
@@ -130,7 +131,7 @@ public class PlantGuesserController {
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit);
         model.addAttribute("roundNumber", roundNumber);
-        model.addAttribute("correctOption", correctOption);
+        model.addAttribute(CORRECT_OPTION, correctOption);
         model.addAttribute("selectedOption", selectedOption);
         model.addAttribute("bloomBonus", BLOOM_BONUS);
 
@@ -233,7 +234,8 @@ public class PlantGuesserController {
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit + " via Trefle");
         model.addAttribute("roundNumber", roundNumber + 1);
-        model.addAttribute("correctOption", correctOption);
+        session.setAttribute(CORRECT_OPTION, correctOption);
+        model.addAttribute(CORRECT_OPTION, "");
         model.addAttribute("selectedOption", -1);
         model.addAttribute("answerSubmitted", false);
         model.addAttribute("gameOver", false);
