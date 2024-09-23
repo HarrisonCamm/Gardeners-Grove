@@ -119,6 +119,7 @@ public class UploadImageController {
                                            @RequestParam(value = "edit-plant", required = false) boolean editPlant,
                                            @RequestParam(value = "view-user-profile", required = false) boolean viewUser,
                                            @RequestParam(value = "edit-user-profile-image", required = false) boolean editUserProfile,
+                                           @RequestParam(value = "shop", required = false) boolean viewShop,
                                            @RequestParam(value = "temporary", required = false) boolean temporary,
                                            @RequestParam(value = "gardenID", required = false) Long gardenID,
                                            @RequestParam(value = "userID", required = false) Long userID,
@@ -143,7 +144,7 @@ public class UploadImageController {
             }
             model.addAttribute("id", imageID);
             model.addAttribute("picture", image.getData());
-        } else if (!viewUser && !editUserProfile) {
+        } else if (!viewUser && !editUserProfile && !viewShop) {
             Optional<Plant> foundPlant = plantService.findPlant(plantID);
             if (foundPlant.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant not found");
@@ -151,6 +152,16 @@ public class UploadImageController {
             Plant plant = foundPlant.get();
             image = plant.getImage();
             model.addAttribute("id", plantID);
+            model.addAttribute("picture", image.getData());
+
+        } else if (viewShop) {
+            Optional<Image> foundImage = imageService.findImage(imageID);
+            if (foundImage.isEmpty()) {
+                logger.error("Image with ID {} not found for item", imageID);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found");
+            }
+            image = foundImage.get();
+            model.addAttribute("id", imageID);
             model.addAttribute("picture", image.getData());
         } else {
             User user = userService.getUserByID(userID);

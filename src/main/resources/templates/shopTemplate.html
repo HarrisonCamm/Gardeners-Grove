@@ -1,49 +1,41 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Gardener's Grove</title>
-    <!-- Bootstrap CSS -->
-    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
-    <!-- Navbar styling -->
-    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
-    <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
-    <link th:href="@{/css/generalStyles.css}" rel="stylesheet"/>
-    <script th:src="@{/javascript/carousel.js}"></script>
-    <!-- Bootstrap JS (for carousel functionality) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<html lang="en">
+<head th:replace="fragments/head :: head(title='Shop')">
 </head>
 <body>
+<!-- Navigation Bar Fragment -->
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-<div class="content appBody">
-    <div>
-        <div id="itemCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="row">
-                        <!-- Thymeleaf loop to iterate through items in the model -->
-                        <div class="col-lg-3" th:each="item : ${availableItems}">
-                            <div class="card h-100 text-center">
-                                <p class="card-title mt-5" th:text="${item.emoji}"></p>
-                                <div class="card-body">
-                                    <h5 class="card-title" th:text="${item.name}"></h5>
-                                    <p class="card-text fw-bold" th:text="${item.price}"></p>
-                                    <button type="submit" class="button mt-2 mb-2">Buy</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<div class="appBody">
+    <div class="container p-0">
+        <!-- This row will display the user's badge items they have -->
+        <div class="row mt-5">
+            <h3 class="mb-3">Badges</h3>
+            <!--                Iterate through the badgeItems list and display each badge item-->
+            <!--                NOTE: item indexes are [quantity, image, name] and are subject to change-->
+            <div class="col content card ms-2 me-2" th:each="item: ${badgeItems}">
+                <div class="h-25 w-100 mt-3 inventory-card-title">
+                    <h3 class="p-2" th:text="${item.name}"></h3>
+                    <p class="item-quantity" th:text="${item.quantity} + 'x'"></p>
+                </div>
+                <div class="mb-5" >
+                    <span class="image mt-5" th:text="${item.emoji}"></span>
+                    <button class="item-use-button button">Use</button>
                 </div>
             </div>
-            <!-- Carousel controls (previous/next) -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#itemCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon bg-dark rounded-circle" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#itemCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon bg-dark rounded-circle" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+        </div>
+        <!--                NOTE: item indexes are [quantity, image, name] and are subject to change-->
+        <div class="row mt-5">
+            <h3 class="mb-3 mt-5">Profile Pictures</h3>
+            <div class="col content card ms-2 me-2" th:each="item: ${imageItems}">
+                <div class="h-25 w-100 mt-3 inventory-card-title">
+                    <h3 class="p-2" th:text="${item.name}"></h3>
+                    <p class="item-quantity" th:text="${item.quantity} + 'x'"></p>
+                </div>
+                <div class="mb-5" >
+                    <img type="gif" class="image mt-5" th:src="@{/get-image?shop=true(imageID=${item.image.id})}" alt="Item Image">
+                    <button class="item-use-button button">Use</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

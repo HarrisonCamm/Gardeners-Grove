@@ -1,8 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove;
 
-import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.ShopRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;

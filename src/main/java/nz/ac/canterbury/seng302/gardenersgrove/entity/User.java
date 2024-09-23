@@ -62,11 +62,8 @@ public class User {
     @JoinColumn
     private Image image;
 
-    @ElementCollection
-    @CollectionTable(name = "user_inventory", joinColumns = @JoinColumn(name = "user_id"))
-    @MapKeyJoinColumn(name = "item_id")
-    @Column(name = "quantity")
-    private Map<Item, Integer> inventory = new HashMap<>();
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Item> inventory = new ArrayList<>();
 
     @Column()
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -186,12 +183,12 @@ public class User {
     }
 
     // Getter for inventory
-    public Map<Item, Integer> getInventory() {
+    public List<Item> getInventory() {
         return inventory;
     }
 
     // Setter for inventory
-    public void setInventory(Map<Item, Integer> inventory) {
+    public void setInventory(List<Item> inventory) {
         this.inventory = inventory;
     }
 
@@ -343,22 +340,32 @@ public class User {
     }
 
 
-    public void addItem(Item item, int quantity) {
-        inventory.put(item, inventory.getOrDefault(item, 0) + quantity);
+    public void addItem(Item item) {
+        for (Item existingItem : inventory) {
+            if (existingItem.getName().equals(item.getName())) {
+                existingItem.setQuantity(existingItem.getQuantity() + 1);
+                return;
+            }
+        }
+        // If the item doesn't exist, set the owner and add it to the inventory
+        item.setOwner(this);
+        item.setQuantity(1);
+        inventory.add(item);
     }
 
-    public void removeItem(Item item, int quantity) throws Exception {
-        if (!hasItem(item, quantity)) {
-            throw new Exception("Insufficient quantity.");
-        }
-        inventory.put(item, inventory.get(item) - quantity);
-        if (inventory.get(item) <= 0) {
-            inventory.remove(item);
-        }
-    }
 
-    public boolean hasItem(Item item, int quantity) {
-        return inventory.getOrDefault(item, 0) >= quantity;
-    }
+//    public void removeItem(Item item, int quantity) throws Exception {
+//        if (!hasItem(item, quantity)) {
+//            throw new Exception("Insufficient quantity.");
+//        }
+//        inventory.put(item, inventory.get(item) - quantity);
+//        if (inventory.get(item) <= 0) {
+//            inventory.remove(item);
+//        }
+//    }
+//
+//    public boolean hasItem(Item item, int quantity) {
+//        return inventory.getOrDefault(item, 0) >= quantity;
+//    }
 
 }

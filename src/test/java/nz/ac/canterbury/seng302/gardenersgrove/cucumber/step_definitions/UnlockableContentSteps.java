@@ -72,8 +72,10 @@ public class UnlockableContentSteps {
 
     @Then("I am shown the shop")
     public void i_am_shown_the_shop() {
-        Set<Item> availableItems = (Set<Item>) mvcResult.getModelAndView().getModel().get("availableItems");
-        assertNotNull(availableItems);
+        Set<Item> badgeItems = (Set<Item>) mvcResult.getModelAndView().getModel().get("badgeItems");
+        Set<Item> imageItems = (Set<Item>) mvcResult.getModelAndView().getModel().get("imageItems");
+        assertNotNull(badgeItems);
+        assertNotNull(imageItems);
     }
 
     @Given("I am in the shop")

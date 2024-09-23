@@ -20,7 +20,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByName(String name);
 
     // Find all items by owner ID (works for any type of item)
-    List<Item> findByOwnerId(Long ownerId);
+    List<Item> findByOwner_UserId(Long userId);
 }
 
 
