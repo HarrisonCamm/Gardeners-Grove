@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,13 +151,19 @@ public class ViewGardenController {
 
         User currentUser = userService.getAuthenticatedUser();
 
-//        doTipValidations(model, tipAmount, currentUser);
+        doTipValidations(session, tipAmount, currentUser);
 
-        addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
+        if (model.containsAttribute("tipAmountError")) {
+            return "viewUnownedGardenDetailsTemplate";
+        }
 
+        // Charge the user the tip they gave the tip has already been validated.
+        userService.chargeBlooms(currentUser, tipAmount);
 
-//        return "redirect:/view-garden?gardenID=" + gardenID;
-        return "viewUnownedGardenDetailsTemplate";
+        //Add unclaimed blooms to the garden that was tipped
+        gardenService.addUnclaimedBloomTips(gardenID, tipAmount);
+
+        return "redirect:/view-garden?gardenID=" + gardenID;
     }
 
     @PostMapping("/add-tag")
@@ -269,10 +276,20 @@ public class ViewGardenController {
         return garden.get();
     }
 
-    private Model addTipAttributes(Model model, Garden garden, User currentUser) {
+    private Model addTipAttributes(HttpSession session, Model model, Garden garden, User currentUser) {
         //new code added to get Blooms tipped
         Integer totalBloomsTipped = garden.getTotalBloomTips();
         model.addAttribute("totalBloomsTippedMessage", "Total Blooms tipped: " + totalBloomsTipped);
+
+        if (session.getAttribute("tipAmountError") != null) {
+            model.addAttribute("tipAmountError", session.getAttribute("tipAmountError"));
+            model.addAttribute("showTipModal", true);
+            model.addAttribute("tipInput", session.getAttribute("tipInput"));
+
+            session.removeAttribute("tipAmountError");
+            session.removeAttribute("tipInput");
+        }
+
         boolean isOwner = garden.getOwner().equals(currentUser);
         if (isOwner) {
             Integer unclaimedBlooms = garden.getUnclaimedBlooms();
@@ -307,7 +324,7 @@ public class ViewGardenController {
 
 
             User currentUser = userService.getAuthenticatedUser();
-            addTipAttributes(model, garden.get(), currentUser);
+            addTipAttributes(session, model, garden.get(), currentUser);
 
             // New Code Added to get weather
             String gardenCity = garden.get().getLocation().getCity();

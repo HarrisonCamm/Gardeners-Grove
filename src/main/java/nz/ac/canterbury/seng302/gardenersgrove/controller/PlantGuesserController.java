@@ -152,6 +152,7 @@ public class PlantGuesserController {
             model.addAttribute("bloomBalance", currentUser.getBloomBalance());
             Integer bloomsToAdd = BLOOM_BONUS + (score*NUM_ROUNDS);
 
+//            userService.chargeBlooms(gardenersGroveUser, bloomsToAdd); TODO?
             gardenersGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
             transactionService.addTransaction(bloomsToAdd, "Plant guesser game.","type", currentUser.getUserId(), gardenersGroveUser.getUserId());
             gameOver = true;
