@@ -177,3 +177,101 @@ h2 {
         font-size: 250%;
     }
 }
+
+/* Container styling for the leaderboard */
+.leaderboard-container {
+    background: #BEE186;
+    padding: 20px;
+    border-radius: 15px;
+    color: #0A3407;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.leaderboard-header {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #0A3407;
+    text-align: center;
+}
+
+.leaderboard-table {
+    width: 100%;
+    margin: auto;
+    border-collapse: separate;
+    border-spacing: 10px 10px;
+}
+
+.leaderboard-table th {
+    background: #3D7B36;
+    padding: 12px;
+    text-transform: uppercase;
+    font-weight: bold;
+    border: none;
+    color: #ffffff;
+    border-radius: 8px;
+}
+
+.leaderboard-table td {
+    background: #E2F1CA;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    vertical-align: middle;
+    color: #0A3407;
+}
+
+.leaderboard-table td:first-child {
+    width: 60px;
+}
+
+.leaderboard-table tr:nth-child(even) td {
+    background: #D8E8A3;
+}
+
+.leaderboard-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    border: 3px solid transparent;
+}
+
+/* Specific borders for top 3 users */
+.leaderboard-table tbody tr:nth-child(1) .leaderboard-image {
+    border-color: gold;
+    width: 60px;
+    height: 60px;
+
+}
+
+.leaderboard-table tbody tr:nth-child(2) .leaderboard-image {
+    border-color: silver;
+    width: 60px;
+    height: 60px;
+
+}
+
+.leaderboard-table tbody tr:nth-child(3) .leaderboard-image {
+    border-color: #cd7f32;
+    width: 60px;
+    height: 60px;
+
+}
+
+.profile-name {
+    font-size: 16px;
+    color: #0A3407;
+}
+
+.leaderboard-table td + td {
+    padding-left: 20px;
+}
+
+.highlight-user {
+    font-weight: bold;
+    font-size: larger;
+}
+
+
