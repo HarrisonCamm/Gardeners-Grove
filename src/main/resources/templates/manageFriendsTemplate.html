@@ -36,6 +36,7 @@
                                                     <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
                                                     &nbsp;
                                                     <h3 th:text="${friend.firstName + ' ' + friend.lastName}"></h3>
+                                                    <img type="gif" class="badge-image ms-2" th:src="${friend.badgeURL}"/>
                                                 </div>
                                                 <div th:id="removeFriend + ${stat.index}" th:hidden="false">
                                                     <div class="buttons-right">
