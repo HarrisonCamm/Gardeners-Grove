@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface TransactionRepository  extends JpaRepository<Transaction, Long> {
-    @Query("SELECT t FROM Transaction t WHERE t.sender = :user OR t.receiver = :user")
+    @Query("SELECT t FROM Transaction t WHERE t.sender = :user OR t.receiver = :user AND t.claimed = true")
     Page<Transaction> findAllByUser(@Param("user") User user, Pageable pageable);
 
 }

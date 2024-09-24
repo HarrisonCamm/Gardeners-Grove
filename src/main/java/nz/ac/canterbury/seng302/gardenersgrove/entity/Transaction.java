@@ -41,6 +41,13 @@ public class Transaction {
     @Column(name = "notes", length = 512)
     private String notes;
 
+
+    // This column will be used to determine if the transaction has been claimed by the receiver
+    // In general, this will be true if you are playing plant guesser and daily spin
+    // and false if you are tipping because the receiver has to claim the tip
+    @Column
+    private boolean claimed;
+
     public Transaction() {
         // JPA empty constructor
     }
@@ -53,7 +60,7 @@ public class Transaction {
         this.transactionType = transactionType;
         this.plant = plant;
         this.notes = notes;
-
+        this.claimed = true;
     }
 
     public Long getTransactionId() {
@@ -85,6 +92,9 @@ public class Transaction {
         return notes;
     }
 
+    // Not sure if JPA requires naming of getters to be getClaimed I want to do isClaimed
+    public boolean getClaimed() { return claimed; }
+
     public void setSender(User sender) {
         this.sender = sender;
     }
@@ -110,4 +120,6 @@ public class Transaction {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
+    public void setClaimed(boolean claimed) { this.claimed = claimed; }
 }
