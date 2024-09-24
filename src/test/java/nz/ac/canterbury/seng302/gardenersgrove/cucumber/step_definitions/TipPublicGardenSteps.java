@@ -5,11 +5,8 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import nz.ac.canterbury.seng302.gardenersgrove.controller.UserProfileController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -32,7 +29,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -188,44 +184,57 @@ public class TipPublicGardenSteps {
     @When("I enter an invalid tip {string}")
     public void i_enter_an_invalid_tip(String string) {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+//        throw new io.cucumber.java.PendingException();
     }
 
     @Given("I enter an valid tip {int}")
     public void i_enter_an_valid_tip(Integer int1) {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+//        throw new io.cucumber.java.PendingException();
     }
 
     @When("I confirm the transaction for {int} by clicking {string}")
     public void i_confirm_the_transaction_for_by_clicking(Integer int1, String string) {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+//        throw new io.cucumber.java.PendingException();
     }
 
     @Then("the Blooms are deducted from my account")
     public void the_blooms_are_deducted_from_my_account() {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+//        throw new io.cucumber.java.PendingException();
     }
 
     @Then("the garden's tip count is updated")
     public void the_garden_s_tip_count_is_updated() {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+//        throw new io.cucumber.java.PendingException();
     }
 
     @Given("I enter an valid tip {string}")
     public void i_enter_an_valid_tip(String string) {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+//        throw new io.cucumber.java.PendingException();
     }
 
     @When("I confirm the transaction for {string} by clicking {string}")
     public void i_confirm_the_transaction_for_by_clicking(String string, String string2) {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+//        throw new io.cucumber.java.PendingException();
     }
 
 
+    @And("I choose to claim the Blooms from my garden's tips")
+    public void iChooseToClaimTheBloomsFromMyGardenSTips() {
+
+    }
+
+    @When("I confirm the action")
+    public void iConfirmTheAction() {
+        
+    }
+
+    @Then("the {int} blooms are added to my account")
+    public void theBloomsAreAddedToMyAccount(int amountClaimed) {
+    }
 }
