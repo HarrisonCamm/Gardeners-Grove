@@ -34,9 +34,15 @@
                     th:classappend="${user.userId == currentUserId} ? 'highlight-user' : ''">
                     <td th:text="${index.index + 1}"></td>
                     <td class="profile-info">
-                        <img class="leaderboard-image"
+<!--                        <img class="leaderboard-image"-->
+<!--                             th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="Profile Picture">-->
+
+                        <img th:if="${user.badgeURL != null}" class="leaderboard-image"
+                             th:src="${user.imageURL}" alt="Profile Picture">
+                        <img th:unless="${user.badgeURL != null}" class="leaderboard-image"
                              th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="Profile Picture">
                         <span class="profile-name" th:text="${user.firstName} + ' ' + ${user.lastName}"></span>
+                        <img type="gif" class="badge-image ms-2" th:src="${user.badgeURL}"/>
                     </td>
                     <td th:text="${user.bloomBalance}"></td>
                 </tr>

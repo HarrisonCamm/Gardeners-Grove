@@ -140,9 +140,8 @@ textarea:focus {
 
 .badge-image {
     height: 1em; /* This matches the text height */
-    width: auto; /* Maintain aspect ratio */
+    width: auto;
 }
-
 
 
 

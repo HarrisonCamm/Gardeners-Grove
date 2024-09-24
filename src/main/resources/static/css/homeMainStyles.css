@@ -274,3 +274,12 @@ h2 {
 }
 
 
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.badge-image {
+    height: 1em; /* This matches the text height */
+    width: auto;
+}
