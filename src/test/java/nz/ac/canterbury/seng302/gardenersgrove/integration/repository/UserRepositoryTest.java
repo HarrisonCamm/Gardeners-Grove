@@ -1,8 +1,11 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration.repository;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.ShopRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ShopService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -29,6 +32,15 @@ public class UserRepositoryTest {
 
     @MockBean
     private ImageService imageService;
+
+    @MockBean
+    private ItemService itemService;
+
+    @MockBean
+    private ShopRepository shopRepository;
+
+    @MockBean
+    private ShopService ShopService;
 
     private static User loggedUser;
 

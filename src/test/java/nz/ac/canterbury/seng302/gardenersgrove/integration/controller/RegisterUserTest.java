@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.RegisterFormController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.ShopRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,15 @@ public class RegisterUserTest {
 
     @MockBean
     private AuthorityService authorityService;
+
+    @MockBean
+    private ItemService itemService;
+
+    @MockBean
+    private ShopService shopService;
+
+    @MockBean
+    private ShopRepository shopRepository;
 
     @MockBean
     private MailService mailService;
