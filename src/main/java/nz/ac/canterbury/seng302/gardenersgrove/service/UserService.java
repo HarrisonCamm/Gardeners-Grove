@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -192,14 +193,34 @@ public class UserService {
                 user1.getDateOfBirth().equals(user2.getDateOfBirth());
     }
 
+    /**
+     * Adds blooms to the user's balance
+     * @param user
+     * @param blooms
+     */
     public void addBlooms(User user, int blooms) {
         user.setBloomBalance(user.getBloomBalance() + blooms);
         userRepository.save(user);
     }
 
+    /**
+     * Charges the user a certain number of blooms
+     * @param user
+     * @param blooms
+     */
     public void chargeBlooms(User user, int blooms) {
         user.setBloomBalance(user.getBloomBalance() - blooms);
         userRepository.save(user);
+    }
+
+    /**
+     * Return true if the user can afford the item
+     * @param user
+     * @param item
+     * @return
+     */
+    public boolean canAfford(User user, Item item) {
+        return user.getBloomBalance() >= item.getPrice();
     }
 
     public void updateUserLastFreeSpinUsed(User user) {
