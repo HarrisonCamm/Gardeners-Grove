@@ -104,38 +104,6 @@ public class GardenersGroveApplication {
 
 			// Create default items
 			shopService.populateShopWithPredefinedItems();
-
-//			// Create default items
-//			if (!itemService.itemExists("Cat Fall")) {
-//				Path catFallImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/cat-fall.gif").getURI());
-//				byte[] catFallImageBytes = Files.readAllBytes(catFallImagePath);
-//				Image image = new Image(catFallImageBytes, "gif", false);
-//				ImageItem imageItem = new ImageItem("Cat Fall",5000, image);
-//				itemService.saveItem(imageItem);
-//			}
-//			if (!itemService.itemExists("Cat Typing")) {
-//				Path catTypingImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/cat-typing.gif").getURI());
-//				byte[] catTypingImageBytes = Files.readAllBytes(catTypingImagePath);
-//				Image image = new Image(catTypingImageBytes, "gif", false);
-//				ImageItem imageItem = new ImageItem("Cat Typing",3000, image);
-//				itemService.saveItem(imageItem);
-//			}
-//			if (!itemService.itemExists("Starfruit")) {
-//				Path starfruitImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/starfruit.jpg").getURI());
-//				byte[] starfruitImageBytes = Files.readAllBytes(starfruitImagePath);
-//				Image image = new Image(starfruitImageBytes, "jpg", false);
-//				ImageItem imageItem = new ImageItem("Starfruit", 1000, image);
-//				itemService.saveItem(imageItem);
-//			}
-//			if (!itemService.itemExists("Nerd")) {
-//				BadgeItem badgeItem = new BadgeItem("Nerd", false, 750, "\uD83E\uDD13");
-//				itemService.saveItem(badgeItem);
-//
-//			}
-//			if (!itemService.itemExists("Chestnut")) {
-//				BadgeItem badgeItem = new BadgeItem("Chestnut", false, 250, "\uD83C\uDF30");
-//				itemService.saveItem(badgeItem);
-//			}
 		};
 	}
 }

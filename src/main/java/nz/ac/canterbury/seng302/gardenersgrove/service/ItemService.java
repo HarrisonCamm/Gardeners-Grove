@@ -36,43 +36,4 @@ public class ItemService {
 //        return itemRepository.findByName(name).isPresent();
         return true;
     }
-
-
-//
-//    public Iterable<Item> getAllItems() {
-//        return itemRepository.findAll();
-//    }
-//
-//    public Iterable<Item> getBadges() {
-//        return itemRepository.findBadges();
-//    }
-//
-//    public Iterable<Item> getImages() {
-//        return itemRepository.findImages();
-//    }
-//
-//    public Iterable<Item> getEquipable() {
-//        return itemRepository.findIsEquipable(true);
-//    }
-//
-//    public Iterable<Item> getEquippedByOwner(User owner) {
-//        return itemRepository.findIsEquippedByOwner(owner);
-//    }
-//
-//    public Iterable<Item> getEquipableByOwner(User owner) {
-//        return itemRepository.findIsEquipableByOwner(owner);
-//    }
-//
-//    public Iterable<Item> getBadgesByOwner(User owner) {
-//        return itemRepository.findBadgesByOwner(owner);
-//    }
-//
-//    public Iterable<Item> getImagesByOwner(User owner) {
-//        return itemRepository.findImagesByOwner(owner);
-//    }
-//
-//    public Iterable<Item> getItemsByOwner(User owner) {
-//        return itemRepository.findByOwner(owner);
-//    }
-
 }

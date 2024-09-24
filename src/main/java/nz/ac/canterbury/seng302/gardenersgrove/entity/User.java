@@ -318,14 +318,6 @@ public class User {
         this.friends = friends;
     }
 
-    public boolean canAfford(Item item) {
-        return this.bloomBalance >= item.getPrice();
-    }
-
-
-    public void decreaseBloomBalance(Integer amount) {
-        this.bloomBalance = bloomBalance - amount;
-    }
 
     @Override
     public boolean equals(Object user) {

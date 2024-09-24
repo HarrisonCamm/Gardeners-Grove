@@ -21,12 +21,10 @@ public class ShopService {
     private TransactionRepository transactionRepository;
     private UserRepository userRepository;
     private PlantService Plant;
-
     private ShopRepository shopRepository;
-
     private ItemRepository itemRepository;
-
     private ResourceLoader resourceLoader;
+    private UserService userService;
 
     // Injecting EntityManager
     @PersistenceContext
@@ -38,12 +36,14 @@ public class ShopService {
                               PlantRepository plantRepository,
                               ItemRepository itemRepository,
                               ShopRepository shopRepository,
-                              ResourceLoader resourceLoader) {
+                              ResourceLoader resourceLoader,
+                              UserService userService) {
         this.transactionRepository = transactionRepository;
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
         this.shopRepository = shopRepository;
         this.resourceLoader = resourceLoader;
+        this.userService = userService;
     }
 
     @Transactional
@@ -83,11 +83,13 @@ public class ShopService {
 
     @Transactional
     public void purchaseItem(User user, Shop shop, Item item) {
-        if (shop.hasItem(item) && user.canAfford(item)) {
+        if (shop.hasItem(item) && userService.canAfford(user, item)) {
 
             // add item to user inventory
             user.addItem(item);
-            user.decreaseBloomBalance(item.getPrice());
+
+            userService.chargeBlooms(user, item.getPrice());
+
 
             userRepository.save(user);
         }

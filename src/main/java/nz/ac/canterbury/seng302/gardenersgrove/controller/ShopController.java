@@ -21,6 +21,13 @@ public class ShopController {
         this.shopService = shopService;
     }
 
+
+    /**
+     * Retrieves badge and image items for the shop
+     * and adds them to the model
+     * @param model
+     * @return
+     */
     @GetMapping("/shop")
     public String shopPage(Model model) {
         Set<Item> availableItems = shopService.getItemsInShop();
@@ -39,5 +46,4 @@ public class ShopController {
 
         return "shopTemplate";  // This will return the shopTemplate.html from the templates folder
     }
-
 }
