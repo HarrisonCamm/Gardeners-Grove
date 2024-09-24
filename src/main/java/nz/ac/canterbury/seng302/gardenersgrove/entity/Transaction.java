@@ -48,6 +48,12 @@ public class Transaction {
     @Column
     private boolean claimed;
 
+    //This column is only currently used for garden tips to determine which garden it is for
+    //Explicitly set to optional but not sure if this is necessary
+    @OneToOne(optional = true)
+    @PrimaryKeyJoinColumn
+    private Garden tippedGarden;
+
     public Transaction() {
         // JPA empty constructor
     }

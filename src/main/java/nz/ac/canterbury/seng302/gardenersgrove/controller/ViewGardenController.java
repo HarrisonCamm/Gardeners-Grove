@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,6 +177,34 @@ public class ViewGardenController {
 
         //Add unclaimed blooms to the garden that was tipped
         gardenService.addUnclaimedBloomTips(gardenID, tipAmount);
+
+        return "redirect:/view-garden?gardenID=" + gardenID;
+    }
+
+    @PostMapping("/claim-tips")
+    public String claimTips(@RequestParam("gardenID") Long gardenID,
+                            Model model,
+                            HttpSession session) {
+        logger.info("POST /claim-tips");
+
+
+        //TODO use transaction service to find all tips associated with garden that are unclaimed
+        // use this amount to pay user
+        // set all transactions to claimed
+        // update the notes to say "Tipped owner.getFirstName() (claimed)"
+        // add the amount to the user's balance
+        // determine correct method in either garden or gardenservice to update the claimed and unclaimed amounts
+        // DONE FR
+
+        User currentUser = userService.getAuthenticatedUser();
+        Garden garden = authoriseAction(gardenID, currentUser, false);
+
+        userService.addBlooms(userService.getAuthenticatedUser(), garden.getUnclaimedBlooms());
+
+        gardenService.addUnclaimedBloomTips(gardenID, -garden.getUnclaimedBlooms());
+
+
+
 
         return "redirect:/view-garden?gardenID=" + gardenID;
     }
