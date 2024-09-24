@@ -5,12 +5,10 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.ShopRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
-import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 
-import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.PlantService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import nz.ac.canterbury.seng302.gardenersgrove.validation.FieldErrorFactory;
 import nz.ac.canterbury.seng302.gardenersgrove.validation.PlantValidator;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,6 +51,15 @@ public class EditPlantTests {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private ItemService itemService;
+
+    @MockBean
+    private ShopRepository shopRepository;
+
+    @MockBean
+    private ShopService ShopService;
     @MockBean
     private UserRepository userRepository;
     @MockBean

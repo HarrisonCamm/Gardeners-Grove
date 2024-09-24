@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.CreateGardenController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.ShopRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,15 @@ public class CreateGardenTests {
 
     @MockBean
     private GardenService gardenService;
+
+    @MockBean
+    private ItemService itemService;
+
+    @MockBean
+    private ShopRepository shopRepository;
+
+    @MockBean
+    private ShopService shopService;
 
     @MockBean
     LocationService locationService;

@@ -5,6 +5,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -18,7 +19,9 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,13 +64,18 @@ public class UnlockableContentSteps {
     }
 
     @When("I click Shop")
-    public void i_click_shop() {
-        // TODO: Implement logic for clicking the shop
+    public void i_click_shop() throws Exception {
+        resultActions = mockMvc.perform(get("/shop"));
+        mvcResult = resultActions.andExpect(status().isOk())
+                .andReturn();
     }
 
     @Then("I am shown the shop")
     public void i_am_shown_the_shop() {
-        // TODO: Implement logic for displaying the shop
+        Set<Item> badgeItems = (Set<Item>) mvcResult.getModelAndView().getModel().get("badgeItems");
+        Set<Item> imageItems = (Set<Item>) mvcResult.getModelAndView().getModel().get("imageItems");
+        assertNotNull(badgeItems);
+        assertNotNull(imageItems);
     }
 
     @Given("I am in the shop")

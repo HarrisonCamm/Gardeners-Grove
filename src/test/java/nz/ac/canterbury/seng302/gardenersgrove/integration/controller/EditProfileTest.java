@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.controller.EditProfileController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.ShopRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +36,16 @@ public class EditProfileTest {
     private UserRepository userRepository;
 
     @MockBean
+    private ShopRepository shopRepository;
+
+    @MockBean
     private AuthenticationManager authenticationManager;
+
+    @MockBean
+    private ItemService itemService;
+
+    @MockBean
+    private ShopService ShopService;
 
     @MockBean
     private MailService mailService;
