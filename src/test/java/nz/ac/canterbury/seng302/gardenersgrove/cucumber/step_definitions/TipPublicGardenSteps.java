@@ -14,18 +14,26 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -37,10 +45,14 @@ public class TipPublicGardenSteps {
     private GardenService gardenService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     private MockMvc mockMvc;
     private MvcResult mvcResult;
-    private Garden testOwnedGarden;
+    private Garden inayasGarden;
+
+    private ResultActions resultActions;
 
 
 
@@ -50,28 +62,58 @@ public class TipPublicGardenSteps {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
-    @And("I have a public garden with {int} blooms tipped")
-    public void i_have_a_public_garden(Integer numBloomsTip) {
-        // Create a new unique location for garden
+    public void logInAsUser(String email) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, "Password1!");
+        var authentication = authenticationManager.authenticate(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    @Given("{string} has a public garden")
+    public void has_a_public_garden(String userEmail) throws Exception {
+        logInAsUser(userEmail);
+
         Location location = new Location("Test Street", "Test Suburb", "Test City", "1234", "Country");
 
-        String gardenName = "Public Test Garden";
-        testOwnedGarden = new Garden(gardenName, location, "100");
 
-        // Mark the garden as public
-        testOwnedGarden.setIsPublic(true);
+        resultActions = mockMvc.perform(post("/create-garden")
+                .param("name", "Test Garden 1")
+                .param("location.streetAddress", location.getStreetAddress())
+                .param("location.suburb", location.getSuburb())
+                .param("location.city", location.getCity())
+                .param("location.postcode", location.getPostcode())
+                .param("location.country", location.getCountry())
+                .param("size", "10")
+                .with(csrf())); // Add CSRF token
 
-        User loggedInUser = userService.getAuthenticatedUser();
-        testOwnedGarden.setOwner(loggedInUser);
-        testOwnedGarden.setTotalBloomTips(numBloomsTip);
-        testOwnedGarden.setUnclaimedBlooms(numBloomsTip);
-        gardenService.addGarden(testOwnedGarden);
+        ArrayList<Garden> gardens = (ArrayList<Garden>) gardenService.getOwnedGardens(userService.getAuthenticatedUser().getUserId());
+        inayasGarden = gardens.get(gardens.size() - 1);
+
+        mockMvc.perform(patch("/view-garden")
+                .param("gardenID", inayasGarden.getId().toString())
+                .param("isPublic", "true")
+                .with(csrf()));
+
+        // Log out
+        SecurityContextHolder.clearContext();
     }
+
+    @And("{string}'s garden has been tipped {int} blooms by {string}")
+    public void s_garden_has_been_tipped_blooms_by(String ownerEmail, Integer tipAmount, String senderEmail) throws Exception {
+        logInAsUser(senderEmail);
+
+        mockMvc.perform(post("/tip-blooms")
+                .param("gardenID", inayasGarden.getId().toString())
+                .param("tipAmount", tipAmount.toString()));
+
+        // Log out
+        SecurityContextHolder.clearContext();
+    }
+
 
     @Given("I am on the garden details page for a garden I own for tips")
     public void i_am_on_the_garden_details_page_for_a_garden_i_own_for_tips() throws Exception {
 
-        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + testOwnedGarden.getId()))
+        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + inayasGarden.getId()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("viewGardenDetailsTemplate"))
                 .andReturn();
@@ -87,20 +129,20 @@ public class TipPublicGardenSteps {
         Integer totalBloomsTipped = garden.get().getTotalBloomTips();
         Assertions.assertAll(
                 () -> Assertions.assertNotNull(garden),
-                () -> Assertions.assertEquals("Total Blooms tipped: " + totalBloomsTipped, totalBloomsTippedMessage)
+                () -> assertEquals("Total Blooms tipped: " + totalBloomsTipped, totalBloomsTippedMessage)
         );
     }
 
     @Given("I have received tips for my garden for {int} blooms")
     public void i_have_received_tips_for_my_garden(Integer tipAmount) {
-        testOwnedGarden.setTotalBloomTips(tipAmount);
-        testOwnedGarden.setUnclaimedBlooms(tipAmount);
+        inayasGarden.setTotalBloomTips(tipAmount);
+        inayasGarden.setUnclaimedBlooms(tipAmount);
         //TODO once functionality implemented, use the controller to set tips
     }
 
     @Then("I see a claim blooms button to add the amount of unclaimed bloom tips of the garden to my balance")
     public void i_see_a_claim_blooms_button_to_add_the_amount_of_unclaimed_bloom_tips_of_the_garden_to_my_balance() throws Exception {
-        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + testOwnedGarden.getId()))
+        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + inayasGarden.getId()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("viewGardenDetailsTemplate"))
                 .andReturn();
@@ -113,31 +155,34 @@ public class TipPublicGardenSteps {
         Optional<Garden> garden = gardenService.findGarden(gardenId);
         Integer totalBloomsUnclaimed = garden.get().getUnclaimedBlooms();
 
-        Integer actualBloomsUnclaimed = testOwnedGarden.getUnclaimedBlooms();
+        Integer actualBloomsUnclaimed = inayasGarden.getUnclaimedBlooms();
         Assertions.assertAll(
                 () -> Assertions.assertNotNull(garden),
                 () -> Assertions.assertTrue(hasBloomsToClaim),
-                () -> Assertions.assertEquals(actualBloomsUnclaimed, totalBloomsUnclaimed),
-                () -> Assertions.assertEquals("You have " + actualBloomsUnclaimed + " Blooms to claim!", unclaimedBloomsMessage)
+                () -> assertEquals(actualBloomsUnclaimed, totalBloomsUnclaimed),
+                () -> assertEquals("You have " + actualBloomsUnclaimed + " Blooms to claim!", unclaimedBloomsMessage)
                 );
     }
 
-    @Given("I am on the garden details page for a garden I do not own")
-    public void i_am_on_the_garden_details_page_for_a_garden_i_do_not_own() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    @And("I am on the garden details page for a garden I do not own")
+    public void i_am_on_the_garden_details_page_for_a_garden_i_do_not_own() throws Exception {
+        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + inayasGarden.getId()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("viewUnownedGardenDetailsTemplate"))
+                .andReturn();
     }
 
     @When("I enter an invalid tip {int}")
-    public void i_enter_an_invalid_tip(Integer int1) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    public void i_enter_an_invalid_tip(Integer tipAmount) throws Exception {
+        mockMvc.perform(post("/tip-blooms")
+                .param("gardenID", inayasGarden.getId().toString())
+                .param("tipAmount", tipAmount.toString()));
     }
 
     @Then("I am shown an error message {string}")
-    public void i_am_shown_an_error_message(String string) {
+    public void i_am_shown_an_error_message(String errorMessage) {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        assertEquals(mvcResult.getModelAndView().getModel().get("tipAmountError"), errorMessage);
     }
 
     @When("I enter an invalid tip {string}")
@@ -181,4 +226,6 @@ public class TipPublicGardenSteps {
         // Write code here that turns the phrase above into concrete actions
         throw new io.cucumber.java.PendingException();
     }
+
+
 }
