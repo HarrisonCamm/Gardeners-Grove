@@ -37,11 +37,14 @@ public class ViewGardenController {
     private final ModerationService moderationService;
     private final AlertService alertService;
 
+    private final TransactionService transactionService;
+
     @Autowired
     public ViewGardenController(GardenService gardenService, PlantService plantService,
                                 UserService userService, ImageService imageService,
                                 TagService tagService, WeatherService weatherService,
-                                ModerationService moderationService, AlertService alertService) {
+                                ModerationService moderationService, AlertService alertService,
+                                TransactionService transactionService) {
         this.gardenService = gardenService;
         this.plantService = plantService;
         this.userService = userService;
@@ -50,6 +53,7 @@ public class ViewGardenController {
         this.weatherService = weatherService;
         this.moderationService = moderationService;
         this.alertService = alertService;
+        this.transactionService = transactionService;
     }
 
     @GetMapping("/view-garden")
@@ -146,8 +150,6 @@ public class ViewGardenController {
                          Model model,
                          HttpSession session) {
         logger.info("POST /tip-blooms");
-        logger.info(String.valueOf(gardenID));
-        logger.info(tipAmount + " tip amount"); //TODO remove logs
 
         User currentUser = userService.getAuthenticatedUser();
 
@@ -159,6 +161,20 @@ public class ViewGardenController {
 
         // Charge the user the tip they gave the tip has already been validated.
         userService.chargeBlooms(currentUser, tipAmount);
+
+        User owner = gardenService.findGarden(gardenID).get().getOwner();
+
+        // Add a new transaction for the tip
+        Transaction transaction = transactionService.addTransaction(tipAmount,
+                "Tipped " +owner.getFirstName()+ "'s Garden (unclaimed)",
+                "Garden Tip",
+                owner.getUserId(),
+                currentUser.getUserId());
+
+        // Set the transaction to unclaimed so that it doesn't show on the receiver side
+        // TODO call transactionService.setClaimed(...) when you claim the blooms so that the receiver can see the transaction
+        // TODO update the notes so that it says "Tipped owner.getFirstName() (claimed)"
+        transactionService.setClaimed(transaction.getTransactionId(), false);
 
         //Add unclaimed blooms to the garden that was tipped
         gardenService.addUnclaimedBloomTips(gardenID, tipAmount);

@@ -74,4 +74,14 @@ public class TransactionService {
         return transactionRepository.findAllByUser(currentUser, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "transactionDate")));
     }
 
+    /**
+     * Sets the claimed status of a transaction this is used after a tip transaction is created
+     * @param transactionId The transaction to set claimed status
+     * @param b The status to set the transaction to
+     */
+    public void setClaimed(Long transactionId, boolean b) {
+        Transaction transaction = transactionRepository.findById(transactionId).get();
+        transaction.setClaimed(b);
+        transactionRepository.save(transaction);
+    }
 }
