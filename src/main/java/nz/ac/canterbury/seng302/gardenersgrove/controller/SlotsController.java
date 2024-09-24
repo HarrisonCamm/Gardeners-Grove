@@ -35,13 +35,9 @@ public class SlotsController {
     private static final String BUTTON_TEXT_PAID = "SPIN for " + SPIN_COST + "฿";
     private static final String MESSAGE_PAID = "You've already spun today! Spend " + SPIN_COST + "฿ to spin again?";
     private static final String MESSAGE_INSUFFICIENT_BALANCE = "Insufficient balance! You need " + SPIN_COST + "฿ to spin again";
-
     private static final String REDIRECT_STR = "redirect:/daily-spin";
-
     private static final String GAME_STATE_ATTRIBUTE = "gameState";
     private static final String SLOTS_ATTRIBUTE = "slots";
-
-
 
     Logger logger = LoggerFactory.getLogger(SlotsController.class);
     private final UserService userService;

@@ -5,6 +5,12 @@
 //     The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
 //     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// Define Multipliers for base win amounts
+const MULTIPLIER_3_IN_A_ROW = 15;
+const MULTIPLIER_4_IN_A_ROW = 50;
+const MULTIPLIER_5_IN_A_ROW = 1000;
+
 document.addEventListener("DOMContentLoaded", function() {
     let reelContents = ["" ,"💧", "☀️", "🍄", "🌶️", "🌾"];
     let reelLength = 3;
@@ -218,13 +224,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     reelContents.forEach((symbol, index) => {
         if (index !== 0 && index < 5) {
-            addToPrizeTable(`${symbol}`, (index) * 15, "triples");
-            addToPrizeTable(`${symbol}`, (index) * 50, "quadruples");
-            addToPrizeTable(`${symbol}`, (index) * 1000, "quintuples");
+            addToPrizeTable(`${symbol}`, (index) * MULTIPLIER_3_IN_A_ROW, "triples");
+            addToPrizeTable(`${symbol}`, (index) * MULTIPLIER_4_IN_A_ROW, "quadruples");
+            addToPrizeTable(`${symbol}`, (index) * MULTIPLIER_5_IN_A_ROW, "quintuples");
         } else if (index !== 0) {
-            addToPrizeTable(`${symbol}`, 10 * 15, "triples");
-            addToPrizeTable(`${symbol}`, 10 * 50, "quadruples");
-            addToPrizeTable(`${symbol}`, 10 * 1000, "quintuples");
+            addToPrizeTable(`${symbol}`, 10 * MULTIPLIER_3_IN_A_ROW, "triples");
+            addToPrizeTable(`${symbol}`, 10 * MULTIPLIER_4_IN_A_ROW, "quadruples");
+            addToPrizeTable(`${symbol}`, 10 * MULTIPLIER_5_IN_A_ROW, "quintuples");
         }
     });
 
