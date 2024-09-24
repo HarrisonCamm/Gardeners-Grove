@@ -177,7 +177,7 @@ public class PlantGuesserController {
         int score = (int) session.getAttribute(SESSION_SCORE);
         int roundNumber = (int) session.getAttribute(SESSION_ROUND);
 
-        while (listSize != NUM_OPTIONS && attempt < MAX_TRIES) {
+        while (listSize != NUM_OPTIONS && attempt < MAX_TRIES && !Objects.equals(imageCredit, "bs.plantnet.org")) {
             plant = plantList.get(tryNumber);
             plantName = plant.common_name;
             plantScientificName = plant.scientific_name;
