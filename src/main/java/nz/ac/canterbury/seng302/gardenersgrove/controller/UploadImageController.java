@@ -29,12 +29,11 @@ import java.util.Optional;
  */
 @Controller
 public class UploadImageController {
-
     Logger logger = LoggerFactory.getLogger(UploadImageController.class);
-
     private final PlantService plantService;
     private final UserService userService;
     private final ImageService imageService;
+    private static final String PICTURE_ATTRIBUTE = "picture";
 
     @Autowired
     public UploadImageController(PlantService plantService, UserService userService, ImageService imageService) {
@@ -143,7 +142,7 @@ public class UploadImageController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image is not temporary");
             }
             model.addAttribute("id", imageID);
-            model.addAttribute("picture", image.getData());
+            model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
         } else if (!viewUser && !editUserProfile && !viewShop) {
             Optional<Plant> foundPlant = plantService.findPlant(plantID);
             if (foundPlant.isEmpty()) {
@@ -152,7 +151,7 @@ public class UploadImageController {
             Plant plant = foundPlant.get();
             image = plant.getImage();
             model.addAttribute("id", plantID);
-            model.addAttribute("picture", image.getData());
+            model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
 
         } else if (viewShop) {
             Optional<Image> foundImage = imageService.findImage(imageID);
@@ -162,12 +161,12 @@ public class UploadImageController {
             }
             image = foundImage.get();
             model.addAttribute("id", imageID);
-            model.addAttribute("picture", image.getData());
+            model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
         } else {
             User user = userService.getUserByID(userID);
             image = user.getImage();
             model.addAttribute("id", userID);
-            model.addAttribute("picture", image.getData());
+            model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
         }
 
         switch (image.getContentType()) {

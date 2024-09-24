@@ -34,11 +34,11 @@ public class ShopController {
 
         // Filter BadgeItem and ImageItem
         Set<Item> badgeItems = availableItems.stream()
-                .filter(item -> item instanceof BadgeItem)
+                .filter(BadgeItem.class::isInstance)
                 .collect(Collectors.toSet());
 
         Set<Item> imageItems = availableItems.stream()
-                .filter(item -> item instanceof ImageItem)
+                .filter(ImageItem.class::isInstance)
                 .collect(Collectors.toSet());
 
         model.addAttribute("badgeItems", badgeItems);

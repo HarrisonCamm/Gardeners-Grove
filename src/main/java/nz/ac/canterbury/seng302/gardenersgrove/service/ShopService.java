@@ -20,7 +20,6 @@ public class ShopService {
     private static Shop shopInstance;
     private TransactionRepository transactionRepository;
     private UserRepository userRepository;
-    private PlantService Plant;
     private ShopRepository shopRepository;
     private ItemRepository itemRepository;
     private ResourceLoader resourceLoader;
@@ -33,7 +32,6 @@ public class ShopService {
     @Autowired
     public ShopService(TransactionRepository transactionRepository,
                               UserRepository userRepository,
-                              PlantRepository plantRepository,
                               ItemRepository itemRepository,
                               ShopRepository shopRepository,
                               ResourceLoader resourceLoader,
@@ -46,8 +44,7 @@ public class ShopService {
         this.userService = userService;
     }
 
-    @Transactional
-    public Shop getShopInstance(EntityManager em) {
+    public static Shop getShopInstance(EntityManager em) {
         if (shopInstance == null) {
             // Assuming the shop is persisted once in the database and retrieved from there.
             shopInstance = em.find(Shop.class, 1L);  // ID 1 for the single shop

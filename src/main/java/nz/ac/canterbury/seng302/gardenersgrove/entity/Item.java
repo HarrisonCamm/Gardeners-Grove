@@ -25,7 +25,7 @@ public abstract class Item implements Purchasable {
     private Integer quantity;
 
 
-    public Item() {
+    protected Item() {
     }
 
     public Item(String name, Integer price, Integer quantity) {
