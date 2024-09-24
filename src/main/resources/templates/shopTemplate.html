@@ -33,7 +33,11 @@
                 </div>
                 <div class="mb-5" >
                     <img type="gif" class="image mt-5" th:src="@{/get-image?shop=true(imageID=${item.image.id})}" alt="Item Image">
-                    <button class="item-use-button button">Use</button>
+                    <form th:action="@{/shop/addItem}" method="post">
+                        <input type="hidden" name="userId" th:value="${user.userId}">
+                        <input type="hidden" name="item" th:value="${item}">
+                        <button class="item-use-button button" type="submit">Use</button>
+                    </form>
                 </div>
             </div>
         </div>
