@@ -1,7 +1,8 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
@@ -18,16 +19,16 @@ import java.util.List;
 
 @Controller
 public class InventoryController {
+    Logger logger = LoggerFactory.getLogger(InventoryController.class);
+
+    private final ItemService itemService;
+    private final UserService userService;
 
     @Autowired
-    private UserService userService;
-
-
-    public InventoryController(UserService userService) {
+    public InventoryController(ItemService itemService, UserService userService) {
+        this.itemService = itemService;
         this.userService = userService;
     }
-
-    Logger logger = LoggerFactory.getLogger(InventoryController.class);
 
     @GetMapping("/inventory")
     public String getTemplate(Model model) {
@@ -37,8 +38,12 @@ public class InventoryController {
         logger.info("GET /inventory");
         RedirectService.addEndpoint("/inventory");
 
+        //Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+
         //Create and populate a list of items for the view to render
-        List<String[]> badgeItems = new ArrayList<>();
+//        List<String[]> badgeItems = new ArrayList<>();
+        List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
 
         // TODO - Simulating the adding of items, this will be done using service and repo layers in another task
         badgeItems.add(new String[]{"1x", "vegemite.png", "Vegemite"});
@@ -46,7 +51,8 @@ public class InventoryController {
         badgeItems.add(new String[]{"1x", "neo_fabian.png", "Neo Fabian"});
 
         //Create and populate a list of items for the view to render
-        List<String[]> gifItems = new ArrayList<>();
+//        List<String[]> gifItems = new ArrayList<>();
+        List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
 
         // TODO - Simulating the adding of items, this will be done using service and repo layers in another task
         gifItems.add(new String[]{"1x", "fabian.gif", "Fabian Intensifies"});
@@ -54,10 +60,20 @@ public class InventoryController {
         gifItems.add(new String[]{"1x", "stick_man.gif", "Stick Man"});
 
         model.addAttribute("user", currentUser);
+        if (badgeItems.isEmpty()) {
+            currentUser.addItem(itemService.getItemByName("Happy"));
+            currentUser.addItem(itemService.getItemByName("Eggplant"));
+            userService.addUser(currentUser);
+        }
+        if (imageItems.isEmpty()) {
+            currentUser.addItem(itemService.getItemByName("Cat Fall"));
+            currentUser.addItem(itemService.getItemByName("Cat Typing"));
+            currentUser.addItem(itemService.getItemByName("Fabian Intensifies"));
+            userService.addUser(currentUser);
+        }
 
         model.addAttribute("badgeItems", badgeItems);
-        model.addAttribute("gifItems", gifItems);
-
+        model.addAttribute("imageItems", imageItems);
 
         return "inventoryTemplate";
     }

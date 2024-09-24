@@ -2,14 +2,20 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 // Abstract class for shared properties
-@Inheritance(strategy = InheritanceType.JOINED)
 @Entity
-public abstract class Item implements Purchasable {
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "item_type", discriminatorType = DiscriminatorType.STRING)
+public abstract class Item implements Purchasable, Equipable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "item_type", insertable = false, updatable = false)
+    private String itemType;
 
     @Column(nullable = false, unique = true)
     private String name;
@@ -17,6 +23,9 @@ public abstract class Item implements Purchasable {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
+
+    @Column(nullable = false)
+    private boolean isEquipped;
 
     @Column(nullable = false)
     private Integer price;
@@ -32,6 +41,7 @@ public abstract class Item implements Purchasable {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
+        this.isEquipped = false;
     }
 
     public Long getId() {
@@ -71,6 +81,30 @@ public abstract class Item implements Purchasable {
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
+
+    @Override
+    public boolean isEquipped() {
+        return isEquipped;
+    }
+
+    @Override
+    public void setEquipped(boolean equipped) {
+        this.isEquipped = equipped;
+    }
+
+    @Override
+    public boolean equals(Object item) {
+        if (!(item instanceof Item)) {
+            return false;
+        }
+        return this.name.equals(((Item) item).name);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+
 }
 
 
