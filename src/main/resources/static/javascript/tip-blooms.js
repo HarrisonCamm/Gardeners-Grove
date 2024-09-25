@@ -29,6 +29,8 @@ function checkTipInput(input) {
     } else {
         tipErrorMessage.textContent = "";
         confirmTipButton.disabled = false // Enable the button
+        confirmTipButton.style.backgroundColor = "green"; // Set background color to gray
+        confirmTipButton.style.color = "white";
         input.classList.remove('error'); // Add the error class to the input
     }
 }
