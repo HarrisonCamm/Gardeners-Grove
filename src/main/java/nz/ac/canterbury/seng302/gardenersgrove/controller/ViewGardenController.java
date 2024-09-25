@@ -168,12 +168,15 @@ public class ViewGardenController {
                 "Tipped " +owner.getFirstName()+ "'s Garden (unclaimed)",
                 "Garden Tip",
                 owner.getUserId(),
-                currentUser.getUserId());
+                currentUser.getUserId(),
+                gardenService.findGarden(gardenID).get());
 
         // Set the transaction to unclaimed so that it doesn't show on the receiver side
         // TODO call transactionService.setClaimed(...) when you claim the blooms so that the receiver can see the transaction
         // TODO update the notes so that it says "Tipped owner.getFirstName() (claimed)"
+        transactionService.setTippedGarden(transaction.getTransactionId(), gardenService.findGarden(gardenID).get());
         transactionService.setClaimed(transaction.getTransactionId(), false);
+
 
         //Add unclaimed blooms to the garden that was tipped
         gardenService.addUnclaimedBloomTips(gardenID, tipAmount);
@@ -199,12 +202,22 @@ public class ViewGardenController {
         User currentUser = userService.getAuthenticatedUser();
         Garden garden = authoriseAction(gardenID, currentUser, false);
 
-        userService.addBlooms(userService.getAuthenticatedUser(), garden.getUnclaimedBlooms());
+        List<Transaction> transactions = transactionService.retrieveGardenTips(currentUser, garden);
+        int total = transactionService.totalUnclaimedTips(currentUser, garden);
 
-        gardenService.addUnclaimedBloomTips(gardenID, -garden.getUnclaimedBlooms());
+        // TODO Might remove this
+        if (total == 0) {
+            session.setAttribute("tipAmountError", "No unclaimed tips to claim");
+            return "redirect:/view-garden?gardenID=" + gardenID;
+        }
 
+        // Pay the user the total amount of unclaimed tips and remove them from the gardens unclaimed amount
+        userService.addBlooms(userService.getAuthenticatedUser(), total);
+        gardenService.addUnclaimedBloomTips(gardenID, -total);
 
-
+        // Set all transactions to claimed
+        //TODO maybe move this to the transaction service
+        transactionService.claimAllGardenTips(transactions);
 
         return "redirect:/view-garden?gardenID=" + gardenID;
     }

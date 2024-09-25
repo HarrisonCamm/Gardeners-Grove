@@ -50,8 +50,8 @@ public class Transaction {
 
     //This column is only currently used for garden tips to determine which garden it is for
     //Explicitly set to optional but not sure if this is necessary
-    @OneToOne(optional = true)
-    @PrimaryKeyJoinColumn
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "tipped_garden", referencedColumnName = "id")
     private Garden tippedGarden;
 
     public Transaction() {
@@ -69,6 +69,19 @@ public class Transaction {
         this.claimed = true;
     }
 
+    public Transaction(User sender, User receiver, Integer amount, Date transactionDate, String transactionType, Plant plant, String notes, Garden tippedGarden) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.amount = amount;
+        this.transactionDate = transactionDate;
+        this.transactionType = transactionType;
+        this.plant = plant;
+        this.notes = notes;
+        this.tippedGarden = tippedGarden;
+        // This will be set later on the transaction is created
+        this.claimed = true;
+    }
+
     public Long getTransactionId() {
         return transactionId;
     }
@@ -80,7 +93,6 @@ public class Transaction {
     public User getReceiver() {
         return receiver;
     }
-
 
     public Integer getAmount() {
         return amount;
@@ -100,6 +112,8 @@ public class Transaction {
 
     // Not sure if JPA requires naming of getters to be getClaimed I want to do isClaimed
     public boolean getClaimed() { return claimed; }
+
+    public Garden getTippedGarden() { return tippedGarden; }
 
     public void setSender(User sender) {
         this.sender = sender;
@@ -128,4 +142,6 @@ public class Transaction {
     }
 
     public void setClaimed(boolean claimed) { this.claimed = claimed; }
+
+    public void setTippedGarden(Garden tippedGarden) { this.tippedGarden = tippedGarden; }
 }

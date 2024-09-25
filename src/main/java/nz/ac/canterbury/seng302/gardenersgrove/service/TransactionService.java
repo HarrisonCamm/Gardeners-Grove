@@ -35,10 +35,15 @@ public class TransactionService {
     }
 
     public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId) {
-        return addTransaction(amount, notes, transactionType, receiverId, senderId, null);
+        return addTransaction(amount, notes, transactionType, receiverId, senderId, null, null);
     }
 
-    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId, Long plantId) {
+    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId, Garden tippedGarden) {
+        return addTransaction(amount, notes, transactionType, receiverId, senderId, null, tippedGarden);
+    }
+
+
+    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId, Long plantId, Garden tippedGarden) {
         Transaction transaction = new Transaction();
         transaction.setAmount(amount);
         transaction.setNotes(notes);
@@ -59,6 +64,10 @@ public class TransactionService {
             Plant plant = plantRepository.findById(plantId)
                     .orElseThrow(() -> new EntityNotFoundException("Plant not found"));
             transaction.setPlant(plant);
+        }
+
+        if (tippedGarden != null) {
+            transaction.setTippedGarden(tippedGarden);
         }
 
         return transactionRepository.save(transaction);
@@ -84,6 +93,14 @@ public class TransactionService {
     public void setClaimed(Long transactionId, boolean b) {
         Transaction transaction = transactionRepository.findById(transactionId).get();
         transaction.setClaimed(b);
+        String gardenName = transaction.getTippedGarden().getName();
+        transaction.setNotes("Tipped " + gardenName + " (claimed)");
+        transactionRepository.save(transaction);
+    }
+
+    public void setTippedGarden(Long transactionId, Garden garden) {
+        Transaction transaction = transactionRepository.findById(transactionId).get();
+        transaction.setTippedGarden(garden);
         transactionRepository.save(transaction);
     }
 
@@ -103,6 +120,7 @@ public class TransactionService {
     public void claimAllGardenTips(List<Transaction> transactions)                                                                             {
         for (Transaction transaction : transactions)                                                                                                        {
             setClaimed(transaction.getTransactionId(), true)                                                                                      ;
+
                                                                                                                                                                                    }
                                                                                                                                                                                    }
 }
