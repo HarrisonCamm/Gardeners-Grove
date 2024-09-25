@@ -4,7 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
-// Badge class implementing Purchasable and Equipable
+// Badge class extending Item
 @Entity
 @DiscriminatorValue("badge")
 public class BadgeItem extends Item {
@@ -28,4 +28,13 @@ public class BadgeItem extends Item {
         this.emoji = emoji;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!super.equals(o))
+            return false;
+        if (!(o instanceof BadgeItem badge))
+            return false;
+
+        return getEmoji().equals(badge.getEmoji());
+    }
 }

@@ -37,7 +37,7 @@ public abstract class Item implements Purchasable, Equipable {
     protected Item() {
     }
 
-    public Item(String name, Integer price, Integer quantity) {
+    protected Item(String name, Integer price, Integer quantity) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
