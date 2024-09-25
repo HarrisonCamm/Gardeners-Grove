@@ -45,6 +45,19 @@ public class InventoryController {
         List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
         List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
 
+        // DUMMY DATA
+        if (badgeItems.isEmpty()) {
+            currentUser.addItem(itemService.getItemByName("Happy"));
+            currentUser.addItem(itemService.getItemByName("Eggplant"));
+            userService.addUser(currentUser);
+        }
+        if (imageItems.isEmpty()) {
+            currentUser.addItem(itemService.getItemByName("Cat Fall"));
+            currentUser.addItem(itemService.getItemByName("Cat Typing"));
+            currentUser.addItem(itemService.getItemByName("Fabian Intensifies"));
+            userService.addUser(currentUser);
+        }
+
         model.addAttribute("badgeItems", badgeItems);
         model.addAttribute("imageItems", imageItems);
 
