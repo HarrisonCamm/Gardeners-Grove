@@ -22,7 +22,7 @@ public class TipValidator {
 
     public static void doTipValidations(HttpSession session, Integer tipAmount, User currentUser) {
         if (!isPositiveTip(tipAmount)) {
-            session.setAttribute(TIP_AMOUNT_ERROR, "Tip amount must be a positive number");
+            session.setAttribute(TIP_AMOUNT_ERROR, "Tip amount must be a positive integer");
         } else if (!isValidTip(tipAmount, currentUser)) {
             session.setAttribute(TIP_AMOUNT_ERROR, "Insufficient Bloom balance");
         }
