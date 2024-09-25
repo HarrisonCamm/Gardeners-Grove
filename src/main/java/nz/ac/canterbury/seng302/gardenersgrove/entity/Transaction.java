@@ -69,19 +69,6 @@ public class Transaction {
         this.claimed = true;
     }
 
-    public Transaction(User sender, User receiver, Integer amount, Date transactionDate, String transactionType, Plant plant, String notes, Garden tippedGarden) {
-        this.sender = sender;
-        this.receiver = receiver;
-        this.amount = amount;
-        this.transactionDate = transactionDate;
-        this.transactionType = transactionType;
-        this.plant = plant;
-        this.notes = notes;
-        this.tippedGarden = tippedGarden;
-        // This will be set later on the transaction is created
-        this.claimed = true;
-    }
-
     public Long getTransactionId() {
         return transactionId;
     }

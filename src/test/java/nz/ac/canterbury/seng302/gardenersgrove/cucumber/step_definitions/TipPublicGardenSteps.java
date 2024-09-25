@@ -275,6 +275,7 @@ public class TipPublicGardenSteps {
         );
     }
 
+    //AC8
     @When("I choose to claim the Blooms from my garden's tips")
     public void iChooseToClaimTheBloomsFromMyGardenSTips() throws Exception{
         oldUserBloomBalance = userService.getAuthenticatedUser().getBloomBalance();
@@ -286,20 +287,23 @@ public class TipPublicGardenSteps {
                 .andReturn();
     }
 
+    //AC8
     @Then("the {int} blooms are added to my account")
     public void theBloomsAreAddedToMyAccount(int amountClaimed) {
         assertEquals(oldUserBloomBalance + amountClaimed, (int) userService.getAuthenticatedUser().getBloomBalance());
     }
 
+    //AC8
     @And("a transaction is added to my account history")
     public void aTransactionIsAddedToMyAccountHistory() {
         Long transactionCount = transactionService.findTransactionsByUser(userService.getAuthenticatedUser(), 0, 10).getTotalElements();
         assertEquals(oldTransctionCount + 1, transactionCount);
     }
 
+    //AC8
     @And("the total number of Blooms I can claim is {int}")
     public void theTotalNumberOfBloomsICanClaimIs(int expectedUnclaimedBlooms) {
-        int totalUnclaimedTips = transactionService.totalUnclaimedTips(userService.getAuthenticatedUser(), inayasGarden);
+        int totalUnclaimedTips = transactionService.totalUnclaimedTips(inayasGarden);
         assertEquals(expectedUnclaimedBlooms, totalUnclaimedTips);
     }
 }

@@ -111,7 +111,7 @@ public class UserProfileController {
                                  @RequestParam Long receiverId,
                                  @RequestParam(required = false) Long senderId,
                                  @RequestParam(required = false) Long plantId) {
-        transactionService.addTransaction(amount, notes, transactionType, receiverId, senderId, plantId, null);
+        transactionService.addTransaction(amount, notes, transactionType, receiverId, senderId, plantId);
         return "redirect:/transactions";
     }
 

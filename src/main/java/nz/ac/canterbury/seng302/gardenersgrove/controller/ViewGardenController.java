@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.TagValidator.*;
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.TipValidator.doTipValidations;
@@ -171,21 +172,18 @@ public class ViewGardenController {
         // Charge the user the tip they gave the tip has already been validated.
         userService.chargeBlooms(currentUser, tipAmount);
 
-        User owner = gardenService.findGarden(gardenID).get().getOwner();
+        Garden curGarden = gardenService.findGarden(gardenID)
+                .orElseThrow(() -> new NoSuchElementException("Garden not found with ID: " + gardenID));
+        User owner = curGarden.getOwner();
 
         // Add a new transaction for the tip
-        Transaction transaction = transactionService.addTransaction(tipAmount,
-                "Tipped " +owner.getFirstName()+ "'s Garden (unclaimed)",
+        transactionService.addTransaction(tipAmount,
+                "Tipped " + curGarden + " (unclaimed)",
                 "Garden Tip",
                 owner.getUserId(),
                 currentUser.getUserId(),
-                gardenService.findGarden(gardenID).get());
-
-        // Set the transaction to unclaimed so that it doesn't show on the receiver side
-        // TODO call transactionService.setClaimed(...) when you claim the blooms so that the receiver can see the transaction
-        // TODO update the notes so that it says "Tipped owner.getFirstName() (claimed)"
-        transactionService.setTippedGarden(transaction.getTransactionId(), gardenService.findGarden(gardenID).get());
-        transactionService.setClaimed(transaction.getTransactionId(), false);
+                false,
+                curGarden);
 
         //Add unclaimed blooms to the garden that was tipped
         gardenService.addUnclaimedBloomTips(gardenID, tipAmount);
@@ -194,38 +192,23 @@ public class ViewGardenController {
     }
 
     @PostMapping("/claim-tips")
-    public String claimTips(@RequestParam("gardenID") Long gardenID,
-                            Model model,
-                            HttpSession session) {
+    public String claimTips(@RequestParam("gardenID") Long gardenID) {
         logger.info("POST /claim-tips");
 
-
-        //TODO use transaction service to find all tips associated with garden that are unclaimed
-        // use this amount to pay user
-        // set all transactions to claimed
-        // update the notes to say "Tipped owner.getFirstName() (claimed)"
-        // add the amount to the user's balance
-        // determine correct method in either garden or gardenservice to update the claimed and unclaimed amounts
-        // DONE FR
-
         User currentUser = userService.getAuthenticatedUser();
-        Garden garden = authoriseAction(gardenID, currentUser, false);
+        Garden curGarden = authoriseAction(gardenID, currentUser, false);
 
-        List<Transaction> transactions = transactionService.retrieveGardenTips(currentUser, garden);
-        int total = transactionService.totalUnclaimedTips(currentUser, garden);
+        List<Transaction> transactions = transactionService.retrieveGardenTips(curGarden);
+        int totalUnclaimedBlooms = transactionService.totalUnclaimedTips(curGarden);
 
-        // TODO Might remove this
-        if (total == 0) {
-            session.setAttribute("tipAmountError", "No unclaimed tips to claim");
-            return "redirect:/view-garden?gardenID=" + gardenID;
-        }
+        // If no tips to claim exit
+        if (transactions.isEmpty()) return REDIRECT_VIEW_GARDEN + gardenID;
 
         // Pay the user the total amount of unclaimed tips and remove them from the gardens unclaimed amount
-        userService.addBlooms(userService.getAuthenticatedUser(), total);
-        gardenService.addUnclaimedBloomTips(gardenID, -total);
+        userService.addBlooms(userService.getAuthenticatedUser(), totalUnclaimedBlooms);
+        gardenService.addUnclaimedBloomTips(gardenID, -totalUnclaimedBlooms);
 
-        // Set all transactions to claimed
-        //TODO maybe move this to the transaction service
+        // Set all garden's tips transactions to claimed
         transactionService.claimAllGardenTips(transactions);
 
         return REDIRECT_VIEW_GARDEN + gardenID;

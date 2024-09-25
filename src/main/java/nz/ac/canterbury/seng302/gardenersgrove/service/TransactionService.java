@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -35,15 +36,19 @@ public class TransactionService {
     }
 
     public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId) {
-        return addTransaction(amount, notes, transactionType, receiverId, senderId, null, null);
+        return addTransaction(amount, notes, transactionType, receiverId, senderId, null, null, null);
     }
 
-    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId, Garden tippedGarden) {
-        return addTransaction(amount, notes, transactionType, receiverId, senderId, null, tippedGarden);
+    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId, Boolean isClaimed, Garden tippedGarden) {
+        return addTransaction(amount, notes, transactionType, receiverId, senderId, null, isClaimed, tippedGarden);
     }
 
+    //addTransaction(amount, notes, transactionType, receiverId, senderId, plantId)
+    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId, Long plantId) {
+        return addTransaction(amount, notes, transactionType, receiverId, senderId, plantId, null, null);
+    }
 
-    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId, Long plantId, Garden tippedGarden) {
+    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId, Long plantId, Boolean isClaimed, Garden tippedGarden) {
         Transaction transaction = new Transaction();
         transaction.setAmount(amount);
         transaction.setNotes(notes);
@@ -66,9 +71,9 @@ public class TransactionService {
             transaction.setPlant(plant);
         }
 
-        if (tippedGarden != null) {
-            transaction.setTippedGarden(tippedGarden);
-        }
+        transaction.setClaimed(Objects.requireNonNullElse(isClaimed, true));
+
+        transaction.setTippedGarden(tippedGarden);
 
         return transactionRepository.save(transaction);
     }
@@ -86,30 +91,33 @@ public class TransactionService {
     }
 
     /**
-     * Sets the claimed status of a transaction this is used after a tip transaction is created
+     * Sets the claimed status of a transaction to true
      * @param transactionId The transaction to set claimed status
-     * @param b The status to set the transaction to
      */
-    public void setClaimed(Long transactionId, boolean b) {
+    public void setClaimed(Long transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId).get();
-        transaction.setClaimed(b);
+        transaction.setClaimed(true);
         String gardenName = transaction.getTippedGarden().getName();
         transaction.setNotes("Tipped " + gardenName + " (claimed)");
         transactionRepository.save(transaction);
     }
 
-    public void setTippedGarden(Long transactionId, Garden garden) {
-        Transaction transaction = transactionRepository.findById(transactionId).get();
-        transaction.setTippedGarden(garden);
-        transactionRepository.save(transaction);
+    /**
+     * Returns all the unclaimed tip transaction for a garden
+     * @param tippedGarden The Garden object of the garden to retrieve the tips from
+     * @return list of Transaction objects
+     */
+    public List<Transaction> retrieveGardenTips(Garden tippedGarden) {
+        return transactionRepository.findAllByTippedGardenAndClaimedFalse(tippedGarden);
     }
 
-    public List<Transaction> retrieveGardenTips(User receiver, Garden tippedGarden) {
-        return transactionRepository.findAllByReceiverAndTippedGardenAndClaimedFalse(receiver, tippedGarden);
-    }
-
-    public int totalUnclaimedTips(User receiver, Garden tippedGarden) {
-        List<Transaction> transactions = retrieveGardenTips(receiver, tippedGarden);
+    /**
+     * Returns the total value of unclaimed tips for the provided Garden
+     * @param tippedGarden  Garden object to get unclaimed tips for
+     * @return The amount of blooms available to claim
+     */
+    public int totalUnclaimedTips(Garden tippedGarden) {
+        List<Transaction> transactions = retrieveGardenTips(tippedGarden);
         int total = 0;
         for (Transaction transaction : transactions) {
             total += transaction.getAmount();
@@ -117,9 +125,13 @@ public class TransactionService {
         return total;
     }
 
+    /**
+     * Sets all the provided transactions to claimed
+     * @param transactions List of transactions to claim
+     */
     public void claimAllGardenTips(List<Transaction> transactions) {
         for (Transaction transaction : transactions) {
-            setClaimed(transaction.getTransactionId(), true);
+            setClaimed(transaction.getTransactionId());
         }
     }
 }

@@ -15,6 +15,6 @@ public interface TransactionRepository  extends JpaRepository<Transaction, Long>
     @Query("SELECT t FROM Transaction t WHERE t.sender = :user OR t.receiver = :user AND t.claimed = true")
     Page<Transaction> findAllByUser(@Param("user") User user, Pageable pageable);
 
-    List<Transaction> findAllByReceiverAndTippedGardenAndClaimedFalse(User receiver, Garden tippedGarden);
+    List<Transaction> findAllByTippedGardenAndClaimedFalse(Garden tippedGarden);
 
 }
