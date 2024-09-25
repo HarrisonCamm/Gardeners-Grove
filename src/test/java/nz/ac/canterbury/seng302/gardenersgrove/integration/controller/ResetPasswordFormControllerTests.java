@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.controller.ResetPasswordFormContr
 import nz.ac.canterbury.seng302.gardenersgrove.controller.SignInController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.VerificationToken;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.ShopRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.VerificationTokenRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
@@ -45,6 +46,15 @@ public class ResetPasswordFormControllerTests {
 
     @MockBean
     private AuthorityService authorityService;
+
+    @MockBean
+    private ItemService itemService;
+
+    @MockBean
+    private ShopService shopService;
+
+    @MockBean
+    private ShopRepository shopRepository;
 
     @MockBean
     private UserService userService;

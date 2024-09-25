@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.ManageFriendsController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.ShopRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,15 @@ public class ManageFriendsTests {
 
     @MockBean
     private MailService mailService;
+
+    @MockBean
+    private ItemService itemService;
+
+    @MockBean
+    private ShopService shopService;
+
+    @MockBean
+    private ShopRepository shopRepository;
 
     @MockBean
     private ImageService imageService;
