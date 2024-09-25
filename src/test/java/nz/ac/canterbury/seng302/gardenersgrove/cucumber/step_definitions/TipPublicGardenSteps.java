@@ -6,9 +6,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import jakarta.servlet.http.HttpSession;
-import nz.ac.canterbury.seng302.gardenersgrove.controller.UserProfileController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
@@ -26,16 +24,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -274,5 +269,24 @@ public class TipPublicGardenSteps {
                 // Unclaimed blooms are correct
                 // Message is correct
         );
+    }
+
+    @And("I have received tips for my garden for {int} blooms")
+    public void iHaveReceivedTipsForMyGardenForBlooms(int newTipAmount) {
+
+    }
+
+    @And("I choose to claim the Blooms from my garden's tips")
+    public void iChooseToClaimTheBloomsFromMyGardenSTips() {
+
+    }
+
+    @When("I confirm the action")
+    public void iConfirmTheAction() {
+
+    }
+
+    @Then("the {int} blooms are added to my account")
+    public void theBloomsAreAddedToMyAccount(int amountClaimed) {
     }
 }
