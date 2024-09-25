@@ -165,7 +165,7 @@ button, label {
 }
 
 button, .button {
-    background-color: #3D7B36;
+    background-color: #3D7B36 !important;
     color: floralwhite;
     border-radius: 10px;
     border-width: 0;
@@ -173,7 +173,7 @@ button, .button {
     margin: 2px;
 }
 button:hover, .button:hover {
-    background-color: #72543C;
+    background-color: #72543C !important;
     cursor: pointer;
 }
 

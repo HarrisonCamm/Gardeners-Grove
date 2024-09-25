@@ -77,11 +77,11 @@ public class TransactionService {
     /**
      * Sets the claimed status of a transaction this is used after a tip transaction is created
      * @param transactionId The transaction to set claimed status
-     * @param b The status to set the transaction to
+     * @param claimed The status to set the transaction to
      */
-    public void setClaimed(Long transactionId, boolean b) {
+    public void setClaimed(Long transactionId, boolean claimed) {
         Transaction transaction = transactionRepository.findById(transactionId).get();
-        transaction.setClaimed(b);
+        transaction.setClaimed(claimed);
         transactionRepository.save(transaction);
     }
 }

@@ -172,10 +172,11 @@ public class ViewGardenController {
         userService.chargeBlooms(currentUser, tipAmount);
 
         User owner = gardenService.findGarden(gardenID).get().getOwner();
+        Garden garden = gardenService.findGarden(gardenID).get();
 
         // Add a new transaction for the tip
         Transaction transaction = transactionService.addTransaction(tipAmount,
-                "Tipped " +owner.getFirstName()+ "'s Garden (unclaimed)",
+                "Tipped " +garden.getName()+ " (unclaimed)",
                 "Garden Tip",
                 owner.getUserId(),
                 currentUser.getUserId());
