@@ -6,9 +6,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import jakarta.servlet.http.HttpSession;
-import nz.ac.canterbury.seng302.gardenersgrove.controller.UserProfileController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
@@ -26,9 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -74,7 +70,7 @@ public class TipPublicGardenSteps {
     }
 
     // Background
-    public void logInAsUser(String email) {
+    public void login_as_user(String email) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, "Password1!");
         var authentication = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -83,7 +79,7 @@ public class TipPublicGardenSteps {
     // Background
     @Given("{string} has a public garden")
     public void has_a_public_garden(String userEmail) throws Exception {
-        logInAsUser(userEmail);
+        login_as_user(userEmail);
 
         Location location = new Location("Test Street", "Test Suburb", "Test City", "1234", "Country");
 
@@ -114,9 +110,9 @@ public class TipPublicGardenSteps {
 
     // Background
     @And("{string} has {int} Blooms")
-    public void hasBlooms(String email, int bloomAmount) {
+    public void has_blooms(String email, int bloomAmount) {
 
-        logInAsUser(email);
+        login_as_user(email);
 
         User user = userService.getUserByEmail(email);
         user.setBloomBalance(bloomAmount);
@@ -135,7 +131,7 @@ public class TipPublicGardenSteps {
     public void s_garden_has_been_tipped_blooms_by(String ownerEmail, Integer tipAmount, String senderEmail) throws Exception {
         //NOTE: unused variable as it needs to be 'reusable' and read in English by PO
 
-        logInAsUser(senderEmail);
+        login_as_user(senderEmail);
 
         mockMvc.perform(post("/tip-blooms")
                 .param("gardenID", inayasGarden.getId().toString())

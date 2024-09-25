@@ -11,7 +11,7 @@ Feature: U6002 Tipping public garden
     And I am on the garden details page for a garden I do not own
     When I enter an invalid tip <tip>
     And I confirm the transaction by clicking Confirm
-    Then I am shown an error message "Tip amount must be a positive number"
+    Then I am shown an error message "Tip amount must be a positive integer"
     Examples:
     | tip    |
     | -100   |
