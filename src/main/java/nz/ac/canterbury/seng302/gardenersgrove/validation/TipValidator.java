@@ -2,12 +2,11 @@ package nz.ac.canterbury.seng302.gardenersgrove.validation;
 
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import org.springframework.ui.Model;
 
 
 public class TipValidator {
 
-    private final static String TIP_AMOUNT_ERROR = "tipAmountError";
+    private static final String TIP_AMOUNT_ERROR = "tipAmountError";
 
     private TipValidator() {
         // Private constructor to prevent instantiation

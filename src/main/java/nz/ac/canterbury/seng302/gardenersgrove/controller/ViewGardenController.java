@@ -38,9 +38,9 @@ public class ViewGardenController {
 
     private final TransactionService transactionService;
 
-    private final String REDIRECT_VIEW_GARDEN = "redirect:/view-garden?gardenID=";
+    private static final String REDIRECT_VIEW_GARDEN = "redirect:/view-garden?gardenID=";
 
-    private final String TIP_AMOUNT_ERROR_STR = "tipAmountError";
+    private static final String TIP_AMOUNT_ERROR_STR = "tipAmountError";
 
     private final String TIP_INPUT_STR = "tipInput";
 
@@ -295,6 +295,13 @@ public class ViewGardenController {
         return garden.get();
     }
 
+    /**
+     * Adds tip attributes to the model
+     * @param session the session
+     * @param model the model
+     * @param garden the garden
+     * @return the model with the tip attributes added
+     */
     private Model addTipAttributes(HttpSession session, Model model, Garden garden) {
         //new code added to get Blooms tipped
 
@@ -325,86 +332,123 @@ public class ViewGardenController {
         return model;
     }
 
-    private void addAttributes(User owner, Long gardenID, Model model, PlantService plantService, GardenService gardenService, HttpSession session) {
+    /**
+     * Adds attributes to the model
+     * @param owner the owner of the garden
+     * @param gardenID
+     * @param model the model
+     * @param plantService the plant service
+     * @param gardenService the garden service
+     * @param session the session
+     */
+    private void addAttributes(User owner, Long gardenID, Model model, PlantService plantService,
+                               GardenService gardenService, HttpSession session) {
         List<Plant> plants = plantService.getGardenPlant(gardenID);
         List<Garden> gardens = gardenService.getOwnedGardens(owner.getUserId());
         model.addAttribute("gardens", gardens);
         model.addAttribute("plants", plants);
 
         Optional<Garden> garden = gardenService.findGarden(gardenID);
-        if (garden.isPresent()) { // if the garden ID exists
-            model.addAttribute("gardenID", gardenID);
-            model.addAttribute("tagInput", "");
-            model.addAttribute("gardenName", garden.get().getName());
-            model.addAttribute("gardenLocation", garden.get().getLocation().toString());
-            model.addAttribute("gardenDescription", garden.get().getDescription());
-            model.addAttribute("gardenSize", garden.get().getSize());
-            model.addAttribute("gardenTags", gardenService.getEvaluatedTags(gardenID));
-            model.addAttribute("gardenIsPublic", garden.get().getIsPublic());
-            model.addAttribute("allTags", tagService.getTagsByEvaluated(true));
-            model.addAttribute("tagError", session.getAttribute("tagEvaluationError"));
-
-
-            User currentUser = userService.getAuthenticatedUser();
-            addTipAttributes(session, model, garden.get());
-
-            // New Code Added to get weather
-            String gardenCity = garden.get().getLocation().getCity();
-            String gardenCountry = garden.get().getLocation().getCountry();
-
-            // Entered Location empty or null checks
-            if (gardenCity != null && !gardenCity.isEmpty() && gardenCountry != null && !gardenCountry.isEmpty()) {
-                // Location present, get weather
-                // Get forecasted weather for current location
-                ForecastResponse forecastResponse = weatherService.getForecastWeather(gardenCity, gardenCountry);
-                // Get current weather for this location
-                WeatherResponse currentWeather = weatherService.getCurrentWeather(gardenCity, gardenCountry);
-                // Check if there has been rain in the past two days
-                Boolean hasRained = weatherService.hasRained(gardenCity, gardenCountry);
-                // Check if it is currently raining
-                Boolean isRaining = weatherService.isRaining(gardenCity, gardenCountry);
-
-                // Use the AlertService to determine if alerts should be displayed
-                boolean hasNotRainedDismissed = alertService.isAlertDismissed(owner, garden.get(), "hasNotRained");
-                boolean isRainingDismissed = alertService.isAlertDismissed(owner, garden.get(), "isRaining");
-
-                // If forecastResponse is null, because API does not find weather at that location
-                User gardenOwner = garden.get().getOwner();
-                if (forecastResponse == null && currentUser.equals(gardenOwner)) {
-                    model.addAttribute("weatherErrorMessage", "Location not found, please update your location to see the weather");
-                } else if (forecastResponse == null) {
-                    model.addAttribute("weatherErrorMessage", "Location not found, please contact the garden owner for more information");
-                } else {
-                    // Null current weather check (for tests)
-                    if (currentWeather != null) {
-                        forecastResponse.addWeatherResponse(currentWeather);
-                    }
-                    // Add forecast weather which has the current weather added to it
-                    model.addAttribute("forecastResponse", forecastResponse);
-
-                    // Check that hasRained is successful
-                    if (hasRained == null) {
-                        model.addAttribute("weatherErrorMessage", "Historic weather data not available, no watering reminder available");
-                    } else if (!hasRained && !hasNotRainedDismissed) {
-                        // It hasn't rained in the past two days, alert hasn't been dismissed, display water plants alert
-                        model.addAttribute("hasNotRainedAlert", "There hasn’t been any rain recently, make sure to water your plants if they need it");
-                    } // Otherwise, it has rained in the past two days, no need to display anything
-
-                    // Check that isRaining is successful
-                    if (isRaining == null) {
-                        model.addAttribute("weatherErrorMessage", "Current weather data not available, no watering reminder available");
-                    } else if (isRaining && !isRainingDismissed) {
-                        // It is currently raining, alert hasn't been dismissed, display water plants warning
-                        model.addAttribute("isRainingAlert", "Outdoor plants don’t need any water today");
-                    } // Otherwise, it is not raining, no need to display anything
-                }
-            } else {
-                // Entered Location is empty or null
-                model.addAttribute("weatherErrorMessage", "Location not found, \nplease update your location to see the weather");
-            }
+        if (garden.isPresent()) {
+            addGardenAttributes(garden.get(), gardenID, model, session);
+            addWeatherAttributes(owner, garden.get(), model, session);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " does not exist");
         }
     }
+
+    private void addGardenAttributes(Garden garden, Long gardenID, Model model, HttpSession session) {
+        model.addAttribute("gardenID", gardenID);
+        model.addAttribute("tagInput", "");
+        model.addAttribute("gardenName", garden.getName());
+        model.addAttribute("gardenLocation", garden.getLocation().toString());
+        model.addAttribute("gardenDescription", garden.getDescription());
+        model.addAttribute("gardenSize", garden.getSize());
+        model.addAttribute("gardenTags", gardenService.getEvaluatedTags(gardenID));
+        model.addAttribute("gardenIsPublic", garden.getIsPublic());
+        model.addAttribute("allTags", tagService.getTagsByEvaluated(true));
+        model.addAttribute("tagError", session.getAttribute("tagEvaluationError"));
+
+        User currentUser = userService.getAuthenticatedUser();
+        addTipAttributes(session, model, garden);
+    }
+
+    /**
+     * Adds weather attributes to the model
+     * @param owner the owner of the garden
+     * @param garden the garden
+     * @param model the model
+     * @param session the session
+     */
+    private void addWeatherAttributes(User owner, Garden garden, Model model, HttpSession session) {
+        String gardenCity = garden.getLocation().getCity();
+        String gardenCountry = garden.getLocation().getCountry();
+
+        if (isValidLocation(gardenCity, gardenCountry)) {
+            ForecastResponse forecastResponse = weatherService.getForecastWeather(gardenCity, gardenCountry);
+            WeatherResponse currentWeather = weatherService.getCurrentWeather(gardenCity, gardenCountry);
+            Boolean hasRained = weatherService.hasRained(gardenCity, gardenCountry);
+            Boolean isRaining = weatherService.isRaining(gardenCity, gardenCountry);
+            handleWeatherAlerts(owner, garden, model, forecastResponse, currentWeather, hasRained, isRaining);
+        } else {
+            model.addAttribute("weatherErrorMessage", "Location not found, please update your location to see the weather");
+        }
+    }
+
+    /**
+     * Checks if the location is valid
+     * @param city the city
+     * @param country the country
+     * @return true if the location is valid, false otherwise
+     */
+    private boolean isValidLocation(String city, String country) {
+        return city != null && !city.isEmpty() && country != null && !country.isEmpty();
+    }
+
+    private void handleWeatherAlerts(User owner, Garden garden, Model model,
+                                     ForecastResponse forecastResponse, WeatherResponse currentWeather,
+                                     Boolean hasRained, Boolean isRaining) {
+        User currentUser = userService.getAuthenticatedUser();
+        User gardenOwner = garden.getOwner();
+
+        if (forecastResponse == null) {
+            String errorMessage = currentUser.equals(gardenOwner)
+                    ? "Location not found, please update your location to see the weather"
+                    : "Location not found, please contact the garden owner for more information";
+            model.addAttribute("weatherErrorMessage", errorMessage);
+        } else {
+            if (currentWeather != null) {
+                forecastResponse.addWeatherResponse(currentWeather);
+            }
+            model.addAttribute("forecastResponse", forecastResponse);
+            addRainAlerts(owner, garden, model, hasRained, isRaining);
+        }
+    }
+
+    /**
+     * Adds rain alerts to the model
+     * @param owner the owner of the garden
+     * @param garden the garden
+     * @param model the model
+     * @param hasRained whether it has rained
+     * @param isRaining whether it is raining
+     */
+    private void addRainAlerts(User owner, Garden garden, Model model, Boolean hasRained, Boolean isRaining) {
+        boolean hasNotRainedDismissed = alertService.isAlertDismissed(owner, garden, "hasNotRained");
+        boolean isRainingDismissed = alertService.isAlertDismissed(owner, garden, "isRaining");
+
+        if (hasRained == null) {
+            model.addAttribute("weatherErrorMessage", "Historic weather data not available, no watering reminder available");
+        } else if (!hasRained && !hasNotRainedDismissed) {
+            model.addAttribute("hasNotRainedAlert", "There hasn’t been any rain recently, make sure to water your plants if they need it");
+        }
+
+        if (isRaining == null) {
+            model.addAttribute("weatherErrorMessage", "Current weather data not available, no watering reminder available");
+        } else if (isRaining && !isRainingDismissed) {
+            model.addAttribute("isRainingAlert", "Outdoor plants don’t need any water today");
+        }
+    }
+
 }
 
