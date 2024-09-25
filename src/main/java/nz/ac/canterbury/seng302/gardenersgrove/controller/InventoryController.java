@@ -1,7 +1,10 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
@@ -11,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class InventoryController {
@@ -21,11 +26,13 @@ public class InventoryController {
 
     private final ItemService itemService;
     private final UserService userService;
+    private final ImageService imageService;
 
     @Autowired
-    public InventoryController(ItemService itemService, UserService userService) {
+    public InventoryController(ItemService itemService, UserService userService, ImageService imageService) {
         this.itemService = itemService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     @GetMapping("/inventory")
@@ -42,5 +49,36 @@ public class InventoryController {
         model.addAttribute("imageItems", imageItems);
 
         return "inventoryTemplate";
+    }
+
+    @PostMapping("/inventory/use/{itemId}")
+    public String useImageItem(@PathVariable Long itemId) {
+        logger.info("POST /inventory/use/{}", itemId);
+
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+
+        try {
+            // Gets item, then casts to ImageItem
+            ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
+
+            // Get the image of imageItem
+            Long itemImageId = imageItem.getImage().getId();
+
+            // Get image from Image Table
+            Optional<Image> image = imageService.findImage(itemImageId);
+
+            // Update Users Image to ItemsImage
+            image.ifPresent(currentUser::setImage);
+
+            // Persis change to user
+            userService.saveUser(currentUser);
+
+            logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+        } catch (IllegalArgumentException e) {
+            logger.error("Error applying item: {}", e.getMessage());
+        }
+
+        return "redirect:/inventory";
     }
 }
