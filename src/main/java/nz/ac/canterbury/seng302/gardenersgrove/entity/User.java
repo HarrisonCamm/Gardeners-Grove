@@ -342,10 +342,10 @@ public class User {
     }
 
 
-    public void removeItem(Item item, int quantity) throws Exception {
+    public void removeItem(Item item, int quantity) {
         Item theItem = getItem(item, quantity);
         if (theItem == null) {
-            throw new Exception("Insufficient quantity.");
+            throw new IllegalArgumentException("Insufficient quantity.");
         }
 
         theItem.setQuantity(theItem.getQuantity() - quantity);
