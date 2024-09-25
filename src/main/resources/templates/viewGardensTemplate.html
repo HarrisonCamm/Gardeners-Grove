@@ -28,28 +28,47 @@
                     </table>
                 </div>
 
-                <div class="wrapper">
-                    <div class="gardenTable">
-                        <table>
-                            <thead>
-                            <tr class="garden-header">
-                                <th class="gardens-table">Name&nbsp;</th>
-                                <th class="gardens-table">Location&nbsp;</th>
-                                <th class="gardens-table">Size&nbsp;</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr class="garden-header" th:each="garden : ${gardens}">
-                                <td><span th:text="${#strings.abbreviate(garden.name,20)}"> Name </span></a></td>
-                                <td><span th:text="${garden.location.streetAddress != null
+<!--                <div class="wrapper">-->
+<!--                    <div class="gardenTable">-->
+<!--                        <table>-->
+<!--                            <thead>-->
+<!--                            <tr class="garden-header">-->
+<!--                                <th class="gardens-table">Name&nbsp;</th>-->
+<!--                                <th class="gardens-table">Location&nbsp;</th>-->
+<!--                                <th class="gardens-table">Size&nbsp;</th>-->
+<!--                            </tr>-->
+<!--                            </thead>-->
+<!--                            <tbody>-->
+<!--                            <tr class="garden-header" th:each="garden : ${gardens}">-->
+<!--                                <td><span th:text="${#strings.abbreviate(garden.name,20)}"> Name </span></a></td>-->
+<!--                                <td><span th:text="${garden.location.streetAddress != null-->
+<!--                                and !#strings.isEmpty(garden.location.streetAddress) ?-->
+<!--                                garden.location.streetAddress : garden.location.city}">Location </span></td>-->
+<!--                                <td><span th:utext="${garden.size} + ' m<sup>2</sup>'"> Size </span></td>-->
+<!--                            </tr>-->
+<!--                            </tbody>-->
+<!--                        </table>-->
+<!--                    </div>-->
+<!--                </div> -->
+                    <div class="container-fluid">
+                        <div class="row" th:each="garden : ${gardens}">
+                            <div class="col">
+                                <span th:text="${#strings.abbreviate(garden.name,20)}"> Name </span>
+                            </div>
+                            <div class="col">
+                                <span th:text="${garden.location.streetAddress != null
                                 and !#strings.isEmpty(garden.location.streetAddress) ?
-                                garden.location.streetAddress : garden.location.city}">Location </span></td>
-                                <td><span th:utext="${garden.size} + ' m<sup>2</sup>'"> Size </span></td>
-                            </tr>
-                            </tbody>
-                        </table>
+                                garden.location.streetAddress : garden.location.city}">Location </span>
+                            </div>
+                            <div class="col">
+                                <span th:utext="${garden.size} + ' m<sup>2</sup>'"> Size </span>
+                            </div>
+                            <div class="col">
+                                <a th:href="@{'/view-garden?gardenID=' + ${garden.id}}">View Garden</a>
+                            </div>
+
+                        </div>
                     </div>
-                </div>
                 <div class="empty_space"></div>
             </div>
         </div>
