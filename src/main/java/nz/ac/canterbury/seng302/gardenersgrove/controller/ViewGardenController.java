@@ -178,7 +178,7 @@ public class ViewGardenController {
 
         // Add a new transaction for the tip
         transactionService.addTransaction(tipAmount,
-                "Tipped " + curGarden + " (unclaimed)",
+                "Tipped " + curGarden.getName() + " (unclaimed)",
                 "Garden Tip",
                 owner.getUserId(),
                 currentUser.getUserId(),
