@@ -87,6 +87,15 @@ public class UserService {
     }
 
     /**
+     * Persists changes to a user.
+     * @param user The user to save
+     * @return The saved user
+     */
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+
+    /**
      * Updates User entity in the database.
      *
      * @param user the User entity to be updated
