@@ -79,15 +79,15 @@ public class ShopService {
     }
 
     @Transactional
-    public void purchaseItem(User user, Shop shop, Item item) {
+    public void purchaseItem(User user, Item item) {
+        Shop shop = getShopInstance(entityManager);
+
         if (shop.hasItem(item) && userService.canAfford(user, item)) {
 
             // add item to user inventory
             user.addItem(item);
 
             userService.chargeBlooms(user, item.getPrice());
-
-
             userRepository.save(user);
         }
     }
