@@ -39,6 +39,7 @@ public class User {
     @Column(name = "dateOfBirth")
     private String dateOfBirth;
 
+
     @Column
     private Date lastFreeSpinUsed;
 
@@ -240,6 +241,9 @@ public class User {
     public String getBadgeURL() {
         return badgeURL;
     }
+
+
+
 
 
     //TODO: Modify this code so it works with the logic for Image/GIF items in U6007-AC2

@@ -72,13 +72,24 @@ public class InventoryController {
         return "inventoryTemplate";
     }
 
-    @PostMapping("/inventory/updateBadgeURL")
-    public String updateUserBadge(@RequestParam Long userId, @RequestParam String badgeURL) {
+//    @PostMapping("/inventory/updateBadgeURL")
+//    public String updateUserBadge(@RequestParam Long userId, @RequestParam String badgeURL) {
+//        User user = userService.getUserByID(userId);
+//        user.setBadgeURL(badgeURL);
+//        userService.saveUser(user);
+//        return "redirect:/inventory";
+//    }
+
+
+    @PostMapping("/inventory/updateBadge")
+    public String updateUserBadge(@RequestParam Long userId, @RequestParam Long badgeId) {
         User user = userService.getUserByID(userId);
-        user.setBadgeURL(badgeURL);
+//        user.setBadgeURL(badgeURL);
         userService.saveUser(user);
         return "redirect:/inventory";
     }
+
+
 
     @PostMapping("/inventory/updateProfile")
     public String updateUserProfile(@RequestParam Long userId, @RequestParam String imageURL) {
