@@ -104,23 +104,22 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
-    public List<Transaction> retrieveGardenTips(User receiver, Garden tippedGarden)                                              {
-    return transactionRepository.findAllByReceiverAndTippedGardenAndClaimedFalse(receiver, tippedGarden)         ;
-                                                                                                                                                                                    }
+    public List<Transaction> retrieveGardenTips(User receiver, Garden tippedGarden) {
+        return transactionRepository.findAllByReceiverAndTippedGardenAndClaimedFalse(receiver, tippedGarden);
+    }
 
-    public int totalUnclaimedTips(User receiver, Garden tippedGarden)                                                                        {
-    List<Transaction> transactions = retrieveGardenTips(receiver, tippedGarden)                                                       ;
-    int total = 0                                                                                                                                                              ;
-    for (Transaction transaction : transactions)                                                                                                            {
-        total += transaction.getAmount()                                                                                                                        ;
-                                                                                                                                                                                    }
-    return total                                                                                                                                                               ;
-                                                                                                                                                                                    }
+    public int totalUnclaimedTips(User receiver, Garden tippedGarden) {
+        List<Transaction> transactions = retrieveGardenTips(receiver, tippedGarden);
+        int total = 0;
+        for (Transaction transaction : transactions) {
+            total += transaction.getAmount();
+        }
+        return total;
+    }
 
-    public void claimAllGardenTips(List<Transaction> transactions)                                                                             {
-        for (Transaction transaction : transactions)                                                                                                        {
-            setClaimed(transaction.getTransactionId(), true)                                                                                      ;
-
-                                                                                                                                                                                   }
-                                                                                                                                                                                   }
+    public void claimAllGardenTips(List<Transaction> transactions) {
+        for (Transaction transaction : transactions) {
+            setClaimed(transaction.getTransactionId(), true);
+        }
+    }
 }

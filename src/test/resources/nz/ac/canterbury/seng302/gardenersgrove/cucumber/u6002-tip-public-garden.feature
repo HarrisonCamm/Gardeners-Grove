@@ -11,7 +11,7 @@ Feature: U6002 Tipping public garden
     And I am on the garden details page for a garden I do not own
     When I enter an invalid tip <tip>
     And I confirm the transaction by clicking Confirm
-    Then I am shown an error message "Tip amount must be a positive number"
+    Then I am shown an error message "Tip amount must be a positive integer"
     Examples:
     | tip    |
     | -100   |
@@ -52,10 +52,14 @@ Feature: U6002 Tipping public garden
     When I am on the garden details page for a garden I own for tips
     Then I see a claim blooms button to add the amount of unclaimed bloom tips of the garden to my balance
 
+#  Background: User is logged in
+#    Given "inaya@email.com" has a public garden
+#    And "liam@email.com" has 10000 Blooms
+#    And "inaya@email.com"'s garden has been tipped 100 blooms by "liam@email.com"
 
   Scenario: AC8 - Claim Blooms transaction
     Given I am logged in with email "inaya@email.com" and password "Password1!"
-    And I have received tips for my garden for 100 blooms
-    And  I choose to claim the Blooms from my garden's tips
-    When I confirm the action
+    When  I choose to claim the Blooms from my garden's tips
     Then the 100 blooms are added to my account
+    And a transaction is added to my account history
+    And the total number of Blooms I can claim is 0

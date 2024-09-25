@@ -10,6 +10,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.TransactionService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,8 @@ public class TipPublicGardenSteps {
     private UserService userService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    TransactionService transactionService;
 
     // MockMvc for using API
     private MockMvc mockMvc;
@@ -61,6 +64,7 @@ public class TipPublicGardenSteps {
     private Integer tipAmount;
     private int oldUserBloomBalance;
     private int oldGardenTipCount;
+    private long oldTransctionCount;
 
 
     @Before
@@ -271,22 +275,31 @@ public class TipPublicGardenSteps {
         );
     }
 
-    @And("I have received tips for my garden for {int} blooms")
-    public void iHaveReceivedTipsForMyGardenForBlooms(int newTipAmount) {
-
-    }
-
-    @And("I choose to claim the Blooms from my garden's tips")
-    public void iChooseToClaimTheBloomsFromMyGardenSTips() {
-
-    }
-
-    @When("I confirm the action")
-    public void iConfirmTheAction() {
-
+    @When("I choose to claim the Blooms from my garden's tips")
+    public void iChooseToClaimTheBloomsFromMyGardenSTips() throws Exception{
+        oldUserBloomBalance = userService.getAuthenticatedUser().getBloomBalance();
+        oldTransctionCount = transactionService.findTransactionsByUser(userService.getAuthenticatedUser(), 0, 10).getTotalElements();
+        mvcResult = mockMvc.perform(post("/claim-tips")
+                .param("gardenID", inayasGarden.getId().toString())
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
     }
 
     @Then("the {int} blooms are added to my account")
     public void theBloomsAreAddedToMyAccount(int amountClaimed) {
+        assertEquals(oldUserBloomBalance + amountClaimed, (int) userService.getAuthenticatedUser().getBloomBalance());
+    }
+
+    @And("a transaction is added to my account history")
+    public void aTransactionIsAddedToMyAccountHistory() {
+        Long transactionCount = transactionService.findTransactionsByUser(userService.getAuthenticatedUser(), 0, 10).getTotalElements();
+        assertEquals(oldTransctionCount + 1, transactionCount);
+    }
+
+    @And("the total number of Blooms I can claim is {int}")
+    public void theTotalNumberOfBloomsICanClaimIs(int expectedUnclaimedBlooms) {
+        int totalUnclaimedTips = transactionService.totalUnclaimedTips(userService.getAuthenticatedUser(), inayasGarden);
+        assertEquals(expectedUnclaimedBlooms, totalUnclaimedTips);
     }
 }
