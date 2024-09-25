@@ -32,18 +32,15 @@ public class InventoryController {
 
     @GetMapping("/inventory")
     public String getTemplate(Model model) {
-
-        User currentUser = userService.getAuthenticatedUser();
-
         logger.info("GET /inventory");
         RedirectService.addEndpoint("/inventory");
 
-
-        //Create and populate a list of items for the view to render
-//        List<String[]> badgeItems = new ArrayList<>();
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
         List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
 
-//        // TODO - Simulating the adding of items, this will be done using service and repo layers in another task
+        // TODO - Simulating the adding of items, this will be done using service and repo layers in another task
+        // uncomment these to view how it would look, commented out for tests to work
 //        badgeItems.add(new String[]{"1x", "vegemite.png", "Vegemite"});
 //        badgeItems.add(new String[]{"1x", "timtam.png", "Tim Tam"});
 //        badgeItems.add(new String[]{"1x", "neo_fabian.png", "Neo Fabian"});
@@ -57,7 +54,6 @@ public class InventoryController {
 //        gifItems.add(new String[]{"1x", "scrum_master_harrison.gif", "Scrum Master Harrison"});
 //        gifItems.add(new String[]{"1x", "stick_man.gif", "Stick Man"});
 
-        model.addAttribute("user", currentUser);
         if (badgeItems.isEmpty()) {
             currentUser.addItem(itemService.getItemByName("Happy"));
             currentUser.addItem(itemService.getItemByName("Eggplant"));
