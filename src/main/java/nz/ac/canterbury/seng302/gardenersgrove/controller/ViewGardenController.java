@@ -147,7 +147,6 @@ public class ViewGardenController {
     @PostMapping("/tip-blooms")
     public String addTip(@RequestParam("gardenID") Long gardenID,
                          @RequestParam(defaultValue = "0") Integer tipAmount,
-                         Model model,
                          HttpSession session) {
         logger.info("POST /tip-blooms");
 
@@ -155,8 +154,9 @@ public class ViewGardenController {
 
         doTipValidations(session, tipAmount, currentUser);
 
-        if (model.containsAttribute("tipAmountError")) {
-            return "viewUnownedGardenDetailsTemplate";
+        // If there is an error, do not charge the user and return to the garden page
+        if (session.getAttribute("tipAmountError") != null) {
+            return "redirect:/view-garden?gardenID=" + gardenID;
         }
 
         // Charge the user the tip they gave the tip has already been validated.
