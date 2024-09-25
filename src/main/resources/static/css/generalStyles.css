@@ -77,7 +77,6 @@ body {
     color: #DE2929;
 }
 
-
 .table-wrapper {
     max-width: 100%; /* Full width on smaller screens */
     margin: 0 auto;
@@ -562,6 +561,33 @@ hr {
     resize: none;
 }
 
+/*Used to style item quantity for inventory item cards*/
+.item-quantity {
+    position: absolute;
+    right: 10%;
+    top: 10%;
+}
+
+/*Used to style item title for inventory item cards*/
+.inventory-card-title {
+    background-color: #BEE186;
+    border-radius: 10px;
+    border: solid black 1px;
+}
+
+/*Used to style item use button for inventory item cards*/
+.item-use-button {
+    position: absolute;
+    right: 7.5%;
+    bottom: 7.5%
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    background: none;
+    opacity: 0.1;
+}
+
 
 @media only screen and (orientation: portrait) {
     h2 {
@@ -793,5 +819,13 @@ h2 {
     margin-bottom: 1.5rem;
 }
 
-
-
+/* Shop CSS */
+.shop-emoji {
+    width: 200px;
+    height: 200px;
+    border-radius: 100px;
+    border: #3D7B36 solid 1px;
+    font-size: xxx-large;
+    font-family: var(--bs-body-font-family);
+    padding: 15px 15px 15px 15px;
+}

@@ -3,10 +3,8 @@ package nz.ac.canterbury.seng302.gardenersgrove.unit.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.*;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.ShopRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.security.CustomAuthenticationProvider;
 import nz.ac.canterbury.seng302.gardenersgrove.security.SecurityConfiguration;
@@ -88,6 +86,15 @@ public class SecurityConfigurationTest {
 
     @MockBean
     private ImageService imageService;
+
+    @MockBean
+    private ShopRepository shopRepository;
+
+    @MockBean
+    private ShopService shopService;
+
+    @MockBean
+    private ItemService itemService;
 
     @MockBean
     private TagService tagService;
