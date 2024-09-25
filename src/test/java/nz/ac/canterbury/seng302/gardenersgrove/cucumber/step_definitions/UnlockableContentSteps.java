@@ -55,11 +55,11 @@ public class UnlockableContentSteps {
         List<String[]> badgeItems = (List<String[]>) mvcResult.getModelAndView().getModel().get("badgeItems");
 //        List<String[]> ownedBadgeItems = currentUser.getBadgeItems(); todo
         List<String[]> ownedBadgeItems = new ArrayList<>();
-        List<String[]> gifItems = (List<String[]>) mvcResult.getModelAndView().getModel().get("gifItems");
+        List<String[]> imageItems = (List<String[]>) mvcResult.getModelAndView().getModel().get("imageItems");
 //        List<String[]> ownedGifItems = currentUser.getBadgeItems(); todo
         List<String[]> ownedGifItems = new ArrayList<>();
         Assertions.assertEquals(ownedBadgeItems, badgeItems);
-        Assertions.assertEquals(ownedGifItems, gifItems);
+        Assertions.assertEquals(ownedGifItems, imageItems);
 
     }
 
