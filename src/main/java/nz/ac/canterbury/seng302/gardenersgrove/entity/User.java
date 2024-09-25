@@ -346,7 +346,7 @@ public class User {
     }
 
 
-    public void removeItem(Item item, int quantity) {
+    public void removeItem(Item item, int quantity) throws IllegalArgumentException {
         Item theItem = getItem(item, quantity);
         if (theItem == null) {
             throw new IllegalArgumentException("Insufficient quantity.");
