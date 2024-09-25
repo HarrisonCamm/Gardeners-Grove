@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -84,4 +86,23 @@ public class TransactionService {
         transaction.setClaimed(b);
         transactionRepository.save(transaction);
     }
+
+    public List<Transaction> retrieveGardenTips(User receiver, Garden tippedGarden)                                              {
+    return transactionRepository.findAllByReceiverAndTippedGardenAndClaimedFalse(receiver, tippedGarden)         ;
+                                                                                                                                                                                    }
+
+    public int totalUnclaimedTips(User receiver, Garden tippedGarden)                                                                        {
+    List<Transaction> transactions = retrieveGardenTips(receiver, tippedGarden)                                                       ;
+    int total = 0                                                                                                                                                              ;
+    for (Transaction transaction : transactions)                                                                                                            {
+        total += transaction.getAmount()                                                                                                                        ;
+                                                                                                                                                                                    }
+    return total                                                                                                                                                               ;
+                                                                                                                                                                                    }
+
+    public void claimAllGardenTips(List<Transaction> transactions)                                                                             {
+        for (Transaction transaction : transactions)                                                                                                        {
+            setClaimed(transaction.getTransactionId(), true)                                                                                      ;
+                                                                                                                                                                                   }
+                                                                                                                                                                                   }
 }

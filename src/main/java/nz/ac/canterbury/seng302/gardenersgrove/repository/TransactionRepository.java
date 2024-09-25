@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.repository;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import org.springframework.data.domain.Page;
@@ -14,8 +15,6 @@ public interface TransactionRepository  extends JpaRepository<Transaction, Long>
     @Query("SELECT t FROM Transaction t WHERE t.sender = :user OR t.receiver = :user AND t.claimed = true")
     Page<Transaction> findAllByUser(@Param("user") User user, Pageable pageable);
 
-    List<Transaction> findAllByReceiver(User receiver);
-
-    List<Transaction> findAllByReceiverAndClaimedTrue(User receiver);
+    List<Transaction> findAllByReceiverAndTippedGardenAndClaimedFalse(User receiver, Garden tippedGarden);
 
 }
