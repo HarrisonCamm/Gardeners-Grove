@@ -198,7 +198,7 @@ public class DailySpinSteps {
                 .andExpect(view().name("dailySpinTemplate"))
                 .andReturn();
         mvcResult = mockMvc.perform(post("/daily-spin").session(session)
-                        .param("buttonAction", "PAYED_SPINNING"))
+                        .param("buttonAction", "PAID_SPINNING"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("dailySpinTemplate"))
                 .andReturn();

@@ -189,7 +189,6 @@ public class PlantGuesserSteps {
                 .param("plantImage", plantImage)
                 .param("imageCredit", imageCredit)
                 .param("roundNumber", String.valueOf(roundNumber))
-                .param("correctOption", String.valueOf(correctOption))
                 .param("score", String.valueOf(score))
                 .session(mockSession));
 
@@ -263,7 +262,6 @@ public class PlantGuesserSteps {
                 .param("plantImage", plantImage)
                 .param("imageCredit", imageCredit)
                 .param("roundNumber", String.valueOf(roundNumber))
-                .param("correctOption", String.valueOf(correctOption))
                 .param("score", String.valueOf(score))
                 .session(mockSession));
 
@@ -388,7 +386,7 @@ public class PlantGuesserSteps {
         plantImage = (String) model.get("plantImage");
         imageCredit = (String) model.get("imageCredit");
         roundNumber = (int) model.get("roundNumber");
-        correctOption = (int) model.get("correctOption");
+        correctOption = (int) mockSession.getAttribute("correctOption");
         score = (int) model.get("score");
     }
 }

@@ -5,6 +5,12 @@
 //     The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
 //     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// Define Multipliers for base win amounts
+const MULTIPLIER_3_IN_A_ROW = 15;
+const MULTIPLIER_4_IN_A_ROW = 50;
+const MULTIPLIER_5_IN_A_ROW = 1000;
+
 document.addEventListener("DOMContentLoaded", function() {
     let reelContents = ["" ,"💧", "☀️", "🍄", "🌶️", "🌾"];
     let reelLength = 3;
@@ -13,7 +19,6 @@ document.addEventListener("DOMContentLoaded", function() {
     let spinning = false;
     let reelDelay = 100;
     let money = bloomBalance;
-    let moneyToAdd = amountWon;     //Ensure this is updated to be model attribute "amountWon" at appropriate time
     let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let masterVolume = audioCtx.createGain();
     masterVolume.gain.setValueAtTime(0.05, audioCtx.currentTime);
@@ -147,13 +152,8 @@ document.addEventListener("DOMContentLoaded", function() {
         reelContainers.forEach(reel => {
             if (reel.children[rowNumber].innerText === symbol) reel.children[rowNumber].classList.add("win");
         });
-        let winAmount = reelContents.indexOf(symbol);
-        playWinChime(winAmount);
-        if (amountMatching === 3) winAmount *= 10;
-        if (amountMatching === 4) winAmount *= 30;
-        if (amountMatching === 5) winAmount *= 100;
-        setChange(winAmount);
-        addToMoney(winAmount);
+        setChange(amountWon);
+        addToMoney(amountWon);
     };
     let addToMoney = (amountWon, speed) => {
         let changeAmount = Math.ceil(amountWon / 2);
@@ -212,8 +212,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let setPrizeTableHeaders = (target) => {
         let pt = document.querySelector(`.prize-table .${target}`);
         let heading = document.createElement("div");
-        let comboType = getComboType(target);
-        heading.innerHTML = comboType;
+        heading.innerHTML = getComboType(target);
         pt.append(heading);
     }
 
@@ -224,10 +223,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     reelContents.forEach((symbol, index) => {
-        if (index !== 0) {
-            addToPrizeTable(`${symbol}`, (index) * 10, "triples");
-            addToPrizeTable(`${symbol}`, (index) * 30, "quadruples");
-            addToPrizeTable(`${symbol}`, (index) * 100, "quintuples");
+        if (index !== 0 && index < 5) {
+            addToPrizeTable(`${symbol}`, (index) * MULTIPLIER_3_IN_A_ROW, "triples");
+            addToPrizeTable(`${symbol}`, (index) * MULTIPLIER_4_IN_A_ROW, "quadruples");
+            addToPrizeTable(`${symbol}`, (index) * MULTIPLIER_5_IN_A_ROW, "quintuples");
+        } else if (index !== 0) {
+            addToPrizeTable(`${symbol}`, 10 * MULTIPLIER_3_IN_A_ROW, "triples");
+            addToPrizeTable(`${symbol}`, 10 * MULTIPLIER_4_IN_A_ROW, "quadruples");
+            addToPrizeTable(`${symbol}`, 10 * MULTIPLIER_5_IN_A_ROW, "quintuples");
         }
     });
 
@@ -245,12 +248,12 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     window.onclick = function(event) {
-        if (event.target == modal) {
+        if (event.target === modal) {
             modal.style.display = "none";
         }
     }
 
-    if (gameState === "FREE_SPINNING" || gameState === "PAYED_SPINNING") {
+    if (gameState === "FREE_SPINNING" || gameState === "PAID_SPINNING") {
         startSpin();
     }
 });
