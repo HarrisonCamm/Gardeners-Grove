@@ -79,8 +79,14 @@ public class UnlockableContentSteps {
     }
 
     @Given("I am in the shop")
-    public void i_am_in_the_shop() {
-        // TODO: Setup initial context for being in the shop
+    public void i_am_in_the_shop() throws Exception {
+        resultActions = mockMvc.perform(get("/shop"));
+        mvcResult = resultActions.andExpect(status().isOk())
+                .andReturn();
+        Set<Item> badgeItems = (Set<Item>) mvcResult.getModelAndView().getModel().get("badgeItems");
+        Set<Item> imageItems = (Set<Item>) mvcResult.getModelAndView().getModel().get("imageItems");
+        assertNotNull(badgeItems);
+        assertNotNull(imageItems);
     }
 
     @Then("I can see a list of items for sale with a picture, name, description and price in Blooms")
@@ -171,6 +177,16 @@ public class UnlockableContentSteps {
     @Then("a confirmation popup with a cancel button and confirm button is shown with the message {string}")
     public void a_confirmation_popup_with_a_cancel_button_and_confirm_button_is_shown_with_the_message(String arg0) {
         // TODO: Display confirmation popup for selling an item
+    }
+
+    @Then("I confirm the sale")
+    public void i_confirm_the_sale() {
+        // TODO: Implement logic for confirming the sale
+    }
+
+    @Then("the item is removed from my inventory")
+    public void the_item_is_removed_from_my_inventory() {
+        // TODO: Remove the item from inventory
     }
 
     @Given("I purchase an item")
