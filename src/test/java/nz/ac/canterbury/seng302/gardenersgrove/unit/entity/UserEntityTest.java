@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserEntityTest {
+class UserEntityTest {
 
     @Test
     void toString_ReturnsCorrectFormat() {
