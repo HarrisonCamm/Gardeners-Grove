@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserEntityTest {
 
     @Test
-    public void toString_ReturnsCorrectFormat() {
+    void toString_ReturnsCorrectFormat() {
         User user = new User("John", "Doe", false, "john.doe@example.com", "Password1!", "01/01/1990");
         user.setUserId(1L);
         String expected = "User[id=1, firstName='John', lastName='Doe', email='john.doe@example.com', password='Password1!', dateOfBirth='01/01/1990']";
@@ -17,7 +17,7 @@ public class UserEntityTest {
     }
 
     @Test
-    public void addItem_AddsItemToInventory() {
+    void addItem_AddsItemToInventory() {
         User user = new User("John", "Doe", false, "", "", "");
         BadgeItem badgeItem = new BadgeItem("Badge", 10, "\uD83C\uDF46", 3);
         user.addItem(badgeItem);
@@ -26,7 +26,7 @@ public class UserEntityTest {
     }
 
     @Test
-    public void addItem_AddsItemToInventoryWithQuantity() {
+    void addItem_AddsItemToInventoryWithQuantity() {
         User user = new User("John", "Doe", false, "", "", "");
         BadgeItem badgeItem = new BadgeItem("Badge", 10, "\uD83C\uDF46", 3);
         user.addItem(badgeItem);
@@ -37,7 +37,7 @@ public class UserEntityTest {
     }
 
     @Test
-    public void removeItem_RemovesItemFromInventory() {
+    void removeItem_RemovesItemFromInventory() {
         User user = new User("John", "Doe", false, "", "", "");
         BadgeItem badgeItem = new BadgeItem("Badge", 10, "\uD83C\uDF46", 3);
         user.addItem(badgeItem);
@@ -46,7 +46,7 @@ public class UserEntityTest {
     }
 
     @Test
-    public void removeItem_RemovesItemFromInventoryWithQuantity() {
+    void removeItem_RemovesItemFromInventoryWithQuantity() {
         User user = new User("John", "Doe", false, "", "", "");
         BadgeItem badgeItem = new BadgeItem("Badge", 10, "\uD83C\uDF46", 3);
         user.addItem(badgeItem);
@@ -58,7 +58,7 @@ public class UserEntityTest {
     }
 
     @Test
-    public void removeItem_RemovesItemFromInventoryWithQuantityZero() {
+    void removeItem_RemovesItemFromInventoryWithQuantityZero() {
         User user = new User("John", "Doe", false, "", "", "");
         BadgeItem badgeItem = new BadgeItem("Badge", 10, "\uD83C\uDF46", 3);
         user.addItem(badgeItem);
@@ -69,7 +69,7 @@ public class UserEntityTest {
     }
 
     @Test
-    public void removeItem_RemovesItemFromInventoryWithQuantityGreaterThanInventory() {
+    void removeItem_RemovesItemFromInventoryWithQuantityGreaterThanInventory() {
         User user = new User("John", "Doe", false, "", "", "");
         BadgeItem badgeItem = new BadgeItem("Badge", 10, "\uD83C\uDF46", 3);
         user.addItem(badgeItem);
