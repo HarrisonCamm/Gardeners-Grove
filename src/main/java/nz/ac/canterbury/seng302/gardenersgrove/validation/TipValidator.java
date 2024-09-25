@@ -7,32 +7,28 @@ import org.springframework.ui.Model;
 
 public class TipValidator {
 
-//    private final static int MAX_TIP_AMOUNT;
-//    TODO another time: calculate max tip amount based on case where the tipper and tippee
-//     both have nearly the max amount of Blooms possible in database
+    private final static String TIP_AMOUNT_ERROR = "tipAmountError";
+
+    private TipValidator() {
+        // Private constructor to prevent instantiation
+    }
 
     public static boolean isPositiveTip(Integer tipAmount) {
-        if (tipAmount <= 0){
-            return false;
-        }
-        return true;
+        return tipAmount > 0;
     }
 
     public static boolean isValidTip(Integer tipAmount, User currentUser) {
-        if (tipAmount > currentUser.getBloomBalance()){
-            return false;
-        }
-        return true;
+        return tipAmount <= currentUser.getBloomBalance();
     }
 
     public static void doTipValidations(HttpSession session, Integer tipAmount, User currentUser) {
         if (!isPositiveTip(tipAmount)) {
-            session.setAttribute("tipAmountError", "Tip amount must be a positive number");
+            session.setAttribute(TIP_AMOUNT_ERROR, "Tip amount must be a positive number");
         } else if (!isValidTip(tipAmount, currentUser)) {
-            session.setAttribute("tipAmountError", "Insufficient Bloom balance");
+            session.setAttribute(TIP_AMOUNT_ERROR, "Insufficient Bloom balance");
         }
         // If there is an error, add a flag to keep the modal open
-        if (session.getAttribute("tipAmountError") != null) {
+        if (session.getAttribute(TIP_AMOUNT_ERROR) != null) {
 
             //Add tip amount to the session so we can add it to the model later in the controller
             session.setAttribute("tipInput", tipAmount);

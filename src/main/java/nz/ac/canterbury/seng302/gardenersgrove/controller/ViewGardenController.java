@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +37,12 @@ public class ViewGardenController {
     private final AlertService alertService;
 
     private final TransactionService transactionService;
+
+    private final String REDIRECT_VIEW_GARDEN = "redirect:/view-garden?gardenID=";
+
+    private final String TIP_AMOUNT_ERROR_STR = "tipAmountError";
+
+    private final String TIP_INPUT_STR = "tipInput";
 
     @Autowired
     public ViewGardenController(GardenService gardenService, PlantService plantService,
@@ -125,7 +130,7 @@ public class ViewGardenController {
         }
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
-        return "redirect:/view-garden?gardenID=" + gardenID;
+        return REDIRECT_VIEW_GARDEN + gardenID;
     }
 
     @PatchMapping("/view-garden")
@@ -155,8 +160,8 @@ public class ViewGardenController {
         doTipValidations(session, tipAmount, currentUser);
 
         // If there is an error, do not charge the user and return to the garden page
-        if (session.getAttribute("tipAmountError") != null) {
-            return "redirect:/view-garden?gardenID=" + gardenID;
+        if (session.getAttribute(TIP_AMOUNT_ERROR_STR) != null) {
+            return REDIRECT_VIEW_GARDEN + gardenID;
         }
 
         // Charge the user the tip they gave the tip has already been validated.
@@ -172,14 +177,12 @@ public class ViewGardenController {
                 currentUser.getUserId());
 
         // Set the transaction to unclaimed so that it doesn't show on the receiver side
-        // TODO call transactionService.setClaimed(...) when you claim the blooms so that the receiver can see the transaction
-        // TODO update the notes so that it says "Tipped owner.getFirstName() (claimed)"
         transactionService.setClaimed(transaction.getTransactionId(), false);
 
         //Add unclaimed blooms to the garden that was tipped
         gardenService.addUnclaimedBloomTips(gardenID, tipAmount);
 
-        return "redirect:/view-garden?gardenID=" + gardenID;
+        return REDIRECT_VIEW_GARDEN + gardenID;
     }
 
     @PostMapping("/add-tag")
@@ -197,7 +200,7 @@ public class ViewGardenController {
         WeatherResponse weatherResponse = weatherService.getCurrentWeather(garden.getLocation().getCity(), garden.getLocation().getCountry());
         model.addAttribute("weatherResponse", weatherResponse);
         if (tag.isEmpty()) {
-            return "redirect:/view-garden?gardenID=" + gardenID;
+            return REDIRECT_VIEW_GARDEN + gardenID;
         }
 
         // Check if this is a duplicate tag before moderation
@@ -250,7 +253,7 @@ public class ViewGardenController {
         }
 
         // Return user to page
-        return "redirect:/view-garden?gardenID=" + gardenID;
+        return REDIRECT_VIEW_GARDEN + gardenID;
     }
 
     @PostMapping("/dismiss-alert")
@@ -263,7 +266,7 @@ public class ViewGardenController {
 
         alertService.dismissAlert(currentUser, garden, alertType);
 
-        return "redirect:/view-garden?gardenID=" + gardenID;
+        return REDIRECT_VIEW_GARDEN + gardenID;
     }
 
     /**
@@ -292,18 +295,21 @@ public class ViewGardenController {
         return garden.get();
     }
 
-    private Model addTipAttributes(HttpSession session, Model model, Garden garden, User currentUser) {
+    private Model addTipAttributes(HttpSession session, Model model, Garden garden) {
         //new code added to get Blooms tipped
+
+        User currentUser = userService.getAuthenticatedUser();
+
         Integer totalBloomsTipped = garden.getTotalBloomTips();
         model.addAttribute("totalBloomsTippedMessage", "Total Blooms tipped: " + totalBloomsTipped);
 
-        if (session.getAttribute("tipAmountError") != null) {
-            model.addAttribute("tipAmountError", session.getAttribute("tipAmountError"));
+        if (session.getAttribute(TIP_AMOUNT_ERROR_STR) != null) {
+            model.addAttribute(TIP_AMOUNT_ERROR_STR, session.getAttribute(TIP_AMOUNT_ERROR_STR));
             model.addAttribute("showTipModal", true);
-            model.addAttribute("tipInput", session.getAttribute("tipInput"));
+            model.addAttribute(TIP_INPUT_STR, session.getAttribute(TIP_INPUT_STR));
 
-            session.removeAttribute("tipAmountError");
-            session.removeAttribute("tipInput");
+            session.removeAttribute(TIP_AMOUNT_ERROR_STR);
+            session.removeAttribute(TIP_INPUT_STR);
         }
 
         boolean isOwner = garden.getOwner().equals(currentUser);
@@ -340,7 +346,7 @@ public class ViewGardenController {
 
 
             User currentUser = userService.getAuthenticatedUser();
-            addTipAttributes(session, model, garden.get(), currentUser);
+            addTipAttributes(session, model, garden.get());
 
             // New Code Added to get weather
             String gardenCity = garden.get().getLocation().getCity();
@@ -366,7 +372,7 @@ public class ViewGardenController {
                 User gardenOwner = garden.get().getOwner();
                 if (forecastResponse == null && currentUser.equals(gardenOwner)) {
                     model.addAttribute("weatherErrorMessage", "Location not found, please update your location to see the weather");
-                } else if (forecastResponse == null && !currentUser.equals(gardenOwner)) {
+                } else if (forecastResponse == null) {
                     model.addAttribute("weatherErrorMessage", "Location not found, please contact the garden owner for more information");
                 } else {
                     // Null current weather check (for tests)
