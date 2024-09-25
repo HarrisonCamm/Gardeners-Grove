@@ -42,7 +42,11 @@ public class ViewGardenController {
 
     private static final String TIP_AMOUNT_ERROR_STR = "tipAmountError";
 
-    private final String TIP_INPUT_STR = "tipInput";
+    private static final String TIP_INPUT_STR = "tipInput";
+
+    private static final String TAG_EVALUATION_ERROR = "tagEvaluationError";
+
+    private static final String WEATHER_ERROR_MESSAGE = "weatherErrorMessage";
 
     @Autowired
     public ViewGardenController(GardenService gardenService, PlantService plantService,
@@ -83,7 +87,7 @@ public class ViewGardenController {
         boolean isOwner = garden.getOwner().equals(currentUser);
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
-        session.removeAttribute("tagEvaluationError");
+        session.removeAttribute(TAG_EVALUATION_ERROR);
 
         if (isOwner) {
             return "viewGardenDetailsTemplate";
@@ -226,7 +230,7 @@ public class ViewGardenController {
                 // Add tag to a waiting list for later evaluation
 
                 // Show evaluation error
-                session.setAttribute("tagEvaluationError", "Tag could not be evaluated at this time and will be reviewed shortly.");
+                session.setAttribute(TAG_EVALUATION_ERROR, "Tag could not be evaluated at this time and will be reviewed shortly.");
             } else  {
                 if (!isAppropriateName(possibleTerms)) {
                     model.addAttribute("profanityTagError", "Profanity or inappropriate language detected");
@@ -351,7 +355,7 @@ public class ViewGardenController {
         Optional<Garden> garden = gardenService.findGarden(gardenID);
         if (garden.isPresent()) {
             addGardenAttributes(garden.get(), gardenID, model, session);
-            addWeatherAttributes(owner, garden.get(), model, session);
+            addWeatherAttributes(owner, garden.get(), model);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " does not exist");
         }
@@ -367,9 +371,8 @@ public class ViewGardenController {
         model.addAttribute("gardenTags", gardenService.getEvaluatedTags(gardenID));
         model.addAttribute("gardenIsPublic", garden.getIsPublic());
         model.addAttribute("allTags", tagService.getTagsByEvaluated(true));
-        model.addAttribute("tagError", session.getAttribute("tagEvaluationError"));
+        model.addAttribute("tagError", session.getAttribute(TAG_EVALUATION_ERROR));
 
-        User currentUser = userService.getAuthenticatedUser();
         addTipAttributes(session, model, garden);
     }
 
@@ -378,9 +381,8 @@ public class ViewGardenController {
      * @param owner the owner of the garden
      * @param garden the garden
      * @param model the model
-     * @param session the session
      */
-    private void addWeatherAttributes(User owner, Garden garden, Model model, HttpSession session) {
+    private void addWeatherAttributes(User owner, Garden garden, Model model) {
         String gardenCity = garden.getLocation().getCity();
         String gardenCountry = garden.getLocation().getCountry();
 
@@ -391,7 +393,7 @@ public class ViewGardenController {
             Boolean isRaining = weatherService.isRaining(gardenCity, gardenCountry);
             handleWeatherAlerts(owner, garden, model, forecastResponse, currentWeather, hasRained, isRaining);
         } else {
-            model.addAttribute("weatherErrorMessage", "Location not found, please update your location to see the weather");
+            model.addAttribute(WEATHER_ERROR_MESSAGE, "Location not found, please update your location to see the weather");
         }
     }
 
@@ -415,7 +417,7 @@ public class ViewGardenController {
             String errorMessage = currentUser.equals(gardenOwner)
                     ? "Location not found, please update your location to see the weather"
                     : "Location not found, please contact the garden owner for more information";
-            model.addAttribute("weatherErrorMessage", errorMessage);
+            model.addAttribute(WEATHER_ERROR_MESSAGE, errorMessage);
         } else {
             if (currentWeather != null) {
                 forecastResponse.addWeatherResponse(currentWeather);
@@ -438,13 +440,13 @@ public class ViewGardenController {
         boolean isRainingDismissed = alertService.isAlertDismissed(owner, garden, "isRaining");
 
         if (hasRained == null) {
-            model.addAttribute("weatherErrorMessage", "Historic weather data not available, no watering reminder available");
+            model.addAttribute(WEATHER_ERROR_MESSAGE, "Historic weather data not available, no watering reminder available");
         } else if (!hasRained && !hasNotRainedDismissed) {
             model.addAttribute("hasNotRainedAlert", "There hasn’t been any rain recently, make sure to water your plants if they need it");
         }
 
         if (isRaining == null) {
-            model.addAttribute("weatherErrorMessage", "Current weather data not available, no watering reminder available");
+            model.addAttribute(WEATHER_ERROR_MESSAGE, "Current weather data not available, no watering reminder available");
         } else if (isRaining && !isRainingDismissed) {
             model.addAttribute("isRainingAlert", "Outdoor plants don’t need any water today");
         }
