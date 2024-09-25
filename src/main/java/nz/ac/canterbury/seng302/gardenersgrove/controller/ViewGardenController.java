@@ -355,7 +355,7 @@ public class ViewGardenController {
         Optional<Garden> garden = gardenService.findGarden(gardenID);
         if (garden.isPresent()) {
             addGardenAttributes(garden.get(), gardenID, model, session);
-            addWeatherAttributes(owner, garden.get(), model, session);
+            addWeatherAttributes(owner, garden.get(), model);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Garden with ID " + gardenID + " does not exist");
         }
