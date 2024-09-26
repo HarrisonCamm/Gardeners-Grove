@@ -4,7 +4,6 @@ import jakarta.persistence.EntityNotFoundException;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.GardenRepository;
-import nz.ac.canterbury.seng302.gardenersgrove.repository.TransactionRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.Assertions;
@@ -30,18 +29,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @ActiveProfiles("cucumber")
 @AutoConfigureMockMvc
-public class ViewGardenTipsTests {
+class ViewGardenTipsTests {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private GardenRepository gardenRepository;
-
-    @Autowired GardenService gardenService;
-
-    @Autowired
-    private TransactionRepository transactionRepository;
 
     @Autowired
     private TransactionService transactionService;
@@ -65,13 +59,13 @@ public class ViewGardenTipsTests {
         inaya = userRepository.save(new User("inaya","inaya",null,null,null));
         liam = userRepository.save(new User("liam","liam",null,null,null));
 
-        sarahsGarden = new Garden("sarahsGarden", null, null, sarah);
+        sarahsGarden = new Garden("sarah'sGarden", null, null, sarah);
         sarahsGarden.setIsPublic(true);
 
-        inayasGarden = new Garden("inayasGarden", null, null, sarah);
+        inayasGarden = new Garden("inaya'sGarden", null, null, sarah);
         inayasGarden.setIsPublic(true);
 
-        liamsGarden = new Garden("liamsGarden", null, null, sarah);
+        liamsGarden = new Garden("liam'sGarden", null, null, sarah);
         liamsGarden.setIsPublic(true);
 
         sarahsGarden = gardenRepository.save(sarahsGarden);
@@ -97,40 +91,95 @@ public class ViewGardenTipsTests {
 
     @Test
     @WithMockUser
-    public void claimTips_withOneTipTransaction_CorrectlyChargesAndPays() throws Exception{
+    void claimTips_withOneTipTransaction_CorrectlyChargesAndPays() throws Exception{
         Integer totalTips = 20;
         String totalTipsString = totalTips.toString();
         Integer initialBalanceSarah = sarah.getBloomBalance();
         Integer initialBalanceLiam = liam.getBloomBalance();
 
-        Mockito.when(userService.getAuthenticatedUser()).thenReturn(liam);      // 'Login' as liam
-
-
-        mockMvc.perform(post("/tip-blooms")    // Tip sarahsGarden
-                .param("gardenID", sarahsGarden.getId().toString())
-                .param("tipAmount", totalTipsString)
-                .with(csrf()));
-
+        tipGarden(sarahsGarden, liam, totalTipsString);
         Assertions.assertEquals(1, transactionService.retrieveGardenTips(sarahsGarden).size(), "There should be 1 transaction from the tip from liam");
 
-        liam = userRepository.findById(liam.getUserId()).orElseThrow(() -> new EntityNotFoundException("Receiver not found"));    //Update liam from database
-        sarah = userRepository.findById(sarah.getUserId()).orElseThrow(() -> new EntityNotFoundException("Receiver not found"));    //Update sarah from database
+        updateUsers();
         Assertions.assertEquals(initialBalanceLiam - totalTips, liam.getBloomBalance(), "Tips should now be subtracted to Liam's balance");
         Assertions.assertEquals(initialBalanceSarah, sarah.getBloomBalance(),  "Tips should not be added to Sarah's balance until she claims the tips");
 
-
-        Mockito.when(userService.getAuthenticatedUser()).thenReturn(sarah);      // 'Login' as sarah
-
-        mockMvc.perform(post("/claim-tips")
-                .param("gardenID", sarahsGarden.getId().toString())
-                .with(csrf()));
-
+        claimTips(sarahsGarden, sarah);
         Assertions.assertEquals(0, transactionService.retrieveGardenTips(sarahsGarden).size(), "All tip transactions should be consumed by claim-tips post");
 
-        sarah = userRepository.findById(sarah.getUserId()).orElseThrow(() -> new EntityNotFoundException("Receiver not found"));    //Update sarah from database
-        liam = userRepository.findById(liam.getUserId()).orElseThrow(() -> new EntityNotFoundException("Receiver not found"));    //Update liam from database
-
+        updateUsers();
         Assertions.assertEquals(initialBalanceSarah + totalTips, sarah.getBloomBalance(), "Tips should now be added to Sarah's balance");
         Assertions.assertEquals(initialBalanceLiam - totalTips, liam.getBloomBalance(), "Tips should be subtracted to Liam's balance only once");
+    }
+
+    @Test
+    @WithMockUser
+    void claimTips_withTwoTipTransactions_CorrectlyChargesAndPays() throws Exception{
+        Integer totalTips = 40;
+        Integer individualTips = 20;
+        String individualTipsString = individualTips.toString();
+        Integer initialBalanceSarah = sarah.getBloomBalance();
+        Integer initialBalanceLiam = liam.getBloomBalance();
+        Integer initialBalanceInaya = inaya.getBloomBalance();
+
+        tipGarden(sarahsGarden, liam, individualTipsString);
+        Assertions.assertEquals(1, transactionService.retrieveGardenTips(sarahsGarden).size(), "There should be 1 transaction from the tip from liam");
+
+        tipGarden(sarahsGarden, inaya, individualTipsString);
+        Assertions.assertEquals(2, transactionService.retrieveGardenTips(sarahsGarden).size(), "There should be 2 transactions now from liam and Inaya");
+
+        claimTips(sarahsGarden, sarah);
+        Assertions.assertEquals(0, transactionService.retrieveGardenTips(sarahsGarden).size(), "All tip transactions should be consumed by claim-tips post");
+
+        updateUsers();
+        Assertions.assertEquals(initialBalanceSarah + totalTips, sarah.getBloomBalance(), "Tips should now be added to Sarah's balance");
+        Assertions.assertEquals(initialBalanceLiam - individualTips, liam.getBloomBalance(), "Tips should be subtracted to Liam's balance only once");
+        Assertions.assertEquals(initialBalanceInaya - individualTips, inaya.getBloomBalance(), "Tips should be subtracted to Liam's balance only once");
+    }
+
+    @Test
+    @WithMockUser
+    void claimTips_withTwoTippedGardens_TipIsOnlyAddedToTippedGarden() throws Exception {
+        Integer individualTips = 20;
+        String individualTipsString = individualTips.toString();
+        Integer initialBalanceSarah = sarah.getBloomBalance();
+
+        tipGarden(sarahsGarden, liam, individualTipsString);
+        Assertions.assertEquals(1, transactionService.retrieveGardenTips(sarahsGarden).size(), "There should be 1 transaction from the tip from liam");
+
+        tipGarden(liamsGarden, inaya, individualTipsString);
+        Assertions.assertEquals(1, transactionService.retrieveGardenTips(sarahsGarden).size(), "The tip to another garden shouldn't be added to sarah");
+
+        claimTips(sarahsGarden, sarah);
+        Assertions.assertEquals(0, transactionService.retrieveGardenTips(sarahsGarden).size(), "All tip transactions should be consumed by claim-tips post");
+
+        updateUsers();
+        Assertions.assertEquals(initialBalanceSarah + individualTips, sarah.getBloomBalance(), "Only one tip should be added to Sarah's balance");
+
+        claimTips(liamsGarden, liam);
+        Assertions.assertEquals(0, transactionService.retrieveGardenTips(sarahsGarden).size(), "All tip transactions should be consumed by claim-tips post");
+
+        updateUsers();
+        Assertions.assertEquals(initialBalanceSarah + individualTips, sarah.getBloomBalance(), "Only one tip should be added to Liam's balance");
+    }
+
+    private void updateUsers() {
+        sarah = userRepository.findById(sarah.getUserId()).orElseThrow(() -> new EntityNotFoundException("Receiver not found"));    //Update sarah from database
+        liam = userRepository.findById(liam.getUserId()).orElseThrow(() -> new EntityNotFoundException("Receiver not found"));    //Update liam from database
+        inaya = userRepository.findById(inaya.getUserId()).orElseThrow(() -> new EntityNotFoundException("Receiver not found"));    //Update liam from database
+    }
+
+    private void tipGarden(Garden tippedGarden, User tippingUser, String individualTipsString) throws Exception{
+        Mockito.when(userService.getAuthenticatedUser()).thenReturn(tippingUser);      // 'Login' as tippingUser
+
+        mockMvc.perform(post("/tip-blooms")    // Tip tippedGarden
+                .param("gardenID", tippedGarden.getId().toString())
+                .param("tipAmount", individualTipsString)
+                .with(csrf()));
+    }
+
+    private void claimTips(Garden tippedGarden, User tipClaimingUser) throws Exception {
+        Mockito.when(userService.getAuthenticatedUser()).thenReturn(tipClaimingUser);      // 'Login' as tipClaimingUser
+        mockMvc.perform(post("/claim-tips").param("gardenID", tippedGarden.getId().toString()).with(csrf()));
     }
 }
