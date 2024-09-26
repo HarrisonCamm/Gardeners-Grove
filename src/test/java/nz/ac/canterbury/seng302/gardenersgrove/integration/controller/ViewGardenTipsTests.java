@@ -50,6 +50,7 @@ class ViewGardenTipsTests {
     private User inaya;
     private User liam;
     private Garden sarahsGarden;
+    private Garden sarahs2ndGarden;
     private Garden inayasGarden;
     private Garden liamsGarden;
 
@@ -62,6 +63,9 @@ class ViewGardenTipsTests {
         sarahsGarden = new Garden("sarah'sGarden", null, null, sarah);
         sarahsGarden.setIsPublic(true);
 
+        sarahs2ndGarden = new Garden("sarah'sGarden", null, null, sarah);
+        sarahs2ndGarden.setIsPublic(true);
+
         inayasGarden = new Garden("inaya'sGarden", null, null, sarah);
         inayasGarden.setIsPublic(true);
 
@@ -69,6 +73,7 @@ class ViewGardenTipsTests {
         liamsGarden.setIsPublic(true);
 
         sarahsGarden = gardenRepository.save(sarahsGarden);
+        sarahs2ndGarden = gardenRepository.save(sarahs2ndGarden);
         inayasGarden = gardenRepository.save(inayasGarden);
         liamsGarden = gardenRepository.save(liamsGarden);
 
@@ -143,6 +148,7 @@ class ViewGardenTipsTests {
         Integer individualTips = 20;
         String individualTipsString = individualTips.toString();
         Integer initialBalanceSarah = sarah.getBloomBalance();
+        Integer initialBalanceLiam = liam.getBloomBalance();
 
         tipGarden(sarahsGarden, liam, individualTipsString);
         Assertions.assertEquals(1, transactionService.retrieveGardenTips(sarahsGarden).size(), "There should be 1 transaction from the tip from liam");
@@ -160,13 +166,35 @@ class ViewGardenTipsTests {
         Assertions.assertEquals(0, transactionService.retrieveGardenTips(sarahsGarden).size(), "All tip transactions should be consumed by claim-tips post");
 
         updateUsers();
-        Assertions.assertEquals(initialBalanceSarah + individualTips, sarah.getBloomBalance(), "Only one tip should be added to Liam's balance");
+        Assertions.assertEquals(initialBalanceLiam + individualTips - individualTips, liam.getBloomBalance(), "Only one tip should be added to Liam's balance");
+    }
+
+    @Test
+    @WithMockUser
+    void claimTipsFromOneGarden_TwoSeparateGardensHaveBeenTipped_TipIsOnlyPayedFromOneGarden() throws Exception {
+        Integer individualTips = 20;
+        String individualTipsString = individualTips.toString();
+        Integer initialBalanceSarah = sarah.getBloomBalance();
+
+        tipGarden(sarahsGarden, liam, individualTipsString);
+        Assertions.assertEquals(1, transactionService.retrieveGardenTips(sarahsGarden).size(), "There should be 1 transaction on sarah'sGarden from the tip from liam");
+
+        tipGarden(sarahs2ndGarden, liam, individualTipsString);
+        Assertions.assertEquals(1, transactionService.retrieveGardenTips(sarahs2ndGarden).size(), "There should be 1 transaction on sarahs2ndGarden from the tip from liam");
+        Assertions.assertEquals(1, transactionService.retrieveGardenTips(sarahsGarden).size(), "There should still be only 1 transaction on sarahsGarden");
+
+        claimTips(sarahsGarden, sarah);
+        Assertions.assertEquals(0, transactionService.retrieveGardenTips(sarahsGarden).size(), "All tip transactions should be consumed by claim-tips post");
+        Assertions.assertEquals(1, transactionService.retrieveGardenTips(sarahs2ndGarden).size(), "Tip shouldn't be claimed from sarahs2ndGarden");
+
+        updateUsers();
+        Assertions.assertEquals(initialBalanceSarah + individualTips, sarah.getBloomBalance(), "Only one tip should be added to Sarah's balance");
     }
 
     private void updateUsers() {
         sarah = userRepository.findById(sarah.getUserId()).orElseThrow(() -> new EntityNotFoundException("Receiver not found"));    //Update sarah from database
         liam = userRepository.findById(liam.getUserId()).orElseThrow(() -> new EntityNotFoundException("Receiver not found"));    //Update liam from database
-        inaya = userRepository.findById(inaya.getUserId()).orElseThrow(() -> new EntityNotFoundException("Receiver not found"));    //Update liam from database
+        inaya = userRepository.findById(inaya.getUserId()).orElseThrow(() -> new EntityNotFoundException("Receiver not found"));    //Update inaya from database
     }
 
     private void tipGarden(Garden tippedGarden, User tippingUser, String individualTipsString) throws Exception{
