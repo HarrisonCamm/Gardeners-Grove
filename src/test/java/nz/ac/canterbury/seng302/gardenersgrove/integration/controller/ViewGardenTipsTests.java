@@ -66,10 +66,10 @@ class ViewGardenTipsTests {
         sarahs2ndGarden = new Garden("sarah'sGarden", null, null, sarah);
         sarahs2ndGarden.setIsPublic(true);
 
-        inayasGarden = new Garden("inaya'sGarden", null, null, sarah);
+        inayasGarden = new Garden("inaya'sGarden", null, null, inaya);
         inayasGarden.setIsPublic(true);
 
-        liamsGarden = new Garden("liam'sGarden", null, null, sarah);
+        liamsGarden = new Garden("liam'sGarden", null, null, liam);
         liamsGarden.setIsPublic(true);
 
         sarahsGarden = gardenRepository.save(sarahsGarden);
@@ -163,7 +163,7 @@ class ViewGardenTipsTests {
         Assertions.assertEquals(initialBalanceSarah + individualTips, sarah.getBloomBalance(), "Only one tip should be added to Sarah's balance");
 
         claimTips(liamsGarden, liam);
-        Assertions.assertEquals(0, transactionService.retrieveGardenTips(sarahsGarden).size(), "All tip transactions should be consumed by claim-tips post");
+        Assertions.assertEquals(0, transactionService.retrieveGardenTips(liamsGarden).size(), "All tip transactions should be consumed by claim-tips post");
 
         updateUsers();
         Assertions.assertEquals(initialBalanceLiam + individualTips - individualTips, liam.getBloomBalance(), "Only one tip should be added to Liam's balance");
