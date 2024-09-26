@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TipValidatorTests {
+class TipValidatorTests {
 
 
     @ParameterizedTest
@@ -25,7 +25,7 @@ public class TipValidatorTests {
             "0, 1111111, false",
             "-1, 0, false",
     })
-    public void testDoTipValidations(Integer tipAmount, Integer userBalance, boolean expectedResult) {
+    void testDoTipValidations(Integer tipAmount, Integer userBalance, boolean expectedResult) {
         User user = new User();
         user.setBloomBalance(userBalance);
         HttpSession session = new MockHttpSession();

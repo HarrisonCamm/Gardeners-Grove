@@ -176,7 +176,7 @@ public class ViewGardenController {
 
         // Add a new transaction for the tip
         Transaction transaction = transactionService.addTransaction(tipAmount,
-                "Tipped " +garden.getName()+ " (unclaimed)",
+                "Tipped " +garden.getName()+ " (unclaimed by " + owner.getFirstName() + ")",
                 "Garden Tip",
                 owner.getUserId(),
                 currentUser.getUserId());
