@@ -170,8 +170,8 @@ public class TipPublicGardenSteps {
     }
 
     // AC5
-    @When("I enter an valid tip that is my entire balance")
-    public void iEnterAnValidTipThatIsMyEntireBalance() {
+    @When("I enter a valid tip that is my entire balance")
+    public void i_enter_a_valid_tip_that_is_my_entire_balance() {
         this.tipAmount = userService.getAuthenticatedUser().getBloomBalance();
     }
 

@@ -44,7 +44,7 @@ Feature: U6002 Tipping public garden
   Scenario: AC5 - Tip success (edge case)
     Given I am logged in with email "liam@email.com" and password "Password1!"
     And I am on the garden details page for a garden I do not own
-    When I enter an valid tip that is my entire balance
+    When I enter a valid tip that is my entire balance
     And I confirm the transaction by clicking Confirm
     Then the Blooms are deducted from my account
     And the garden's tip count is updated
