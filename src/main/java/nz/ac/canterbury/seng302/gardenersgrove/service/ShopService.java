@@ -98,18 +98,43 @@ public class ShopService {
 
         // Check if shop already has items to avoid duplicates
         if (shop.getAvailableItems().isEmpty()) {
-            // Create predefined badges
-            BadgeItem badge1 = new BadgeItem("Happy", 100, "😀", 1);
-            BadgeItem badge2 = new BadgeItem("Eggplant", 50, "\uD83C\uDF46", 1);
-            BadgeItem badge3 = new BadgeItem("Love", 25, "\uD83E\uDE77", 1);
-            BadgeItem badge4 = new BadgeItem("Diamond", 200, "\uD83D\uDC8E", 1);
+
+
+            // Create predefined profile pictures
+            Path timtamImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/timtam.png").getURI());
+            byte[] timtamImageBytes = Files.readAllBytes(timtamImagePath);
+            Image timtamImage = new Image(timtamImageBytes, "png", false);
+
+
+            Path vegimiteImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/vegimite.png").getURI());
+            byte[] vegimiteImageBytes = Files.readAllBytes(vegimiteImagePath);
+            Image vegimiteImage = new Image(vegimiteImageBytes, "png", false);
+
+
+            Path neoFabianImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/neo_fabian.png").getURI());
+            byte[] neoFabianImageBytes = Files.readAllBytes(neoFabianImagePath);
+            Image neoFabianImage = new Image(neoFabianImageBytes, "png", false);
+
+
+            BadgeItem badge1 = new BadgeItem("Tim Tam", 100, timtamImage, 1);
+            BadgeItem badge2 = new BadgeItem("Vegimite", 50, vegimiteImage, 1);
+            BadgeItem badge3 = new BadgeItem("Love", 25, neoFabianImage, 1);
+
+
+
+//            // Create predefined badges
+//            BadgeItem badge1 = new BadgeItem("Happy", 100, "😀", 1);
+//            BadgeItem badge2 = new BadgeItem("Eggplant", 50, "\uD83C\uDF46", 1);
+//            BadgeItem badge3 = new BadgeItem("Love", 25, "\uD83E\uDE77", 1);
+//            BadgeItem badge4 = new BadgeItem("Diamond", 200, "\uD83D\uDC8E", 1);
+
 
 
             // Add items to the shop
             addItemToShop(badge1);
             addItemToShop(badge2);
             addItemToShop(badge3);
-            addItemToShop(badge4);
+
 
             // Create predefined profile pictures
             Path catFallImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/cat-fall.gif").getURI());

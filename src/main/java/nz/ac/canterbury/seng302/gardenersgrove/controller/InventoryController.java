@@ -1,7 +1,10 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
@@ -11,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class InventoryController {
@@ -23,12 +28,57 @@ public class InventoryController {
 
     private final ItemService itemService;
     private final UserService userService;
+    private final ImageService imageService;
 
     @Autowired
-    public InventoryController(ItemService itemService, UserService userService) {
+    public InventoryController(ItemService itemService, UserService userService, ImageService imageService) {
         this.itemService = itemService;
         this.userService = userService;
+        this.imageService = imageService;
     }
+
+//    @GetMapping("/inventory")
+//    public String getTemplate(Model model) {
+//        logger.info("GET /inventory");
+//        RedirectService.addEndpoint("/inventory");
+//
+//        // Get the current user
+//        User currentUser = userService.getAuthenticatedUser();
+//        List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
+//
+//        // TODO - Simulating the adding of items, this will be done using service and repo layers in another task
+//        // uncomment these to view how it would look, commented out for tests to work
+////        badgeItems.add(new String[]{"1x", "vegemite.png", "Vegemite"});
+////        badgeItems.add(new String[]{"1x", "timtam.png", "Tim Tam"});
+////        badgeItems.add(new String[]{"1x", "neo_fabian.png", "Neo Fabian"});
+//
+//        //Create and populate a list of items for the view to render
+////        List<String[]> gifItems = new ArrayList<>();
+//        List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
+//
+//        // TODO - Simulating the adding of items, this will be done using service and repo layers in another task
+////        gifItems.add(new String[]{"1x", "fabian.gif", "Fabian Intensifies"});
+////        gifItems.add(new String[]{"1x", "scrum_master_harrison.gif", "Scrum Master Harrison"});
+////        gifItems.add(new String[]{"1x", "stick_man.gif", "Stick Man"});
+//
+//        if (badgeItems.isEmpty()) {
+//            currentUser.addItem(itemService.getItemByName("Happy"));
+//            currentUser.addItem(itemService.getItemByName("Eggplant"));
+//            userService.addUser(currentUser);
+//        }
+//        if (imageItems.isEmpty()) {
+//            currentUser.addItem(itemService.getItemByName("Cat Fall"));
+//            currentUser.addItem(itemService.getItemByName("Cat Typing"));
+//            currentUser.addItem(itemService.getItemByName("Fabian Intensifies"));
+//            userService.addUser(currentUser);
+//        }
+//
+//        model.addAttribute("badgeItems", badgeItems);
+//        model.addAttribute("imageItems", imageItems);
+//
+//        return "inventoryTemplate";
+//    }
+
 
     @GetMapping("/inventory")
     public String getTemplate(Model model) {
@@ -38,39 +88,35 @@ public class InventoryController {
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
         List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
-
-        // TODO - Simulating the adding of items, this will be done using service and repo layers in another task
-        // uncomment these to view how it would look, commented out for tests to work
-//        badgeItems.add(new String[]{"1x", "vegemite.png", "Vegemite"});
-//        badgeItems.add(new String[]{"1x", "timtam.png", "Tim Tam"});
-//        badgeItems.add(new String[]{"1x", "neo_fabian.png", "Neo Fabian"});
-
-        //Create and populate a list of items for the view to render
-//        List<String[]> gifItems = new ArrayList<>();
         List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
 
-        // TODO - Simulating the adding of items, this will be done using service and repo layers in another task
-//        gifItems.add(new String[]{"1x", "fabian.gif", "Fabian Intensifies"});
-//        gifItems.add(new String[]{"1x", "scrum_master_harrison.gif", "Scrum Master Harrison"});
-//        gifItems.add(new String[]{"1x", "stick_man.gif", "Stick Man"});
-
+        // DUMMY DATA
         if (badgeItems.isEmpty()) {
             currentUser.addItem(itemService.getItemByName("Happy"));
             currentUser.addItem(itemService.getItemByName("Eggplant"));
-            userService.addUser(currentUser);
+            userService.saveUser(currentUser);
         }
         if (imageItems.isEmpty()) {
             currentUser.addItem(itemService.getItemByName("Cat Fall"));
             currentUser.addItem(itemService.getItemByName("Cat Typing"));
             currentUser.addItem(itemService.getItemByName("Fabian Intensifies"));
-            userService.addUser(currentUser);
+            userService.saveUser(currentUser);
         }
 
         model.addAttribute("badgeItems", badgeItems);
         model.addAttribute("imageItems", imageItems);
+        model.addAttribute("user", currentUser);
 
         return "inventoryTemplate";
     }
+
+
+
+
+
+
+
+
 
 //    @PostMapping("/inventory/updateBadgeURL")
 //    public String updateUserBadge(@RequestParam Long userId, @RequestParam String badgeURL) {
@@ -90,6 +136,47 @@ public class InventoryController {
     }
 
 
+    @PostMapping("/inventory/use/{itemId}")
+    public String useImageItem(@PathVariable Long itemId) {
+        logger.info("POST /inventory/use/{}", itemId);
+
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+
+        try {
+            // Gets item, then casts to ImageItem
+            ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
+
+            // Get the image id of imageItem
+            Long itemImageId = imageItem.getImage().getId();
+
+            // Get image from Image Table
+            Optional<Image> image = imageService.findImage(itemImageId);
+
+            // Check if the current user's image does not equal the item image ID
+            if (!currentUser.getImage().getId().equals(itemImageId)) {
+                // Store the current profile image ID for the ability for user to revert back
+                currentUser.setPreviousImageId(currentUser.getImage().getId());
+            }
+
+            // Update Users Image to ItemsImage
+            image.ifPresent(currentUser::setImage);
+
+            // Persis change to user
+            userService.saveUser(currentUser);
+
+            logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+        } catch (IllegalArgumentException e) {
+            logger.error("Error applying item: {}", e.getMessage());
+        }
+
+        return "redirect:/inventory";
+    }
+
+
+
+
+
 
     @PostMapping("/inventory/updateProfile")
     public String updateUserProfile(@RequestParam Long userId, @RequestParam String imageURL) {
@@ -99,8 +186,5 @@ public class InventoryController {
         userService.saveUser(user);
         return "redirect:/inventory";
     }
-
-
-
 
 }

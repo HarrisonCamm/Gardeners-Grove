@@ -66,6 +66,9 @@ public class User {
     @JoinColumn
     private Image image;
 
+    @JoinColumn(name = "previous_image_id")
+    private Long previousImageId;
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Item> inventory = new ArrayList<>();
 
@@ -224,6 +227,17 @@ public class User {
         return password;
     }
 
+
+    public Long getPreviousImageId() {
+        return previousImageId;
+    }
+
+    public void setPreviousImageId(Long previousImageId) {
+        this.previousImageId = previousImageId;
+    }
+
+
+
     public void setImage(Image image) {
         this.image = image;
     }
@@ -313,6 +327,11 @@ public class User {
     public void resetLastFreeSpinUsed() {
         lastFreeSpinUsed = null;
     }
+
+
+
+
+
 
     /**
      * Adds a non-friend contact

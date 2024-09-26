@@ -1,31 +1,27 @@
 package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 
-// Badge class implementing Purchasable and Equipable
 @Entity
 @DiscriminatorValue("badge")
 public class BadgeItem extends Item {
 
-    @Column(nullable = false)
-    private String emoji;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn
+    private Image icon;
 
     protected BadgeItem() {
     }
 
-    public BadgeItem(String name, Integer price, String emoji, Integer quantity) {
+    public BadgeItem(String name, Integer price, Image icon, Integer quantity) {
         super(name, price, quantity);
-        this.emoji = emoji;
+        this.icon = icon;
     }
 
-    public String getEmoji() {
-        return emoji;
+    public void setIcon() {
+        this.icon = icon;
     }
-
-    public void setEmoji(String emoji) {
-        this.emoji = emoji;
+    public Image getIcon() {
+        return this.icon;
     }
-
 }

@@ -13,16 +13,15 @@
                 <div class="col content card ms-2 me-2">
                     <div class="mb-5">
                         <!-- Example profile picture -->
-<!--                        <img class="image"-->
-<!--                             th:data-user-id="${user.userId}"-->
-<!--                             th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="">-->
+                        <img class="image"
+                             th:data-user-id="${user.userId}"
+                             th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="">
                         <img type="gif" class="image mt-5" th:src="${user.imageURL}" alt="">
 <!--                        <img type="png" class="image mt-3" th:src="@{'images/' + ${user.badgeURL}}">-->
                         <div class="user-info d-flex align-items-center mt-3">
                             <h3 class="user-name mt-3" th:text="${user.firstName} + ' ' + ${user.lastName}"></h3>
                             <!-- Badge image to the right of the user name -->
                             <img type="gif" class="badge-image ms-2" th:src="${user.badgeURL}"/>
-    <!--                        <p class="user-description mt-2" th:text="${user.description}">A brief description or bio of the user</p>-->
                         </div>
                     </div>
                 </div>
@@ -49,7 +48,8 @@
                     </div>
                 </div>
             </div>
-<!--                NOTE: item indexes are [quantity, image, name] and are subject to change-->
+
+
             <div class="row mt-5">
                 <h3 class="mb-3 mt-5">Profile Pictures</h3>
                 <div class="col content card ms-2 me-2" th:each="item: ${imageItems}">
@@ -58,14 +58,10 @@
                         <p class="item-quantity" th:text="${item.quantity} + 'x'"></p>
                     </div>
                     <div class="mb-5">
-                        <img type="gif" class="image mt-5" th:src="@{'images/' + ${item[1]}}">
                         <img type="gif" class="image mt-5" th:src="@{/get-image?shop=true(imageID=${item.image.id})}" alt="Item Image">
                         <!-- Form to use this image -->
-                        <form th:action="@{/inventory/updateProfile}" method="post">
-                            <input type="hidden" name="userId" th:value="${user.userId}" />
-                            <input type="hidden" name="imageURL" th:value="'images/' + ${item[1]}" />
-                            <button class="item-use-button button" type="submit">Use</button>
-
+                        <form th:action="@{'/inventory/use/' + ${item.id}}" method="post" style="display:inline;">
+                            <button type="submit" class="item-use-button button">Use</button>
                         </form>
                     </div>
                 </div>
