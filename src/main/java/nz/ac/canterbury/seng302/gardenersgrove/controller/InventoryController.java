@@ -49,13 +49,13 @@ public class InventoryController {
         if (badgeItems.isEmpty()) {
             currentUser.addItem(itemService.getItemByName("Happy"));
             currentUser.addItem(itemService.getItemByName("Eggplant"));
-            userService.addUser(currentUser);
+            userService.saveUser(currentUser);
         }
         if (imageItems.isEmpty()) {
             currentUser.addItem(itemService.getItemByName("Cat Fall"));
             currentUser.addItem(itemService.getItemByName("Cat Typing"));
             currentUser.addItem(itemService.getItemByName("Fabian Intensifies"));
-            userService.addUser(currentUser);
+            userService.saveUser(currentUser);
         }
 
         model.addAttribute("badgeItems", badgeItems);
@@ -75,11 +75,17 @@ public class InventoryController {
             // Gets item, then casts to ImageItem
             ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
 
-            // Get the image of imageItem
+            // Get the image id of imageItem
             Long itemImageId = imageItem.getImage().getId();
 
             // Get image from Image Table
             Optional<Image> image = imageService.findImage(itemImageId);
+
+            // Check if the current user's image does not equal the item image ID
+            if (!currentUser.getImage().getId().equals(itemImageId)) {
+                // Store the current profile image ID for the ability for user to revert back
+                currentUser.setPreviousImageId(currentUser.getImage().getId());
+            }
 
             // Update Users Image to ItemsImage
             image.ifPresent(currentUser::setImage);
