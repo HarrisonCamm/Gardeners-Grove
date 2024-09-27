@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -134,8 +133,8 @@ public class InventoryController {
     }
 
 
-    @PostMapping("/inventory/use/{itemId}")
-    public String useImageItem(@PathVariable Long itemId) {
+    @PostMapping("/inventory/badge/use/{itemId}")
+    public String useBadgeItem(@PathVariable Long itemId) {
         logger.info("POST /inventory/use/{}", itemId);
 
         // Get the current user
@@ -144,9 +143,6 @@ public class InventoryController {
         try {
             // Gets item, then casts to ImageItem
             BadgeItem badgeItem = (BadgeItem) itemService.getItemById(itemId);
-
-            // Get the image id of imageItem
-            Long itemImageId = badgeItem.getIcon().getId();
 
             // Update Users Badge
             currentUser.setAppliedBadge(badgeItem);
@@ -161,5 +157,44 @@ public class InventoryController {
 
         return "redirect:/inventory";
     }
+
+    @PostMapping("/inventory/gif/use/{itemId}")
+    public String useGifItem(@PathVariable Long itemId) {
+        logger.info("POST /inventory/use/{}", itemId);
+
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+
+        try {
+            // Gets item, then casts to ImageItem
+            ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
+
+            // Get the image id of imageItem
+            Long itemImageId = imageItem.getImage().getId();
+
+            // Get image from Image Table
+            Optional<Image> image = imageService.findImage(itemImageId);
+
+            // Check if the current user's image does not equal the item image ID
+            if (!currentUser.getImage().getId().equals(itemImageId)) {
+                // Store the current profile image ID for the ability for user to revert back
+                currentUser.setPreviousImageId(currentUser.getImage().getId());
+            }
+
+            // Update Users Image to ItemsImage
+            image.ifPresent(currentUser::setImage);
+
+            // Persis change to user
+            userService.saveUser(currentUser);
+
+            logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+        } catch (IllegalArgumentException e) {
+            logger.error("Error applying item: {}", e.getMessage());
+        }
+
+        return "redirect:/inventory";
+    }
+
+
 
 }

@@ -37,7 +37,7 @@
                     </div>
                     <div class="mb-5" >
                         <img type="gif" class="image mt-5" th:src="@{/get-image?shop=true(imageID=${item.icon.id})}">
-                        <form th:action="@{'/inventory/use/' + ${item.id}}" method="post">                            <input type="hidden" name="userId" th:value="${user.userId}">
+                        <form th:action="@{'/inventory/badge/use/' + ${item.id}}" method="post">                            <input type="hidden" name="userId" th:value="${user.userId}">
                             <input type="hidden" name="badgeURL" th:src="@{/get-image?shop=true(imageID=${item.icon.id})}">
                             <button class="item-use-button button" type="submit">Use</button>
                         </form>
@@ -54,7 +54,7 @@
                     <div class="mb-5">
                         <img type="gif" class="image mt-5" th:src="@{/get-image?shop=true(imageID=${item.image.id})}" alt="Item Image">
                         <!-- Form to use this image -->
-                        <form th:action="@{'/inventory/use/' + ${item.id}}" method="post" style="display:inline;">
+                        <form th:action="@{'/inventory/gif/use/' + ${item.id}}" method="post" style="display:inline;">
                             <button type="submit" class="item-use-button button">Use</button>
                         </form>
                     </div>

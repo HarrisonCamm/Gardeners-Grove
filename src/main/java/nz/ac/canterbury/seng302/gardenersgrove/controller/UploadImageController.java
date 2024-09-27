@@ -144,7 +144,7 @@ public class UploadImageController {
             }
             model.addAttribute("id", imageID);
             model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
-        } else if (!viewUser && !editUserProfile && !viewShop) {
+        } else if (!viewUser && !editUserProfile && !viewShop && !userBadge) {
             Optional<Plant> foundPlant = plantService.findPlant(plantID);
             if (foundPlant.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant not found");
