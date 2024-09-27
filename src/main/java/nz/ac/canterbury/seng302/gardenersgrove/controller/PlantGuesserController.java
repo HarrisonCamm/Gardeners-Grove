@@ -38,10 +38,12 @@ public class PlantGuesserController {
     private static final int NUM_OPTIONS = 4;
     private static final int NUM_ROUNDS = 10;
     private static final int BLOOM_BONUS = 100;
-    private static final int MAX_TRIES = 25;
+    private static final int MAX_TRIES = 5;
     private static final String PAGE_URL = "/plant-guesser";
     private static final String SESSION_SCORE = "plantGuesserScore";
     private static final String SESSION_ROUND = "plantGuesserRound";
+    private static final String SESSION_TRY = "plantGuesserTry";
+    private static final String CORRECT_OPTION = "correctOption";
 
     @Autowired
     public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, TransactionService transactionService, UserService userService, UserRepository userRepository, Random random) {
@@ -61,6 +63,9 @@ public class PlantGuesserController {
 
         session.setAttribute(SESSION_SCORE, 0);
         session.setAttribute(SESSION_ROUND, 0);
+        session.setAttribute(SESSION_TRY, 0);
+        List<PlantData> plantList = plantGuesserService.getPlantRound();
+        session.setAttribute("plantList", plantList);
     }
     /**
      * Gets the thymeleaf page showing the plant guesser page
@@ -73,12 +78,12 @@ public class PlantGuesserController {
             resetRound(session);
         }
         RedirectService.addEndpoint(PAGE_URL);
-        int roundNumber = (int) session.getAttribute(SESSION_ROUND);
+        int tryNumber = (int) session.getAttribute(SESSION_TRY);
+        List<PlantData> plantList = (List<PlantData>) session.getAttribute("plantList");
 
         try {
             session.removeAttribute("guesserGameError");
-            PlantData plant = plantGuesserService.getPlant(roundNumber);
-            playGameRound(model, plant, session);
+            playGameRound(model, plantList, tryNumber, session);
             return "plantGuesserTemplate";
         } catch (Exception e){
             // if there is an error in creating the game, the app will redirect back to the games page and display an error message
@@ -97,7 +102,6 @@ public class PlantGuesserController {
                                @RequestParam("quizOption4") String quizOption4,
                                @RequestParam("plantImage") String plantImage,
                                @RequestParam("imageCredit") String imageCredit,
-                               @RequestParam("correctOption") int correctOption,
                                @RequestParam("score") int score,
                                HttpSession session,
                               Model model) {
@@ -106,6 +110,7 @@ public class PlantGuesserController {
         User currentUser = userService.getAuthenticatedUser();
         int currentBloomBalance = currentUser.getBloomBalance();
         int roundNumber = (int) session.getAttribute(SESSION_ROUND) + 1;
+        int correctOption = (int) session.getAttribute(CORRECT_OPTION);
 
         String[] quizOptions = {quizOption1, quizOption2, quizOption3, quizOption4};
         List<String[]> splitQuizOptions = new ArrayList<>();
@@ -121,7 +126,7 @@ public class PlantGuesserController {
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit);
         model.addAttribute("roundNumber", roundNumber);
-        model.addAttribute("correctOption", correctOption);
+        model.addAttribute(CORRECT_OPTION, correctOption);
         model.addAttribute("selectedOption", selectedOption);
         model.addAttribute("bloomBonus", BLOOM_BONUS);
 
@@ -157,7 +162,8 @@ public class PlantGuesserController {
         return "plantGuesserTemplate";
     }
 
-    public void playGameRound(Model model, PlantData plant, HttpSession session) {
+    public void playGameRound(Model model, List<PlantData> plantList, int tryNumber, HttpSession session) {
+        PlantData plant = null;
         String plantName = null;
         String plantScientificName = null;
         String plantImage = null;
@@ -171,7 +177,8 @@ public class PlantGuesserController {
         int score = (int) session.getAttribute(SESSION_SCORE);
         int roundNumber = (int) session.getAttribute(SESSION_ROUND);
 
-        while (listSize != NUM_OPTIONS && attempt < MAX_TRIES) {
+        while (listSize != NUM_OPTIONS && attempt < MAX_TRIES && !Objects.equals(imageCredit, "bs.plantnet.org")) {
+            plant = plantList.get(tryNumber);
             plantName = plant.common_name;
             plantScientificName = plant.scientific_name;
             plantImage = plant.image_url;
@@ -187,8 +194,10 @@ public class PlantGuesserController {
             plantCommonAndScientificName = plantName + ",\n(" + plantScientificName + ")";
             quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
             listSize = quizOptions.size();
+            tryNumber ++;
             attempt++;
         }
+        session.setAttribute(SESSION_TRY, tryNumber);
 
         // to throw list size error in get mapping, since otherwise the error won't be caught until the thymeleaf parsing
         if (quizOptions.size() != NUM_OPTIONS || plantName==null || plantScientificName==null
@@ -220,7 +229,8 @@ public class PlantGuesserController {
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit + " via Trefle");
         model.addAttribute("roundNumber", roundNumber + 1);
-        model.addAttribute("correctOption", correctOption);
+        session.setAttribute(CORRECT_OPTION, correctOption);
+        model.addAttribute(CORRECT_OPTION, "");
         model.addAttribute("selectedOption", -1);
         model.addAttribute("answerSubmitted", false);
         model.addAttribute("gameOver", false);
