@@ -112,4 +112,19 @@ public class GardenService {
         return gardenRepository.findPublicGardensBySearchAndTags(search, PageRequest.of(page, GARDENS_PER_PAGE), tagIds);
     }
 
+    /**
+     * Updates and saves a garden with a new unclaimed bloom tips amount
+     * @param gardenID the garden to update
+     * @param tipAmount the tip amount
+     */
+    public void addUnclaimedBloomTips(Long gardenID, Integer tipAmount) {
+        Garden garden = gardenRepository.findById(gardenID).get();
+
+        // Add to the total number of blooms tipped
+        garden.setTotalBloomTips(garden.getTotalBloomTips() + tipAmount);
+
+        // Set the new amount of unclaimed tips by adding the old amount to the new amount
+        garden.setUnclaimedBlooms(garden.getUnclaimedBlooms() + tipAmount);
+        gardenRepository.save(garden);
+    }
 }
