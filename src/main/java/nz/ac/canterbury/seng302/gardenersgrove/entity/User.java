@@ -39,7 +39,6 @@ public class User {
     @Column(name = "dateOfBirth")
     private String dateOfBirth;
 
-
     @Column
     private Date lastFreeSpinUsed;
 
@@ -106,7 +105,6 @@ public class User {
     public User(Long id, String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth) {
         this.userId = id;
         this.password = password;
-        this.bloomBalance = DEFAULT_BALANCE;
         this.setValues(firstName, lastName, noLastName, email, dateOfBirth);
     }
 
@@ -118,7 +116,6 @@ public class User {
         this.password = password;
         this.dateOfBirth = dateOfBirth;
         this.image = image;
-        this.bloomBalance = DEFAULT_BALANCE;
     }
 
     public User setValues(String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
@@ -306,11 +303,6 @@ public class User {
         lastFreeSpinUsed = null;
     }
 
-
-
-
-
-
     /**
      * Adds a non-friend contact
      * @param contact the contact
@@ -380,10 +372,10 @@ public class User {
     }
 
 
-    public void removeItem(Item item, int quantity) throws Exception {
+    public void removeItem(Item item, int quantity) throws IllegalArgumentException {
         Item theItem = getItem(item, quantity);
         if (theItem == null) {
-            throw new Exception("Insufficient quantity.");
+            throw new IllegalArgumentException("Insufficient quantity.");
         }
 
         theItem.setQuantity(theItem.getQuantity() - quantity);

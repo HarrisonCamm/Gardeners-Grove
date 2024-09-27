@@ -578,8 +578,8 @@ hr {
 /*Used to style item quantity for inventory item cards*/
 .item-quantity {
     position: absolute;
-    right: 10%;
-    top: 10%;
+    right: 25px;
+    top: 25px;
 }
 
 /*Used to style item title for inventory item cards*/
@@ -842,4 +842,11 @@ h2 {
     font-size: xxx-large;
     font-family: var(--bs-body-font-family);
     padding: 15px 15px 15px 15px;
+}
+
+.shop-image {
+    width: 200px;
+    aspect-ratio: 1/1;
+    border-radius: 100px;
+    border: #3D7B36 solid 1px;
 }
