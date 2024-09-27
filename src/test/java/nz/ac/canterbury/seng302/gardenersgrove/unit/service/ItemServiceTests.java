@@ -55,15 +55,6 @@ class ItemServiceTests {
     void setUp() {
         itemService = new ItemService(itemRepository);
 
-        happyBadge = new BadgeItem("Happy1", 1000, "😀", 1);
-        eggplantBadge = new BadgeItem("Eggplant1", 2000, "\uD83C\uDF46", 1);
-        loveBadge = new BadgeItem("Love1", 3000, "\uD83E\uDE77", 1);
-        diamondBadge = new BadgeItem("Diamond1", 4000, "\uD83D\uDC8E", 1);
-        itemService.saveItem(happyBadge);
-        itemService.saveItem(eggplantBadge);
-        itemService.saveItem(loveBadge);
-        itemService.saveItem(diamondBadge);
-
         try {
             Path catFallImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/cat-fall.gif").getURI());
             Image image1 = new Image(Files.readAllBytes(catFallImagePath), "gif", false);
@@ -76,6 +67,33 @@ class ItemServiceTests {
             Path fabianIntensifiesImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/fabian-intensifies.gif").getURI());
             Image image3 = new Image(Files.readAllBytes(fabianIntensifiesImagePath), "gif", false);
             fabianIntensifiesImage = new ImageItem("Fabian Intensifies1",7000, image3, 1);
+
+
+            // Create predefined profile pictures
+            Path timtamImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/timtam.png").getURI());
+            byte[] timtamImageBytes = Files.readAllBytes(timtamImagePath);
+            Image timtamImage = new Image(timtamImageBytes, "png", false);
+
+
+            Path vegimiteImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/vegemite.png").getURI());
+            byte[] vegimiteImageBytes = Files.readAllBytes(vegimiteImagePath);
+            Image vegimiteImage = new Image(vegimiteImageBytes, "png", false);
+
+
+            Path neoFabianImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/neo_fabian.png").getURI());
+            byte[] neoFabianImageBytes = Files.readAllBytes(neoFabianImagePath);
+            Image neoFabianImage = new Image(neoFabianImageBytes, "png", false);
+
+
+            BadgeItem badge1 = new BadgeItem("Tim Tam", 100, timtamImage, 1);
+            BadgeItem badge2 = new BadgeItem("Vegemite", 50, vegimiteImage, 1);
+            BadgeItem badge3 = new BadgeItem("Love", 25, neoFabianImage, 1);
+
+            itemService.saveItem(badge1);
+            itemService.saveItem(badge2);
+            itemService.saveItem(badge3);
+
+
 
             itemService.saveItem(catFallImage);
             itemService.saveItem(catTypingImage);

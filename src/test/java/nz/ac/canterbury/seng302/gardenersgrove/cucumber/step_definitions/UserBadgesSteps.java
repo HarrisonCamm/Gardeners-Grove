@@ -1,27 +1,117 @@
 package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
+import io.cucumber.java.Before;
+import io.cucumber.java.BeforeAll;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.junit.jupiter.api.Assertions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class UserBadgesSteps {
 
-    @Given("I am in my inventory and own a badge item")
-    public void i_am_in_my_inventory_and_own_a_badge_item() {
-        // Write code here that turns the phrase above into concrete actions
-        assert true;
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ItemService itemService;
+    private ResourceLoader resourceLoader;
+
+    private MockMvc mockMvc;
+    private MvcResult mvcResult;
+    private ResultActions resultActions;
+    private BadgeItem badgeItem;
+
+    @Before
+    public void setup() throws IOException {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+
+        // Get the user Entity for Sarah
+        User currentUser = userService.getAuthenticatedUser();
+        List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
+        List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
+
+        // Create predefined profile pictures
+        Path timtamImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/timtam.png").getURI());
+        byte[] timtamImageBytes = Files.readAllBytes(timtamImagePath);
+        Image timtamImage = new Image(timtamImageBytes, "png", false);
+
+
+        Path vegimiteImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/vegemite.png").getURI());
+        byte[] vegimiteImageBytes = Files.readAllBytes(vegimiteImagePath);
+        Image vegimiteImage = new Image(vegimiteImageBytes, "png", false);
+
+
+        Path neoFabianImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/neo_fabian.png").getURI());
+        byte[] neoFabianImageBytes = Files.readAllBytes(neoFabianImagePath);
+        Image neoFabianImage = new Image(neoFabianImageBytes, "png", false);
+
+
+        BadgeItem badge1 = new BadgeItem("Tim Tam", 100, timtamImage, 1);
+        BadgeItem badge2 = new BadgeItem("Vegemite", 50, vegimiteImage, 1);
+        BadgeItem badge3 = new BadgeItem("Love", 25, neoFabianImage, 1);
+
+
+
+        // DUMMY DATA
+        if (badgeItems.isEmpty()) {
+            currentUser.addItem(badge1);
+            currentUser.addItem(badge2);
+            currentUser.addItem(badge3);
+        }
+
     }
 
+    //AC1
+    @Given("I am in my inventory and own a badge item")
+    public void i_am_in_my_inventory_and_own_a_badge_item() throws Exception {
+        mvcResult = mockMvc.perform(get("/inventory"))
+                .andExpect(view().name("inventoryTemplate"))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    //AC1
     @When("I click on the {string} button on that badge item")
-    public void i_click_on_the_button_on_that_badge_item(String string) {
-        // Write code here that turns the phrase above into concrete actions
-        assert true;
+    public void i_click_on_the_button_on_that_badge_item(String string) throws Exception {
+
+        badgeItem = (BadgeItem) itemService.getItemByName("Tim Tam");
+
+        mockMvc.perform(post("/inventory/badge/use/{badgeId}", badgeItem.getId()))
+                .andExpect(status().isOk())
+                .andReturn();
     }
 
     @Then("the badge is shown next to my name")
     public void the_badge_is_shown_next_to_my_name() {
-        // Write code here that turns the phrase above into concrete actions
-        assert true;
+        BadgeItem userBadge = userService.getAuthenticatedUser().getAppliedBadge();
+        BadgeItem badge = (BadgeItem) itemService.getItemByName("Tim Tam");
+        Assertions.assertEquals( userBadge, badge);
     }
 
     @Given("I have a badge item applied to my name")

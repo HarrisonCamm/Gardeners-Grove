@@ -114,7 +114,7 @@ public class UnlockableContentSteps {
                 .flatMap(badgeItem -> Stream.of(
                         (Executable) () -> Assertions.assertNotNull(badgeItem.getName(), "BadgeItem name should not be null"),
                         (Executable) () -> Assertions.assertNotNull(badgeItem.getPrice(), "BadgeItem price should not be null"),
-                        (Executable) () -> Assertions.assertNotNull(badgeItem.getEmoji(), "BadgeItem emoji should not be null")
+                        (Executable) () -> Assertions.assertNotNull(badgeItem.getIcon(), "BadgeItem icon should not be null")
                 ))
                 .collect(Collectors.toList());
 

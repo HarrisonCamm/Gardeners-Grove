@@ -18,6 +18,9 @@ class UserEntityTest {
 
     @Test
     void addItem_AddsItemToInventory() {
+
+
+
         User user = new User("John", "Doe", false, "", "", "");
         BadgeItem badgeItem = new BadgeItem("Badge", 10, "\uD83C\uDF46", 3);
         user.addItem(badgeItem);

@@ -1,6 +1,9 @@
 Feature: User Badges
   As Sarah, I want to personalize my Gardener's Grove experience by applying badges (emojis) next to my name, so that I can showcase my achievements and express my personality to others.
 
+  Background: User is logged in
+    Given I am logged in with email "inaya@email.com" and password "Password1!"
+
   Scenario: Apply badge to user name
     Given I am in my inventory and own a badge item
     When I click on the "Use" button on that badge item
