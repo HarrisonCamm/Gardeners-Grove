@@ -20,8 +20,9 @@ body {
 .image {
     max-height: 350px;
     height: 350px;
-    max-width: fit-content;
+    max-width: 100%;
 }
+
 .plant-card {
     background-color: #E2F1CA;
 }

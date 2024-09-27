@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantGuesserList;
@@ -10,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,8 +36,9 @@ public class PlantGuesserService {
     private Random random = new Random();
     private static final String PLANT_PAGE_FILTERS = "&filter_not[common_name]=null&filter_not[image_url]=null&token=";
     private static final String PLANT_FAMILY_PAGE_FILTERS = "&filter_not[common_name]=null&token=";
-    private static final int MAX_PAGE_NUM = 740;
+    private static final int MAX_PAGE_NUM = 730;
     private static final int NUM_FAMILY_OPTIONS = 3;
+    private String excludedPlantFamilies = "";
 
     @Autowired
     public PlantGuesserService(RestTemplate restTemplate) {
@@ -41,7 +46,7 @@ public class PlantGuesserService {
     }
 
     public PlantGuesserList getPlantPage(int pageNum) {
-        String url = apiUrl + "?page=" + pageNum + PLANT_PAGE_FILTERS + apiKey;
+        String url = apiUrl + "?page=" + pageNum + excludedPlantFamilies + PLANT_PAGE_FILTERS + apiKey;
         try {
             return restTemplate.getForObject(url, PlantGuesserList.class);
         } catch (Exception e) {
@@ -73,6 +78,11 @@ public class PlantGuesserService {
         Collections.shuffle(plantList);
         return plantList.get(i);
     }
+    public List<PlantData> getPlantRound() {
+        List<PlantData> plantList= new ArrayList<>(Arrays.stream(getPlants()).toList());
+        Collections.shuffle(plantList);
+        return plantList;
+    }
 
     public PlantData[] getFamilyPlants(String family, String plantName) {
         PlantData[] plantList = getPlantFamily(family).getPlantGuesserList();
@@ -94,6 +104,35 @@ public class PlantGuesserService {
                     .collect(Collectors.toList());
 
 
+    }
+
+    public void excludePlantFamilies() {
+        try {
+            // Create ObjectMapper instance
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            // Read the JSON file into a JsonNode
+            JsonNode rootNode = objectMapper.readTree(new File("src/main/resources/static/json/excludedPlantFamilies.json"));
+
+            // Get the plant_families array from the JSON
+            JsonNode plantFamiliesNode = rootNode.path("plant_families");
+
+            // Use StringBuilder to concatenate the names
+            StringBuilder combinedString = new StringBuilder();
+            Iterator<JsonNode> elements = plantFamiliesNode.elements();
+
+            while (elements.hasNext()) {
+                combinedString.append(elements.next().asText());
+                if (elements.hasNext()) {
+                    combinedString.append(",");
+                }
+            }
+
+            excludedPlantFamilies = "&" + combinedString;
+
+        } catch (IOException e) {
+            logger.info("Excluded family error", e);
+        }
     }
 
 }

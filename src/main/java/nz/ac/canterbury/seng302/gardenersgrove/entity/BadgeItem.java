@@ -37,4 +37,9 @@ public class BadgeItem extends Item {
 
         return getEmoji().equals(badge.getEmoji());
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + getEmoji().hashCode();
+    }
 }

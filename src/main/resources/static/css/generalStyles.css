@@ -564,8 +564,8 @@ hr {
 /*Used to style item quantity for inventory item cards*/
 .item-quantity {
     position: absolute;
-    right: 10%;
-    top: 10%;
+    right: 25px;
+    top: 25px;
 }
 
 /*Used to style item title for inventory item cards*/
@@ -586,6 +586,19 @@ hr {
 .carousel-control-next:hover {
     background: none;
     opacity: 0.1;
+}
+
+.tip-model-button {
+    background-color: #3D7B36 !important;
+    color: floralwhite;
+    border-radius: 10px;
+    border-width: 0;
+    padding: 5px 10px 5px 10px;
+    margin: 2px;
+}
+.tip-model-button:hover {
+    background-color: #72543C !important;
+    cursor: pointer;
 }
 
 
@@ -828,4 +841,11 @@ h2 {
     font-size: xxx-large;
     font-family: var(--bs-body-font-family);
     padding: 15px 15px 15px 15px;
+}
+
+.shop-image {
+    width: 200px;
+    aspect-ratio: 1/1;
+    border-radius: 100px;
+    border: #3D7B36 solid 1px;
 }
