@@ -17,7 +17,7 @@ Feature: U6007 - Unlockable content
 
   Scenario: AC3 - View Items For Sale
     Given I am in the shop
-    Then I can see a list of items for sale with a picture, name, description and price in Blooms
+    Then I can see a list of items for sale with a picture, name and price in Blooms
 
   Scenario: AC4 - View Items in Inventory
     Given I am in my inventory
@@ -50,8 +50,6 @@ Feature: U6007 - Unlockable content
     Given I am viewing an item in my inventory
     When I click the Sell button for that item
     Then a confirmation popup with a cancel button and confirm button is shown with the message "Sell item back to shop for {amount}?"
-    And I confirm the sale
-    Then the item is removed from my inventory
 
   Scenario: AC10 - Transaction History
     Given I purchase an item

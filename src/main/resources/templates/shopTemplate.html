@@ -14,11 +14,14 @@
             <div class="col content card ms-2 me-2" th:each="item: ${badgeItems}">
                 <div class="h-25 w-100 mt-3 inventory-card-title">
                     <h3 class="p-2" th:text="${item.name}"></h3>
-                    <p class="item-quantity" th:text="${item.quantity} + 'x'"></p>
+                    <p class="item-quantity" th:text="${item.price}"></p>
+                    <p class="item-quantity">฿</p>
                 </div>
                 <div class="mb-5 mt-4" >
                     <span class="shop-emoji mt-5" th:text="${item.emoji}"></span>
-                    <button class="item-use-button button">Use</button>
+                    <div class="mt-5">
+                        <button class="item-use-button button mt-5">Purchase</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -29,11 +32,13 @@
             <div class="col content card ms-2 me-2" th:each="item: ${imageItems}">
                 <div class="h-25 w-100 mt-3 inventory-card-title">
                     <h3 class="p-2" th:text="${item.name}"></h3>
-                    <p class="item-quantity" th:text="${item.quantity} + 'x'"></p>
+                    <p class="item-quantity" th:text="${item.price} + '฿'"></p>
                 </div>
                 <div class="mb-5" >
-                    <img type="gif" class="image mt-5" th:src="@{/get-image?shop=true(imageID=${item.image.id})}" alt="Item Image">
-                    <button class="item-use-button button">Use</button>
+                    <img type="gif" class="shop-image mt-5" th:src="@{/get-image?shop=true(imageID=${item.image.id})}" alt="Item Image">
+                    <div class="mt-5">
+                        <button class="item-use-button button mt-5">Purchase</button>
+                    </div>
                 </div>
             </div>
         </div>
