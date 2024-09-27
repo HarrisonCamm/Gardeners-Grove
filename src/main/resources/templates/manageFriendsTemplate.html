@@ -36,7 +36,7 @@
                                                     <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
                                                     &nbsp;
                                                     <h3 th:text="${friend.firstName + ' ' + friend.lastName}"></h3>
-                                                    <img type="gif" class="badge-image ms-2" th:src="${friend.badgeURL}"/>
+                                                    <div th:replace="fragments/badgeFragment :: badgeImage(${friend})"></div>
                                                 </div>
                                                 <div th:id="removeFriend + ${stat.index}" th:hidden="false">
                                                     <div class="buttons-right">
@@ -100,6 +100,7 @@
                                                 <div class="friend-form">
                                                     <div class="align-left">
                                                         <h3 th:text="${matchedUser.firstName + ' - ' + matchedUser.email}"></h3>
+                                                        <div th:replace="fragments/badgeFragment :: badgeImage(${matchedUser})"></div>
                                                     </div>
                                                     <div class="empty-space"></div>
                                                     <div class="buttons-right">
@@ -127,6 +128,7 @@
                                             <div class="friend-form">
                                                 <div class="align-left">
                                                     <h3 th:text="${pendingRequest.sender.firstName}"></h3>
+                                                    <div th:replace="fragments/badgeFragment :: badgeImage(${pendingRequest.sender})"></div>
                                                 </div>
                                                 <div class="empty-space"></div>
                                                 <div class="buttons-right">
@@ -157,7 +159,7 @@
                                             <div class="friend-form">
                                                 <div class="align-left">
                                                     <h3 th:text="${sentRequest.receiver.firstName + ' - ' + sentRequest.receiver.email}"></h3>
-
+                                                    <div th:replace="fragments/badgeFragment :: badgeImage(${sentRequest.receiver})"></div>
                                                 </div>
                                                 <div class="empty-space"></div>
                                                 <div class="buttons-right">

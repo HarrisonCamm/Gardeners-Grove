@@ -34,19 +34,12 @@
                     th:classappend="${user.userId == currentUserId} ? 'highlight-user' : ''">
                     <td th:text="${index.index + 1}"></td>
                     <td class="profile-info">
-<!--                        <img class="leaderboard-image"-->
-<!--                             th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="Profile Picture">-->
-
-                        <img class="leaderboard-image"
-                             th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="Profile Picture">
-
-<!--                        <img th:if="${user.appliedBadge != null}" class="leaderboard-image"-->
-<!--                             th:src="@{/get-image?userBadge=true(userID=${user.userId})}" alt="Profile Picture">-->
-<!--                        <img th:unless="${user.appliedBadge != null}" class="leaderboard-image"-->
-<!--                             th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="Profile Picture">-->
-
-
-                        <span class="profile-name" th:text="${user.firstName} + ' ' + ${user.lastName}"></span>
+                        <div class="d-flex align-items-center">
+                            <img class="leaderboard-image"
+                                 th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="Profile Picture">
+                            <span class="profile-name ms-2" th:text="${user.firstName} + ' ' + ${user.lastName}"></span>
+                            <div th:replace="fragments/badgeFragment :: badgeImage(${user})"></div>
+                        </div>
                     </td>
                     <td th:text="${user.bloomBalance}"></td>
                 </tr>

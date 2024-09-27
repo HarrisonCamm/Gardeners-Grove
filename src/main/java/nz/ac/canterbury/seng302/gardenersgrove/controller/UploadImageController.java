@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpSession;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -168,6 +169,7 @@ public class UploadImageController {
             image = user.getAppliedBadge().getIcon();
             model.addAttribute("id", userID);
             model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
+
         }
         else {
             User user = userService.getUserByID(userID);

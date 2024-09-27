@@ -17,11 +17,10 @@
                              th:data-user-id="${user.userId}"
                              th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="">
                         <div class="user-info d-flex align-items-center mt-3">
-                            <h3 class="user-name mt-3" th:text="${user.firstName} + ' ' + ${user.lastName}"></h3>
+                            <h3 class="mt-3" th:text="${user.firstName} + ' ' + ${user.lastName}"></h3>
                             <!-- Badge image to the right of the username -->
-                            <img type="gif" class="badge-image ms-2" th:src="@{/get-image?userBadge=true(userID=${user.userId})}"/>
+                            <div th:replace="fragments/badgeFragment :: badgeImage(${user})"></div>
                         </div>
-                    </div>
                 </div>
             </div>
 
