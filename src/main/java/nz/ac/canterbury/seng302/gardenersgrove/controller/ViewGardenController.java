@@ -90,6 +90,9 @@ public class ViewGardenController {
         addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
         session.removeAttribute(TAG_EVALUATION_ERROR);
 
+        model.addAttribute("claimedTipsMessage", session.getAttribute("claimedTipsMessage"));
+        session.removeAttribute("claimedTipsMessage");
+
         if (isOwner) {
             return "viewGardenDetailsTemplate";
         } else {
@@ -192,7 +195,7 @@ public class ViewGardenController {
     }
 
     @PostMapping("/claim-tips")
-    public String claimTips(@RequestParam("gardenID") Long gardenID) {
+    public String claimTips(@RequestParam("gardenID") Long gardenID, HttpSession session) {
         logger.info("POST /claim-tips");
 
         User currentUser = userService.getAuthenticatedUser();
@@ -210,6 +213,8 @@ public class ViewGardenController {
 
         // Set all garden's tips transactions to claimed
         transactionService.claimAllGardenTips(transactions);
+
+        session.setAttribute("claimedTipsMessage", "You have claimed " + totalUnclaimedBlooms + " Blooms! \uD83C\uDF31");
 
         return REDIRECT_VIEW_GARDEN + gardenID;
     }
@@ -351,11 +356,7 @@ public class ViewGardenController {
         boolean isOwner = garden.getOwner().equals(currentUser);
         if (isOwner) {
             Integer unclaimedBlooms = garden.getUnclaimedBlooms();
-            boolean hasBloomsToClaim = unclaimedBlooms > 0;
-            model.addAttribute("hasBloomsToClaim", hasBloomsToClaim);
-            if (hasBloomsToClaim) {
-                model.addAttribute("unclaimedBloomsMessage", "You have " + unclaimedBlooms + " Blooms to claim!");
-            }
+            model.addAttribute("unclaimedBlooms", unclaimedBlooms);
         }
         model.addAttribute("userBloomBalance", currentUser.getBloomBalance());
         return model;

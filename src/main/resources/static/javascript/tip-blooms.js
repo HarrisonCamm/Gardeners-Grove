@@ -39,3 +39,11 @@ function checkTipInput(input) {
         input.classList.remove('error'); // Remove the error class from the input
     }
 }
+function toggleClaimTips(){
+    let claimTipsButton = document.getElementById("claimTipsButton");
+    let confirmClaimTipsDiv = document.getElementById("confirmClaimTipsDiv");
+
+
+    claimTipsButton.hidden = !(claimTipsButton.hidden)
+    confirmClaimTipsDiv.hidden = !(confirmClaimTipsDiv.hidden)
+}
