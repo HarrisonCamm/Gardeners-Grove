@@ -37,10 +37,15 @@
 <!--                        <img class="leaderboard-image"-->
 <!--                             th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="Profile Picture">-->
 
-                        <img th:if="${user.appliedBadge != null}" class="leaderboard-image"
-                             th:src="@{/get-image?userBadge=true(userID=${user.userId})}" alt="Profile Picture">
-                        <img th:unless="${user.appliedBadge != null}" class="leaderboard-image"
+                        <img class="leaderboard-image"
                              th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="Profile Picture">
+
+<!--                        <img th:if="${user.appliedBadge != null}" class="leaderboard-image"-->
+<!--                             th:src="@{/get-image?userBadge=true(userID=${user.userId})}" alt="Profile Picture">-->
+<!--                        <img th:unless="${user.appliedBadge != null}" class="leaderboard-image"-->
+<!--                             th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="Profile Picture">-->
+
+
                         <span class="profile-name" th:text="${user.firstName} + ' ' + ${user.lastName}"></span>
                     </td>
                     <td th:text="${user.bloomBalance}"></td>
