@@ -68,12 +68,12 @@ public class GifProfilePictureSteps {
         ImageItem imageItem = (ImageItem) item;
 
         // Get item image id
-        Long itemImageId = imageItem.getImage().getId();
+        Long itemId = item.getId();
 
         // Use item post-mapping call
-        mvcResult = mockMvc.perform(post("/inventory/use/" + itemImageId))
+        mvcResult = mockMvc.perform(post("/inventory/use/" + itemId))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("inventoryTemplate"))
+                .andExpect(view().name("redirect:/inventory"))
                 .andReturn();
     }
 
@@ -89,6 +89,9 @@ public class GifProfilePictureSteps {
     // AC1
     @And("my old profile picture is stored for later")
     public void myOldProfilePictureIsStoredForLater() {
+        // Refetch the current user
+        currentUser = userService.getAuthenticatedUser();
+
         // Verify that the previous profile image ID is stored
         Assertions.assertNotNull(currentUser.getPreviousImageId(), "Previous profile image ID should be stored");
 
