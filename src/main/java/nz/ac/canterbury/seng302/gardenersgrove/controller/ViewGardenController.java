@@ -49,6 +49,8 @@ public class ViewGardenController {
 
     private static final String WEATHER_ERROR_MESSAGE = "weatherErrorMessage";
 
+    private static final String CLAIMED_TIPS_MESSAGE = "claimedTipsMessage";
+
     @Autowired
     public ViewGardenController(GardenService gardenService, PlantService plantService,
                                 UserService userService, ImageService imageService,
@@ -90,8 +92,8 @@ public class ViewGardenController {
         addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
         session.removeAttribute(TAG_EVALUATION_ERROR);
 
-        model.addAttribute("claimedTipsMessage", session.getAttribute("claimedTipsMessage"));
-        session.removeAttribute("claimedTipsMessage");
+        model.addAttribute(CLAIMED_TIPS_MESSAGE, session.getAttribute(CLAIMED_TIPS_MESSAGE));
+        session.removeAttribute(CLAIMED_TIPS_MESSAGE);
 
         if (isOwner) {
             return "viewGardenDetailsTemplate";
@@ -180,7 +182,7 @@ public class ViewGardenController {
         User owner = curGarden.getOwner();
 
         // Add a new transaction for the tip
-        Transaction transaction = transactionService.addTransaction(tipAmount,
+        transactionService.addTransaction(tipAmount,
                 "Tipped " +curGarden.getName()+ " (unclaimed by " + owner.getFirstName() + ")",
                 "Garden Tip",
                 owner.getUserId(),
@@ -214,7 +216,7 @@ public class ViewGardenController {
         // Set all garden's tips transactions to claimed
         transactionService.claimAllGardenTips(transactions);
 
-        session.setAttribute("claimedTipsMessage", "You have claimed " + totalUnclaimedBlooms + " Blooms! \uD83C\uDF31");
+        session.setAttribute(CLAIMED_TIPS_MESSAGE, "You have claimed " + totalUnclaimedBlooms + " Blooms! \uD83C\uDF31");
 
         return REDIRECT_VIEW_GARDEN + gardenID;
     }
