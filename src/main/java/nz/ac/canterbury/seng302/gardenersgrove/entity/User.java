@@ -80,17 +80,12 @@ public class User {
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Transaction> transactions = new ArrayList<>();
 
-
+    @OneToOne
+    @JoinColumn(name = "id")
+    private BadgeItem appliedBadge;
 
     @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer inappropriateTagCount = 0;
-
-    @Column(name = "badgeURL")
-    private String badgeURL;
-
-    @Column(name = "imageURL")
-    private String imageURL;
-
 
     public User() {
         // JPA empty constructor
@@ -133,8 +128,7 @@ public class User {
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.bloomBalance = DEFAULT_BALANCE;
-        this.badgeURL = null;
-        this.imageURL = null;
+        this.appliedBadge = null;
         return this;
     }
 
@@ -190,6 +184,10 @@ public class User {
         return noLastName;
     }
 
+    public BadgeItem getAppliedBadge() {
+        return appliedBadge;
+    }
+
     public void setEmail(String newEmail) {
         this.email = newEmail;
     }
@@ -236,6 +234,10 @@ public class User {
         this.previousImageId = previousImageId;
     }
 
+    public void setAppliedBadge(BadgeItem badge) {
+        this.appliedBadge = badge;
+    }
+
 
 
     public void setImage(Image image) {
@@ -245,30 +247,6 @@ public class User {
     public Image getImage() {
         return image;
     }
-
-
-    //TODO: Modify/Change the logic here to work with the Badge/Item classes that were implemented on U6007-AC2
-    public void setBadgeURL(String newBadgeURL) {
-        this.badgeURL = newBadgeURL;
-    }
-
-    public String getBadgeURL() {
-        return badgeURL;
-    }
-
-
-
-
-
-    //TODO: Modify this code so it works with the logic for Image/GIF items in U6007-AC2
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
-    }
-
-    public String getImageURL() {
-        return imageURL;
-    }
-
 
     public List<FriendRequest> getSentFriendRequests() {
         return null;

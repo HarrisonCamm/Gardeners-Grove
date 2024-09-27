@@ -79,13 +79,4 @@ public class ShopController {
         return "redirect:/shop";
     }
 
-
-    public String updateUserProfile(@RequestParam Long userId, @RequestParam String imageURL) {
-        User user = userService.getUserByID(userId);
-
-        user.setImageURL(imageURL);
-        userService.saveUser(user);
-        return "redirect:/shop";
-    }
-
 }

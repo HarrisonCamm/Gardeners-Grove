@@ -1,9 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
@@ -92,8 +89,9 @@ public class InventoryController {
 
         // DUMMY DATA
         if (badgeItems.isEmpty()) {
-            currentUser.addItem(itemService.getItemByName("Happy"));
-            currentUser.addItem(itemService.getItemByName("Eggplant"));
+            currentUser.addItem(itemService.getItemByName("Tim Tam"));
+            currentUser.addItem(itemService.getItemByName("Vegemite"));
+            currentUser.addItem(itemService.getItemByName("Love"));
             userService.saveUser(currentUser);
         }
         if (imageItems.isEmpty()) {
@@ -145,22 +143,13 @@ public class InventoryController {
 
         try {
             // Gets item, then casts to ImageItem
-            ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
+            BadgeItem badgeItem = (BadgeItem) itemService.getItemById(itemId);
 
             // Get the image id of imageItem
-            Long itemImageId = imageItem.getImage().getId();
+            Long itemImageId = badgeItem.getIcon().getId();
 
-            // Get image from Image Table
-            Optional<Image> image = imageService.findImage(itemImageId);
-
-            // Check if the current user's image does not equal the item image ID
-            if (!currentUser.getImage().getId().equals(itemImageId)) {
-                // Store the current profile image ID for the ability for user to revert back
-                currentUser.setPreviousImageId(currentUser.getImage().getId());
-            }
-
-            // Update Users Image to ItemsImage
-            image.ifPresent(currentUser::setImage);
+            // Update Users Badge
+            currentUser.setAppliedBadge(badgeItem);
 
             // Persis change to user
             userService.saveUser(currentUser);
@@ -170,20 +159,6 @@ public class InventoryController {
             logger.error("Error applying item: {}", e.getMessage());
         }
 
-        return "redirect:/inventory";
-    }
-
-
-
-
-
-
-    @PostMapping("/inventory/updateProfile")
-    public String updateUserProfile(@RequestParam Long userId, @RequestParam String imageURL) {
-        User user = userService.getUserByID(userId);
-
-        user.setImageURL(imageURL);
-        userService.saveUser(user);
         return "redirect:/inventory";
     }
 

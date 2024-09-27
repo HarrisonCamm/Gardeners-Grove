@@ -8,20 +8,18 @@
     <div class="appBody">
         <div class="container p-0">
 
-            <!-- Profile Card to display user's profile information -->
+<!--             Profile Card to display user's profile information -->
             <div class="row mt-5">
                 <div class="col content card ms-2 me-2">
-                    <div class="mb-5">
+                    <div class="mb-5 mt-5">
                         <!-- Example profile picture -->
-                        <img class="image"
+                        <img class="image "
                              th:data-user-id="${user.userId}"
                              th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="">
-                        <img type="gif" class="image mt-5" th:src="${user.imageURL}" alt="">
-<!--                        <img type="png" class="image mt-3" th:src="@{'images/' + ${user.badgeURL}}">-->
                         <div class="user-info d-flex align-items-center mt-3">
                             <h3 class="user-name mt-3" th:text="${user.firstName} + ' ' + ${user.lastName}"></h3>
-                            <!-- Badge image to the right of the user name -->
-                            <img type="gif" class="badge-image ms-2" th:src="${user.badgeURL}"/>
+                            <!-- Badge image to the right of the username -->
+                            <img type="gif" class="badge-image ms-2" th:src="@{/get-image?userBadge=true(userID=${user.userId})}"/>
                         </div>
                     </div>
                 </div>
@@ -38,18 +36,14 @@
                         <p class="item-quantity" th:text="${item.quantity} + 'x'"></p>
                     </div>
                     <div class="mb-5" >
-                        <img type="gif" class="image mt-5" th:src="@{'images/' + ${item[1]}}">
-                        <span class="shop-emoji mt-5" th:text="${item.emoji}"></span>
-                        <form th:action="@{/inventory/updateBadgeURL}" method="post">
-                            <input type="hidden" name="userId" th:value="${user.userId}">
-                            <input type="hidden" name="badgeURL" th:value="@{'images/' + ${item[1]}}">
+                        <img type="gif" class="image mt-5" th:src="@{/get-image?shop=true(imageID=${item.icon.id})}">
+                        <form th:action="@{'/inventory/use/' + ${item.id}}" method="post">                            <input type="hidden" name="userId" th:value="${user.userId}">
+                            <input type="hidden" name="badgeURL" th:src="@{/get-image?shop=true(imageID=${item.icon.id})}">
                             <button class="item-use-button button" type="submit">Use</button>
                         </form>
                     </div>
                 </div>
             </div>
-
-
             <div class="row mt-5">
                 <h3 class="mb-3 mt-5">Profile Pictures</h3>
                 <div class="col content card ms-2 me-2" th:each="item: ${imageItems}">

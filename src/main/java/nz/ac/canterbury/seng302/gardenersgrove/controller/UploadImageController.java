@@ -119,6 +119,7 @@ public class UploadImageController {
                                            @RequestParam(value = "view-user-profile", required = false) boolean viewUser,
                                            @RequestParam(value = "edit-user-profile-image", required = false) boolean editUserProfile,
                                            @RequestParam(value = "shop", required = false) boolean viewShop,
+                                           @RequestParam(value = "userBadge", required = false) boolean userBadge,
                                            @RequestParam(value = "temporary", required = false) boolean temporary,
                                            @RequestParam(value = "gardenID", required = false) Long gardenID,
                                            @RequestParam(value = "userID", required = false) Long userID,
@@ -162,7 +163,13 @@ public class UploadImageController {
             image = foundImage.get();
             model.addAttribute("id", imageID);
             model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
-        } else {
+        } else if (userBadge) {
+            User user = userService.getUserByID(userID);
+            image = user.getAppliedBadge().getIcon();
+            model.addAttribute("id", userID);
+            model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
+        }
+        else {
             User user = userService.getUserByID(userID);
             image = user.getImage();
             model.addAttribute("id", userID);

@@ -106,7 +106,7 @@ public class ShopService {
             Image timtamImage = new Image(timtamImageBytes, "png", false);
 
 
-            Path vegimiteImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/vegimite.png").getURI());
+            Path vegimiteImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/vegemite.png").getURI());
             byte[] vegimiteImageBytes = Files.readAllBytes(vegimiteImagePath);
             Image vegimiteImage = new Image(vegimiteImageBytes, "png", false);
 
@@ -117,7 +117,7 @@ public class ShopService {
 
 
             BadgeItem badge1 = new BadgeItem("Tim Tam", 100, timtamImage, 1);
-            BadgeItem badge2 = new BadgeItem("Vegimite", 50, vegimiteImage, 1);
+            BadgeItem badge2 = new BadgeItem("Vegemite", 50, vegimiteImage, 1);
             BadgeItem badge3 = new BadgeItem("Love", 25, neoFabianImage, 1);
 
 
