@@ -17,7 +17,7 @@ Feature: U6007 - Unlockable content
 
   Scenario: AC3 - View Items For Sale
     Given I am in the shop
-    Then I can see a list of items for sale with a picture, name, description and price in Blooms
+    Then I can see a list of items for sale with a picture, name and price in Blooms
 
   Scenario: AC4 - View Items in Inventory
     Given I am in my inventory

@@ -1,8 +1,13 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,32 +19,27 @@ import java.util.List;
 public class InventoryController {
     Logger logger = LoggerFactory.getLogger(InventoryController.class);
 
+    private final ItemService itemService;
+    private final UserService userService;
+
+    @Autowired
+    public InventoryController(ItemService itemService, UserService userService) {
+        this.itemService = itemService;
+        this.userService = userService;
+    }
+
     @GetMapping("/inventory")
     public String getTemplate(Model model) {
         logger.info("GET /inventory");
         RedirectService.addEndpoint("/inventory");
 
-        //Create and populate a list of items for the view to render
-        List<String[]> badgeItems = new ArrayList<>();
-
-        // TODO - Simulating the adding of items, this will be done using service and repo layers in another task
-        // uncomment these to view how it would look, commented out for tests to work
-//        badgeItems.add(new String[]{"1x", "vegemite.png", "Vegemite"});
-//        badgeItems.add(new String[]{"1x", "timtam.png", "Tim Tam"});
-//        badgeItems.add(new String[]{"1x", "neo_fabian.png", "Neo Fabian"});
-
-        //Create and populate a list of items for the view to render
-        List<String[]> gifItems = new ArrayList<>();
-
-        // TODO - Simulating the adding of items, this will be done using service and repo layers in another task
-//        gifItems.add(new String[]{"1x", "fabian.gif", "Fabian Intensifies"});
-//        gifItems.add(new String[]{"1x", "scrum_master_harrison.gif", "Scrum Master Harrison"});
-//        gifItems.add(new String[]{"1x", "stick_man.gif", "Stick Man"});
-
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+        List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
+        List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
 
         model.addAttribute("badgeItems", badgeItems);
-        model.addAttribute("gifItems", gifItems);
-
+        model.addAttribute("imageItems", imageItems);
 
         return "inventoryTemplate";
     }
