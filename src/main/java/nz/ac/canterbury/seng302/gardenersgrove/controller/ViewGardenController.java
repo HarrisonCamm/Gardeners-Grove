@@ -357,6 +357,7 @@ public class ViewGardenController {
         if (isOwner) {
             Integer unclaimedBlooms = garden.getUnclaimedBlooms();
             model.addAttribute("unclaimedBlooms", unclaimedBlooms);
+            model.addAttribute("claimBloomsButtonText", "Claim " + unclaimedBlooms + " Blooms");
         }
         model.addAttribute("userBloomBalance", currentUser.getBloomBalance());
         return model;

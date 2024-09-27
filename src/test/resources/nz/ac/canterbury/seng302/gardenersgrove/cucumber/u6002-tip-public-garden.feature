@@ -62,7 +62,9 @@ Feature: U6002 Tipping public garden
 
   Scenario: AC8 - Claim Blooms transaction
     Given I am logged in with email "inaya@email.com" and password "Password1!"
-    When  I choose to claim the Blooms from my garden's tips
+    And  I choose to claim the Blooms from my garden's tips
+    When I confirm the action
     Then the 100 blooms are added to my account
     And a transaction is added to my account history
+    And a confirmation message is displayed
     And the total number of Blooms I can claim is 0

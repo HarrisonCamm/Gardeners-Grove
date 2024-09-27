@@ -100,7 +100,7 @@
                     <div th:if="${unclaimedBlooms >0}" >
                         <form th:action="@{/claim-tips(gardenID=${gardenID})}" method="post">
                             <div id="claimTipsButton" th:hidden="false">
-                                <button type="button"  class="btn btn-primary" onclick="toggleClaimTips()" th:text="'Claim ' + ${unclaimedBlooms} + ' Blooms'">
+                                <button type="button"  class="btn btn-primary" onclick="toggleClaimTips()" th:text="${claimBloomsButtonText}">
                                     Claim Blooms
                                 </button>
                             </div>
