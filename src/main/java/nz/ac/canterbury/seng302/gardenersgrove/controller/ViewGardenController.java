@@ -206,7 +206,7 @@ public class ViewGardenController {
 
         // Pay the user the total amount of unclaimed tips and remove them from the gardens unclaimed amount
         userService.addBlooms(userService.getAuthenticatedUser(), totalUnclaimedBlooms);
-        gardenService.addUnclaimedBloomTips(gardenID, -totalUnclaimedBlooms);
+        gardenService.removeUnclaimedBloomTips(curGarden);
 
         // Set all garden's tips transactions to claimed
         transactionService.claimAllGardenTips(transactions);

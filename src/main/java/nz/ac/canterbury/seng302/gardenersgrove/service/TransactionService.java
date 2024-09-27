@@ -98,7 +98,7 @@ public class TransactionService {
         Transaction transaction = transactionRepository.findById(transactionId).get();
         transaction.setClaimed(true);
         String gardenName = transaction.getTippedGarden().getName();
-        transaction.setNotes("Tipped " + gardenName + " (claimed)");
+        transaction.setNotes("Tipped " + gardenName + " (claimed by " + transaction.getReceiver().getFirstName() + ")");
         transactionRepository.save(transaction);
     }
 
