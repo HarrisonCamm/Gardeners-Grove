@@ -45,16 +45,22 @@ public class InventoryController {
         List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
         List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
 
+        //TODO delete these 2 if statments before merging ive just updated so they dont mess with tests and I can blackbox test the story
         // DUMMY DATA
         if (badgeItems.isEmpty()) {
             currentUser.addItem(itemService.getItemByName("Happy"));
             currentUser.addItem(itemService.getItemByName("Eggplant"));
+            badgeItems.add(itemService.getItemByName("Happy"));
+            badgeItems.add(itemService.getItemByName("Eggplant"));
             userService.saveUser(currentUser);
         }
         if (imageItems.isEmpty()) {
             currentUser.addItem(itemService.getItemByName("Cat Fall"));
             currentUser.addItem(itemService.getItemByName("Cat Typing"));
             currentUser.addItem(itemService.getItemByName("Fabian Intensifies"));
+            imageItems.add(itemService.getItemByName("Cat Fall"));
+            imageItems.add(itemService.getItemByName("Cat Typing"));
+            imageItems.add(itemService.getItemByName("Fabian Intensifies"));
             userService.saveUser(currentUser);
         }
 
