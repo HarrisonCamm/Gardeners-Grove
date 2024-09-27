@@ -39,6 +39,7 @@ public class GifProfilePictureSteps {
     private MvcResult mvcResult;
     private User currentUser;
     private Item item;
+    private Image displayedImage;
 
     @Before
     public void setUp() throws IOException {
@@ -154,5 +155,27 @@ public class GifProfilePictureSteps {
         }
         Assertions.assertTrue(expectedFriendIsShown, "True if the expected friend is displayed on the page");
         Assertions.assertEquals(expectedItem.getImage().getId(), displayedImageId, "The correct image is displayed");
+    }
+
+    //AC3
+    @And("I am on my profile page")
+    public void iAmOnMyProfilePage() throws Exception{
+        mvcResult = mockMvc.perform(get("/view-user-profile"))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    //AC3
+    @When("I view my profile picture")
+    public void iViewMyProfilePicture() {
+        User displayedUser = (User) mvcResult.getModelAndView().getModel().get("user");
+        displayedImage = displayedUser.getImage();
+    }
+
+    //AC3
+    @Then("I can see the {string} GIF image as my profile picture")
+    public void iCanSeeTheGIFImageAsMyProfilePicture(String itemName) {
+        ImageItem expectedItem = (ImageItem) itemService.getItemByName(itemName);
+        Assertions.assertEquals(expectedItem.getImage().getId(), displayedImage.getId(), "The gif items 'image' Id is the same Id as user in models image");
     }
 }
