@@ -329,31 +329,33 @@ public class User {
 
 
     public void addItem(Item item) {
-        for (Item existingItem : inventory) {
-            if (existingItem.getName().equals(item.getName())) {
-                existingItem.setQuantity(existingItem.getQuantity() + 1);
-                return;
-            }
+        Item theItem = getItem(item, 1);
+
+        if (theItem != null) {
+            theItem.setQuantity(theItem.getQuantity() + 1);
+        } else {
+            // If the item doesn't exist, set the owner and add it to the inventory
+            item.setOwner(this);
+            item.setQuantity(1);
+            inventory.add(item);
         }
-        // If the item doesn't exist, set the owner and add it to the inventory
-        item.setOwner(this);
-        item.setQuantity(1);
-        inventory.add(item);
     }
 
 
-//    public void removeItem(Item item, int quantity) throws Exception {
-//        if (!hasItem(item, quantity)) {
-//            throw new Exception("Insufficient quantity.");
-//        }
-//        inventory.put(item, inventory.get(item) - quantity);
-//        if (inventory.get(item) <= 0) {
-//            inventory.remove(item);
-//        }
-//    }
-//
-//    public boolean hasItem(Item item, int quantity) {
-//        return inventory.getOrDefault(item, 0) >= quantity;
-//    }
+    public void removeItem(Item item, int quantity) throws IllegalArgumentException {
+        Item theItem = getItem(item, quantity);
+        if (theItem == null) {
+            throw new IllegalArgumentException("Insufficient quantity.");
+        }
+
+        theItem.setQuantity(theItem.getQuantity() - quantity);
+        if (theItem.getQuantity() == 0) {
+            inventory.remove(theItem);
+        }
+    }
+
+    public Item getItem(Item item, int quantity) {
+        return inventory.stream().filter(i -> i.equals(item) && i.getQuantity() >= quantity).findFirst().orElse(null);
+    }
 
 }
