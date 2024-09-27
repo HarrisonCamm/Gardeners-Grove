@@ -60,11 +60,6 @@ Feature: U6002 Tipping public garden
     When I am on the garden details page for a garden I own for tips
     Then I see a claim blooms button to add the amount of unclaimed bloom tips of the garden to my balance
 
-#  Background: User is logged in
-#    Given "inaya@email.com" has a public garden
-#    And "liam@email.com" has 10000 Blooms
-#    And "inaya@email.com"'s garden has been tipped 100 blooms by "liam@email.com"
-
   Scenario: AC8 - Claim Blooms transaction
     Given I am logged in with email "inaya@email.com" and password "Password1!"
     When  I choose to claim the Blooms from my garden's tips

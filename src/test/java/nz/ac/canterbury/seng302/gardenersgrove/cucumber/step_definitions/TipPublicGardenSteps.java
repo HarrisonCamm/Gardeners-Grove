@@ -289,7 +289,7 @@ public class TipPublicGardenSteps {
         oldUserBloomBalance = userService.getAuthenticatedUser().getBloomBalance();
         oldTransctionCount = transactionService.findTransactionsByUser(userService.getAuthenticatedUser(), 0, 10).getTotalElements();
         mvcResult = mockMvc.perform(post("/claim-tips")
-                .param("gardenID", inayasGarden.getId().toString())
+                .param("gardenID", testCreatedGarden.getId().toString())
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
@@ -311,7 +311,7 @@ public class TipPublicGardenSteps {
     //AC8
     @And("the total number of Blooms I can claim is {int}")
     public void theTotalNumberOfBloomsICanClaimIs(int expectedUnclaimedBlooms) {
-        int totalUnclaimedTips = transactionService.totalUnclaimedTips(inayasGarden);
+        int totalUnclaimedTips = transactionService.totalUnclaimedTips(testCreatedGarden);
         assertEquals(expectedUnclaimedBlooms, totalUnclaimedTips);
     }
 }
