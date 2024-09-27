@@ -58,7 +58,7 @@ public class TipPublicGardenSteps {
     private MvcResult mvcResult;
 
     // Garden object to store the garden created in the background used to get the garden ID
-    private Garden inayasGarden;
+    private Garden testCreatedGarden;
 
     // Variables to store the tip amount, old user bloom balance and old garden tip count
     private Integer tipAmount;
@@ -73,7 +73,7 @@ public class TipPublicGardenSteps {
     }
 
     // Background
-    public void logInAsUser(String email) {
+    public void login_as_user(String email) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, "Password1!");
         var authentication = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -82,7 +82,7 @@ public class TipPublicGardenSteps {
     // Background
     @Given("{string} has a public garden")
     public void has_a_public_garden(String userEmail) throws Exception {
-        logInAsUser(userEmail);
+        login_as_user(userEmail);
 
         Location location = new Location("Test Street", "Test Suburb", "Test City", "1234", "Country");
 
@@ -99,11 +99,11 @@ public class TipPublicGardenSteps {
                 .with(csrf())); // Add CSRF token
 
         ArrayList<Garden> gardens = (ArrayList<Garden>) gardenService.getOwnedGardens(userService.getAuthenticatedUser().getUserId());
-        inayasGarden = gardens.get(gardens.size() - 1);
+        testCreatedGarden = gardens.get(gardens.size() - 1);
 
         // Make garden public
         mockMvc.perform(patch("/view-garden")
-                .param("gardenID", inayasGarden.getId().toString())
+                .param("gardenID", testCreatedGarden.getId().toString())
                 .param("isPublic", "true")
                 .with(csrf()));
 
@@ -113,9 +113,9 @@ public class TipPublicGardenSteps {
 
     // Background
     @And("{string} has {int} Blooms")
-    public void hasBlooms(String email, int bloomAmount) {
+    public void has_blooms(String email, int bloomAmount) {
 
-        logInAsUser(email);
+        login_as_user(email);
 
         User user = userService.getUserByEmail(email);
         user.setBloomBalance(bloomAmount);
@@ -134,10 +134,10 @@ public class TipPublicGardenSteps {
     public void s_garden_has_been_tipped_blooms_by(String ownerEmail, Integer tipAmount, String senderEmail) throws Exception {
         //NOTE: unused variable as it needs to be 'reusable' and read in English by PO
 
-        logInAsUser(senderEmail);
+        login_as_user(senderEmail);
 
         mockMvc.perform(post("/tip-blooms")
-                .param("gardenID", inayasGarden.getId().toString())
+                .param("gardenID", testCreatedGarden.getId().toString())
                 .param("tipAmount", tipAmount.toString()));
 
         // Log out
@@ -148,7 +148,7 @@ public class TipPublicGardenSteps {
     // AC3, AC4, AC5
     @And("I am on the garden details page for a garden I do not own")
     public void i_am_on_the_garden_details_page_for_a_garden_i_do_not_own() throws Exception {
-        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + inayasGarden.getId()))
+        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + testCreatedGarden.getId()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("viewUnownedGardenDetailsTemplate"))
                 .andReturn();
@@ -167,9 +167,15 @@ public class TipPublicGardenSteps {
     }
 
     // AC5
-    @Given("I enter an valid tip {int}")
+    @When("I enter an valid tip {int}")
     public void i_enter_an_valid_tip(Integer tipAmount) {
         this.tipAmount = tipAmount;
+    }
+
+    // AC5
+    @When("I enter a valid tip that is my entire balance")
+    public void i_enter_a_valid_tip_that_is_my_entire_balance() {
+        this.tipAmount = userService.getAuthenticatedUser().getBloomBalance();
     }
 
     // AC3, AC4, AC5
@@ -178,11 +184,11 @@ public class TipPublicGardenSteps {
 
         // Store old user bloom balance and old garden tip count for later
         oldUserBloomBalance = userService.getAuthenticatedUser().getBloomBalance();
-        oldGardenTipCount = gardenService.findGarden(inayasGarden.getId()).get().getTotalBloomTips();
+        oldGardenTipCount = gardenService.findGarden(testCreatedGarden.getId()).get().getTotalBloomTips();
 
         // Perform the post request and store the ResultActions
         ResultActions postResultActions = mockMvc.perform(post("/tip-blooms")
-                .param("gardenID", inayasGarden.getId().toString())
+                .param("gardenID", testCreatedGarden.getId().toString())
                 .param("tipAmount", tipAmount.toString())
                 .with(csrf()));
 
@@ -191,7 +197,7 @@ public class TipPublicGardenSteps {
 
         // Perform the get request with the extracted HttpSession
         assert session != null;
-        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + inayasGarden.getId())
+        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + testCreatedGarden.getId())
                         .session((MockHttpSession) session))
                 .andExpect(status().isOk())
                 .andExpect(view().name("viewUnownedGardenDetailsTemplate"))
@@ -201,23 +207,25 @@ public class TipPublicGardenSteps {
     //AC5
     @Then("the Blooms are deducted from my account")
     public void the_blooms_are_deducted_from_my_account() {
-        // Note, this only works if liam has a REALLY high balance, otherwise it will fail
-        // We can fix this by doing something like max(tipAmount - oldUserBloomBalance, 0)
-        assertEquals(oldUserBloomBalance - tipAmount, (int) userService.getAuthenticatedUser().getBloomBalance());
+        assertEquals(Math.max(oldUserBloomBalance - tipAmount, 0), (int) userService.getAuthenticatedUser().getBloomBalance());
     }
 
     //AC5
     @Then("the garden's tip count is updated")
     public void the_garden_s_tip_count_is_updated() {
         // It will be unclaimed blooms not claimed blooms
-        assertEquals(oldGardenTipCount + tipAmount, gardenService.findGarden(inayasGarden.getId()).get().getTotalBloomTips());
+        Integer blooms = gardenService.findGarden(testCreatedGarden.getId()).orElseThrow(
+                () -> new IllegalArgumentException("Garden not found")
+        ).getTotalBloomTips();
+
+        assertEquals(oldGardenTipCount + tipAmount, blooms);
     }
 
     // AC6, AC7
     @Given("I am on the garden details page for a garden I own for tips")
     public void i_am_on_the_garden_details_page_for_a_garden_i_own_for_tips() throws Exception {
 
-        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + inayasGarden.getId()))
+        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + testCreatedGarden.getId()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("viewGardenDetailsTemplate"))
                 .andReturn();
@@ -241,14 +249,14 @@ public class TipPublicGardenSteps {
     //AC7
     @Given("I have received tips for my garden")
     public void i_have_received_tips_for_my_garden() {
-        Integer tipAmount = gardenService.findGarden(inayasGarden.getId()).get().getTotalBloomTips();
+        Integer tipAmount = gardenService.findGarden(testCreatedGarden.getId()).get().getTotalBloomTips();
         assertTrue(tipAmount > 0);
     }
 
     //AC7
     @Then("I see a claim blooms button to add the amount of unclaimed bloom tips of the garden to my balance")
     public void i_see_a_claim_blooms_button_to_add_the_amount_of_unclaimed_bloom_tips_of_the_garden_to_my_balance() throws Exception {
-        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + inayasGarden.getId()))
+        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + testCreatedGarden.getId()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("viewGardenDetailsTemplate"))
                 .andReturn();
@@ -262,7 +270,7 @@ public class TipPublicGardenSteps {
         Integer totalBloomsUnclaimed = garden.get().getUnclaimedBlooms();
 
         // Get actual amount that was changed in the controller
-        Integer actualBloomsUnclaimed =  gardenService.findGarden(inayasGarden.getId()).get().getUnclaimedBlooms();
+        Integer actualBloomsUnclaimed =  gardenService.findGarden(testCreatedGarden.getId()).get().getUnclaimedBlooms();
         Assertions.assertAll(
                 () -> Assertions.assertNotNull(garden),
                 () -> assertTrue(hasBloomsToClaim),

@@ -177,8 +177,8 @@ public class ViewGardenController {
         User owner = curGarden.getOwner();
 
         // Add a new transaction for the tip
-        transactionService.addTransaction(tipAmount,
-                "Tipped " + curGarden.getName() + " (unclaimed)",
+        Transaction transaction = transactionService.addTransaction(tipAmount,
+                "Tipped " +curGarden.getName()+ " (unclaimed by " + owner.getFirstName() + ")",
                 "Garden Tip",
                 owner.getUserId(),
                 currentUser.getUserId(),
@@ -476,5 +476,6 @@ public class ViewGardenController {
             model.addAttribute("isRainingAlert", "Outdoor plants don’t need any water today");
         }
     }
+
 }
 

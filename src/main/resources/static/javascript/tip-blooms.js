@@ -1,18 +1,23 @@
 function checkTipInput(input) {
-    // const maxAmount = 512;
-    // todo come up with max amount in case the tip causes the tippee to reach the max blooms allowed in DB
-    const value = input.value;
-    const contains_dot = value.includes(".");
+    const value = input.value.trim();
+    const isWholeNumber = /^\d+$/.test(value); // Check if the input is a whole number
 
     const userBloomBalance = parseInt(input.dataset.tipInput);
-    let possibleTipFloat = parseFloat(input.value);
-    let tipAmount = parseInt(input.value);
+    let tipAmount = parseInt(value);
 
     let tipErrorMessage = document.getElementById('tipAmountErrorMessage');
     let confirmTipButton = document.getElementById('confirmTipButton');
 
     // if it's <= 0, empty space, or a decimal
-    if (tipAmount <= 0 || isNaN(tipAmount) || possibleTipFloat !== tipAmount || contains_dot) {
+    if (value.trim() === '') {
+        confirmTipButton.disabled = true; // Disable the button
+        confirmTipButton.style.backgroundColor = "gray"; // Set background color to gray
+        confirmTipButton.style.color = "white"; // Set text color to white
+        tipErrorMessage.textContent = "";
+        input.classList.remove('error'); // Remove the error class from the input
+    }
+    // if it's empty, not a whole number, or <= 0
+    else if (!isWholeNumber || tipAmount <= 0) {
         tipErrorMessage.textContent = "Tip amount must be a positive integer";
         tipErrorMessage.style.color = "red";
         confirmTipButton.disabled = true; // Disable the button
@@ -29,8 +34,8 @@ function checkTipInput(input) {
     } else {
         tipErrorMessage.textContent = "";
         confirmTipButton.disabled = false // Enable the button
-        confirmTipButton.style.backgroundColor = "green"; // Set background color to gray
+        confirmTipButton.style.backgroundColor = "green"; // Set background color to green
         confirmTipButton.style.color = "white";
-        input.classList.remove('error'); // Add the error class to the input
+        input.classList.remove('error'); // Remove the error class from the input
     }
 }
