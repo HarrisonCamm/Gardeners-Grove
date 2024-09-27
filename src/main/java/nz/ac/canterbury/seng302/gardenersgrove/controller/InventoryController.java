@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,4 +46,29 @@ public class InventoryController {
 
         return "inventoryTemplate";
     }
+
+    @PostMapping("/inventory")
+    public String purchaseItem(@RequestParam("itemId") Long itemId, Model model) {
+        logger.info("POST /inventory - Attempting to purchase item with ID: " + itemId);
+
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+
+        // Attempt to purchase the item
+        String purchaseResult = itemService.purchaseItem(itemId, currentUser.getUserId());
+
+        // Add the result to the model to display in the view
+        model.addAttribute("purchaseMessage", purchaseResult);
+
+        // Update the inventory to reflect any changes
+        List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
+        List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
+
+        model.addAttribute("badgeItems", badgeItems);
+        model.addAttribute("imageItems", imageItems);
+
+        return "inventoryTemplate";
+    }
+
+
 }
