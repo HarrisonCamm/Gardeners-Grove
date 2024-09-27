@@ -2,8 +2,10 @@ package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -17,7 +19,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -98,5 +103,56 @@ public class GifProfilePictureSteps {
         // Verify that the previous image is different from the current one
         Assertions.assertNotEquals(currentUser.getImage().getId(), currentUser.getPreviousImageId(),
                 "Previous profile image should differ from the current one");
+    }
+
+    //AC2 AC3
+    @Given("I have applied the {string} GIF item")
+    public void iHaveAppliedTheGIFItem(String itemName) throws Exception {
+        // Get item image id
+        Long itemId = itemService.getItemByName(itemName).getId();
+
+        // Use item post-mapping call
+        mvcResult = mockMvc.perform(post("/inventory/use/" + itemId))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/inventory"))
+                .andReturn();
+    }
+
+    //AC2
+    @And("I am friends with {string}")
+    public void iAmFriendsWith(String friendEmail) {
+        currentUser = userService.getAuthenticatedUser();
+        User newUser = userService.getUserByEmail(friendEmail);
+
+        currentUser.addFriend(newUser);
+        newUser.addFriend(currentUser);
+        userService.updateUserFriends(currentUser);
+        userService.updateUserFriends(newUser);
+    }
+
+
+    @And("I views Liam's profile image on the {string} page")
+    public void iViewsLaimsProfileImageOnTheEndpointPage(String endpoint) throws Exception {
+        mvcResult = mockMvc.perform(get(endpoint))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Then("I can see the {string} GIF in place of {string}s old profile picture")
+    public void iCanSeeTheGIFInPlaceOfSOldProfilePicture(String itemName, String userEmail) {
+        //Because of the way images are retrieved checking by id is acceptable
+
+        ImageItem expectedItem = (ImageItem) itemService.getItemByName(itemName);
+        boolean expectedFriendIsShown = false;
+        Long displayedImageId =  null;
+        for (User friend : (List<User>) mvcResult.getModelAndView().getModel().get("friends")) {
+            //Only retrieve the image from the correct user
+            if (friend.getEmail().equals(userEmail)) {
+                displayedImageId = friend.getImage().getId();
+                expectedFriendIsShown = true;
+            }
+        }
+        Assertions.assertTrue(expectedFriendIsShown, "True if the expected friend is displayed on the page");
+        Assertions.assertEquals(expectedItem.getImage().getId(), displayedImageId, "The correct image is displayed");
     }
 }
