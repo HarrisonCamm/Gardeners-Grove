@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -147,37 +147,129 @@ public class UnlockableContentSteps {
 
     @When("I attempt to buy an item costing more than my current Blooms balance")
     public void i_attempt_to_buy_an_item_costing_more_than_my_current_blooms_balance() {
-        // TODO: Implement logic for attempting to buy an expensive item
+        User currentUser = userService.getAuthenticatedUser();
+
+        Item item = itemService.getAllItems().iterator().next();
+        currentUser.setBloomBalance(100);
+        item.setPrice(200);
+        itemService.purchaseItem(item.getId(), currentUser.getUserId());
     }
 
     @Then("I am shown the error message {string}")
-    public void i_am_shown_the_error_message(String arg0) {
-        // TODO: Implement logic for displaying an error message
+    public void i_am_shown_the_error_message(String expectedMessage) {
+
+        // Retrieve the current user and item
+        User currentUser = userService.getAuthenticatedUser();
+        Item item = itemService.getAllItems().iterator().next();
+
+        // Broke user
+        currentUser.setBloomBalance(0);
+        userService.saveUser(currentUser);
+
+        item.setPrice(10000); // Set item price higher than user's balance
+        itemService.saveItem(item);
+
+        // Attempt to purchase the item
+        String purchaseResult = itemService.purchaseItem(item.getId(), currentUser.getUserId());
+
+        // Assert the expected result
+        assertEquals(expectedMessage, purchaseResult);
     }
 
     @And("the item is not added to my items")
     public void the_item_is_not_added_to_my_items() {
-        // TODO: Ensure item is not added to inventory on failure
+
+        User currentUser = userService.getAuthenticatedUser();
+        Item item = itemService.getAllItems().iterator().next();
+
+        //old item list
+        List<Item> ownedItems = itemService.getItemsByOwner(currentUser.getUserId());
+
+        //try purchase item
+        itemService.purchaseItem(item.getId(), currentUser.getUserId());
+
+        //new item list
+        List<Item> newOwnedItems = itemService.getItemsByOwner(currentUser.getUserId());
+
+        //assert that the item is not added to the user's items
+        assertEquals(ownedItems.size(), newOwnedItems.size());
     }
 
     @When("I buy an item costing less than or equal to my current Blooms balance")
     public void i_buy_an_item_costing_less_than_or_equal_to_my_current_blooms_balance() {
-        // TODO: Implement logic for buying an affordable item
+
+        User currentUser = userService.getAuthenticatedUser();
+
+        Item item = itemService.getAllItems().iterator().next();
+        currentUser.setBloomBalance(1000);
+        item.setPrice(100);
+        itemService.purchaseItem(item.getId(), currentUser.getUserId());
     }
 
     @Then("that item is added to my inventory")
     public void that_item_is_added_to_my_inventory() {
-        // TODO: Add the purchased item to inventory
+
+        User currentUser = userService.getAuthenticatedUser();
+        Item item = itemService.getAllItems().iterator().next();
+
+        //try purchase item
+        itemService.purchaseItem(item.getId(), currentUser.getUserId());
+        itemService.saveItem(item);
+
+        //owned item list
+        List<Item> ownedItems = itemService.getItemsByOwner(currentUser.getUserId());
+
+        //assert that the item is not added to the user's items
+        assertTrue(ownedItems.contains(item));
     }
 
     @And("the items cost in Blooms is deducted from my account")
     public void the_items_cost_in_blooms_is_deducted_from_my_account() {
-        // TODO: Deduct the item cost from the user's Blooms account
+
+        // Retrieve the current user
+        User currentUser = userService.getAuthenticatedUser();
+
+        // Retrieve the item to be purchased
+        Item item = itemService.getAllItems().iterator().next();
+
+        // Store the old Bloom balance and item price
+        int oldBloomBalance = currentUser.getBloomBalance();
+        int itemPrice = item.getPrice();
+
+        // Perform the purchase (which should update the user's balance)
+        itemService.purchaseItem(item.getId(), currentUser.getUserId());
+
+        // Re-fetch the user to ensure the balance is updated
+        currentUser = userService.getAuthenticatedUser();
+
+        // Get the updated Bloom balance
+        int newBloomBalance = currentUser.getBloomBalance();
+
+        // Assert that the new balance is correct
+        assertEquals(oldBloomBalance - itemPrice, newBloomBalance);
+
     }
 
     @And("I am shown a confirmation message {string}")
-    public void i_am_shown_a_confirmation_message(String arg0) {
-        // TODO: Display a confirmation message after purchase
+    public void i_am_shown_a_confirmation_message(String expectedMessage) {
+
+        // Retrieve the current user and item
+        User currentUser = userService.getAuthenticatedUser();
+        Item item = itemService.getAllItems().iterator().next();
+
+        // Give user hella bank
+        currentUser.setBloomBalance(1000);
+        userService.saveUser(currentUser);
+
+        item.setPrice(100);
+        itemService.saveItem(item);
+
+        // Attempt to purchase the item
+        String purchaseResult = itemService.purchaseItem(item.getId(), currentUser.getUserId());
+
+        // Assert the expected result
+        assertEquals(expectedMessage, purchaseResult);
+
     }
 
     @Given("I have more than one of the same item")
