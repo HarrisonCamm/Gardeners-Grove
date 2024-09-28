@@ -94,8 +94,7 @@
             <div id="bloomTipsGardenInfo" class="row mb-3 ps-5">
                 <div class="col">
                     <p th:text="${totalBloomsTippedMessage}"></p>
-                    <p id="makeGardenPublicMessage" th:if="${!gardenIsPublic}">Make your garden public to get tips!</p>
-
+                    <p id="makeGardenPublicMessage" th:hidden="${gardenIsPublic}">Make your garden public to get tips!</p>
 <!--                    Claim blooms tips stuff-->
                     <div th:if="${unclaimedBlooms >0}" >
                         <form th:action="@{/claim-tips(gardenID=${gardenID})}" method="post">
