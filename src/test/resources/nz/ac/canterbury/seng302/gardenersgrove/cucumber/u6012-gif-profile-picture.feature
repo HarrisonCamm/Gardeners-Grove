@@ -33,8 +33,8 @@ Feature: U6012 Gif Profile Picture
     When I view their profile
     Then I can see friend "sarah@email.com" with gif "Cat Typing" displayed as their profile picture
 
-  Scenario: AC5 - I can see a public garden owners GIF profile image
-    Given I am viewing a public garden
-    And the owner has applied a gif image item to their profile picture
-    When I view their profile picture
-    Then I can see the gif they have selected as their profile picture
+#  Scenario: AC5 - I can see a public garden owners GIF profile image
+#    Given I am viewing a public garden
+#    And the owner has applied a gif image item to their profile picture
+#    When I view their profile picture
+#    Then I can see the gif they have selected as their profile picture

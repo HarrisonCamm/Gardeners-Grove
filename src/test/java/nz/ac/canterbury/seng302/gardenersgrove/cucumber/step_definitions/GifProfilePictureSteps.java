@@ -20,8 +20,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -255,7 +253,7 @@ public class GifProfilePictureSteps {
         // Get item image id
         Long imageItemId = imageItem.getImage().getId();
 
-        // Check that friends image ID matchs cat typing image id
+        // Check that friends' image ID matches cat-typing image id
         Assertions.assertEquals(imageItemId, friend.getImage().getId(),
                 "Friend's profile picture should be set to the GIF item: " + imageItemName);
     }
