@@ -25,9 +25,6 @@ public class ShopController {
     private final TransactionService transactionService;
     private final User gardenGroveUser;
 
-    // Injecting EntityManager
-//    @PersistenceContext
-//    private EntityManager entityManager;
 
     @Autowired
     public ShopController(ShopService shopService, ItemService itemService, UserService userService, TransactionService transactionService) {
