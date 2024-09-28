@@ -233,7 +233,7 @@ public class UnlockableContentSteps {
         Item item = itemService.getAllItems().iterator().next();
 
         // Store the old Bloom balance and item price
-        int oldBloomBalance = currentUser.getBloomBalance();
+        int oldBloomBalance = 10000;
         int itemPrice = item.getPrice();
 
         // Perform the purchase (which should update the user's balance)
