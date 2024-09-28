@@ -118,7 +118,7 @@ public class UploadImageController {
                                            @RequestParam(value = "edit-plant", required = false) boolean editPlant,
                                            @RequestParam(value = "view-user-profile", required = false) boolean viewUser,
                                            @RequestParam(value = "edit-user-profile-image", required = false) boolean editUserProfile,
-                                           @RequestParam(value = "shop", required = false) boolean viewShop,
+                                           @RequestParam(value = "imageItem", required = false) boolean imageItem,
                                            @RequestParam(value = "temporary", required = false) boolean temporary,
                                            @RequestParam(value = "gardenID", required = false) Long gardenID,
                                            @RequestParam(value = "userID", required = false) Long userID,
@@ -143,7 +143,7 @@ public class UploadImageController {
             }
             model.addAttribute("id", imageID);
             model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
-        } else if (!viewUser && !editUserProfile && !viewShop) {
+        } else if (!viewUser && !editUserProfile && !imageItem) {
             Optional<Plant> foundPlant = plantService.findPlant(plantID);
             if (foundPlant.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant not found");
@@ -153,7 +153,7 @@ public class UploadImageController {
             model.addAttribute("id", plantID);
             model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
 
-        } else if (viewShop) {
+        } else if (imageItem) {
             Optional<Image> foundImage = imageService.findImage(imageID);
             if (foundImage.isEmpty()) {
                 logger.error("Image with ID {} not found for item", imageID);

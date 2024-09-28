@@ -17,10 +17,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
+import java.util.List;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class GifProfilePictureSteps {
@@ -62,13 +63,20 @@ public class GifProfilePictureSteps {
     // AC1
     @When("I click on the {string} button for the {string} imageItem")
     public void iClickOnTheButtonForTheImageItem(String buttonName, String imageItemName) throws Exception {
-        // UPDATE TO GET FROM INVENTORY MODEL?
+        // Fills model with inventory items
+        MvcResult inventoryResult = mockMvc.perform(get("/inventory"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("imageItems"))
+                .andReturn();
+
+        // Extract imageItems from the model
+        List<ImageItem> imageItems = (List<ImageItem>) inventoryResult.getModelAndView().getModel().get("imageItems");
 
         // Retrieve the item, cast to imageItem
-        ImageItem imageItem = (ImageItem) item;
+        ImageItem imageItem = imageItems.get(0);
 
         // Get item image id
-        Long itemId = item.getId();
+        Long itemId = imageItem.getId();
 
         // Use item post-mapping call
         mvcResult = mockMvc.perform(post("/inventory/use/" + itemId))
@@ -93,10 +101,10 @@ public class GifProfilePictureSteps {
         currentUser = userService.getAuthenticatedUser();
 
         // Verify that the previous profile image ID is stored
-        Assertions.assertNotNull(currentUser.getPreviousImageId(), "Previous profile image ID should be stored");
+        Assertions.assertNotNull(currentUser.getUploadedImageId(), "Previous profile image ID should be stored");
 
         // Verify that the previous image is different from the current one
-        Assertions.assertNotEquals(currentUser.getImage().getId(), currentUser.getPreviousImageId(),
+        Assertions.assertNotEquals(currentUser.getImage().getId(), currentUser.getUploadedImageId(),
                 "Previous profile image should differ from the current one");
     }
 }

@@ -143,6 +143,12 @@ public class UserProfileController {
             if (oldImage != null) {
                 imageService.deleteImage(oldImage);
             }
+
+            // Retrieve the user from the database
+            userToEdit = userService.getUserByID(userToEdit.getUserId());
+            // init user with uploaded image id
+            userToEdit.setUploadedImageId(userToEdit.getImage().getId());
+            userService.saveUser(userToEdit);
         }
         return "redirect:/view-user-profile";
     }
