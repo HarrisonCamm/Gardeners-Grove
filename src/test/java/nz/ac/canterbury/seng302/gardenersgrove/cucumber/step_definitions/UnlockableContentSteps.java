@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings({"unchecked", "SpringJavaInjectionPointsAutowiringInspection"})
@@ -146,130 +147,111 @@ public class UnlockableContentSteps {
     }
 
     @When("I attempt to buy an item costing more than my current Blooms balance")
-    public void i_attempt_to_buy_an_item_costing_more_than_my_current_blooms_balance() {
+    public void i_attempt_to_buy_an_item_costing_more_than_my_current_blooms_balance() throws Exception {
         User currentUser = userService.getAuthenticatedUser();
 
         Item item = itemService.getAllItems().iterator().next();
         currentUser.setBloomBalance(100);
+        userService.saveUser(currentUser);
         item.setPrice(200);
-        itemService.purchaseItem(item.getId(), currentUser.getUserId());
+        itemService.saveItem(item);
+
+        // Perform the POST request
+        mvcResult = mockMvc.perform(post("/shop")
+                        .param("itemId", item.getId().toString()))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
     }
 
     @Then("I am shown the error message {string}")
     public void i_am_shown_the_error_message(String expectedMessage) {
 
-        // Retrieve the current user and item
-        User currentUser = userService.getAuthenticatedUser();
-        Item item = itemService.getAllItems().iterator().next();
+        String redirectedUrl = mvcResult.getResponse().getRedirectedUrl();
+        assert redirectedUrl != null;
 
-        // Broke user
-        currentUser.setBloomBalance(0);
-        userService.saveUser(currentUser);
+        assertTrue(redirectedUrl.contains(expectedMessage));
 
-        item.setPrice(10000); // Set item price higher than user's balance
-        itemService.saveItem(item);
-
-        // Attempt to purchase the item
-        String purchaseResult = itemService.purchaseItem(item.getId(), currentUser.getUserId());
-
-        // Assert the expected result
-        assertEquals(expectedMessage, purchaseResult);
     }
 
     @And("the item is not added to my items")
-    public void the_item_is_not_added_to_my_items() {
+    public void the_item_is_not_added_to_my_items() throws Exception {
 
         User currentUser = userService.getAuthenticatedUser();
         Item item = itemService.getAllItems().iterator().next();
 
-        //old item list
         List<Item> ownedItems = itemService.getItemsByOwner(currentUser.getUserId());
 
-        //try purchase item
-        itemService.purchaseItem(item.getId(), currentUser.getUserId());
+        mockMvc.perform(post("/shop")
+                        .param("itemId", item.getId().toString()))
+                .andExpect(status().is3xxRedirection());
 
-        //new item list
         List<Item> newOwnedItems = itemService.getItemsByOwner(currentUser.getUserId());
-
-        //assert that the item is not added to the user's items
         assertEquals(ownedItems.size(), newOwnedItems.size());
+
     }
 
     @When("I buy an item costing less than or equal to my current Blooms balance")
-    public void i_buy_an_item_costing_less_than_or_equal_to_my_current_blooms_balance() {
+    public void i_buy_an_item_costing_less_than_or_equal_to_my_current_blooms_balance() throws Exception {
 
         User currentUser = userService.getAuthenticatedUser();
 
         Item item = itemService.getAllItems().iterator().next();
         currentUser.setBloomBalance(1000);
+        userService.saveUser(currentUser);
         item.setPrice(100);
-        itemService.purchaseItem(item.getId(), currentUser.getUserId());
+        itemService.saveItem(item);
+
+        // Perform the POST request
+        mvcResult = mockMvc.perform(post("/shop")
+                        .param("itemId", item.getId().toString()))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+
     }
 
     @Then("that item is added to my inventory")
-    public void that_item_is_added_to_my_inventory() {
+    public void that_item_is_added_to_my_inventory() throws Exception {
 
         User currentUser = userService.getAuthenticatedUser();
         Item item = itemService.getAllItems().iterator().next();
 
-        //try purchase item
-        itemService.purchaseItem(item.getId(), currentUser.getUserId());
-        itemService.saveItem(item);
-
-        //owned item list
         List<Item> ownedItems = itemService.getItemsByOwner(currentUser.getUserId());
 
-        //assert that the item is not added to the user's items
-        assertTrue(ownedItems.contains(item));
+        mockMvc.perform(post("/shop")
+                        .param("itemId", item.getId().toString()))
+                .andExpect(status().is3xxRedirection());
+
+        List<Item> newOwnedItems = itemService.getItemsByOwner(currentUser.getUserId());
+        assertTrue(newOwnedItems.contains(item));
     }
 
     @And("the items cost in Blooms is deducted from my account")
-    public void the_items_cost_in_blooms_is_deducted_from_my_account() {
+    public void the_items_cost_in_blooms_is_deducted_from_my_account() throws Exception {
 
-        // Retrieve the current user
         User currentUser = userService.getAuthenticatedUser();
-
-        // Retrieve the item to be purchased
         Item item = itemService.getAllItems().iterator().next();
 
-        // Store the old Bloom balance and item price
-        int oldBloomBalance = 10000;
+        int oldBloomBalance = currentUser.getBloomBalance();
         int itemPrice = item.getPrice();
 
-        // Perform the purchase (which should update the user's balance)
-        itemService.purchaseItem(item.getId(), currentUser.getUserId());
+        mockMvc.perform(post("/shop")
+                        .param("itemId", item.getId().toString()))
+                .andExpect(status().is3xxRedirection());
 
-        // Re-fetch the user to ensure the balance is updated
         currentUser = userService.getAuthenticatedUser();
-
-        // Get the updated Bloom balance
         int newBloomBalance = currentUser.getBloomBalance();
 
-        // Assert that the new balance is correct
         assertEquals(oldBloomBalance - itemPrice, newBloomBalance);
 
     }
 
     @And("I am shown a confirmation message {string}")
-    public void i_am_shown_a_confirmation_message(String expectedMessage) {
+    public void i_am_shown_a_confirmation_message(String expectedMessage) throws Exception {
 
-        // Retrieve the current user and item
-        User currentUser = userService.getAuthenticatedUser();
-        Item item = itemService.getAllItems().iterator().next();
+        String redirectedUrl = mvcResult.getResponse().getRedirectedUrl();
+        assert redirectedUrl != null;
 
-        // Give user hella bank
-        currentUser.setBloomBalance(1000);
-        userService.saveUser(currentUser);
-
-        item.setPrice(100);
-        itemService.saveItem(item);
-
-        // Attempt to purchase the item
-        String purchaseResult = itemService.purchaseItem(item.getId(), currentUser.getUserId());
-
-        // Assert the expected result
-        assertEquals(expectedMessage, purchaseResult);
-
+        assertTrue(redirectedUrl.contains("success"));
     }
 
     @Given("I have more than one of the same item")
