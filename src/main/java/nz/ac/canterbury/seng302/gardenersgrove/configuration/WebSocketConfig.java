@@ -1,8 +1,11 @@
 package nz.ac.canterbury.seng302.gardenersgrove.configuration;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -24,10 +27,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     /**
      * Configure the message broker
-     * @param registry The message broker registry
+     * @param config The message broker registry
      */
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic/", "/queue/");
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("/app", "/topic", "/queue")
+                .setTaskScheduler(heartBeatScheduler());
+    }
+
+    @Bean
+    public TaskScheduler heartBeatScheduler() {
+        return new ThreadPoolTaskScheduler();
     }
 }
