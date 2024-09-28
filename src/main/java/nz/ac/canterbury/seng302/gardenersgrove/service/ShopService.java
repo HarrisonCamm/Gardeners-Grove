@@ -57,6 +57,13 @@ public class ShopService {
     }
 
     @Transactional
+    public Shop getShop() {
+        // Assumes we have only one Shop with a fixed ID (like 1L)
+        return shopRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("Shop not found"));
+    }
+
+    @Transactional
     public void addItemToShop(Item item) {
         Shop shop = getShopInstance(entityManager);
         shop.getAvailableItems().add(item);

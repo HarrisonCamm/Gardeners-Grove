@@ -26,8 +26,8 @@ public class ShopController {
     private final User gardenGroveUser;
 
     // Injecting EntityManager
-    @PersistenceContext
-    private EntityManager entityManager;
+//    @PersistenceContext
+//    private EntityManager entityManager;
 
     @Autowired
     public ShopController(ShopService shopService, ItemService itemService, UserService userService, TransactionService transactionService) {
@@ -84,14 +84,14 @@ public class ShopController {
         }
 
         // Attempt to purchase the item
-        boolean isPurchased =  shopService.purchaseItem(currentUser, ShopService.getShopInstance(entityManager), item);
+        boolean isPurchased =  shopService.purchaseItem(currentUser, shopService.getShop(), item);
 
 
         // Redirect based on the purchase result
         if (isPurchased) {
             // Add a new transaction for the purchase
             Transaction transaction = transactionService.addTransaction(item.getPrice(),
-                    "Purchased " + item.getName() + " from the Shop",
+                    "Purchased '" + item.getName() + "' item from the Shop",
                     "Shop Purchase",
                     gardenGroveUser.getUserId(),
                     currentUser.getUserId());
