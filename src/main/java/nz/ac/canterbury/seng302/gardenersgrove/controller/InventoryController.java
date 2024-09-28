@@ -48,33 +48,4 @@ public class InventoryController {
 
         return "inventoryTemplate";
     }
-
-    @PostMapping("/shop")
-    public String purchaseItem(@RequestParam("itemId") Long itemId, Model model) {
-        logger.info("POST /shop - Attempting to purchase item with ID: " + itemId);
-
-        // Get the current user
-        User currentUser = userService.getAuthenticatedUser();
-
-        // Validate the item exists
-        Item item = itemService.getItemById(itemId);
-        if (item == null) {
-            model.addAttribute("purchaseMessage", "Item not found.");
-            return "redirect:/shop?error=Item not found";
-        }
-
-        // Attempt to purchase the item
-        String purchaseResult = itemService.purchaseItem(itemId, currentUser.getUserId());
-
-        // Redirect based on the purchase result
-        if (purchaseResult.equals("Purchase successful")) {
-            return "redirect:/shop?success=true";
-        } else {
-            return "redirect:/shop?error=Insufficient Bloom balance";
-        }
-    }
-
-
-
-
 }
