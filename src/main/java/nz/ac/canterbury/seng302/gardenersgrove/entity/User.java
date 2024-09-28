@@ -61,8 +61,8 @@ public class User {
     @JoinColumn
     private Image image;
 
-    @JoinColumn(name = "previous_image_id")
-    private Long previousImageId;
+    @JoinColumn(name = "uploaded_image_id")
+    private Long uploadedImageId;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Item> inventory = new ArrayList<>();
@@ -217,12 +217,12 @@ public class User {
         return image;
     }
 
-    public Long getPreviousImageId() {
-        return previousImageId;
+    public Long getUploadedImageId() {
+        return uploadedImageId;
     }
 
-    public void setPreviousImageId(Long previousImageId) {
-        this.previousImageId = previousImageId;
+    public void setUploadedImageId(Long previousImageId) {
+        this.uploadedImageId = previousImageId;
     }
 
     public List<FriendRequest> getSentFriendRequests() {

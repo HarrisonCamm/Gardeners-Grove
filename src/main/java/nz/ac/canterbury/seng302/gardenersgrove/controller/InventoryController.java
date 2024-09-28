@@ -85,18 +85,12 @@ public class InventoryController {
             Long itemImageId = imageItem.getImage().getId();
 
             // Get image from Image Table
-            Optional<Image> image = imageService.findImage(itemImageId);
-
-            // Check if the current user's image does not equal the item image ID
-            if (!currentUser.getImage().getId().equals(itemImageId)) {
-                // Store the current profile image ID for the ability for user to revert back
-                currentUser.setPreviousImageId(currentUser.getImage().getId());
-            }
+            Optional<Image> imageOpt = imageService.findImage(itemImageId);
 
             // Update Users Image to ItemsImage
-            image.ifPresent(currentUser::setImage);
+            imageOpt.ifPresent(currentUser::setImage);
 
-            // Persis change to user
+            // Persist change to user
             userService.saveUser(currentUser);
 
             logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
