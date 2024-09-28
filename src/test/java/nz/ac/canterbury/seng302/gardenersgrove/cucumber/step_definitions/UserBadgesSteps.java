@@ -45,6 +45,7 @@ public class UserBadgesSteps {
     @Autowired
     private ResourceLoader resourceLoader;
 
+    @Autowired
     private MockMvc mockMvc;
     private MvcResult mvcResult;
     private ResultActions resultActions;
@@ -88,6 +89,7 @@ public class UserBadgesSteps {
             currentUser.addItem(badge1);
             currentUser.addItem(badge2);
             currentUser.addItem(badge3);
+
         }
 
     }

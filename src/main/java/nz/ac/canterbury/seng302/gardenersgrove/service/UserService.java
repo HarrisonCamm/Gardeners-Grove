@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -251,6 +253,17 @@ public class UserService {
         return userRepository.findUserRank(userId);
     }
 
+    @Transactional
+    public void addItemToUser(Long userId, Item item) {
+        // Fetch user from database
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
+        // Add item to user's inventory (in-memory)
+        user.addItem(item);
+
+        // Save the user to persist the changes in the database
+        userRepository.save(user);
+    }
 
 }
