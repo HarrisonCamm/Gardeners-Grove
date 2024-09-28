@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -36,6 +37,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Bean
+    @Primary
     public TaskScheduler heartBeatScheduler() {
         return new ThreadPoolTaskScheduler();
     }

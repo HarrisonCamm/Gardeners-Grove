@@ -32,7 +32,7 @@ public class Image {
     /**
      * Required constructor
      */
-    protected Image() {}
+    public Image() {}
 
     /**
      * Constructor for an image from a file that has been picked.
