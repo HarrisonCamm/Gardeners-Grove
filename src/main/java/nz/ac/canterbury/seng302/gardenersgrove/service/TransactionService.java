@@ -95,7 +95,9 @@ public class TransactionService {
      * @param transactionId The transaction to set claimed status
      */
     public void setClaimed(Long transactionId) {
-        Transaction transaction = transactionRepository.findById(transactionId).get();
+        Transaction transaction = transactionRepository.findById(transactionId)     //throws null pointer exception if transaction does not actually exist fr
+                .orElseThrow(NullPointerException::new);
+
         transaction.setClaimed(true);
         String gardenName = transaction.getTippedGarden().getName();
         transaction.setNotes("Tipped " + gardenName + " (claimed by " + transaction.getReceiver().getFirstName() + ")");

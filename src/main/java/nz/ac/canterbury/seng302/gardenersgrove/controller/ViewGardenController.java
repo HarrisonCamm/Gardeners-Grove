@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -145,9 +146,7 @@ public class ViewGardenController {
 
     @PatchMapping("/view-garden")
     public ResponseEntity<Void> changePublicity(@RequestParam("gardenID") Long gardenID,
-                                          @RequestParam("isPublic") Boolean isPublic,
-                                          Model model,
-                                          HttpSession session){
+                                          @RequestParam("isPublic") Boolean isPublic){
         logger.info("PATCH /view-garden");
 
         User currentUser = userService.getAuthenticatedUser();
@@ -196,6 +195,7 @@ public class ViewGardenController {
         return REDIRECT_VIEW_GARDEN + gardenID;
     }
 
+    @Transactional
     @PostMapping("/claim-tips")
     public String claimTips(@RequestParam("gardenID") Long gardenID, HttpSession session) {
         logger.info("POST /claim-tips");
@@ -210,7 +210,7 @@ public class ViewGardenController {
         if (transactions.isEmpty()) return REDIRECT_VIEW_GARDEN + gardenID;
 
         // Pay the user the total amount of unclaimed tips and remove them from the gardens unclaimed amount
-        userService.addBlooms(userService.getAuthenticatedUser(), totalUnclaimedBlooms);
+        userService.addBlooms(currentUser, totalUnclaimedBlooms);
         gardenService.removeUnclaimedBloomTips(curGarden);
 
         // Set all garden's tips transactions to claimed
