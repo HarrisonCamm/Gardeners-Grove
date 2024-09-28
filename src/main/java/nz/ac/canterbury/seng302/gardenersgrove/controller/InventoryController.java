@@ -8,11 +8,13 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 
 import java.util.ArrayList;
@@ -47,28 +49,32 @@ public class InventoryController {
         return "inventoryTemplate";
     }
 
-    @PostMapping("/inventory")
+    @PostMapping("/shop")
     public String purchaseItem(@RequestParam("itemId") Long itemId, Model model) {
-        logger.info("POST /inventory - Attempting to purchase item with ID: " + itemId);
+        logger.info("POST /shop - Attempting to purchase item with ID: " + itemId);
 
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
 
+        // Validate the item exists
+        Item item = itemService.getItemById(itemId);
+        if (item == null) {
+            model.addAttribute("purchaseMessage", "Item not found.");
+            return "redirect:/shop?error=Item not found";
+        }
+
         // Attempt to purchase the item
         String purchaseResult = itemService.purchaseItem(itemId, currentUser.getUserId());
 
-        // Add the result to the model to display in the view
-        model.addAttribute("purchaseMessage", purchaseResult);
-
-        // Update the inventory to reflect any changes
-        List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
-        List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
-
-        model.addAttribute("badgeItems", badgeItems);
-        model.addAttribute("imageItems", imageItems);
-
-        return "inventoryTemplate";
+        // Redirect based on the purchase result
+        if (purchaseResult.equals("Purchase successful")) {
+            return "redirect:/shop?success=true";
+        } else {
+            return "redirect:/shop?error=Insufficient Bloom balance";
+        }
     }
+
+
 
 
 }

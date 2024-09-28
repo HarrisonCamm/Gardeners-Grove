@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.ItemRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ShopService;
@@ -50,10 +51,12 @@ class ItemServiceTests {
     private ImageItem catFallImage;
     private ImageItem catTypingImage;
     private ImageItem fabianIntensifiesImage;
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
-        itemService = new ItemService(itemRepository);
+        itemService = new ItemService(itemRepository, userRepository);
 
         happyBadge = new BadgeItem("Happy1", 1000, "😀", 1);
         eggplantBadge = new BadgeItem("Eggplant1", 2000, "\uD83C\uDF46", 1);
