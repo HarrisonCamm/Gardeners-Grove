@@ -77,23 +77,41 @@ public class InventoryController {
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
 
+        // Get inventory
+        List<Item> inventory = currentUser.getInventory();
+
         try {
-            // Gets item, then casts to ImageItem
-            ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
+            // Find item in inventory
+            Optional<Item> matchingItem = inventory.stream()
+                    .filter(item -> item.getId().equals(itemId))
+                    .findFirst();
 
-            // Get the image id of imageItem
-            Long itemImageId = imageItem.getImage().getId();
+            if (matchingItem.isPresent()) {
+                // Extract item, and cast to ImageItem
+                ImageItem item = (ImageItem) matchingItem.get();
 
-            // Get image from Image Table
-            Optional<Image> imageOpt = imageService.findImage(itemImageId);
+                // Gets item, then casts to ImageItem
+                ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
 
-            // Update Users Image to ItemsImage
-            imageOpt.ifPresent(currentUser::setImage);
+                // Get the image id of imageItem
+                Long itemImageId = imageItem.getImage().getId();
 
-            // Persist change to user
-            userService.saveUser(currentUser);
+                // Get image from Image Table
+                Optional<Image> imageOpt = imageService.findImage(itemImageId);
 
-            logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+                // Update Users Image to ItemsImage
+                imageOpt.ifPresent(currentUser::setImage);
+
+                // Persist change to user
+                userService.saveUser(currentUser);
+
+                // Log success
+                logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+            } else {
+                // Item is not found
+                logger.error("Item with ID {} not found", itemId);
+            }
+
         } catch (IllegalArgumentException e) {
             logger.error("Error applying item: {}", e.getMessage());
         }
