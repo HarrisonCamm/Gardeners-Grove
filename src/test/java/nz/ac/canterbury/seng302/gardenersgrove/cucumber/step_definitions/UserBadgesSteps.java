@@ -41,6 +41,8 @@ public class UserBadgesSteps {
 
     @Autowired
     private ItemService itemService;
+
+    @Autowired
     private ResourceLoader resourceLoader;
 
     private MockMvc mockMvc;
@@ -52,8 +54,10 @@ public class UserBadgesSteps {
     public void setup() throws IOException {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
-        // Get the user Entity for Sarah
-        User currentUser = userService.getAuthenticatedUser();
+
+        // Get the user Entity
+//        User currentUser = userService.getAuthenticatedUser();
+        User currentUser = userService.getUserByEmail("inaya@email.com");
         List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
         List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
 
@@ -104,7 +108,8 @@ public class UserBadgesSteps {
         badgeItem = (BadgeItem) itemService.getItemByName("Tim Tam");
 
         mockMvc.perform(post("/inventory/badge/use/{badgeId}", badgeItem.getId()))
-                .andExpect(status().isOk())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/inventory"))
                 .andReturn();
     }
 
@@ -112,7 +117,7 @@ public class UserBadgesSteps {
     public void the_badge_is_shown_next_to_my_name() {
         BadgeItem userBadge = userService.getAuthenticatedUser().getAppliedBadge();
         BadgeItem badge = (BadgeItem) itemService.getItemByName("Tim Tam");
-        Assertions.assertEquals( userBadge, badge);
+        Assertions.assertEquals( userBadge.getId(), badge.getId());
     }
 
     @Given("I have a badge item applied to my name")
