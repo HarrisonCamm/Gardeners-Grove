@@ -22,13 +22,13 @@ Feature: U6012 Gif Profile Picture
      | "/manage-friends" |
 
   Scenario: AC3 - I can see my GIF profile image when viewing my profile
-    Given I have applied the "Cat Typing" GIF item
+    Given I am logged in with email "liam@email.com" and password "Password1!"
+    And I have applied the "Cat Typing" GIF item
     And I am on my profile page
     When I view my profile picture
     Then I can see the "Cat Typing" GIF image as my profile picture
 
   Scenario: AC4 - I can see a friends GIF profile image
-    Given I am logged in with email "sarah@email.com" and password "Password1!"
     Given I have a friend "sarah@email.com" who has applied the "Cat Typing" GIF image item
     When I view their profile
     Then I can see friend "sarah@email.com" with gif "Cat Typing" displayed as their profile picture

@@ -116,7 +116,7 @@ public class GifProfilePictureSteps {
     }
 
     //AC2 AC3
-    @Given("I have applied the {string} GIF item")
+    @And("I have applied the {string} GIF item")
     public void iHaveAppliedTheGIFItem(String itemName) throws Exception {
         // Get item image id
         Long itemId = itemService.getItemByName(itemName).getId();
@@ -199,30 +199,31 @@ public class GifProfilePictureSteps {
         // Set friend from email
         this.friend = sarah;
 
-        // Get the image item
-        ImageItem imageItem = (ImageItem) (itemService.getItemByName(imageItemName));
+        // Add the image item to the user's inventory
+        Item itemCatTyping = itemService.getItemByName(imageItemName);
 
-        Long itemId = imageItem.getId();
+        sarah.addItem(itemCatTyping);
 
-        mvcResult = mockMvc.perform(post("/inventory/use/" + itemId))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/inventory"))
-                .andReturn();
+        // Save the adding item
+        userService.saveUser(sarah);
 
-        // Get image from databsae
-//        Image profileImage = imageItem.getImage();
+        // Get the image items from sarah
+        List<Item> sarahItems = sarah.getInventory();
 
-        // Set the image to Sarah's profile picture
-//        sarah.setImage(profileImage);
+        // Extract the image item (Only one item)
+        ImageItem item = (ImageItem) sarahItems.get(0);
+
+        // Apply image
+        sarah.setImage(item.getImage());
 
         // Save the user
-//        userService.saveUser(sarah);
+        userService.saveUser(sarah);
     }
 
     // AC4
     @When("I view their profile")
     public void iViewTheirProfile() throws Exception {
-        // View profile is essentially going to manage friends page
+        // View profile is essentially going to manage friends page (AS LIAM)
 
         // Perform GET request to /manage-friends to load the friends list
         mvcResult = mockMvc.perform(get("/manage-friends"))
@@ -242,8 +243,8 @@ public class GifProfilePictureSteps {
     @Then("I can see friend {string} with gif {string} displayed as their profile picture")
     public void iCanSeeFriendWithGifDisplayedAsTheirProfilePicture(String friendEmail, String imageItemName) {
 
-        // Find the friend with the specified email, from model list
-        friend = friends.stream()
+        // Find the friend (sarah) from the specified email from the model list
+        this.friend = friends.stream()
                 .filter(f -> f.getEmail().equals(friendEmail))
                 .findFirst()
                 .orElse(null);
@@ -251,8 +252,11 @@ public class GifProfilePictureSteps {
         // Get item, cast to imageItem
         ImageItem imageItem = (ImageItem) itemService.getItemByName(imageItemName);
 
+        // Get item image id
+        Long imageItemId = imageItem.getImage().getId();
+
         // Check that friends image ID matchs cat typing image id
-        Assertions.assertEquals(imageItem.getImage().getId(), friend.getImage().getId(),
+        Assertions.assertEquals(imageItemId, friend.getImage().getId(),
                 "Friend's profile picture should be set to the GIF item: " + imageItemName);
     }
 }
