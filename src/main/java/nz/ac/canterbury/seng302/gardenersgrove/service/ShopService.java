@@ -57,6 +57,13 @@ public class ShopService {
     }
 
     @Transactional
+    public Shop getShop() {
+        // Assumes we have only one Shop with a fixed ID (like 1L)
+        return shopRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("Shop not found"));
+    }
+
+    @Transactional
     public void addItemToShop(Item item) {
         Shop shop = getShopInstance(entityManager);
         shop.getAvailableItems().add(item);
@@ -79,7 +86,8 @@ public class ShopService {
     }
 
     @Transactional
-    public void purchaseItem(User user, Shop shop, Item item) {
+    public boolean purchaseItem(User user, Shop shop, Item item) {
+        boolean successfulPurchase = false;
         if (shop.hasItem(item) && userService.canAfford(user, item)) {
 
             // add item to user inventory
@@ -89,7 +97,9 @@ public class ShopService {
 
 
             userRepository.save(user);
+            successfulPurchase= true;
         }
+        return successfulPurchase;
     }
 
     @Transactional
