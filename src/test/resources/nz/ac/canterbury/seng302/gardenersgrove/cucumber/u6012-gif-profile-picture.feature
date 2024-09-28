@@ -28,9 +28,10 @@ Feature: U6012 Gif Profile Picture
     Then I can see the "Cat Typing" GIF image as my profile picture
 
   Scenario: AC4 - I can see a friends GIF profile image
+    Given I am logged in with email "sarah@email.com" and password "Password1!"
     Given I have a friend "sarah@email.com" who has applied the "Cat Typing" GIF image item
     When I view their profile
-    Then I can see the gif displayed as their profile picture
+    Then I can see friend "sarah@email.com" with gif "Cat Typing" displayed as their profile picture
 
   Scenario: AC5 - I can see a public garden owners GIF profile image
     Given I am viewing a public garden

@@ -38,6 +38,8 @@ public class GifProfilePictureSteps {
     private MockMvc mockMvc;
     private MvcResult mvcResult;
     private User currentUser;
+    private User friend;
+    private List<User> friends;
     private Item item;
     private Image displayedImage;
 
@@ -138,7 +140,7 @@ public class GifProfilePictureSteps {
         userService.updateUserFriends(newUser);
     }
 
-
+    //AC2
     @And("I views Liam's profile image on the {string} page")
     public void iViewsLaimsProfileImageOnTheEndpointPage(String endpoint) throws Exception {
         mvcResult = mockMvc.perform(get(endpoint))
@@ -146,6 +148,7 @@ public class GifProfilePictureSteps {
                 .andReturn();
     }
 
+    // AC2
     @Then("I can see the {string} GIF in place of {string}s old profile picture")
     public void iCanSeeTheGIFInPlaceOfSOldProfilePicture(String itemName, String userEmail) {
         //Because of the way images are retrieved checking by id is acceptable
@@ -184,5 +187,72 @@ public class GifProfilePictureSteps {
     public void iCanSeeTheGIFImageAsMyProfilePicture(String itemName) {
         ImageItem expectedItem = (ImageItem) itemService.getItemByName(itemName);
         Assertions.assertEquals(expectedItem.getImage().getId(), displayedImage.getId(), "The gif items 'image' Id is the same Id as user in models image");
+    }
+
+
+    // AC4
+    @Given("I have a friend {string} who has applied the {string} GIF image item")
+    public void iHaveAFriendWhoHasAppliedTheGIFImageItem(String friendEmail, String imageItemName) throws Exception {
+        // Get sarah user
+        User sarah = userService.getUserByEmail(friendEmail);
+
+        // Set friend from email
+        this.friend = sarah;
+
+        // Get the image item
+        ImageItem imageItem = (ImageItem) (itemService.getItemByName(imageItemName));
+
+        Long itemId = imageItem.getId();
+
+        mvcResult = mockMvc.perform(post("/inventory/use/" + itemId))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/inventory"))
+                .andReturn();
+
+        // Get image from databsae
+//        Image profileImage = imageItem.getImage();
+
+        // Set the image to Sarah's profile picture
+//        sarah.setImage(profileImage);
+
+        // Save the user
+//        userService.saveUser(sarah);
+    }
+
+    // AC4
+    @When("I view their profile")
+    public void iViewTheirProfile() throws Exception {
+        // View profile is essentially going to manage friends page
+
+        // Perform GET request to /manage-friends to load the friends list
+        mvcResult = mockMvc.perform(get("/manage-friends"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("friends"))
+                .andReturn();
+
+        // Set friend list from model
+        // Extract friends from the model
+        List<User> friends = (List<User>) mvcResult.getModelAndView().getModel().get("friends");
+
+        // Set the friends list
+        this.friends = friends;
+    }
+
+    // AC4
+    @Then("I can see friend {string} with gif {string} displayed as their profile picture")
+    public void iCanSeeFriendWithGifDisplayedAsTheirProfilePicture(String friendEmail, String imageItemName) {
+
+        // Find the friend with the specified email, from model list
+        friend = friends.stream()
+                .filter(f -> f.getEmail().equals(friendEmail))
+                .findFirst()
+                .orElse(null);
+
+        // Get item, cast to imageItem
+        ImageItem imageItem = (ImageItem) itemService.getItemByName(imageItemName);
+
+        // Check that friends image ID matchs cat typing image id
+        Assertions.assertEquals(imageItem.getImage().getId(), friend.getImage().getId(),
+                "Friend's profile picture should be set to the GIF item: " + imageItemName);
     }
 }
