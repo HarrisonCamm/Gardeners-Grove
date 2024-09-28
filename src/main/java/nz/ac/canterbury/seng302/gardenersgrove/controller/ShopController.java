@@ -93,8 +93,8 @@ public class ShopController {
             Transaction transaction = transactionService.addTransaction(item.getPrice(),
                     "Purchased " + item.getName() + " from the Shop",
                     "Shop Purchase",
-                    currentUser.getUserId(),
-                    gardenGroveUser.getUserId());
+                    gardenGroveUser.getUserId(),
+                    currentUser.getUserId());
 
             return "redirect:/shop?success=true";
         } else {
