@@ -3,6 +3,7 @@ Feature: User Badges
 
   Background: User is logged in
     Given I am logged in with email "inaya@email.com" and password "Password1!"
+    And I have items in my inventory
 
   Scenario: Apply badge to user name
     Given I am in my inventory and own a badge item

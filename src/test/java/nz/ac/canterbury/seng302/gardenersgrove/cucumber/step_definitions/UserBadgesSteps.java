@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.cucumber.step_definitions;
 
 import io.cucumber.java.Before;
 import io.cucumber.java.BeforeAll;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -40,6 +41,8 @@ public class UserBadgesSteps {
 
     @Autowired
     private ItemService itemService;
+
+    @Autowired
     private ResourceLoader resourceLoader;
 
     private MockMvc mockMvc;
@@ -50,7 +53,10 @@ public class UserBadgesSteps {
     @Before
     public void setup() throws IOException {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
 
+    @And("I have items in my inventory")
+    public void i_have_items_in_my_inventory() throws Exception {
         // Get the user Entity for Sarah
         User currentUser = userService.getAuthenticatedUser();
         List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
@@ -76,15 +82,12 @@ public class UserBadgesSteps {
         BadgeItem badge2 = new BadgeItem("Vegemite", 50, vegimiteImage, 1);
         BadgeItem badge3 = new BadgeItem("Love", 25, neoFabianImage, 1);
 
-
-
         // DUMMY DATA
         if (badgeItems.isEmpty()) {
             currentUser.addItem(badge1);
             currentUser.addItem(badge2);
             currentUser.addItem(badge3);
         }
-
     }
 
     //AC1
@@ -103,7 +106,7 @@ public class UserBadgesSteps {
         badgeItem = (BadgeItem) itemService.getItemByName("Tim Tam");
 
         mockMvc.perform(post("/inventory/badge/use/{badgeId}", badgeItem.getId()))
-                .andExpect(status().isOk())
+                .andExpect(status().is3xxRedirection()) // Redirect to inventory to maintain URL
                 .andReturn();
     }
 
