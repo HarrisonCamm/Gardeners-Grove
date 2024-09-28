@@ -363,6 +363,7 @@ public class ViewGardenController {
     }
 
     private void addGardenAttributes(Garden garden, Long gardenID, Model model, HttpSession session) {
+        model.addAttribute("gardenOwner", garden.getOwner());
         model.addAttribute("gardenID", gardenID);
         model.addAttribute("tagInput", "");
         model.addAttribute("gardenName", garden.getName());

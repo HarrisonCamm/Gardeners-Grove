@@ -5,10 +5,14 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import jakarta.transaction.Transactional;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
+import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -25,6 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Transactional
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class GifProfilePictureSteps {
     @Autowired
@@ -33,6 +38,8 @@ public class GifProfilePictureSteps {
     private UserService userService;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private GardenService gardenService;
     private MockMvc mockMvc;
     private MvcResult mvcResult;
     private User currentUser;
@@ -55,14 +62,17 @@ public class GifProfilePictureSteps {
         // Set the current user
         currentUser = loggedInUser;
 
-        // Add the image item to the user's inventory
-        loggedInUser.addItem(itemService.getItemByName(string));
+        // Get the item only once
+        Item item = itemService.getItemByName(string);
 
-        // Set the image item
-        item = itemService.getItemByName(string);
+        // Add the image item to the user's inventory
+        loggedInUser.addItem(item);
 
         // Save the user
         userService.saveUser(loggedInUser);
+
+        // Set the image item
+        this.item = item;
     }
 
     // AC1
@@ -117,7 +127,7 @@ public class GifProfilePictureSteps {
     @And("I have applied the {string} GIF item")
     public void iHaveAppliedTheGIFItem(String itemName) throws Exception {
         // Get item image id
-        Long itemId = itemService.getItemByName(itemName).getId();
+        Long itemId = this.item.getId();
 
         // Use item post-mapping call
         mvcResult = mockMvc.perform(post("/inventory/use/" + itemId))
@@ -197,15 +207,16 @@ public class GifProfilePictureSteps {
         // Set friend from email
         this.friend = sarah;
 
-        // Add the image item to the user's inventory
-        Item itemCatTyping = itemService.getItemByName(imageItemName);
+        // Get the item
+        Item itemCatTyping = this.item;
 
+        // Add the image item to the user's inventory
         sarah.addItem(itemCatTyping);
 
         // Save the adding item
         userService.saveUser(sarah);
 
-        // Get the image items from sarah
+        // Get the image items from sarah inventory (Emulating post-mapping)
         List<Item> sarahItems = sarah.getInventory();
 
         // Extract the image item (Only one item)
@@ -229,7 +240,7 @@ public class GifProfilePictureSteps {
                 .andExpect(model().attributeExists("friends"))
                 .andReturn();
 
-        // Set friend list from model
+        // Get Liams friend list from model
         // Extract friends from the model
         List<User> friends = (List<User>) mvcResult.getModelAndView().getModel().get("friends");
 
@@ -241,7 +252,7 @@ public class GifProfilePictureSteps {
     @Then("I can see friend {string} with gif {string} displayed as their profile picture")
     public void iCanSeeFriendWithGifDisplayedAsTheirProfilePicture(String friendEmail, String imageItemName) {
 
-        // Find the friend (sarah) from the specified email from the model list
+        // Find the friend (sarah) from the Liams friend list from the model
         this.friend = friends.stream()
                 .filter(f -> f.getEmail().equals(friendEmail))
                 .findFirst()
@@ -256,5 +267,52 @@ public class GifProfilePictureSteps {
         // Check that friends' image ID matches cat-typing image id
         Assertions.assertEquals(imageItemId, friend.getImage().getId(),
                 "Friend's profile picture should be set to the GIF item: " + imageItemName);
+    }
+
+    // AC5
+    @Given("I am viewing a public garden")
+    public void iAmViewingAPublicGarden() throws Exception {
+        this.friend = userService.getUserByEmail("sarah@email.com");
+
+        // Create a public garden owned by Sarah
+        Location location = new Location("123 Garden St", "Suburb", "City", "1234", "Country");
+        Garden sarahsGarden = new Garden("Sarah's Public Garden", location, "100", this.friend, "A beautiful public garden");
+        sarahsGarden.setIsPublic(true);
+        gardenService.addGarden(sarahsGarden); // NOTE: THIS IS WHERE ERROR OCCURS
+
+        // Visit the garden as Liam
+        mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + sarahsGarden.getId()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("viewUnownedGardenDetailsTemplate"))
+                .andExpect(model().attributeExists("gardenOwner"))
+                .andReturn();
+    }
+
+    // AC5
+    @And("the owner has applied a gif image item to their profile picture")
+    public void theOwnerHasAppliedAGifImageItemToTheirProfilePicture() {
+
+        // Sarah has down this in previous steps
+
+    }
+
+    // AC5
+    @When("I view their profile picture")
+    public void iViewTheirProfilePicture() {
+        // Extract the gardenOwner from the model
+        User gardenOwner = (User) mvcResult.getModelAndView().getModel().get("gardenOwner");
+        // Store the displayed image
+        this.displayedImage = gardenOwner.getImage();
+    }
+
+    // AC5
+    @Then("I can see the gif they have selected as their profile picture")
+    public void iCanSeeTheGifTheyHaveSelectedAsTheirProfilePicture() {
+        // Get the expected image (GIF image that Sarah applied)
+        Image expectedImage = friend.getImage();
+        // Compare the displayed image with the expected image
+        Assertions.assertEquals(expectedImage.getId(), this.displayedImage.getId(),
+                "The displayed profile picture should be the GIF image applied by the owner");
+
     }
 }
