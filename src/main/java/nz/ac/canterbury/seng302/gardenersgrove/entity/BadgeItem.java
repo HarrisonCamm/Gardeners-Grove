@@ -19,9 +19,6 @@ public class BadgeItem extends Item {
         this.icon = icon;
     }
 
-    public void setIcon() {
-        this.icon = icon;
-    }
     public Image getIcon() {
         return this.icon;
     }
