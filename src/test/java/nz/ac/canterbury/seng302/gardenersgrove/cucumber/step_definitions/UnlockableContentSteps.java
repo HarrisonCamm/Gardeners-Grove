@@ -20,8 +20,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -84,12 +82,12 @@ public class UnlockableContentSteps {
         List<Map.Entry<Item,Integer>> expectedOwnedBadgeItems = new ArrayList<>();
         List<Map.Entry<Item,Integer>> expectedOwnedImageItems = new ArrayList<>();
 
-        for (Map.Entry<Item,Integer> item: expectedOwnedItems) {
-            if (item.getKey() instanceof BadgeItem) {
-                expectedOwnedBadgeItems.add(item);
+        for (Map.Entry<Item,Integer> expectedItem: expectedOwnedItems) {
+            if (expectedItem.getKey() instanceof BadgeItem) {
+                expectedOwnedBadgeItems.add(expectedItem);
             }
-            if (item.getKey() instanceof ImageItem) {
-                expectedOwnedImageItems.add(item);
+            if (expectedItem.getKey() instanceof ImageItem) {
+                expectedOwnedImageItems.add(expectedItem);
             }
         }
 
@@ -327,7 +325,7 @@ public class UnlockableContentSteps {
     @When("I check my Bloom transaction history")
     public void i_check_my_bloom_transaction_history() {
         List<Transaction> currentUsersTransactions = transactionService.getTransactionsBySender(currentUser);
-        transaction = currentUsersTransactions.getLast();
+        transaction = currentUsersTransactions.get(currentUsersTransactions.size() - 1);
     }
 
 //    AC 10
