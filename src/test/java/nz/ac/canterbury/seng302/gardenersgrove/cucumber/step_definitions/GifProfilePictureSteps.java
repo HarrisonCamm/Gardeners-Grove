@@ -25,6 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.util.List;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -138,19 +139,19 @@ public class GifProfilePictureSteps {
 
     //AC2
     @And("I am friends with {string}")
-    public void iAmFriendsWith(String friendEmail) {
-        currentUser = userService.getAuthenticatedUser();
-        User newUser = userService.getUserByEmail(friendEmail);
+    public void iAmFriendsWith(String friendEmail) throws Exception {
+        User currentUser = userService.getAuthenticatedUser();
+        User friendUser = userService.getUserByEmail(friendEmail);
 
-        currentUser.addFriend(newUser);
-        newUser.addFriend(currentUser);
+        currentUser.addFriend(friendUser);
+        friendUser.addFriend(currentUser);
         userService.updateUserFriends(currentUser);
-        userService.updateUserFriends(newUser);
+        userService.updateUserFriends(friendUser);
     }
 
     //AC2
-    @And("I views Liam's profile image on the {string} page")
-    public void iViewsLaimsProfileImageOnTheEndpointPage(String endpoint) throws Exception {
+    @And("I views {string} profile image on the {string} page")
+    public void iViewsUsersProfileImageOnTheEndpointPage(String profileEmail, String endpoint) throws Exception {
         mvcResult = mockMvc.perform(get(endpoint))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -202,31 +203,31 @@ public class GifProfilePictureSteps {
     @Given("I have a friend {string} who has applied the {string} GIF image item")
     public void iHaveAFriendWhoHasAppliedTheGIFImageItem(String friendEmail, String imageItemName) throws Exception {
         // Get sarah user
-        User sarah = userService.getUserByEmail(friendEmail);
+        User otherFriend = userService.getUserByEmail(friendEmail);
 
         // Set friend from email
-        this.friend = sarah;
+        this.friend = otherFriend;
 
         // Get the item
         Item itemCatTyping = this.item;
 
         // Add the image item to the user's inventory
-        sarah.addItem(itemCatTyping);
+        otherFriend.addItem(itemCatTyping);
 
         // Save the adding item
-        userService.saveUser(sarah);
+        userService.saveUser(otherFriend);
 
         // Get the image items from sarah inventory (Emulating post-mapping)
-        List<Item> sarahItems = sarah.getInventory();
+        List<Item> sarahItems = otherFriend.getInventory();
 
         // Extract the image item (Only one item)
         ImageItem item = (ImageItem) sarahItems.get(0);
 
         // Apply image
-        sarah.setImage(item.getImage());
+        otherFriend.setImage(item.getImage());
 
         // Save the user
-        userService.saveUser(sarah);
+        userService.saveUser(otherFriend);
     }
 
     // AC4
@@ -278,7 +279,7 @@ public class GifProfilePictureSteps {
         Location location = new Location("123 Garden St", "Suburb", "City", "1234", "Country");
         Garden sarahsGarden = new Garden("Sarah's Public Garden", location, "100", this.friend, "A beautiful public garden");
         sarahsGarden.setIsPublic(true);
-        gardenService.addGarden(sarahsGarden); // NOTE: THIS IS WHERE ERROR OCCURS
+        gardenService.addGarden(sarahsGarden);
 
         // Visit the garden as Liam
         mvcResult = mockMvc.perform(get("/view-garden?gardenID=" + sarahsGarden.getId()))

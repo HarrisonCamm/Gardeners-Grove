@@ -15,7 +15,7 @@ Feature: U6012 Gif Profile Picture
    And I am friends with "sarah@email.com"
    # NOTE: Login as friend
    When I am logged in with email "sarah@email.com" and password "Password1!"
-   And I views Liam's profile image on the <endpoint> page
+   And I views "liam@email.com" profile image on the <endpoint> page
    Then I can see the "Cat Typing" GIF in place of "liam@email.com"s old profile picture
    Examples:
      | endpoint |
