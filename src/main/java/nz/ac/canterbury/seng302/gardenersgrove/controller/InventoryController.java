@@ -39,9 +39,9 @@ public class InventoryController {
         User currentUser = userService.getAuthenticatedUser();
         List<Inventory> items = inventoryService.getUserInventory(currentUser);
 
-        List<Map.Entry<Item,Integer>> ownedItems= new ArrayList<>();
+        List<Map.Entry<Item,Integer>> ownedItems = new ArrayList<>();
 
-        for (Inventory inventory: items) {
+        for (Inventory inventory : items) {
             Item item = inventory.getItem();
             Integer quantity = inventory.getQuantity();
             Map.Entry<Item,Integer> itemEntry = new AbstractMap.SimpleEntry<>(item, quantity);
@@ -51,13 +51,17 @@ public class InventoryController {
         List<Map.Entry<Item,Integer>> badgeItems = new ArrayList<>();
         List<Map.Entry<Item,Integer>> imageItems = new ArrayList<>();
 
-        for (Map.Entry<Item,Integer> item: ownedItems) {
+        for (Map.Entry<Item,Integer> item : ownedItems) {
             if (item.getKey() instanceof BadgeItem) {
                 badgeItems.add(item);
             }
             if (item.getKey() instanceof ImageItem) {
                 imageItems.add(item);
             }
+        }
+
+        if (currentUser.getImage() != null && !currentUser.getUploadedImageId().equals(currentUser.getImage().getId())) {
+            model.addAttribute("unapplyItemId", inventoryService.getInventoryByOwnerIdAndImageId(currentUser.getUserId(), currentUser.getImage().getId()).getItem().getId());
         }
 
         model.addAttribute("badgeItems", badgeItems);
@@ -110,4 +114,24 @@ public class InventoryController {
 
         return "redirect:/inventory";
     }
+
+    @PostMapping("/inventory/unapply/{itemId}")
+    public String unapplyImageItem(@PathVariable Long itemId) {
+        logger.info("POST /inventory/unapply/{}", itemId);
+
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+        Inventory unapplyItem = inventoryService.getInventoryByOwnerIdAndImageId(currentUser.getUserId(), currentUser.getImage().getId());
+
+        if (unapplyItem.getItem().getId().equals(itemId)) {
+            Optional<Image> imageOpt = imageService.findImage(currentUser.getUploadedImageId());
+            if (imageOpt.isPresent()) {
+                currentUser.setImage(imageOpt.get());
+                userService.saveUser(currentUser);
+            }
+        }
+
+        return "redirect:/inventory";
+    }
+
 }
