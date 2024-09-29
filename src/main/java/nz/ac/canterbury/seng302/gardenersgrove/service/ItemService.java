@@ -52,22 +52,6 @@ public class ItemService {
         return itemRepository.findImages();
     }
 
-//    public List<Item> getEquippedByOwner(Long userId) {
-//        return itemRepository.findIsEquippedByOwnerUserId(userId);
-//    }
-
-//    public List<Item> getBadgesByOwner(Long userId) {
-//        return itemRepository.findBadgesByOwnerUserId(userId);
-//    }
-
-//    public List<Item> getImagesByOwner(Long userId) {
-//        return itemRepository.findImagesByOwnerUserId(userId);
-//    }
-
-//    public List<Item> getItemsByOwner(Long userId) {
-//        return itemRepository.findByOwnerUserId(userId);
-//    }
-
     public String purchaseItem(Long itemId, Long userId) {
         // Find the item and user by their IDs
         Item item = itemRepository.findById(itemId).orElse(null);

@@ -1,7 +1,5 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.slf4j.Logger;

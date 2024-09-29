@@ -4,9 +4,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.service;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Inventory;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.UserRelationship;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.InventoryRepository;
-import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRelationshipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,11 +46,5 @@ public class InventoryService {
         }
         return items;
     }
-//    public void remove(UserRelationship userRelationship) {
-//        userRelationshipRepository.delete(userRelationship);
-//    }
-//
-//    public void removeAll() {
-//        userRelationshipRepository.deleteAll();
-//    }
+
 }
