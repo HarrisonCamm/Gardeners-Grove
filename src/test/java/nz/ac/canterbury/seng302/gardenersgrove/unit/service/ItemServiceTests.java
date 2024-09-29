@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.ItemRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ShopService;
@@ -57,15 +58,15 @@ class ItemServiceTests {
         try {
             Path catFallImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/cat-fall.gif").getURI());
             Image image1 = new Image(Files.readAllBytes(catFallImagePath), "gif", false);
-            catFallImage = new ImageItem("Cat Fall1", 5000, image1, 1);
+            catFallImage = new ImageItem("Cat Fall1", 5000, image1);
 
             Path catTypingImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/cat-typing.gif").getURI());
             Image image2 = new Image(Files.readAllBytes(catTypingImagePath), "gif", false);
-            catTypingImage = new ImageItem("Cat Typing1", 6000, image2, 1);
+            catTypingImage = new ImageItem("Cat Typing1", 6000, image2);
 
             Path fabianIntensifiesImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/fabian-intensifies.gif").getURI());
             Image image3 = new Image(Files.readAllBytes(fabianIntensifiesImagePath), "gif", false);
-            fabianIntensifiesImage = new ImageItem("Fabian Intensifies1", 7000, image3, 1);
+            fabianIntensifiesImage = new ImageItem("Fabian Intensifies1", 7000, image3);
 
             // Create predefined profile pictures
             Path timtamImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/timtam.png").getURI());
@@ -81,9 +82,9 @@ class ItemServiceTests {
             Image neoFabianImage = new Image(neoFabianImageBytes, "png", false);
 
             // Initialize class-level variables
-            badge1 = new BadgeItem("Tim Tam", 100, timtamImage, 1);
-            badge2 = new BadgeItem("Vegemite", 50, vegimiteImage, 1);
-            badge3 = new BadgeItem("Neo Fabian", 25, neoFabianImage, 1);
+            badge1 = new BadgeItem("Tim Tam", 100, timtamImage);
+            badge2 = new BadgeItem("Vegemite", 50, vegimiteImage);
+            badge3 = new BadgeItem("Neo Fabian", 25, neoFabianImage);
 
             itemService.saveItem(badge1);
             itemService.saveItem(badge2);

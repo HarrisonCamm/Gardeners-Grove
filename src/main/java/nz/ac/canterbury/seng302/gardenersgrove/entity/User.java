@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * User class that contains all the values a user should have
@@ -67,9 +64,6 @@ public class User {
     @JoinColumn(name = "uploaded_image_id")
     private Long uploadedImageId;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Item> inventory = new ArrayList<>();
-
     @Column()
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
@@ -79,7 +73,7 @@ public class User {
     private List<Transaction> transactions = new ArrayList<>();
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "applied_badge_id")
     private BadgeItem appliedBadge;
 
     @Column(nullable = false, columnDefinition = "integer default 0")
@@ -123,7 +117,6 @@ public class User {
         this.noLastName = noLastName;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
-        this.bloomBalance = DEFAULT_BALANCE;
         this.appliedBadge = null;
         return this;
     }
@@ -192,15 +185,6 @@ public class User {
         return email;
     }
 
-    // Getter for inventory
-    public List<Item> getInventory() {
-        return inventory;
-    }
-
-    // Setter for inventory
-    public void setInventory(List<Item> inventory) {
-        this.inventory = inventory;
-    }
 
     public void setDateOfBirth(String newDateOfBirth) {
         this.dateOfBirth = newDateOfBirth;
@@ -355,33 +339,4 @@ public class User {
         return Objects.hash(email, firstName, lastName);
     }
 
-    public void addItem(Item item) {
-        Item theItem = getItem(item, 1);
-
-        if (theItem != null) {
-            theItem.setQuantity(theItem.getQuantity() + 1);
-        } else {
-            // If the item doesn't exist, set the owner and add it to the inventory
-            item.setOwner(this);
-            item.setQuantity(1);
-            inventory.add(item);
-        }
-    }
-
-
-    public void removeItem(Item item, int quantity) throws IllegalArgumentException {
-        Item theItem = getItem(item, quantity);
-        if (theItem == null) {
-            throw new IllegalArgumentException("Insufficient quantity.");
-        }
-
-        theItem.setQuantity(theItem.getQuantity() - quantity);
-        if (theItem.getQuantity() == 0) {
-            inventory.remove(theItem);
-        }
-    }
-
-    public Item getItem(Item item, int quantity) {
-        return inventory.stream().filter(i -> i.equals(item) && i.getQuantity() >= quantity).findFirst().orElse(null);
-    }
 }

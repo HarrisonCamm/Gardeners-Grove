@@ -10,6 +10,8 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class InventoryController {
@@ -32,12 +35,14 @@ public class InventoryController {
 
     private final ItemService itemService;
     private final UserService userService;
+    private final InventoryService inventoryService;
     private final ImageService imageService;
 
     @Autowired
-    public InventoryController(ItemService itemService, UserService userService, ImageService imageService) {
+    public InventoryController(ItemService itemService, UserService userService, InventoryService inventoryService, ImageService imageService) {
         this.itemService = itemService;
         this.userService = userService;
+        this.inventoryService = inventoryService;
         this.imageService = imageService;
     }
 
@@ -48,21 +53,27 @@ public class InventoryController {
 
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
-        List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
-        List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
+        List<Inventory> items = inventoryService.getUserInventory(currentUser);
 
-        // DUMMY DATA
-        if (badgeItems.isEmpty()) {
-            currentUser.addItem(itemService.getItemByName("Tim Tam"));
-            currentUser.addItem(itemService.getItemByName("Vegemite"));
-            currentUser.addItem(itemService.getItemByName("Love"));
-            userService.saveUser(currentUser);
+        List<Map.Entry<Item,Integer>> ownedItems= new ArrayList<>();
+
+        for (Inventory inventory: items) {
+            Item item = inventory.getItem();
+            Integer quantity = inventory.getQuantity();
+            Map.Entry<Item,Integer> itemEntry = new AbstractMap.SimpleEntry<>(item, quantity);
+            ownedItems.add(itemEntry);
         }
-        if (imageItems.isEmpty()) {
-            currentUser.addItem(itemService.getItemByName("Cat Fall"));
-            currentUser.addItem(itemService.getItemByName("Cat Typing"));
-            currentUser.addItem(itemService.getItemByName("Fabian Intensifies"));
-            userService.saveUser(currentUser);
+
+        List<Map.Entry<Item,Integer>> badgeItems = new ArrayList<>();
+        List<Map.Entry<Item,Integer>> imageItems = new ArrayList<>();
+
+        for (Map.Entry<Item,Integer> item: ownedItems) {
+            if (item.getKey() instanceof BadgeItem) {
+                badgeItems.add(item);
+            }
+            if (item.getKey() instanceof ImageItem) {
+                imageItems.add(item);
+            }
         }
 
         model.addAttribute("badgeItems", badgeItems);
@@ -105,15 +116,14 @@ public class InventoryController {
         User currentUser = userService.getAuthenticatedUser();
 
         // Get inventory
-        List<Item> inventory = currentUser.getInventory();
+        List<Inventory> inventory = inventoryService.getUserInventory(currentUser);
 
         try {
             // Find item in inventory
-            Optional<Item> matchingItem = inventory.stream()
-                    .filter(item -> item.getId().equals(itemId))
+            Optional<Inventory> matchingItemInInventory = inventory.stream()
+                    .filter(item -> item.getItem().getId().equals(itemId))
                     .findFirst();
-
-            if (matchingItem.isPresent()) {
+            if (matchingItemInInventory.isPresent()) {
                 // Gets item, then casts to ImageItem
                 ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
 
@@ -142,8 +152,4 @@ public class InventoryController {
 
         return "redirect:/inventory";
     }
-
-
-
-
 }

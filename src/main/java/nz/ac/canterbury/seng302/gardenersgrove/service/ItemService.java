@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.ItemRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,11 +11,13 @@ import java.util.List;
 
 @Service
 public class ItemService {
-    private ItemRepository itemRepository;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository) {
+    public ItemService(ItemRepository itemRepository, UserRepository userRepository) {
         this.itemRepository = itemRepository;
+        this.userRepository = userRepository;
     }
 
     public void saveItem(Item item) {
@@ -48,20 +52,34 @@ public class ItemService {
         return itemRepository.findImages();
     }
 
-    public List<Item> getEquippedByOwner(Long userId) {
-        return itemRepository.findIsEquippedByOwnerUserId(userId);
-    }
+    public String purchaseItem(Long itemId, Long userId) {
+        // Find the item and user by their IDs
+        Item item = itemRepository.findById(itemId).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
 
-    public List<Item> getBadgesByOwner(Long userId) {
-        return itemRepository.findBadgesByOwnerUserId(userId);
-    }
 
-    public List<Item> getImagesByOwner(Long userId) {
-        return itemRepository.findImagesByOwnerUserId(userId);
-    }
+        if (item == null) {
+            return "Item not found.";
+        }
 
-    public List<Item> getItemsByOwner(Long userId) {
-        return itemRepository.findByOwnerUserId(userId);
-    }
+        if (user == null) {
+            return "User not found.";
+        }
 
+        // Check if the user has enough balance
+        if (user.getBloomBalance() >= item.getPrice()) {
+            // Deduct the cost from the user's balance
+            user.setBloomBalance(user.getBloomBalance() - item.getPrice());
+
+            // Set the owner of the item to the current user
+
+            // Save the updated item and user entities
+            itemRepository.save(item);
+            userRepository.save(user);
+
+            return "Purchase successful";
+        } else {
+            return "Insufficient Bloom balance";
+        }
+    }
 }
