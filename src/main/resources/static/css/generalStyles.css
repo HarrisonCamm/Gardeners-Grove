@@ -853,3 +853,6 @@ h2 {
 .fixed-width-card {
     max-width: 400px;
 }
+ .item-row {
+     justify-content: center;
+ }
