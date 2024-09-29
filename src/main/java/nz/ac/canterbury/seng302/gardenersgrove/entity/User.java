@@ -57,7 +57,7 @@ public class User {
     )
     private List<User> nonFriendContacts = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn
     private Image image;
 
