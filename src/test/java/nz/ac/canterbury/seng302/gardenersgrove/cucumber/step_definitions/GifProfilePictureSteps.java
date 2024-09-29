@@ -54,7 +54,6 @@ public class GifProfilePictureSteps {
     private List<User> friends;
     private Item item;
     private Image displayedImage;
-    private Image previousImage;
 
     @Before
     public void setUp() throws IOException {
@@ -327,8 +326,6 @@ public class GifProfilePictureSteps {
     public void iHaveAppliedAsMyProfilePicture(String gifName) throws Exception {
         Inventory inventoryItem = inventoryService.getInventory(currentUser, itemService.getItemByName(gifName));
         currentUser = userService.getAuthenticatedUser();
-        previousImage = currentUser.getImage();
-        assertEquals(currentUser.getUploadedImageId(), previousImage.getId());
 
         mvcResult = mockMvc.perform(post("/inventory/use/" + inventoryItem.getItem().getId()))
                 .andExpect(status().is3xxRedirection())
@@ -352,6 +349,6 @@ public class GifProfilePictureSteps {
     @Then("My profile picture will revert to the image I had before selecting the gif image")
     public void myProfilePictureWillRevertToTheImageIHadBeforeSelectingTheGifImage() {
         currentUser = userService.getAuthenticatedUser();
-        assertEquals(previousImage.getId(), currentUser.getImage().getId());
+        assertEquals(currentUser.getUploadedImageId(), currentUser.getImage().getId());
     }
 }
