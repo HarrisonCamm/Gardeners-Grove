@@ -98,7 +98,7 @@ public class InventoryController {
     }
 
     @PostMapping("/inventory/gif/use/{itemId}")
-    public String useGifItem(@PathVariable Long itemId) {
+    public String useImageItem(@PathVariable Long itemId) {
         logger.info("POST /inventory/use/{}", itemId);
 
         // Get the current user
@@ -117,20 +117,24 @@ public class InventoryController {
                 // Gets item, then casts to ImageItem
                 ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
 
-            // Get image from Image Table
-            Optional<Image> image = imageService.findImage(itemImageId);
+                // Get the image id of imageItem
+                Long itemImageId = imageItem.getImage().getId();
 
-            // Check if the current user's image does not equal the item image ID
-            if (!currentUser.getImage().getId().equals(itemImageId)) {
-                // Store the current profile image ID for the ability for user to revert back
-                currentUser.setUploadedImageId(currentUser.getImage().getId());
+                // Get image from Image Table
+                Optional<Image> imageOpt = imageService.findImage(itemImageId);
+
+                // Update Users Image to ItemsImage
+                imageOpt.ifPresent(currentUser::setImage);
+
+                // Persist change to user
+                userService.saveUser(currentUser);
+
+                // Log success
+                logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+            } else {
+                // Item is not found
+                logger.error("Item with ID {} not found", itemId);
             }
-
-            // Update Users Image to ItemsImage
-            image.ifPresent(currentUser::setImage);
-
-            // Persis change to user
-            userService.saveUser(currentUser);
 
         } catch (IllegalArgumentException e) {
             logger.error("Error applying item: {}", e.getMessage());
@@ -138,6 +142,7 @@ public class InventoryController {
 
         return "redirect:/inventory";
     }
+
 
 
 

@@ -141,11 +141,6 @@ public class UserBadgesSteps {
         assert true;
     }
 
-    @Given("I am on my profile page")
-    public void i_am_on_my_profile_page() {
-        // Write code here that turns the phrase above into concrete actions
-        assert true;
-    }
 
     @When("I view my name")
     public void i_view_my_name() {
@@ -161,12 +156,6 @@ public class UserBadgesSteps {
 
     @Given("I have a friend and they have a badge item applied to their name")
     public void i_have_a_friend_and_they_have_a_badge_item_applied_to_their_name() {
-        // Write code here that turns the phrase above into concrete actions
-        assert true;
-    }
-
-    @When("I view their profile")
-    public void i_view_their_profile() {
         // Write code here that turns the phrase above into concrete actions
         assert true;
     }
