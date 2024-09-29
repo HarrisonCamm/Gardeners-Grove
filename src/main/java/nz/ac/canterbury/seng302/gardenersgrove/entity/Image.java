@@ -6,12 +6,8 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.util.Timer;
-import java.util.TimerTask;
 
 @Entity
 public class Image {

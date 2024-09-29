@@ -4,13 +4,6 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ShopService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +24,6 @@ public class ShopController {
     private final ItemService itemService;
     private final UserService userService;
     private final TransactionService transactionService;
-    private RedirectService redirectService;
 
 
     @Autowired
