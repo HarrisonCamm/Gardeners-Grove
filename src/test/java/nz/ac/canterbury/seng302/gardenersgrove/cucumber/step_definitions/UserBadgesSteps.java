@@ -114,7 +114,7 @@ public class UserBadgesSteps {
     public void the_badge_is_shown_next_to_my_name() {
         BadgeItem userBadge = userService.getAuthenticatedUser().getAppliedBadge();
         BadgeItem badge = (BadgeItem) itemService.getItemByName("Tim Tam");
-        Assertions.assertEquals( userBadge, badge);
+        Assertions.assertEquals(userBadge.getName(), badge.getName());
     }
 
     @Given("I have a badge item applied to my name")

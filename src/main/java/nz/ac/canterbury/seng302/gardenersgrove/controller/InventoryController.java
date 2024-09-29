@@ -43,19 +43,19 @@ public class InventoryController {
         List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
         List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
 
-        // DUMMY DATA
-        if (badgeItems.isEmpty()) {
-            currentUser.addItem(itemService.getItemByName("Tim Tam"));
-            currentUser.addItem(itemService.getItemByName("Vegemite"));
-            currentUser.addItem(itemService.getItemByName("Love"));
-            userService.saveUser(currentUser);
-        }
-        if (imageItems.isEmpty()) {
-            currentUser.addItem(itemService.getItemByName("Cat Fall"));
-            currentUser.addItem(itemService.getItemByName("Cat Typing"));
-            currentUser.addItem(itemService.getItemByName("Fabian Intensifies"));
-            userService.saveUser(currentUser);
-        }
+//        // DUMMY DATA
+//        if (badgeItems.isEmpty()) {
+//            currentUser.addItem(itemService.getItemByName("Tim Tam"));
+//            currentUser.addItem(itemService.getItemByName("Vegemite"));
+//            currentUser.addItem(itemService.getItemByName("Love"));
+//            userService.saveUser(currentUser);
+//        }
+//        if (imageItems.isEmpty()) {
+//            currentUser.addItem(itemService.getItemByName("Cat Fall"));
+//            currentUser.addItem(itemService.getItemByName("Cat Typing"));
+//            currentUser.addItem(itemService.getItemByName("Fabian Intensifies"));
+//            userService.saveUser(currentUser);
+//        }
 
         model.addAttribute("badgeItems", badgeItems);
         model.addAttribute("imageItems", imageItems);
