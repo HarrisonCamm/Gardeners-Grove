@@ -117,7 +117,7 @@ public class InventoryController {
             // Check if the current user's image does not equal the item image ID
             if (!currentUser.getImage().getId().equals(itemImageId)) {
                 // Store the current profile image ID for the ability for user to revert back
-                currentUser.setPreviousImageId(currentUser.getImage().getId());
+                currentUser.setUploadedImageId(currentUser.getImage().getId());
             }
 
             // Update Users Image to ItemsImage
