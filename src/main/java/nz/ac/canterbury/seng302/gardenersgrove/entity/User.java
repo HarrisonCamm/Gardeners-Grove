@@ -61,6 +61,9 @@ public class User {
     @JoinColumn
     private Image image;
 
+    @JoinColumn(name = "uploaded_image_id")
+    private Long uploadedImageId;
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Item> inventory = new ArrayList<>();
 
@@ -71,8 +74,6 @@ public class User {
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Transaction> transactions = new ArrayList<>();
-
-
 
     @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer inappropriateTagCount = 0;
@@ -203,6 +204,7 @@ public class User {
     public String setPassword(String newPassword) {
         return this.password = newPassword;
     }
+
     public String getPassword() {
         return password;
     }
@@ -215,6 +217,13 @@ public class User {
         return image;
     }
 
+    public Long getUploadedImageId() {
+        return uploadedImageId;
+    }
+
+    public void setUploadedImageId(Long previousImageId) {
+        this.uploadedImageId = previousImageId;
+    }
 
     public List<FriendRequest> getSentFriendRequests() {
         return null;
@@ -295,7 +304,6 @@ public class User {
         nonFriendContacts.removeIf(c -> c.equals(contact));
     }
 
-
     /**
      * Gets an immutable list of non-friend contacts
      * @return the list of contacts
@@ -314,7 +322,6 @@ public class User {
         this.friends = friends;
     }
 
-
     @Override
     public boolean equals(Object user) {
         if (!(user instanceof User)) {
@@ -326,7 +333,6 @@ public class User {
     public int hashCode() {
         return Objects.hash(email, firstName, lastName);
     }
-
 
     public void addItem(Item item) {
         Item theItem = getItem(item, 1);
@@ -341,8 +347,7 @@ public class User {
         }
     }
 
-
-    public void removeItem(Item item, int quantity) throws IllegalArgumentException {
+    public void removeItem(Item item, int quantity) {
         Item theItem = getItem(item, quantity);
         if (theItem == null) {
             throw new IllegalArgumentException("Insufficient quantity.");
@@ -357,5 +362,4 @@ public class User {
     public Item getItem(Item item, int quantity) {
         return inventory.stream().filter(i -> i.equals(item) && i.getQuantity() >= quantity).findFirst().orElse(null);
     }
-
 }

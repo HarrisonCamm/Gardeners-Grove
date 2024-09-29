@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @SuppressWarnings({"unchecked", "SpringJavaInjectionPointsAutowiringInspection"})
 public class UnlockableContentSteps {
@@ -136,8 +137,12 @@ public class UnlockableContentSteps {
     }
 
     @Given("I am in my inventory")
-    public void i_am_in_my_inventory() {
-        // TODO: Setup initial context for being in inventory
+    public void i_am_in_my_inventory() throws Exception {
+        // Access the inventory page to ensure the user is in their inventory
+        mvcResult = mockMvc.perform(get("/inventory"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("inventoryTemplate"))
+                .andReturn();
     }
 
     @Then("I can see a list of my items I have purchased that have a picture, name and quantity")

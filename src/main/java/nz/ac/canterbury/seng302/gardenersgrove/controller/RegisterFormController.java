@@ -129,6 +129,7 @@ public class RegisterFormController {
             // Create the user
             User newUser = new User(firstName, lastName, noLastName, email, password, dateOfBirth);
             try {
+                // Assigns new user with default image
                 Path imagePath = Paths.get(resourceLoader.getResource("classpath:static/images/defaultUserImage.png").getURI());
                 byte[] imageBytes = Files.readAllBytes(imagePath);
                 Image image = new Image(imageBytes, "png", false);
@@ -139,6 +140,11 @@ public class RegisterFormController {
 
             // Save the user to database
             userService.addUser(newUser);
+
+            // Initialize uploaded image id
+            // Must be done like this because image has no id until user saved
+            newUser.setUploadedImageId(newUser.getImage().getId());
+            userService.saveUser(newUser);
 
             // Grant user unverified role
             newUser.grantAuthority("ROLE_UNVERIFIED");

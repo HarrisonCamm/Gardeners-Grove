@@ -32,8 +32,10 @@
                         <p class="item-quantity" th:text="${item.quantity} + 'x'"></p>
                     </div>
                     <div class="mb-5" >
-                        <img type="gif" class="shop-image mt-5" th:src="@{/get-image?shop=true(imageID=${item.image.id})}" alt="Item Image">
-                        <button class="item-use-button button">Use</button>
+                        <img type="gif" class="shop-image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.image.id})}" alt="Item Image">
+                        <form th:action="@{'/inventory/use/' + ${item.id}}" method="post">
+                            <button type="submit" class="item-use-button button">Use</button>
+                        </form>
                     </div>
                 </div>
             </div>
