@@ -24,7 +24,7 @@ Feature: User Badges
 
   Scenario: AC4 - View badge on a friend's profile page
     Given I have a friend "lei@email.com" and they have a badge item applied to their name
-    When I view their profile
+    When I view their profile on the manage friends page
     Then I see the badges displayed next to their name
 
   Scenario: AC5 - View badge in friends search results

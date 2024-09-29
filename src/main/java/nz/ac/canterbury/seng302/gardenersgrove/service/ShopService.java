@@ -118,7 +118,7 @@ public class ShopService {
 
             BadgeItem badge1 = new BadgeItem("Tim Tam", 100, timtamImage, 1);
             BadgeItem badge2 = new BadgeItem("Vegemite", 50, vegimiteImage, 1);
-            BadgeItem badge3 = new BadgeItem("Love", 25, neoFabianImage, 1);
+            BadgeItem badge3 = new BadgeItem("Neo Fabian", 25, neoFabianImage, 1);
 
 
 

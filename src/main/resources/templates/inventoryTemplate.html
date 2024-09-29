@@ -34,9 +34,9 @@
                         <p class="item-quantity" th:text="${item.quantity} + 'x'"></p>
                     </div>
                     <div class="mb-5" >
-                        <img type="gif" class="image mt-5" th:src="@{/get-image?shop=true(imageID=${item.icon.id})}">
+                        <img type="gif" class="image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.icon.id})}">
                         <form th:action="@{'/inventory/badge/use/' + ${item.id}}" method="post">                            <input type="hidden" name="userId" th:value="${user.userId}">
-                            <input type="hidden" name="badgeURL" th:src="@{/get-image?shop=true(imageID=${item.icon.id})}">
+                            <input type="hidden" name="badgeURL" th:src="@{/get-image?imageItem=true(imageID=${item.icon.id})}">
                             <button class="item-use-button button" type="submit">Use</button>
                         </form>
                     </div>

@@ -64,8 +64,9 @@ public class UnlockableContentSteps {
         this.currentUser = userService.getAuthenticatedUser();
 
         // Add some items to the current user's inventory (TEMP FOR THIS BRANCH)
-        this.currentUser.addItem(itemService.getItemByName("Happy"));
-        this.currentUser.addItem(itemService.getItemByName("Eggplant"));
+        this.currentUser.addItem(itemService.getItemByName("Tim Tam"));
+        this.currentUser.addItem(itemService.getItemByName("Vegemite"));
+        this.currentUser.addItem(itemService.getItemByName("Neo Fabian"));
 
         this.currentUser.addItem(itemService.getItemByName("Cat Fall"));
         this.currentUser.addItem(itemService.getItemByName("Cat Typing"));
@@ -85,12 +86,28 @@ public class UnlockableContentSteps {
         List<Item> expectedOwnedBadgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
         List<Item> expectedOwnedImageItems = itemService.getImagesByOwner(currentUser.getUserId());
 
-        // Assertions to verify the inventory
-        Assertions.assertEquals(expectedOwnedBadgeItems.size(), badgeItems.size(), "Badge items count does not match.");
-        Assertions.assertTrue(badgeItems.containsAll(expectedOwnedBadgeItems), "Badge items do not match the expected owned items.");
+        // Convert both lists to a list of names
+        List<String> badgeItemNames = badgeItems.stream()
+                .map(Item::getName)
+                .toList();
 
+        List<String> expectedBadgeItemNames = expectedOwnedBadgeItems.stream()
+                .map(Item::getName)
+                .toList();
+
+        List<String> imageItemNames = imageItems.stream()
+                .map(Item::getName)
+                .toList();
+
+        List<String> expectedImageItemNames = expectedOwnedImageItems.stream()
+                .map(Item::getName)
+                .toList();
+
+        Assertions.assertEquals(expectedOwnedBadgeItems.size(), badgeItems.size(), "Badge items count does not match.");
         Assertions.assertEquals(expectedOwnedImageItems.size(), imageItems.size(), "Image items count does not match.");
-        Assertions.assertTrue(imageItems.containsAll(expectedOwnedImageItems), "Image items do not match the expected owned items.");
+
+        Assertions.assertTrue(badgeItemNames.containsAll(expectedBadgeItemNames) && expectedBadgeItemNames.containsAll(badgeItemNames), "Badge items do not match the expected owned items.");
+        Assertions.assertTrue(imageItemNames.containsAll(expectedImageItemNames) && expectedImageItemNames.containsAll(imageItemNames), "Image items do not match the expected owned items.");
     }
 
     // AC2

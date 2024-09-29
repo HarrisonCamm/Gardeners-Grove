@@ -160,14 +160,6 @@ public class UserBadgesSteps {
         assertNotNull(users.get(0).getAppliedBadge());
     }
 
-    @Given("I am on my profile page")
-    public void i_am_on_my_profile_page() throws Exception {
-        mockMvc.perform(get("/view-user-profile"))
-                .andExpect(view().name("viewUserProfileTemplate"))
-                .andExpect(status().isOk())
-                .andReturn();
-    }
-
     @When("I view my name")
     public void i_view_my_name() throws Exception {
         // In the view, the badge is retrieved when the page is loaded
@@ -214,7 +206,7 @@ public class UserBadgesSteps {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    @When("I view their profile")
+    @When("I view their profile on the manage friends page")
     public void i_view_their_profile() throws Exception {
         mvcResult = mockMvc.perform(get("/manage-friends"))
                 .andExpect(view().name("manageFriendsTemplate"))

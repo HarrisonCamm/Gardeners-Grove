@@ -95,7 +95,7 @@ public class GifProfilePictureSteps {
         Long itemId = imageItem.getId();
 
         // Use item post-mapping call
-        mvcResult = mockMvc.perform(post("/inventory/use/" + itemId))
+        mvcResult = mockMvc.perform(post("/inventory/gif/use/" + itemId))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/inventory"))
                 .andReturn();
@@ -131,7 +131,7 @@ public class GifProfilePictureSteps {
         Long itemId = this.item.getId();
 
         // Use item post-mapping call
-        mvcResult = mockMvc.perform(post("/inventory/use/" + itemId))
+        mvcResult = mockMvc.perform(post("/inventory/gif/use/" + itemId))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/inventory"))
                 .andReturn();
