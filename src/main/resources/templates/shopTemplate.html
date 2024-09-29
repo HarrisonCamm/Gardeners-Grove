@@ -18,7 +18,7 @@
                     <p class="item-quantity">฿</p>
                 </div>
                 <div class="mb-5 mt-4" >
-                    <span class="shop-emoji mt-5" th:text="${item.emoji}"></span>
+                    <img type="gif" class="image mt-5" th:src="@{/get-image?shop=true(imageID=${item.icon.id})}">
                     <div class="mt-5">
                         <button class="item-use-button button mt-5">Purchase</button>
                     </div>

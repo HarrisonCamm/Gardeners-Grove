@@ -6,7 +6,7 @@ Feature: User Badges
 
   Scenario: Apply badge to user name
     Given I am in my inventory and own a badge item
-    When I click on the "Use" button on that badge item
+    When I click on the use button on that badge item
     Then the badge is shown next to my name
 
   Scenario: View another user's badge next to their name
