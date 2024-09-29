@@ -197,7 +197,6 @@ public class ViewGardenController {
                          HttpSession session) {
         logger.info("POST /add-tag");
 
-//        Optional<Garden> garden = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenticatedUser();
         Garden garden = authoriseAction(gardenID, currentUser, false);
 
@@ -363,6 +362,7 @@ public class ViewGardenController {
     }
 
     private void addGardenAttributes(Garden garden, Long gardenID, Model model, HttpSession session) {
+        model.addAttribute("gardenOwner", garden.getOwner());
         model.addAttribute("gardenID", gardenID);
         model.addAttribute("tagInput", "");
         model.addAttribute("gardenName", garden.getName());

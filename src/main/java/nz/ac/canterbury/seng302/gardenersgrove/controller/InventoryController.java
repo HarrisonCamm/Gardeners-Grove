@@ -73,23 +73,38 @@ public class InventoryController {
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
 
+        // Get inventory
+        List<Item> inventory = currentUser.getInventory();
+
         try {
-            // Gets item, then casts to ImageItem
-            ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
+            // Find item in inventory
+            Optional<Item> matchingItem = inventory.stream()
+                    .filter(item -> item.getId().equals(itemId))
+                    .findFirst();
 
-            // Get the image id of imageItem
-            Long itemImageId = imageItem.getImage().getId();
+            if (matchingItem.isPresent()) {
+                // Gets item, then casts to ImageItem
+                ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
 
-            // Get image from Image Table
-            Optional<Image> imageOpt = imageService.findImage(itemImageId);
+                // Get the image id of imageItem
+                Long itemImageId = imageItem.getImage().getId();
 
-            // Update Users Image to ItemsImage
-            imageOpt.ifPresent(currentUser::setImage);
+                // Get image from Image Table
+                Optional<Image> imageOpt = imageService.findImage(itemImageId);
 
-            // Persist change to user
-            userService.saveUser(currentUser);
+                // Update Users Image to ItemsImage
+                imageOpt.ifPresent(currentUser::setImage);
 
-            logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+                // Persist change to user
+                userService.saveUser(currentUser);
+
+                // Log success
+                logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+            } else {
+                // Item is not found
+                logger.error("Item with ID {} not found", itemId);
+            }
+
         } catch (IllegalArgumentException e) {
             logger.error("Error applying item: {}", e.getMessage());
         }

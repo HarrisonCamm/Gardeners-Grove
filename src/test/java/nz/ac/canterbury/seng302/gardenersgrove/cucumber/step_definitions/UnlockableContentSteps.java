@@ -35,13 +35,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SuppressWarnings({"unchecked", "SpringJavaInjectionPointsAutowiringInspection"})
 public class UnlockableContentSteps {
     @Autowired
     private WebApplicationContext webApplicationContext;
-    @Autowired
-    private MockMvc mockMvc;
     @Autowired
     private UserService userService;
     @Autowired
@@ -50,6 +49,7 @@ public class UnlockableContentSteps {
     private InventoryService inventoryService;
     private ResultActions resultActions;
     private MvcResult mvcResult;
+    private MockMvc mockMvc;
     private User currentUser;
     private Item item;
     private List<Map.Entry<Item,Integer>> ownedItems;
@@ -58,13 +58,14 @@ public class UnlockableContentSteps {
     @Before
     public void setup() throws IOException {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        User currentUser = userService.getAuthenticatedUser();
     }
 
     @When("I click Inventory")
     public void i_click_inventory() throws Exception {
-        resultActions = mockMvc.perform(get("/inventory"));
-        mvcResult = resultActions.andExpect(status().isOk())
+        this.mvcResult = mockMvc.perform(get("/inventory"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("imageItems"))
+                .andExpect(model().attributeExists("badgeItems"))
                 .andReturn();
     }
 
@@ -104,8 +105,8 @@ public class UnlockableContentSteps {
     // AC2
     @When("I click Shop")
     public void i_click_shop() throws Exception {
-        resultActions = mockMvc.perform(get("/shop"));
-        mvcResult = resultActions.andExpect(status().isOk())
+        this.mvcResult = mockMvc.perform(get("/shop"))
+                .andExpect(status().isOk())
                 .andReturn();
     }
 
