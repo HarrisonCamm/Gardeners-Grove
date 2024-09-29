@@ -37,10 +37,17 @@ public class InventoryItemService {
         return inventoryRepository.findInventoryByOwnerAndItem(owner, item);
     }
 
+    /**
+     * Get the items in the inventory of a user
+     * @param owner The user to get the inventory of
+     * @return A list of items in the inventory
+     */
     public List<Map.Entry<Item,Integer>> getItems(User owner) {
         List<InventoryItem> inventoryItems = getUserInventory(owner);
+        // Convert the inventory items to a list of items
         List<Map.Entry<Item,Integer>> items = new ArrayList<>();
         for (InventoryItem inventoryItem: inventoryItems) {
+            // Create a map entry of the item and its quantity
             Map.Entry<Item,Integer> item =new AbstractMap.SimpleEntry<>(inventoryItem.getItem(), inventoryItem.getQuantity());
             items.add(item);
         }
