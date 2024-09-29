@@ -90,6 +90,10 @@ public class TransactionService {
         return transactionRepository.findAllByUser(currentUser, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "transactionDate")));
     }
 
+    public List<Transaction> getTransactionsBySender(User currentUser) {
+        return transactionRepository.findTransactionBySender(currentUser);
+    }
+
     /**
      * Sets the claimed status of a transaction to true
      * @param transactionId The transaction to set claimed status

@@ -15,8 +15,8 @@ public class BadgeItem extends Item {
     protected BadgeItem() {
     }
 
-    public BadgeItem(String name, Integer price, String emoji, Integer quantity) {
-        super(name, price, quantity);
+    public BadgeItem(String name, Integer price, String emoji) {
+        super(name, price);
         this.emoji = emoji;
     }
 
