@@ -1,11 +1,13 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Inventory;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.InventoryRepository;
+import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
+import org.hibernate.HibernateException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.AbstractMap;
@@ -22,8 +24,27 @@ public class InventoryService {
         this.inventoryRepository = inventoryRepository;
     }
 
+    /**
+     * Save the inventory, if the inventory already exists when trying to save a brand-new inventory,
+     *      then increment the quantity
+     * @param inventory the inventory to save
+     */
     public void save(Inventory inventory) {
-        inventoryRepository.save(inventory);
+        Inventory existing = null;
+
+        // If the inventory is a new inventory, check if the inventory already exists and not unique
+        if (inventory.getId() == null) {
+            existing = inventoryRepository.findInventoryByOwnerIdAndItemId(
+                    inventory.getOwner().getUserId(), inventory.getItem().getId());
+        }
+
+        // If the inventory already exists, increment the quantity
+        if (existing != null) {
+            existing.setQuantity(existing.getQuantity() + inventory.getQuantity());
+            inventoryRepository.save(existing);
+        } else {
+            inventoryRepository.save(inventory);
+        }
     }
 
     public List<Inventory> getAllInventory() {
