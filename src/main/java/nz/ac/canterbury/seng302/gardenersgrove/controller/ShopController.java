@@ -3,10 +3,9 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ShopService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.TransactionService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Controller
 public class ShopController {
+    Logger logger = LoggerFactory.getLogger(ShopController.class);
     private final ShopService shopService;
     private final ItemService itemService;
     private final UserService userService;
@@ -44,6 +44,8 @@ public class ShopController {
      */
     @GetMapping("/shop")
     public String shopPage(Model model) {
+        logger.info("GET /shop");
+        RedirectService.addEndpoint("/shop");
         Set<Item> availableItems = shopService.getItemsInShop();
 
         // Filter BadgeItem and ImageItem
@@ -70,6 +72,8 @@ public class ShopController {
      */
     @PostMapping("/shop")
     public String purchaseItem(@RequestParam("itemId") Long itemId, Model model) {
+        logger.info("POST /shop");
+        RedirectService.addEndpoint("/shop");
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
 

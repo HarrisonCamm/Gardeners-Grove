@@ -61,9 +61,6 @@ public class User {
     @JoinColumn
     private Image image;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Item> inventory = new ArrayList<>();
-
     @Column()
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
@@ -178,15 +175,6 @@ public class User {
         return email;
     }
 
-    // Getter for inventory
-    public List<Item> getInventory() {
-        return inventory;
-    }
-
-    // Setter for inventory
-    public void setInventory(List<Item> inventory) {
-        this.inventory = inventory;
-    }
 
     public void setDateOfBirth(String newDateOfBirth) {
         this.dateOfBirth = newDateOfBirth;
@@ -325,37 +313,6 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(email, firstName, lastName);
-    }
-
-
-    public void addItem(Item item) {
-        Item theItem = getItem(item, 1);
-
-        if (theItem != null) {
-            theItem.setQuantity(theItem.getQuantity() + 1);
-        } else {
-            // If the item doesn't exist, set the owner and add it to the inventory
-            item.setOwner(this);
-            item.setQuantity(1);
-            inventory.add(item);
-        }
-    }
-
-
-    public void removeItem(Item item, int quantity) throws IllegalArgumentException {
-        Item theItem = getItem(item, quantity);
-        if (theItem == null) {
-            throw new IllegalArgumentException("Insufficient quantity.");
-        }
-
-        theItem.setQuantity(theItem.getQuantity() - quantity);
-        if (theItem.getQuantity() == 0) {
-            inventory.remove(theItem);
-        }
-    }
-
-    public Item getItem(Item item, int quantity) {
-        return inventory.stream().filter(i -> i.equals(item) && i.getQuantity() >= quantity).findFirst().orElse(null);
     }
 
 }

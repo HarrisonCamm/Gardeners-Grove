@@ -20,27 +20,19 @@ public abstract class Item implements Purchasable, Equipable {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
-
     @Column(nullable = false)
     private boolean isEquipped;
 
     @Column(nullable = false)
     private Integer price;
 
-    @Column
-    private Integer quantity;
-
 
     protected Item() {
     }
 
-    protected Item(String name, Integer price, Integer quantity) {
+    protected Item(String name, Integer price) {
         this.name = name;
         this.price = price;
-        this.quantity = quantity;
         this.isEquipped = false;
     }
 
@@ -56,14 +48,6 @@ public abstract class Item implements Purchasable, Equipable {
         this.name = name;
     }
 
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
-
     @Override
     public Integer getPrice() {
         return price;
@@ -72,14 +56,6 @@ public abstract class Item implements Purchasable, Equipable {
     @Override
     public void setPrice(Integer price) {
         this.price = price;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
     }
 
     @Override

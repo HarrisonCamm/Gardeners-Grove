@@ -52,21 +52,21 @@ public class ItemService {
         return itemRepository.findImages();
     }
 
-    public List<Item> getEquippedByOwner(Long userId) {
-        return itemRepository.findIsEquippedByOwnerUserId(userId);
-    }
+//    public List<Item> getEquippedByOwner(Long userId) {
+//        return itemRepository.findIsEquippedByOwnerUserId(userId);
+//    }
 
-    public List<Item> getBadgesByOwner(Long userId) {
-        return itemRepository.findBadgesByOwnerUserId(userId);
-    }
+//    public List<Item> getBadgesByOwner(Long userId) {
+//        return itemRepository.findBadgesByOwnerUserId(userId);
+//    }
 
-    public List<Item> getImagesByOwner(Long userId) {
-        return itemRepository.findImagesByOwnerUserId(userId);
-    }
+//    public List<Item> getImagesByOwner(Long userId) {
+//        return itemRepository.findImagesByOwnerUserId(userId);
+//    }
 
-    public List<Item> getItemsByOwner(Long userId) {
-        return itemRepository.findByOwnerUserId(userId);
-    }
+//    public List<Item> getItemsByOwner(Long userId) {
+//        return itemRepository.findByOwnerUserId(userId);
+//    }
 
     public String purchaseItem(Long itemId, Long userId) {
         // Find the item and user by their IDs
@@ -88,7 +88,6 @@ public class ItemService {
             user.setBloomBalance(user.getBloomBalance() - item.getPrice());
 
             // Set the owner of the item to the current user
-            item.setOwner(user);
 
             // Save the updated item and user entities
             itemRepository.save(item);
