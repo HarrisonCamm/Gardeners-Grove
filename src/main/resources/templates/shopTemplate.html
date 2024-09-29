@@ -51,7 +51,7 @@
                     <p class="item-quantity" th:text="${item.price} + '฿'"></p>
                 </div>
                 <div class="mb-5">
-                    <img type="gif" class="shop-image mt-5" th:src="@{/get-image?shop=true(imageID=${item.image.id})}" alt="Item Image">
+                    <img type="gif" class="shop-image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.image.id})}" alt="Item Image">
                     <div class="mt-5">
                         <!-- Purchase Form -->
                         <form th:action="@{/shop}" method="post">
@@ -62,66 +62,12 @@
                 </div>
             </div>
         </div>
-
-        <!-- Success Modal -->
-        <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true" th:classappend="${purchaseMessage == 'Purchase successful' ? 'show' : ''}">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="successModalLabel">Purchase Successful</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        Your purchase was successful! Would you like to go to your inventory?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <a href="/inventory" class="btn btn-primary">Go to Inventory</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Error Modal -->
-        <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true" th:classappend="${purchaseMessage == 'Insufficient Bloom balance' ? 'show' : ''}">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="errorModalLabel">Purchase Failed</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        Insufficient Blooms balance.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 </div>
 
 <!-- Add Bootstrap and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    $(document).ready(function() {
-        // Automatically trigger the modal if purchaseMessage is set
-        let purchaseMessage = /*[[${purchaseMessage}]]*/ '';
-        if (purchaseMessage === 'Purchase successful') {
-            $('#successModal').modal('show');
-        } else if (purchaseMessage === 'Insufficient Bloom balance') {
-            $('#errorModal').modal('show');
-        }
-    });
-</script>
 
 </body>
 </html>

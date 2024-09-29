@@ -34,7 +34,7 @@
                     </div>
                     <div class="mb-5" >
                         <img type="gif" class="shop-image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.getKey().image.id})}" alt="Item Image">
-                        <form th:action="@{'/inventory/use/' + ${item.id}}" method="post">
+                        <form th:action="@{'/inventory/use/' + ${item.getKey().id}}" method="post">
                             <button type="submit" class="item-use-button button">Use</button>
                         </form>
                     </div>

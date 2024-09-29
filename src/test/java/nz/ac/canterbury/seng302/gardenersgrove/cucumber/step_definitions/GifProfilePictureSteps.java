@@ -5,8 +5,10 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Inventory;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.InventoryService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -18,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,6 +34,8 @@ public class GifProfilePictureSteps {
     private UserService userService;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private InventoryService inventoryService;
     private MockMvc mockMvc;
     private MvcResult mvcResult;
     private User currentUser;
@@ -50,14 +55,13 @@ public class GifProfilePictureSteps {
         // Set the current user
         currentUser = loggedInUser;
 
-        // Add the image item to the user's inventory
-        loggedInUser.addItem(itemService.getItemByName(string));
-
         // Set the image item
         item = itemService.getItemByName(string);
+        // Add the image item to the user's inventory
+        Inventory inventory = new Inventory(currentUser, item, 1);
 
-        // Save the user
-        userService.saveUser(loggedInUser);
+        inventoryService.save(inventory);
+
     }
 
     // AC1
@@ -70,10 +74,10 @@ public class GifProfilePictureSteps {
                 .andReturn();
 
         // Extract imageItems from the model
-        List<ImageItem> imageItems = (List<ImageItem>) inventoryResult.getModelAndView().getModel().get("imageItems");
+        List<Map.Entry<ImageItem,Integer>> imageItems = (List<Map.Entry<ImageItem,Integer>>) inventoryResult.getModelAndView().getModel().get("imageItems");
 
         // Retrieve the item, cast to imageItem
-        ImageItem imageItem = imageItems.get(0);
+        ImageItem imageItem = imageItems.get(0).getKey();
 
         // Get item image id
         Long itemId = imageItem.getId();
