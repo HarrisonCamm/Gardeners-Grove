@@ -57,9 +57,12 @@ public class User {
     )
     private List<User> nonFriendContacts = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn
     private Image image;
+
+    @JoinColumn(name = "uploaded_image_id")
+    private Long uploadedImageId;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Item> inventory = new ArrayList<>();
@@ -71,8 +74,6 @@ public class User {
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Transaction> transactions = new ArrayList<>();
-
-
 
     @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer inappropriateTagCount = 0;
@@ -203,6 +204,7 @@ public class User {
     public String setPassword(String newPassword) {
         return this.password = newPassword;
     }
+
     public String getPassword() {
         return password;
     }
@@ -215,6 +217,13 @@ public class User {
         return image;
     }
 
+    public Long getUploadedImageId() {
+        return uploadedImageId;
+    }
+
+    public void setUploadedImageId(Long previousImageId) {
+        this.uploadedImageId = previousImageId;
+    }
 
     public List<FriendRequest> getSentFriendRequests() {
         return null;
@@ -295,7 +304,6 @@ public class User {
         nonFriendContacts.removeIf(c -> c.equals(contact));
     }
 
-
     /**
      * Gets an immutable list of non-friend contacts
      * @return the list of contacts
@@ -314,7 +322,6 @@ public class User {
         this.friends = friends;
     }
 
-
     @Override
     public boolean equals(Object user) {
         if (!(user instanceof User)) {
@@ -327,33 +334,32 @@ public class User {
         return Objects.hash(email, firstName, lastName);
     }
 
-
     public void addItem(Item item) {
-        for (Item existingItem : inventory) {
-            if (existingItem.getName().equals(item.getName())) {
-                existingItem.setQuantity(existingItem.getQuantity() + 1);
-                return;
-            }
+        Item theItem = getItem(item, 1);
+
+        if (theItem != null) {
+            theItem.setQuantity(theItem.getQuantity() + 1);
+        } else {
+            // If the item doesn't exist, set the owner and add it to the inventory
+            item.setOwner(this);
+            item.setQuantity(1);
+            inventory.add(item);
         }
-        // If the item doesn't exist, set the owner and add it to the inventory
-        item.setOwner(this);
-        item.setQuantity(1);
-        inventory.add(item);
     }
 
+    public void removeItem(Item item, int quantity) {
+        Item theItem = getItem(item, quantity);
+        if (theItem == null) {
+            throw new IllegalArgumentException("Insufficient quantity.");
+        }
 
-//    public void removeItem(Item item, int quantity) throws Exception {
-//        if (!hasItem(item, quantity)) {
-//            throw new Exception("Insufficient quantity.");
-//        }
-//        inventory.put(item, inventory.get(item) - quantity);
-//        if (inventory.get(item) <= 0) {
-//            inventory.remove(item);
-//        }
-//    }
-//
-//    public boolean hasItem(Item item, int quantity) {
-//        return inventory.getOrDefault(item, 0) >= quantity;
-//    }
+        theItem.setQuantity(theItem.getQuantity() - quantity);
+        if (theItem.getQuantity() == 0) {
+            inventory.remove(theItem);
+        }
+    }
 
+    public Item getItem(Item item, int quantity) {
+        return inventory.stream().filter(i -> i.equals(item) && i.getQuantity() >= quantity).findFirst().orElse(null);
+    }
 }
