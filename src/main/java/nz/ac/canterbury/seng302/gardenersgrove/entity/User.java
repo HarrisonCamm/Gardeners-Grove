@@ -72,7 +72,7 @@ public class User {
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Transaction> transactions = new ArrayList<>();
 
-    @OneToOne
+    @ManyToOne // BadgeItem ID
     @JoinColumn(name = "applied_badge_id")
     private BadgeItem appliedBadge;
 

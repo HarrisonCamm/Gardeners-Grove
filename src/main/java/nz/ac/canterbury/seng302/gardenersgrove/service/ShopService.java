@@ -135,7 +135,7 @@ public class ShopService {
 
             BadgeItem badge1 = new BadgeItem("Tim Tam", 100, timtamImage);
             BadgeItem badge2 = new BadgeItem("Vegemite", 50, vegimiteImage);
-            BadgeItem badge3 = new BadgeItem("Love", 25, neoFabianImage);
+            BadgeItem badge3 = new BadgeItem("Neo Fabian", 25, neoFabianImage);
 
 
             // Add items to the shop
