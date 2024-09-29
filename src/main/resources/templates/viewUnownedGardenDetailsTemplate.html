@@ -89,12 +89,20 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                     <button type="submit" class="btn btn-primary tip-model-button" id="confirmTipButton" disabled="disabled">Confirm</button>
-    <!--                                TODO in another task: implement logic for starting the transaction and updating total blooms tipped-->
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
+
+                <!-- Owner Profile Picture and Name -->
+                <h1> Garden Owner:</h1>
+                <div class="align-left">
+                    <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${gardenOwner.userId})}" alt="">
+                    &nbsp;
+                    <h3 th:text="${gardenOwner.firstName + ' ' + gardenOwner.lastName}"></h3>
+                </div>
+
             </div>
 
             <div class="col container pt-5">

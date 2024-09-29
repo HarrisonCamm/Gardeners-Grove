@@ -1,5 +1,10 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
@@ -14,7 +19,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,7 +71,7 @@ public class InventoryController {
 
         return "inventoryTemplate";
     }
-    
+
     @PostMapping("/inventory/badge/use/{itemId}")
     public String useBadgeItem(@PathVariable Long itemId) {
         logger.info("POST /inventory/use/{}", itemId);
@@ -90,42 +98,49 @@ public class InventoryController {
     }
 
     @PostMapping("/inventory/gif/use/{itemId}")
-    public String useGifItem(@PathVariable Long itemId) {
+    public String useImageItem(@PathVariable Long itemId) {
         logger.info("POST /inventory/use/{}", itemId);
 
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
 
+        // Get inventory
+        List<Item> inventory = currentUser.getInventory();
+
         try {
-            // Gets item, then casts to ImageItem
-            ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
+            // Find item in inventory
+            Optional<Item> matchingItem = inventory.stream()
+                    .filter(item -> item.getId().equals(itemId))
+                    .findFirst();
 
-            // Get the image id of imageItem
-            Long itemImageId = imageItem.getImage().getId();
+            if (matchingItem.isPresent()) {
+                // Gets item, then casts to ImageItem
+                ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
 
-            // Get image from Image Table
-            Optional<Image> image = imageService.findImage(itemImageId);
+                // Get the image id of imageItem
+                Long itemImageId = imageItem.getImage().getId();
 
-            // Check if the current user's image does not equal the item image ID
-            if (!currentUser.getImage().getId().equals(itemImageId)) {
-                // Store the current profile image ID for the ability for user to revert back
-                currentUser.setPreviousImageId(currentUser.getImage().getId());
+                // Get image from Image Table
+                Optional<Image> imageOpt = imageService.findImage(itemImageId);
+
+                // Update Users Image to ItemsImage
+                imageOpt.ifPresent(currentUser::setImage);
+
+                // Persist change to user
+                userService.saveUser(currentUser);
+
+                // Log success
+                logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+            } else {
+                // Item is not found
+                logger.error("Item with ID {} not found", itemId);
             }
 
-            // Update Users Image to ItemsImage
-            image.ifPresent(currentUser::setImage);
-
-            // Persis change to user
-            userService.saveUser(currentUser);
-
-            logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
         } catch (IllegalArgumentException e) {
             logger.error("Error applying item: {}", e.getMessage());
         }
 
         return "redirect:/inventory";
     }
-
-
 
 }

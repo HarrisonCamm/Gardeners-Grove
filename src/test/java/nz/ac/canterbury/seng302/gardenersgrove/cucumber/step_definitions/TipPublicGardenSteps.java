@@ -10,6 +10,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.TransactionService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -48,12 +48,16 @@ public class TipPublicGardenSteps {
     private UserService userService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    TransactionService transactionService;
 
     // MockMvc for using API
     private MockMvc mockMvc;
 
     //Storing the result of the API call this will be used to get the model
     private MvcResult mvcResult;
+
+    private MockHttpSession mockSession = new MockHttpSession();
 
     // Garden object to store the garden created in the background used to get the garden ID
     private Garden testCreatedGarden;
@@ -62,6 +66,7 @@ public class TipPublicGardenSteps {
     private Integer tipAmount;
     private int oldUserBloomBalance;
     private int oldGardenTipCount;
+    private long oldTransctionCount;
 
 
     @Before
@@ -243,7 +248,7 @@ public class TipPublicGardenSteps {
     //AC7
     @Given("I have received tips for my garden")
     public void i_have_received_tips_for_my_garden() {
-        Integer tipAmount = gardenService.findGarden(testCreatedGarden.getId()).get().getTotalBloomTips();
+        Integer tipAmount = gardenService.findGarden(testCreatedGarden.getId()).get().getUnclaimedBlooms();
         assertTrue(tipAmount > 0);
     }
 
@@ -256,24 +261,63 @@ public class TipPublicGardenSteps {
                 .andReturn();
 
         // Get values from the model
-        boolean hasBloomsToClaim = (boolean) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("hasBloomsToClaim");
-        String unclaimedBloomsMessage = (String) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("unclaimedBloomsMessage");
-
-        Long gardenId = (Long) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("gardenID");
-        Optional<Garden> garden = gardenService.findGarden(gardenId);
-        Integer totalBloomsUnclaimed = garden.get().getUnclaimedBlooms();
+        String claimBloomsButtonText = (String) Objects.requireNonNull(mvcResult.getModelAndView()).getModel().get("claimBloomsButtonText");
 
         // Get actual amount that was changed in the controller
         Integer actualBloomsUnclaimed =  gardenService.findGarden(testCreatedGarden.getId()).get().getUnclaimedBlooms();
-        Assertions.assertAll(
-                () -> Assertions.assertNotNull(garden),
-                () -> assertTrue(hasBloomsToClaim),
-                () -> assertEquals(actualBloomsUnclaimed, totalBloomsUnclaimed),
-                () -> assertEquals("You have " + actualBloomsUnclaimed + " Blooms to claim!", unclaimedBloomsMessage)
-                // Garden exists
-                // Has blooms to claim
-                // Unclaimed blooms are correct
-                // Message is correct
-        );
+
+        Assertions.assertEquals("Claim " + actualBloomsUnclaimed + " Blooms" , claimBloomsButtonText, "The text on the button should be correct");
+    }
+
+    //AC8
+    @And("I choose to claim the Blooms from my garden's tips")
+    public void i_choose_to_claim_the_blooms_from_my_gardens_tips() throws Exception{
+        oldUserBloomBalance = userService.getAuthenticatedUser().getBloomBalance();
+        oldTransctionCount = transactionService.findTransactionsByUser(userService.getAuthenticatedUser(), 0, 10).getTotalElements();
+        mvcResult = mockMvc.perform(post("/claim-tips")
+                .param("gardenID", testCreatedGarden.getId().toString())
+                .with(csrf())
+                .session(mockSession))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+    }
+
+    @When("I confirm the action")
+    public void i_confirm_the_action() throws Exception{
+        mvcResult = mockMvc.perform(get("/view-garden")
+                .param("gardenID", testCreatedGarden.getId().toString())
+                .with(csrf())
+                .session(mockSession))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+
+    //AC8
+    @Then("the {int} blooms are added to my account")
+    public void the_blooms_are_added_to_my_account(int amountClaimed) {
+        tipAmount = amountClaimed;
+        assertEquals(oldUserBloomBalance + amountClaimed, (int) userService.getAuthenticatedUser().getBloomBalance());
+    }
+
+    //AC8
+    @And("a transaction is added to my account history")
+    public void a_transaction_is_added_to_my_account_history() {
+        Long transactionCount = transactionService.findTransactionsByUser(userService.getAuthenticatedUser(), 0, 10).getTotalElements();
+        assertEquals(oldTransctionCount + 1, transactionCount);
+    }
+    //AC8
+    @And("a confirmation message is displayed")
+    public void a_confirmation_message_is_displayed() {
+        String actualMessage = (String) mvcResult.getModelAndView().getModel().get("claimedTipsMessage");
+        String expectedMessage = "You have claimed " + tipAmount + " Blooms! \uD83C\uDF31";
+        Assertions.assertEquals(expectedMessage, actualMessage);
+    }
+
+    //AC8
+    @And("the total number of Blooms I can claim is {int}")
+    public void the_total_number_of_blooms_i_can_claim_is(int expectedUnclaimedBlooms) {
+        int totalUnclaimedTips = transactionService.totalUnclaimedTips(testCreatedGarden);
+        assertEquals(expectedUnclaimedBlooms, totalUnclaimedTips);
     }
 }

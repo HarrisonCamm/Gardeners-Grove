@@ -15,7 +15,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "USERS") //revise later, ask tutor about style
 public class User {
-
     public static final Integer DEFAULT_BALANCE = 500;
 
     @Id
@@ -61,12 +60,12 @@ public class User {
     )
     private List<User> nonFriendContacts = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn
     private Image image;
 
-    @JoinColumn(name = "previous_image_id")
-    private Long previousImageId;
+    @JoinColumn(name = "uploaded_image_id")
+    private Long uploadedImageId;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Item> inventory = new ArrayList<>();
@@ -124,7 +123,6 @@ public class User {
         this.noLastName = noLastName;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
-        this.bloomBalance = DEFAULT_BALANCE;
         this.appliedBadge = null;
         return this;
     }
@@ -185,6 +183,10 @@ public class User {
         return appliedBadge;
     }
 
+    public void setAppliedBadge(BadgeItem badge) {
+        this.appliedBadge = badge;
+    }
+
     public void setEmail(String newEmail) {
         this.email = newEmail;
     }
@@ -218,24 +220,10 @@ public class User {
     public String setPassword(String newPassword) {
         return this.password = newPassword;
     }
+
     public String getPassword() {
         return password;
     }
-
-
-    public Long getPreviousImageId() {
-        return previousImageId;
-    }
-
-    public void setPreviousImageId(Long previousImageId) {
-        this.previousImageId = previousImageId;
-    }
-
-    public void setAppliedBadge(BadgeItem badge) {
-        this.appliedBadge = badge;
-    }
-
-
 
     public void setImage(Image image) {
         this.image = image;
@@ -243,6 +231,14 @@ public class User {
 
     public Image getImage() {
         return image;
+    }
+
+    public Long getUploadedImageId() {
+        return uploadedImageId;
+    }
+
+    public void setUploadedImageId(Long previousImageId) {
+        this.uploadedImageId = previousImageId;
     }
 
     public List<FriendRequest> getSentFriendRequests() {
@@ -324,7 +320,6 @@ public class User {
         nonFriendContacts.removeIf(c -> c.equals(contact));
     }
 
-
     /**
      * Gets an immutable list of non-friend contacts
      * @return the list of contacts
@@ -343,7 +338,6 @@ public class User {
         this.friends = friends;
     }
 
-
     @Override
     public boolean equals(Object user) {
         if (!(user instanceof User)) {
@@ -356,7 +350,6 @@ public class User {
     public int hashCode() {
         return Objects.hash(email, firstName, lastName);
     }
-
 
     public void addItem(Item item) {
         Item theItem = getItem(item, 1);
@@ -371,8 +364,7 @@ public class User {
         }
     }
 
-
-    public void removeItem(Item item, int quantity) throws IllegalArgumentException {
+    public void removeItem(Item item, int quantity) {
         Item theItem = getItem(item, quantity);
         if (theItem == null) {
             throw new IllegalArgumentException("Insufficient quantity.");
@@ -387,5 +379,4 @@ public class User {
     public Item getItem(Item item, int quantity) {
         return inventory.stream().filter(i -> i.equals(item) && i.getQuantity() >= quantity).findFirst().orElse(null);
     }
-
 }
