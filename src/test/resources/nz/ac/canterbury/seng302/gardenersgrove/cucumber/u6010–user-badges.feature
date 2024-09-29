@@ -23,7 +23,7 @@ Feature: User Badges
     Then the badge I have applied are displayed next to my name
 
   Scenario: AC4 - View badge on a friend's profile page
-    Given I have a friend "liam@email.com" and they have a badge item applied to their name
+    Given I have a friend "lei@email.com" and they have a badge item applied to their name
     When I view their profile
     Then I see the badges displayed next to their name
 

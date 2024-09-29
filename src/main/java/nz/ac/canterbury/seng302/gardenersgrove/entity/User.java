@@ -79,8 +79,8 @@ public class User {
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Transaction> transactions = new ArrayList<>();
 
-    @OneToOne
-    @JoinColumn(name = "id")
+    @ManyToOne
+    @JoinColumn(name = "badge_id")
     private BadgeItem appliedBadge;
 
     @Column(nullable = false, columnDefinition = "integer default 0")
