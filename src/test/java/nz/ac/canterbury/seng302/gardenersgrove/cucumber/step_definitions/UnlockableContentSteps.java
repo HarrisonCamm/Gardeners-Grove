@@ -235,4 +235,3 @@ public class UnlockableContentSteps {
         // TODO: Ensure transaction history displays correct details
     }
 }
-

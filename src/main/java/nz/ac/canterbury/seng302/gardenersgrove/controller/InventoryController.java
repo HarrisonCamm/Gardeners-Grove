@@ -2,6 +2,11 @@ package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
@@ -14,7 +19,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,7 +71,7 @@ public class InventoryController {
 
         return "inventoryTemplate";
     }
-    
+
     @PostMapping("/inventory/badge/use/{itemId}")
     public String useBadgeItem(@PathVariable Long itemId) {
         logger.info("POST /inventory/use/{}", itemId);
