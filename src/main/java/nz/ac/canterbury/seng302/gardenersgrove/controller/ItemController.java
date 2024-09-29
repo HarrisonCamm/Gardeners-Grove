@@ -36,10 +36,19 @@ public class ItemController {
         RedirectService.addEndpoint("/item");
 
         Item item = itemService.getItemById(itemID);
+
+        if (item == null) {
+            return "redirect:/inventory";
+        }
+
         boolean isBadge = item instanceof BadgeItem;
+        Integer resalePrice = (int) (item.getPrice() * 0.9); //todo integrate with AC9 work
 
         model.addAttribute("item", item);
         model.addAttribute("isBadge", isBadge); //if not a badge, it is an ImageItem
+        model.addAttribute("originalPriceText", item.getPrice() + " ฿");
+        model.addAttribute("resalePriceText", resalePrice + " ฿");
+
         return "itemDetailsTemplate";
     }
 

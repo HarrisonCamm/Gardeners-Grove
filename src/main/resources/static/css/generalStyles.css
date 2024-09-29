@@ -573,6 +573,7 @@ hr {
     background-color: #BEE186;
     border-radius: 10px;
     border: solid black 1px;
+    text-align: center;
 }
 
 /*Used to style item use button for inventory item cards*/

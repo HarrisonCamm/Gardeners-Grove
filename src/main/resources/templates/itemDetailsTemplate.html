@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="en">
 <head th:replace="fragments/head :: head(title='Item Details')">
 </head>
 <body>
@@ -12,17 +12,26 @@
             <div class="col-12 col-md-8">
                 <h2 class="browse-gardens-title">Item Details</h2>
             </div>
-            <div class="col content card ms-2 me-2">
-                <div class="h-25 w-100 mt-3 inventory-card-title">
-                    <h3 class="p-2" th:text="${item.name}"></h3>
-                </div>
-                <div th:if="${!isBadge}" class="mb-5">
-                    <img type="gif" class="shop-image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.image.id})}" alt="Item Image">
-                </div>
-                <div th:if="${isBadge}" class="mb-5 mt-4" >
-                    <span class="shop-emoji mt-5" th:text="${item.emoji}"></span>
-                </div>
+        </div>
+        <div class="col content card">
+            <div class="h-25 w-75 mt-3 inventory-card-title">
+                <h3 class="p-2" th:text="${item.name}"></h3>
             </div>
+            </br>
+            <div th:if="${!isBadge}" class="mb-5">
+                <img type="gif" class="shop-image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.image.id})}" alt="Item Image">
+            </div>
+            <div th:if="${isBadge}" class="mb-5 mt-4" >
+                <span class="shop-emoji mt-5" th:text="${item.emoji}"></span>
+            </div>
+            <p th:if="${!isBadge}" class="card-text">This is a GIF Profile Picture item that you can use to customise your profile! </p>
+            <p th:if="${isBadge}" class="card-text">This is a Badge item that you can use to add a Badge next to your name and express your personality! </p>
+            </br>
+            <p class="card-text">Original Price: </p>
+            <p th:text="${originalPriceText}"></p>
+            </br>
+            <p class="card-text">Resale Price: </p>
+            <p class="mb-4" th:text="${resalePriceText}"></p> <!-- TODO get resale price of item from AC9-->
         </div>
 
         </div>
