@@ -63,10 +63,7 @@ public class GifProfilePictureSteps {
     @And("I have a inventory with {string} GIF profile item")
     public void i_have_a_inventory_with_imageItem(String string) {
         // Get the current user
-        User loggedInUser = userService.getAuthenticatedUser();
-
-        // Set the current user
-        currentUser = loggedInUser;
+        currentUser  = userService.getAuthenticatedUser();
 
         // Set the image item
         item = itemService.getItemByName(string);
@@ -129,7 +126,7 @@ public class GifProfilePictureSteps {
     @And("I have applied the {string} GIF item")
     public void iHaveAppliedTheGIFItem(String itemName) throws Exception {
         // Get item image id
-        Long itemId = this.item.getId();
+        Long itemId = item.getId();
 
         // Use item post-mapping call
         mvcResult = mockMvc.perform(post("/inventory/use/" + itemId))
@@ -207,22 +204,20 @@ public class GifProfilePictureSteps {
         User otherFriend = userService.getUserByEmail(friendEmail);
 
         // Set friend from email
-        this.friend = otherFriend;
+        friend = otherFriend;
 
         // Get the item
         Item itemCatTyping = this.item;
 
         // Add the image item to the user's inventory
-        otherFriend.addItem(itemCatTyping);
-
-        // Save the adding item
-        userService.saveUser(otherFriend);
+        Inventory inventory = new Inventory(friend, itemCatTyping, 1);
+        inventoryService.save(inventory);
 
         // Get the image items from sarah inventory (Emulating post-mapping)
-        List<Item> sarahItems = otherFriend.getInventory();
+        List<Inventory> sarahItems = inventoryService.getUserInventory(friend);
 
         // Extract the image item (Only one item)
-        ImageItem item = (ImageItem) sarahItems.get(0);
+        ImageItem item = (ImageItem) sarahItems.get(0).getItem();
 
         // Apply image
         otherFriend.setImage(item.getImage());

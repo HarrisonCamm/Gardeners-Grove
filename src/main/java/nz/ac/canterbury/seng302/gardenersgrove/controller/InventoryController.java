@@ -74,15 +74,14 @@ public class InventoryController {
         User currentUser = userService.getAuthenticatedUser();
 
         // Get inventory
-        List<Item> inventory = currentUser.getInventory();
+        List<Inventory> inventory = inventoryService.getUserInventory(currentUser);
 
         try {
             // Find item in inventory
-            Optional<Item> matchingItem = inventory.stream()
-                    .filter(item -> item.getId().equals(itemId))
+            Optional<Inventory> matchingItemInInventory = inventory.stream()
+                    .filter(item -> item.getItem().getId().equals(itemId))
                     .findFirst();
-
-            if (matchingItem.isPresent()) {
+            if (matchingItemInInventory.isPresent()) {
                 // Gets item, then casts to ImageItem
                 ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
 
