@@ -8,13 +8,13 @@ import io.cucumber.java.en.When;
 import jakarta.transaction.Transactional;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Inventory;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.InventoryItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.InventoryService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.InventoryItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -45,7 +44,7 @@ public class GifProfilePictureSteps {
     @Autowired
     private GardenService gardenService;
     @Autowired
-    private InventoryService inventoryService;
+    private InventoryItemService inventoryService;
     private MockMvc mockMvc;
     private MvcResult mvcResult;
     private User currentUser;
@@ -68,7 +67,7 @@ public class GifProfilePictureSteps {
         // Set the image item
         item = itemService.getItemByName(string);
         // Add the image item to the user's inventory
-        Inventory inventory = new Inventory(currentUser, item, 1);
+        InventoryItem inventory = new InventoryItem(currentUser, item, 1);
 
         inventoryService.save(inventory);
 
@@ -210,11 +209,11 @@ public class GifProfilePictureSteps {
         Item itemCatTyping = this.item;
 
         // Add the image item to the user's inventory
-        Inventory inventory = new Inventory(friend, itemCatTyping, 1);
+        InventoryItem inventory = new InventoryItem(friend, itemCatTyping, 1);
         inventoryService.save(inventory);
 
         // Get the image items from sarah inventory (Emulating post-mapping)
-        List<Inventory> sarahItems = inventoryService.getUserInventory(friend);
+        List<InventoryItem> sarahItems = inventoryService.getUserInventory(friend);
 
         // Extract the image item (Only one item)
         ImageItem item = (ImageItem) sarahItems.get(0).getItem();

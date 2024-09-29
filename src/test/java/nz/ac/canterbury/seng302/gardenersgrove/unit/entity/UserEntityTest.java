@@ -1,7 +1,5 @@
 package nz.ac.canterbury.seng302.gardenersgrove.unit.entity;
 
-import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Inventory;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import org.junit.jupiter.api.Test;
 

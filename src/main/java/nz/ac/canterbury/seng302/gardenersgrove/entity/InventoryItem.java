@@ -3,7 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 import jakarta.persistence.*;
 
 @Entity
-public class Inventory {
+public class InventoryItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,7 +20,7 @@ public class Inventory {
     @Column(name = "quantity")
     private Integer quantity;
 
-    public Inventory() {}
+    public InventoryItem() {}
 
     public void setId(Long id) {
         this.id = id;
@@ -44,7 +44,7 @@ public class Inventory {
         return item;
     }
 
-    public Inventory(User owner, Item item, Integer quantity) {
+    public InventoryItem(User owner, Item item, Integer quantity) {
         this.owner = owner;
         this.item = item;
         this.quantity = quantity;

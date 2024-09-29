@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -72,6 +73,10 @@ public class TransactionService {
     public Page<Transaction> findTransactionsByUser(User currentUser, int page, int size) {
         //Sorted after retrieved from repository before pagination
         return transactionRepository.findAllByUser(currentUser, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "transactionDate")));
+    }
+
+    public List<Transaction> getTransactionsBySender(User currentUser) {
+        return transactionRepository.findTransactionBySender(currentUser);
     }
 
     /**

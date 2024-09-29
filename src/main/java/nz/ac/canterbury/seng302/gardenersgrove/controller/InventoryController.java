@@ -19,11 +19,11 @@ public class InventoryController {
 
     private final ItemService itemService;
     private final UserService userService;
-    private final InventoryService inventoryService;
+    private final InventoryItemService inventoryService;
     private final ImageService imageService;
 
     @Autowired
-    public InventoryController(ItemService itemService, UserService userService, InventoryService inventoryService, ImageService imageService) {
+    public InventoryController(ItemService itemService, UserService userService, InventoryItemService inventoryService, ImageService imageService) {
         this.itemService = itemService;
         this.userService = userService;
         this.inventoryService = inventoryService;
@@ -37,11 +37,11 @@ public class InventoryController {
 
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
-        List<Inventory> items = inventoryService.getUserInventory(currentUser);
+        List<InventoryItem> items = inventoryService.getUserInventory(currentUser);
 
         List<Map.Entry<Item,Integer>> ownedItems= new ArrayList<>();
 
-        for (Inventory inventory: items) {
+        for (InventoryItem inventory: items) {
             Item item = inventory.getItem();
             Integer quantity = inventory.getQuantity();
             Map.Entry<Item,Integer> itemEntry = new AbstractMap.SimpleEntry<>(item, quantity);
@@ -74,11 +74,11 @@ public class InventoryController {
         User currentUser = userService.getAuthenticatedUser();
 
         // Get inventory
-        List<Inventory> inventory = inventoryService.getUserInventory(currentUser);
+        List<InventoryItem> inventory = inventoryService.getUserInventory(currentUser);
 
         try {
             // Find item in inventory
-            Optional<Inventory> matchingItemInInventory = inventory.stream()
+            Optional<InventoryItem> matchingItemInInventory = inventory.stream()
                     .filter(item -> item.getItem().getId().equals(itemId))
                     .findFirst();
             if (matchingItemInInventory.isPresent()) {

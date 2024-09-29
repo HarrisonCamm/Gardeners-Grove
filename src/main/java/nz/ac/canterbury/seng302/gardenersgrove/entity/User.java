@@ -69,7 +69,7 @@ public class User {
     @JoinColumn(name = "user_id")
     private List<Authority> userRoles;
 
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Transaction> transactions = new ArrayList<>();
 
     @Column(nullable = false, columnDefinition = "integer default 0")

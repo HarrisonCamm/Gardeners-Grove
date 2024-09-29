@@ -5,12 +5,10 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.service.InventoryService;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
+import nz.ac.canterbury.seng302.gardenersgrove.service.InventoryItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.TransactionService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.function.Executable;
@@ -22,10 +20,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -46,7 +43,9 @@ public class UnlockableContentSteps {
     @Autowired
     private ItemService itemService;
     @Autowired
-    private InventoryService inventoryService;
+    private InventoryItemService inventoryService;
+    @Autowired
+    private TransactionService transactionService;
     private ResultActions resultActions;
     private MvcResult mvcResult;
     private MockMvc mockMvc;
@@ -54,6 +53,7 @@ public class UnlockableContentSteps {
     private Item item;
     private List<Map.Entry<Item,Integer>> ownedItems;
     private int oldBloomBalance;
+    private Transaction transaction;
 
     @Before
     public void setup() throws IOException {
@@ -210,7 +210,7 @@ public class UnlockableContentSteps {
     @When("I buy an item costing less than or equal to my current Blooms balance")
     public void i_buy_an_item_costing_less_than_or_equal_to_my_current_blooms_balance() throws Exception {
         item = itemService.getAllItems().iterator().next();
-        item.setPrice(100);
+        item.setPrice(10);
         itemService.saveItem(item);
 
         mvcResult = mockMvc.perform(post("/shop")
@@ -245,25 +245,50 @@ public class UnlockableContentSteps {
 
     }
 
+//    AC 6
     @And("I am shown a confirmation message {string}")
     public void i_am_shown_a_confirmation_message(String expectedMessage) {
         String message = (String) mvcResult.getModelAndView().getModel().get("purchaseSuccessful");
         assertEquals(expectedMessage, message);
     }
 
+//    AC 7
     @Given("I have more than one of the same item")
-    public void i_have_more_than_one_of_the_same_item() {
-        // TODO: Setup context for having multiple of the same item
+    public void i_have_more_than_one_of_the_same_item() throws Exception {
+        item = itemService.getItemByName("Cat Typing");
+
+        // Perform the POST request
+        mvcResult = mockMvc.perform(post("/shop")
+                        .param("itemId", item.getId().toString()))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // Perform the POST request
+        mvcResult = mockMvc.perform(post("/shop")
+                        .param("itemId", item.getId().toString()))
+                .andExpect(status().isOk())
+                .andReturn();
+
     }
 
+//    AC 7
     @When("I view my inventory")
-    public void i_view_my_inventory() {
-        // TODO: Implement logic for viewing inventory
+    public void i_view_my_inventory() throws Exception {
+        i_click_inventory();
     }
 
+//    AC 7
     @Then("the quantity is displayed alongside the item rather than displaying multiple instances of the item")
     public void the_quantity_is_displayed_alongside_the_item_rather_than_displaying_multiple_instances_of_the_item() {
         // TODO: Ensure the quantity is displayed properly
+        List<Map.Entry<ImageItem,Integer>> imageItems = (List<Map.Entry<ImageItem, Integer>>) mvcResult.getModelAndView().getModel().get("imageItems");
+        imageItems.forEach(eachItem -> {
+            Item imageItem = eachItem.getKey();
+            Integer imageItemQuantity = eachItem.getValue();
+            if (imageItem.getName().equals(item.getName())) {
+                assertTrue(imageItemQuantity > 1);
+            }
+        });
     }
 
     @When("I click on an item")
@@ -291,18 +316,32 @@ public class UnlockableContentSteps {
         // TODO: Display confirmation popup for selling an item
     }
 
+//    AC 10
     @Given("I purchase an item")
-    public void i_purchase_an_item() {
-        // TODO: Setup context for purchasing an item
+    public void i_purchase_an_item() throws Exception {
+        i_buy_an_item_costing_less_than_or_equal_to_my_current_blooms_balance();
+        currentUser = userService.getAuthenticatedUser();
     }
 
+//    AC 10
     @When("I check my Bloom transaction history")
     public void i_check_my_bloom_transaction_history() {
-        // TODO: Implement logic for checking Bloom transaction history
+        List<Transaction> currentUsersTransactions = transactionService.getTransactionsBySender(currentUser);
+        transaction = currentUsersTransactions.getLast();
     }
 
+//    AC 10
     @Then("I see an entry detailing the date, time, the name of the item and the items sell price with a negative sign")
     public void i_see_an_entry_detailing_the_date_time_the_name_of_the_item_and_the_items_sell_price_with_a_negative_sign() {
-        // TODO: Ensure transaction history displays correct details
+        Date expectedDate = new Date();
+        User expectedSender = currentUser;
+        User expectedReceiver = userService.getUserByEmail("gardenersgrove@email.com");
+        Integer expectedAmount = item.getPrice();
+        String expectedType = "Shop Purchase";
+        assertEquals(expectedDate.getDate(), transaction.getTransactionDate().getDate());
+        assertTrue(userService.areUsersEqual(expectedSender, transaction.getSender()));
+        assertTrue(userService.areUsersEqual(expectedReceiver, transaction.getReceiver()));
+        assertEquals(expectedAmount, transaction.getAmount());
+        assertEquals(expectedType, transaction.getTransactionType());
     }
 }
