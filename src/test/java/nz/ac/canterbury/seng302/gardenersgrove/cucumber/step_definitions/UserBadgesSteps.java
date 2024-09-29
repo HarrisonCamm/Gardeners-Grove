@@ -12,6 +12,9 @@ import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -24,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -45,10 +49,14 @@ public class UserBadgesSteps {
     @Autowired
     private ResourceLoader resourceLoader;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     private MockMvc mockMvc;
     private MvcResult mvcResult;
     private ResultActions resultActions;
     private BadgeItem badgeItem;
+    private User friend;
 
     @Before
     public void setup() throws IOException {
@@ -60,7 +68,6 @@ public class UserBadgesSteps {
         // Get the user Entity for Sarah
         User currentUser = userService.getAuthenticatedUser();
         List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
-        List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
 
         // Create predefined profile pictures
         Path timtamImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/timtam.png").getURI());
@@ -100,8 +107,8 @@ public class UserBadgesSteps {
     }
 
     //AC1
-    @When("I click on the {string} button on that badge item")
-    public void i_click_on_the_button_on_that_badge_item(String string) throws Exception {
+    @When("I click on the Use button on that badge item")
+    public void i_click_on_the_button_on_that_badge_item() throws Exception {
 
         badgeItem = (BadgeItem) itemService.getItemByName("Tim Tam");
 
@@ -111,64 +118,124 @@ public class UserBadgesSteps {
     }
 
     @Then("the badge is shown next to my name")
-    public void the_badge_is_shown_next_to_my_name() {
+    public void the_badge_is_shown_next_to_my_name() throws Exception {
         BadgeItem userBadge = userService.getAuthenticatedUser().getAppliedBadge();
         BadgeItem badge = (BadgeItem) itemService.getItemByName("Tim Tam");
-        Assertions.assertEquals(userBadge.getName(), badge.getName());
+        assertEquals(userBadge.getName(), badge.getName());
+
+        // In the view, the badge is retrieved when the page is loaded
+        MvcResult result = mockMvc.perform(get("/get-image")
+                        .param("userBadge", "true")
+                        .param("userID", userService.getAuthenticatedUser().getUserId().toString()))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // Verify the image data
+        byte[] responseImageData = result.getResponse().getContentAsByteArray();
+        Assertions.assertArrayEquals(userBadge.getIcon().getData(), responseImageData);
     }
 
     @Given("I have a badge item applied to my name")
-    public void i_have_a_badge_item_applied_to_my_name() {
+    public void i_have_a_badge_item_applied_to_my_name() throws Exception {
         // Write code here that turns the phrase above into concrete actions
-        assert true;
+        i_click_on_the_button_on_that_badge_item();
     }
 
     @When("another user views my name")
-    public void another_user_views_my_name() {
-        // Write code here that turns the phrase above into concrete actions
-        assert true;
+    public void another_user_views_my_name() throws Exception {
+        // Because our user is #1 on the leaderboard, we can just view the leaderboard (main page)
+        mvcResult = mockMvc.perform(get("/main"))
+                .andExpect(view().name("mainTemplate"))
+                .andExpect(status().isOk())
+                .andReturn();
+
     }
 
     @Then("they see the badge displayed next to my name")
     public void they_see_the_badge_displayed_next_to_my_name() {
-        // Write code here that turns the phrase above into concrete actions
-        assert true;
+
+        List<User> users = (List<User>) mvcResult.getModelAndView().getModel().get("topUsers");
+        User currentUser = userService.getAuthenticatedUser();
+        assertEquals(currentUser, users.get(0));
+        assertNotNull(users.get(0).getAppliedBadge());
     }
 
     @Given("I am on my profile page")
-    public void i_am_on_my_profile_page() {
-        // Write code here that turns the phrase above into concrete actions
-        assert true;
+    public void i_am_on_my_profile_page() throws Exception {
+        mockMvc.perform(get("/view-user-profile"))
+                .andExpect(view().name("viewUserProfileTemplate"))
+                .andExpect(status().isOk())
+                .andReturn();
     }
 
     @When("I view my name")
-    public void i_view_my_name() {
-        // Write code here that turns the phrase above into concrete actions
-        assert true;
+    public void i_view_my_name() throws Exception {
+        // In the view, the badge is retrieved when the page is loaded
+        mvcResult = mockMvc.perform(get("/get-image")
+                        .param("userBadge", "true")
+                        .param("userID", userService.getAuthenticatedUser().getUserId().toString()))
+                .andExpect(status().isOk())
+                .andReturn();
     }
 
-    @Then("the badges I have applied are displayed next to my name")
+    @Then("the badge I have applied are displayed next to my name")
     public void the_badges_i_have_applied_are_displayed_next_to_my_name() {
-        // Write code here that turns the phrase above into concrete actions
-        assert true;
+        byte[] responseImageData = mvcResult.getResponse().getContentAsByteArray();
+        Assertions.assertArrayEquals(
+                userService.getAuthenticatedUser().getAppliedBadge().getIcon().getData(),
+                responseImageData
+        );
     }
 
-    @Given("I have a friend and they have a badge item applied to their name")
-    public void i_have_a_friend_and_they_have_a_badge_item_applied_to_their_name() {
-        // Write code here that turns the phrase above into concrete actions
-        assert true;
+    @Given("I have a friend {string} and they have a badge item applied to their name")
+    public void i_have_a_friend_and_they_have_a_badge_item_applied_to_their_name(String friendEmail) throws Exception {
+        User currentUser = userService.getAuthenticatedUser();
+        friend = userService.getUserByEmail(friendEmail);
+
+        currentUser.addFriend(friend);
+        friend.addFriend(currentUser);
+        userService.updateUserFriends(currentUser);
+        userService.updateUserFriends(friend);
+
+        // Log out
+        SecurityContextHolder.clearContext();
+
+        // Log in as the friend
+        UsernamePasswordAuthenticationToken friendToken = new UsernamePasswordAuthenticationToken(friend.getEmail(), "Password1!");
+        var friendAuthentication = authenticationManager.authenticate(friendToken);
+        SecurityContextHolder.getContext().setAuthentication(friendAuthentication);
+
+        // Apply a badge to the friend
+        i_click_on_the_button_on_that_badge_item();
+
+        // Log out and log in as the original user
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(currentUser.getEmail(), "Password1!");
+        var authentication = authenticationManager.authenticate(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @When("I view their profile")
-    public void i_view_their_profile() {
-        // Write code here that turns the phrase above into concrete actions
-        assert true;
+    public void i_view_their_profile() throws Exception {
+        mvcResult = mockMvc.perform(get("/manage-friends"))
+                .andExpect(view().name("manageFriendsTemplate"))
+                .andExpect(status().isOk())
+                .andReturn();
     }
 
     @Then("I see the badges displayed next to their name")
-    public void i_see_the_badges_displayed_next_to_their_name() {
-        // Write code here that turns the phrase above into concrete actions
-        assert true;
+    public void i_see_the_badges_displayed_next_to_their_name() throws Exception {
+        BadgeItem friendBadge = userService.getUserByEmail(friend.getEmail()).getAppliedBadge();
+
+        // In the view, the badge is retrieved when the page is loaded
+        MvcResult result = mockMvc.perform(get("/get-image")
+                        .param("userBadge", "true")
+                        .param("userID", friend.getUserId().toString()))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // Verify the image data
+        byte[] responseImageData = result.getResponse().getContentAsByteArray();
+        Assertions.assertArrayEquals(friendBadge.getIcon().getData(), responseImageData);
     }
 
     @Given("I am on the friends page and open the add friends search bar")
