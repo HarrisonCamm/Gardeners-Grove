@@ -61,6 +61,9 @@ public class User {
     @JoinColumn
     private Image image;
 
+    @JoinColumn(name = "uploaded_image_id")
+    private Long uploadedImageId;
+
     @Column()
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
@@ -68,8 +71,6 @@ public class User {
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Transaction> transactions = new ArrayList<>();
-
-
 
     @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer inappropriateTagCount = 0;
@@ -191,6 +192,7 @@ public class User {
     public String setPassword(String newPassword) {
         return this.password = newPassword;
     }
+
     public String getPassword() {
         return password;
     }
@@ -203,6 +205,13 @@ public class User {
         return image;
     }
 
+    public Long getUploadedImageId() {
+        return uploadedImageId;
+    }
+
+    public void setUploadedImageId(Long previousImageId) {
+        this.uploadedImageId = previousImageId;
+    }
 
     public List<FriendRequest> getSentFriendRequests() {
         return null;
@@ -283,7 +292,6 @@ public class User {
         nonFriendContacts.removeIf(c -> c.equals(contact));
     }
 
-
     /**
      * Gets an immutable list of non-friend contacts
      * @return the list of contacts
@@ -301,7 +309,6 @@ public class User {
     public void setFriends(List<User> friends) {
         this.friends = friends;
     }
-
 
     @Override
     public boolean equals(Object user) {
