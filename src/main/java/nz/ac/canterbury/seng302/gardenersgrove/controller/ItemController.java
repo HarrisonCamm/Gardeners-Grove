@@ -1,0 +1,46 @@
+package nz.ac.canterbury.seng302.gardenersgrove.controller;
+
+import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+public class ItemController {
+    Logger logger = LoggerFactory.getLogger(ItemController.class);
+
+    private final ItemService itemService;
+    private final UserService userService;
+    private final ImageService imageService;
+
+    @Autowired
+    public ItemController(ItemService itemService, UserService userService, ImageService imageService) {
+        this.itemService = itemService;
+        this.userService = userService;
+        this.imageService = imageService;
+    }
+
+    @GetMapping("/item")
+    public String getTemplate(@RequestParam("itemID") Long itemID,
+            Model model) {
+        logger.info("GET /item");
+        RedirectService.addEndpoint("/item");
+
+        Item item = itemService.getItemById(itemID);
+        boolean isBadge = item instanceof BadgeItem;
+
+        model.addAttribute("item", item);
+        model.addAttribute("isBadge", isBadge); //if not a badge, it is an ImageItem
+        return "itemDetailsTemplate";
+    }
+
+}
