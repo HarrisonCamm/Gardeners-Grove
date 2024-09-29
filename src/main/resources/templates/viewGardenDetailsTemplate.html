@@ -22,7 +22,7 @@
 
             <div style="display: inline-block; vertical-align: middle;">
                 &nbsp;
-                <input type="checkbox" id="isPublic" onchange="publicityHandler(this)" th:name="isPublic" th:checked="*{gardenIsPublic}">
+                <input class="checkbox" type="checkbox" id="isPublic" onchange="publicityHandler(this)" th:name="isPublic" th:checked="*{gardenIsPublic}">
                 <label for="isPublic" style="font-size: 12px;">Make my garden public</label>
             </div>
         </div>
@@ -91,39 +91,27 @@
                     <h5 th:text="${gardenDescription}"></h5>
                 </div>
             </div>
-
             <div id="bloomTipsGardenInfo" class="row mb-3 ps-5">
                 <div class="col">
                     <p th:text="${totalBloomsTippedMessage}"></p>
-                    <p id="makeGardenPublicMessage" th:if="${!hasBloomsToClaim}">Make your garden public to get tips!</p>
-                    <button type="button" th:if="${hasBloomsToClaim}" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#claimBloomsModal">
-                        Claim Bloom Tips
-                    </button>
-                </div>
-            </div>
-
-            <!-- Claim Tip Blooms Modal -->
-            <div class="modal fade" id="claimBloomsModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" >Accept Tips?</h5>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label" th:text="${unclaimedBloomsMessage}"></label>
+                    <p id="makeGardenPublicMessage" th:hidden="${gardenIsPublic}">Make your garden public to get tips!</p>
+<!--                    Claim blooms tips stuff-->
+                    <div th:if="${unclaimedBlooms >0}" >
+                        <form th:action="@{/claim-tips(gardenID=${gardenID})}" method="post">
+                            <div id="claimTipsButton" th:hidden="false">
+                                <button type="button"  class="btn btn-primary" onclick="toggleClaimTips()" th:text="${claimBloomsButtonText}">
+                                    Claim Blooms
+                                </button>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary">Claim</button>
-                            <!--   TODO in another task: implement logic for finishing the transaction and setting unclaimedBlooms to 0-->
-                        </div>
+                            <div id="confirmClaimTipsDiv" th:hidden="true">
+                                <button type="button" class="btn btn-secondary" onclick="toggleClaimTips()">Cancel</button>
+                                <button type="submit" class="btn btn-primary tip-model-button">Claim</button>
+                            </div>
+                        </form>
                     </div>
+                    <p th:if="${claimedTipsMessage}" th:text="${claimedTipsMessage}" class="text-success fw-bold pt-1"></p>
                 </div>
             </div>
-
-
         </div>
 
         <div class="col container pt-5">
@@ -233,6 +221,7 @@
 </div>
 <!-- Scripts fragment, contains bootstrap scripts -->
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+<script th:src="@{/javascript/tip-blooms.js}"></script>
 </body>
 </html>
 

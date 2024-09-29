@@ -5,10 +5,14 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -20,56 +24,84 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SuppressWarnings({"unchecked", "SpringJavaInjectionPointsAutowiringInspection"})
 public class UnlockableContentSteps {
     @Autowired
     private WebApplicationContext webApplicationContext;
     @Autowired
-    private MockMvc mockMvc;
-    @Autowired
     private UserService userService;
-    private ResultActions resultActions;
+    @Autowired
+    private ItemService itemService;
     private MvcResult mvcResult;
+    private MockMvc mockMvc;
     private User currentUser;
 
     @Before
     public void setup() throws IOException {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        User currentUser = userService.getAuthenticatedUser();
     }
 
     @When("I click Inventory")
     public void i_click_inventory() throws Exception {
-        resultActions = mockMvc.perform(get("/inventory"));
-        mvcResult = resultActions.andExpect(status().isOk())
+        this.mvcResult = mockMvc.perform(get("/inventory"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("imageItems"))
+                .andExpect(model().attributeExists("badgeItems"))
                 .andReturn();
     }
 
+    // AC1
     @Then("I am shown my inventory of items")
     public void i_am_shown_my_inventory_of_items() {
-        List<String[]> badgeItems = (List<String[]>) mvcResult.getModelAndView().getModel().get("badgeItems");
-//        List<String[]> ownedBadgeItems = currentUser.getBadgeItems(); todo
-        List<String[]> ownedBadgeItems = new ArrayList<>();
-        List<String[]> gifItems = (List<String[]>) mvcResult.getModelAndView().getModel().get("gifItems");
-//        List<String[]> ownedGifItems = currentUser.getBadgeItems(); todo
-        List<String[]> ownedGifItems = new ArrayList<>();
-        Assertions.assertEquals(ownedBadgeItems, badgeItems);
-        Assertions.assertEquals(ownedGifItems, gifItems);
+        // Get the current user
+        this.currentUser = userService.getAuthenticatedUser();
 
+        // Add some items to the current user's inventory (TEMP FOR THIS BRANCH)
+        this.currentUser.addItem(itemService.getItemByName("Happy"));
+        this.currentUser.addItem(itemService.getItemByName("Eggplant"));
+
+        this.currentUser.addItem(itemService.getItemByName("Cat Fall"));
+        this.currentUser.addItem(itemService.getItemByName("Cat Typing"));
+        this.currentUser.addItem(itemService.getItemByName("Fabian Intensifies"));
+
+        // Save the user with the new items
+        userService.saveUser(currentUser);
+
+        // Retrieve items from the model
+        List<Item> badgeItems = (List<Item>) mvcResult.getModelAndView().getModel().get("badgeItems");
+        List<Item> imageItems = (List<Item>) mvcResult.getModelAndView().getModel().get("imageItems");
+
+        // Retrieve the current user
+        User currentUser = userService.getAuthenticatedUser();
+
+        // Fetch expected owned items from the services
+        List<Item> expectedOwnedBadgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
+        List<Item> expectedOwnedImageItems = itemService.getImagesByOwner(currentUser.getUserId());
+
+        // Assertions to verify the inventory
+        Assertions.assertEquals(expectedOwnedBadgeItems.size(), badgeItems.size(), "Badge items count does not match.");
+        Assertions.assertTrue(badgeItems.containsAll(expectedOwnedBadgeItems), "Badge items do not match the expected owned items.");
+
+        Assertions.assertEquals(expectedOwnedImageItems.size(), imageItems.size(), "Image items count does not match.");
+        Assertions.assertTrue(imageItems.containsAll(expectedOwnedImageItems), "Image items do not match the expected owned items.");
     }
 
+    // AC2
     @When("I click Shop")
     public void i_click_shop() throws Exception {
-        resultActions = mockMvc.perform(get("/shop"));
-        mvcResult = resultActions.andExpect(status().isOk())
+        this.mvcResult = mockMvc.perform(get("/shop"))
+                .andExpect(status().isOk())
                 .andReturn();
     }
 
+    // AC2
     @Then("I am shown the shop")
     public void i_am_shown_the_shop() {
         Set<Item> badgeItems = (Set<Item>) mvcResult.getModelAndView().getModel().get("badgeItems");
@@ -78,19 +110,51 @@ public class UnlockableContentSteps {
         assertNotNull(imageItems);
     }
 
+    // AC3
     @Given("I am in the shop")
-    public void i_am_in_the_shop() {
-        // TODO: Setup initial context for being in the shop
+    public void i_am_in_the_shop() throws Exception {
+        i_click_shop();
     }
 
-    @Then("I can see a list of items for sale with a picture, name, description and price in Blooms")
-    public void i_can_see_a_list_of_items_for_sale_with_a_picture_name_description_and_price_in_blooms() {
-        // TODO: Implement logic for displaying list of items for sale
+    // AC3
+    @Then("I can see a list of items for sale with a picture, name and price in Blooms")
+    public void i_can_see_a_list_of_items_for_sale_with_a_picture_name_and_price_in_blooms() {
+        Set<BadgeItem> badgeItemSet = (Set<BadgeItem>) mvcResult.getModelAndView().getModel().get("badgeItems");
+        List<BadgeItem> badgeItems = new ArrayList<>(badgeItemSet);
+
+        // AI Assisted Converted Stream for Assertions.assertAll functionality
+        List<Executable> badgeItemAssertions = badgeItems.stream()
+                .flatMap(badgeItem -> Stream.of(
+                        (Executable) () -> Assertions.assertNotNull(badgeItem.getName(), "BadgeItem name should not be null"),
+                        (Executable) () -> Assertions.assertNotNull(badgeItem.getPrice(), "BadgeItem price should not be null"),
+                        (Executable) () -> Assertions.assertNotNull(badgeItem.getEmoji(), "BadgeItem emoji should not be null")
+                ))
+                .collect(Collectors.toList());
+
+        Assertions.assertAll("BadgeItem assertions", badgeItemAssertions);
+
+        Set<ImageItem> imageItemSet = (Set<ImageItem>) mvcResult.getModelAndView().getModel().get("imageItems");
+        List<ImageItem> imageItems = new ArrayList<>(imageItemSet);
+
+        // AI Assisted Converted Stream for Assertions.assertAll functionality
+        List<Executable> imageItemAssertions = imageItems.stream()
+                .flatMap(imageItem -> Stream.of(
+                        (Executable) () -> Assertions.assertNotNull(imageItem.getName(), "ImageItem name should not be null"),
+                        (Executable) () -> Assertions.assertNotNull(imageItem.getPrice(), "ImageItem price should not be null"),
+                        (Executable) () -> Assertions.assertNotNull(imageItem.getImage(), "ImageItem image should not be null")
+                ))
+                .collect(Collectors.toList());
+
+        Assertions.assertAll("ImageItem assertions", imageItemAssertions);
     }
 
     @Given("I am in my inventory")
-    public void i_am_in_my_inventory() {
-        // TODO: Setup initial context for being in inventory
+    public void i_am_in_my_inventory() throws Exception {
+        // Access the inventory page to ensure the user is in their inventory
+        mvcResult = mockMvc.perform(get("/inventory"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("inventoryTemplate"))
+                .andReturn();
     }
 
     @Then("I can see a list of my items I have purchased that have a picture, name and quantity")

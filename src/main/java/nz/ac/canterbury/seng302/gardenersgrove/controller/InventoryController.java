@@ -1,46 +1,113 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class InventoryController {
     Logger logger = LoggerFactory.getLogger(InventoryController.class);
+
+    private final ItemService itemService;
+    private final UserService userService;
+    private final ImageService imageService;
+
+    @Autowired
+    public InventoryController(ItemService itemService, UserService userService, ImageService imageService) {
+        this.itemService = itemService;
+        this.userService = userService;
+        this.imageService = imageService;
+    }
 
     @GetMapping("/inventory")
     public String getTemplate(Model model) {
         logger.info("GET /inventory");
         RedirectService.addEndpoint("/inventory");
 
-        //Create and populate a list of items for the view to render
-        List<String[]> badgeItems = new ArrayList<>();
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+        List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
+        List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
 
-        // TODO - Simulating the adding of items, this will be done using service and repo layers in another task
-        // uncomment these to view how it would look, commented out for tests to work
-//        badgeItems.add(new String[]{"1x", "vegemite.png", "Vegemite"});
-//        badgeItems.add(new String[]{"1x", "timtam.png", "Tim Tam"});
-//        badgeItems.add(new String[]{"1x", "neo_fabian.png", "Neo Fabian"});
-
-        //Create and populate a list of items for the view to render
-        List<String[]> gifItems = new ArrayList<>();
-
-        // TODO - Simulating the adding of items, this will be done using service and repo layers in another task
-//        gifItems.add(new String[]{"1x", "fabian.gif", "Fabian Intensifies"});
-//        gifItems.add(new String[]{"1x", "scrum_master_harrison.gif", "Scrum Master Harrison"});
-//        gifItems.add(new String[]{"1x", "stick_man.gif", "Stick Man"});
-
+        if (badgeItems.isEmpty()) {
+            // Dummy Data for testing, will need to be replaced with inventory
+            badgeItems.add(itemService.getItemByName("Happy"));
+            badgeItems.add(itemService.getItemByName("Eggplant"));
+            userService.saveUser(currentUser);
+        }
+        if (imageItems.isEmpty()) {
+            // Dummy Data for testing, will need to be replaced with inventory
+            imageItems.add(itemService.getItemByName("Cat Fall"));
+            imageItems.add(itemService.getItemByName("Cat Typing"));
+            imageItems.add(itemService.getItemByName("Fabian Intensifies"));
+            userService.saveUser(currentUser);
+        }
 
         model.addAttribute("badgeItems", badgeItems);
-        model.addAttribute("gifItems", gifItems);
-
+        model.addAttribute("imageItems", imageItems);
 
         return "inventoryTemplate";
+    }
+
+    @PostMapping("/inventory/use/{itemId}")
+    public String useImageItem(@PathVariable Long itemId) {
+        logger.info("POST /inventory/use/{}", itemId);
+
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+
+        // Get inventory
+        List<Item> inventory = currentUser.getInventory();
+
+        try {
+            // Find item in inventory
+            Optional<Item> matchingItem = inventory.stream()
+                    .filter(item -> item.getId().equals(itemId))
+                    .findFirst();
+
+            if (matchingItem.isPresent()) {
+                // Gets item, then casts to ImageItem
+                ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
+
+                // Get the image id of imageItem
+                Long itemImageId = imageItem.getImage().getId();
+
+                // Get image from Image Table
+                Optional<Image> imageOpt = imageService.findImage(itemImageId);
+
+                // Update Users Image to ItemsImage
+                imageOpt.ifPresent(currentUser::setImage);
+
+                // Persist change to user
+                userService.saveUser(currentUser);
+
+                // Log success
+                logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+            } else {
+                // Item is not found
+                logger.error("Item with ID {} not found", itemId);
+            }
+
+        } catch (IllegalArgumentException e) {
+            logger.error("Error applying item: {}", e.getMessage());
+        }
+
+        return "redirect:/inventory";
     }
 }
