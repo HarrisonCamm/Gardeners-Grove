@@ -15,11 +15,11 @@ Feature: U6012 Gif Profile Picture
    And I am friends with "sarah@email.com"
    # NOTE: Login as friend
    When I am logged in with email "sarah@email.com" and password "Password1!"
-   And I views "liam@email.com" profile image on the <endpoint> page
+   And I view "liam@email.com" profile image on the <endpoint> page
    Then I can see the "Cat Typing" GIF in place of "liam@email.com"s old profile picture
    Examples:
-     | endpoint |
-     | "/messages" |
+     | endpoint          |
+     | "/messages"       |
      | "/manage-friends" |
 
   Scenario: AC3 - I can see my GIF profile image when viewing my profile
@@ -40,3 +40,9 @@ Feature: U6012 Gif Profile Picture
     And the owner has applied a gif image item to their profile picture
     When I view their profile picture
     Then I can see the gif they have selected as their profile picture
+
+  Scenario: AC6 - I can unapply a GIF profile image I have applied
+    Given I am viewing my inventory
+    And I have "Cat Typing" applied as my profile picture
+    When I click the "Unapply" button on that item
+    Then My profile picture will revert to the image I had before selecting the gif image
