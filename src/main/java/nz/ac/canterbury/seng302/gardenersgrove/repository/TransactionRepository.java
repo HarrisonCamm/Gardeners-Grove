@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.repository;
 
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import org.springframework.data.domain.Page;
@@ -15,5 +16,7 @@ public interface TransactionRepository  extends JpaRepository<Transaction, Long>
     Page<Transaction> findAllByUser(@Param("user") User user, Pageable pageable);
 
     List<Transaction> findTransactionBySender(User user);
+
+    List<Transaction> findAllByTippedGardenAndClaimedFalse(Garden tippedGarden);
 
 }

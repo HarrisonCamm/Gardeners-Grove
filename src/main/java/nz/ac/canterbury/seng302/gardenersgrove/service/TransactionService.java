@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -34,10 +36,19 @@ public class TransactionService {
     }
 
     public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId) {
-        return addTransaction(amount, notes, transactionType, receiverId, senderId, null);
+        return addTransaction(amount, notes, transactionType, receiverId, senderId, null, null, null);
     }
 
+    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId, Boolean isClaimed, Garden tippedGarden) {
+        return addTransaction(amount, notes, transactionType, receiverId, senderId, null, isClaimed, tippedGarden);
+    }
+
+    //addTransaction(amount, notes, transactionType, receiverId, senderId, plantId)
     public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId, Long plantId) {
+        return addTransaction(amount, notes, transactionType, receiverId, senderId, plantId, null, null);
+    }
+
+    public Transaction addTransaction(int amount, String notes, String transactionType, Long receiverId, Long senderId, Long plantId, Boolean isClaimed, Garden tippedGarden) {
         Transaction transaction = new Transaction();
         transaction.setAmount(amount);
         transaction.setNotes(notes);
@@ -60,6 +71,10 @@ public class TransactionService {
             transaction.setPlant(plant);
         }
 
+        transaction.setClaimed(Objects.requireNonNullElse(isClaimed, true));
+
+        transaction.setTippedGarden(tippedGarden);
+
         return transactionRepository.save(transaction);
     }
 
@@ -80,13 +95,49 @@ public class TransactionService {
     }
 
     /**
-     * Sets the claimed status of a transaction this is used after a tip transaction is created
+     * Sets the claimed status of a transaction to true
      * @param transactionId The transaction to set claimed status
-     * @param claimed The status to set the transaction to
      */
-    public void setClaimed(Long transactionId, boolean claimed) {
-        Transaction transaction = transactionRepository.findById(transactionId).get();
-        transaction.setClaimed(claimed);
+    public void setClaimed(Long transactionId) {
+        Transaction transaction = transactionRepository.findById(transactionId)     //throws null pointer exception if transaction does not actually exist fr
+                .orElseThrow(NullPointerException::new);
+
+        transaction.setClaimed(true);
+        String gardenName = transaction.getTippedGarden().getName();
+        transaction.setNotes("Tipped " + gardenName + " (claimed by " + transaction.getReceiver().getFirstName() + ")");
         transactionRepository.save(transaction);
+    }
+
+    /**
+     * Returns all the unclaimed tip transaction for a garden
+     * @param tippedGarden The Garden object of the garden to retrieve the tips from
+     * @return list of Transaction objects
+     */
+    public List<Transaction> retrieveGardenTips(Garden tippedGarden) {
+        return transactionRepository.findAllByTippedGardenAndClaimedFalse(tippedGarden);
+    }
+
+    /**
+     * Returns the total value of unclaimed tips for the provided Garden
+     * @param tippedGarden  Garden object to get unclaimed tips for
+     * @return The amount of blooms available to claim
+     */
+    public int totalUnclaimedTips(Garden tippedGarden) {
+        List<Transaction> transactions = retrieveGardenTips(tippedGarden);
+        int total = 0;
+        for (Transaction transaction : transactions) {
+            total += transaction.getAmount();
+        }
+        return total;
+    }
+
+    /**
+     * Sets all the provided transactions to claimed
+     * @param transactions List of transactions to claim
+     */
+    public void claimAllGardenTips(List<Transaction> transactions) {
+        for (Transaction transaction : transactions) {
+            setClaimed(transaction.getTransactionId());
+        }
     }
 }
