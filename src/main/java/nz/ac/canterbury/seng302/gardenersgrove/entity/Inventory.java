@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.gardenersgrove.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"owner", "item"})})
 public class Inventory {
 
     @Id
