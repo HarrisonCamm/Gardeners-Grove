@@ -33,10 +33,11 @@
                         <h3 class="p-2" th:text="${item.getKey().name}"></h3>
                         <p class="item-quantity" th:text="${item.getValue()} + 'x'"></p>
                     </div>
+                    <!-- Display the badge item's icon -->
                     <div class="mb-5" >
-                        <img type="gif" class="image mt-5" th:src="@{/get-image?shop=true(imageID=${item.getKey().icon.id})}">
-                        <form th:action="@{'/inventory/badge/use/' + ${item.id}}" method="post">                            <input type="hidden" name="userId" th:value="${user.userId}">
-                            <input type="hidden" name="badgeURL" th:src="@{/get-image?shop=true(imageID=${item.getKey().icon.id})}">
+                        <img type="png" class="image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.getKey().icon.id})}">
+                        <form th:action="@{'/inventory/badge/use/' + ${item.getKey().id}}" method="post">                            <input type="hidden" name="userId" th:value="${user.userId}">
+                            <input type="hidden" name="badgeURL" th:src="@{/get-image?imageItem=true(imageID=${item.getKey().icon.id})}">
                             <button class="item-use-button button" type="submit">Use</button>
                         </form>
                     </div>

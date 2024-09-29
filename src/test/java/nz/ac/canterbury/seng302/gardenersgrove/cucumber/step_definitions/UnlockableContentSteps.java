@@ -5,6 +5,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -138,7 +139,7 @@ public class UnlockableContentSteps {
                 .flatMap(badgeItem -> Stream.of(
                         (Executable) () -> Assertions.assertNotNull(badgeItem.getName(), "BadgeItem name should not be null"),
                         (Executable) () -> Assertions.assertNotNull(badgeItem.getPrice(), "BadgeItem price should not be null"),
-                        (Executable) () -> Assertions.assertNotNull(badgeItem.getEmoji(), "BadgeItem emoji should not be null")
+                        (Executable) () -> Assertions.assertNotNull(badgeItem.getIcon(), "BadgeItem icon should not be null")
                 ))
                 .collect(Collectors.toList());
 

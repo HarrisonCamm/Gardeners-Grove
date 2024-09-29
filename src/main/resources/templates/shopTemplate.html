@@ -28,8 +28,9 @@
                     <h3 class="p-2" th:text="${item.name}"></h3>
                     <p class="item-quantity" th:text="${item.price} + '฿'"></p>
                 </div>
+                <!-- Display the badge item's icon -->
                 <div class="mb-5 mt-4" >
-                    <img type="gif" class="image mt-5" th:src="@{/get-image?shop=true(imageID=${item.getKey().icon.id})}">
+                    <img type="png" class="image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.icon.id})}">
                     <div class="mt-5">
                         <!-- Purchase Form -->
                         <form th:action="@{/shop}" method="post">
@@ -50,6 +51,7 @@
                     <h3 class="p-2" th:text="${item.name}"></h3>
                     <p class="item-quantity" th:text="${item.price} + '฿'"></p>
                 </div>
+                <!-- Display the image item's gif -->
                 <div class="mb-5">
                     <img type="gif" class="shop-image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.image.id})}" alt="Item Image">
                     <div class="mt-5">

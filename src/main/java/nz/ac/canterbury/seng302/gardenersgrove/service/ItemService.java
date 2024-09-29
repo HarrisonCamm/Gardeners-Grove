@@ -12,12 +12,10 @@ import java.util.List;
 @Service
 public class ItemService {
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository, UserRepository userRepository) {
+    public ItemService(ItemRepository itemRepository) {
         this.itemRepository = itemRepository;
-        this.userRepository = userRepository;
     }
 
     public void saveItem(Item item) {
@@ -50,36 +48,5 @@ public class ItemService {
 
     public List<Item> getImages() {
         return itemRepository.findImages();
-    }
-
-    public String purchaseItem(Long itemId, Long userId) {
-        // Find the item and user by their IDs
-        Item item = itemRepository.findById(itemId).orElse(null);
-        User user = userRepository.findById(userId).orElse(null);
-
-
-        if (item == null) {
-            return "Item not found.";
-        }
-
-        if (user == null) {
-            return "User not found.";
-        }
-
-        // Check if the user has enough balance
-        if (user.getBloomBalance() >= item.getPrice()) {
-            // Deduct the cost from the user's balance
-            user.setBloomBalance(user.getBloomBalance() - item.getPrice());
-
-            // Set the owner of the item to the current user
-
-            // Save the updated item and user entities
-            itemRepository.save(item);
-            userRepository.save(user);
-
-            return "Purchase successful";
-        } else {
-            return "Insufficient Bloom balance";
-        }
     }
 }

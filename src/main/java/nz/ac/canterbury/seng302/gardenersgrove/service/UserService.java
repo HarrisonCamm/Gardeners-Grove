@@ -253,17 +253,4 @@ public class UserService {
         return userRepository.findUserRank(userId);
     }
 
-    @Transactional
-    public void addItemToUser(Long userId, Item item) {
-        // Fetch user from database
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-        // Add item to user's inventory (in-memory)
-        user.addItem(item);
-
-        // Save the user to persist the changes in the database
-        userRepository.save(user);
-    }
-
 }

@@ -54,44 +54,6 @@ public class UserBadgesSteps {
     @BeforeEach
     public void setup() throws IOException {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-
-
-        // Get the user Entity
-//        User currentUser = userService.getAuthenticatedUser();
-        User currentUser = userService.getUserByEmail("inaya@email.com");
-        List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
-        List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
-
-        // Create predefined profile pictures
-        Path timtamImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/timtam.png").getURI());
-        byte[] timtamImageBytes = Files.readAllBytes(timtamImagePath);
-        Image timtamImage = new Image(timtamImageBytes, "png", false);
-
-
-        Path vegimiteImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/vegemite.png").getURI());
-        byte[] vegimiteImageBytes = Files.readAllBytes(vegimiteImagePath);
-        Image vegimiteImage = new Image(vegimiteImageBytes, "png", false);
-
-
-        Path neoFabianImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/neo_fabian.png").getURI());
-        byte[] neoFabianImageBytes = Files.readAllBytes(neoFabianImagePath);
-        Image neoFabianImage = new Image(neoFabianImageBytes, "png", false);
-
-
-        BadgeItem badge1 = new BadgeItem("Tim Tam", 100, timtamImage, 1);
-        BadgeItem badge2 = new BadgeItem("Vegemite", 50, vegimiteImage, 1);
-        BadgeItem badge3 = new BadgeItem("Love", 25, neoFabianImage, 1);
-
-
-
-        // DUMMY DATA
-        if (badgeItems.isEmpty()) {
-            currentUser.addItem(badge1);
-            currentUser.addItem(badge2);
-            currentUser.addItem(badge3);
-
-        }
-
     }
 
     //AC1
