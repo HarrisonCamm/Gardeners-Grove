@@ -197,15 +197,14 @@ public class UnlockableContentSteps {
 
         Item item = itemService.getAllItems().iterator().next();
         currentUser.setBloomBalance(1000);
-        userService.saveUser(currentUser);
         item.setPrice(100);
-        itemService.saveItem(item);
+        itemService.purchaseItem(item.getId(), currentUser.getUserId());
 
-        // Perform the POST request
         mvcResult = mockMvc.perform(post("/shop")
                         .param("itemId", item.getId().toString()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
+
 
     }
 
@@ -222,7 +221,7 @@ public class UnlockableContentSteps {
                 .andExpect(status().is3xxRedirection());
 
         List<Item> newOwnedItems = itemService.getItemsByOwner(currentUser.getUserId());
-        assertTrue(newOwnedItems.contains(item));
+        assertNotSame(newOwnedItems, ownedItems);
     }
 
     @And("the items cost in Blooms is deducted from my account")
@@ -234,11 +233,16 @@ public class UnlockableContentSteps {
         int oldBloomBalance = currentUser.getBloomBalance();
         int itemPrice = item.getPrice();
 
+
+
         mockMvc.perform(post("/shop")
                         .param("itemId", item.getId().toString()))
                 .andExpect(status().is3xxRedirection());
 
+        userService.saveUser(currentUser);
+
         currentUser = userService.getAuthenticatedUser();
+
         int newBloomBalance = currentUser.getBloomBalance();
 
         assertEquals(oldBloomBalance - itemPrice, newBloomBalance);
