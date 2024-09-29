@@ -30,7 +30,6 @@ public class GardenersGroveApplication {
 
 	@Autowired
 	private UserService userService;
-	private VerificationTokenService verificationTokenService;
 
 	@Autowired
 	private ImageService imageService;
@@ -58,115 +57,34 @@ public class GardenersGroveApplication {
 		byte[] defaultUserImageBytes = Files.readAllBytes(defaultUserImagePath);
 
 		return args -> {
-			// Check if the user already exists
-			if (!userService.emailExists("startup@user.com")) {
-				Image image = new Image(defaultUserImageBytes, "png", false);
-				User user = new User("Startup", "User", false, "startup@user.com", "Password1!", "01/01/2000", image);
-				user.grantAuthority("ROLE_USER");
-				userService.addUser(user);
-
-				// Check if the user and the user's image are not null (For tests)
-				if (user != null && user.getImage() != null && user.getUserId() != null) {
-					// Retrieve the user from the database
-					user = userService.getUserByID(user.getUserId());
-					// init user with uploaded image id
-					user.setUploadedImageId(user.getImage().getId());
-					userService.saveUser(user);
-				}
-			}
-			if (!userService.emailExists("sarah@email.com")) {
-				Image image = new Image(defaultUserImageBytes, "png", false);
-				User user = new User("Sarah", "", true, "sarah@email.com", "Password1!", "24/08/1987", image);
-				user.grantAuthority("ROLE_USER");
-				userService.addUser(user);
-
-				// Check if the user and the user's image are not null (For tests)
-				if (user != null && user.getImage() != null && user.getUserId() != null) {
-					// Retrieve the user from the database
-					user = userService.getUserByID(user.getUserId());
-					// init user with uploaded image id
-					user.setUploadedImageId(user.getImage().getId());
-					userService.saveUser(user);
-				}
-			}
-			if (!userService.emailExists("inaya@email.com")) {
-				Image image = new Image(defaultUserImageBytes, "png", false);
-				User user = new User("Inaya", "Singh", false, "inaya@email.com", "Password1!", "07/01/2000", image);
-				user.grantAuthority("ROLE_USER");
-				userService.addUser(user);
-
-				// Check if the user and the user's image are not null (For tests)
-				if (user != null && user.getImage() != null && user.getUserId() != null) {
-					// Retrieve the user from the database
-					user = userService.getUserByID(user.getUserId());
-					// init user with uploaded image id
-					user.setUploadedImageId(user.getImage().getId());
-					userService.saveUser(user);
-				}
-			}
-			if (!userService.emailExists("kaia@email.com")) {
-				Image image = new Image(defaultUserImageBytes, "png", false);
-				User user = new User("Kaia", "Pene", false, "kaia@email.com", "Password1!", "", image);
-				user.grantAuthority("ROLE_USER");
-				userService.addUser(user);
-
-				// Check if the user and the user's image are not null (For tests)
-				if (user != null && user.getImage() != null && user.getUserId() != null) {
-					// Retrieve the user from the database
-					user = userService.getUserByID(user.getUserId());
-					// init user with uploaded image id
-					user.setUploadedImageId(user.getImage().getId());
-					userService.saveUser(user);
-				}
-			}
-			if (!userService.emailExists("lei@email.com")) {
-				Image image = new Image(defaultUserImageBytes, "png", false);
-				User user = new User("Lei", "Yuan", false, "lei@email.com", "Password1!", "27/02/1994", image);
-				user.grantAuthority("ROLE_USER");
-				userService.addUser(user);
-
-				// Check if the user and the user's image are not null (For tests)
-				if (user != null && user.getImage() != null && user.getUserId() != null) {
-					// Retrieve the user from the database
-					user = userService.getUserByID(user.getUserId());
-					// init user with uploaded image id
-					user.setUploadedImageId(user.getImage().getId());
-					userService.saveUser(user);
-				}
-			}
-			if (!userService.emailExists("liam@email.com")) {
-				Image image = new Image(defaultUserImageBytes, "png", false);
-				User user = new User("Liam", "Müller", false, "liam@email.com", "Password1!", "", image);
-				user.grantAuthority("ROLE_USER");
-				userService.addUser(user);
-
-				// Check if the user and the user's image are not null (For tests)
-				if (user != null && user.getImage() != null && user.getUserId() != null) {
-					// Retrieve the user from the database
-					user = userService.getUserByID(user.getUserId());
-					// init user with uploaded image id
-					user.setUploadedImageId(user.getImage().getId());
-					userService.saveUser(user);
-				}
-			}
-			if (!userService.emailExists("gardenersgrove@email.com")) {
-				Image image = new Image(defaultUserImageBytes, "png", false);
-				User user = new User("Gardeners Grove", "Inc", false, "gardenersgrove@email.com", "Password1!", "", image);
-				user.grantAuthority("ROLE_USER");
-				userService.addUser(user);
-
-				// Check if the user and the user's image are not null (For tests)
-				if (user != null && user.getImage() != null && user.getUserId() != null) {
-					// Retrieve the user from the database
-					user = userService.getUserByID(user.getUserId());
-					// init user with uploaded image id
-					user.setUploadedImageId(user.getImage().getId());
-					userService.saveUser(user);
-				}
-			}
+			createUserIfNotExists("startup@user.com", "Startup", "User", false, "01/01/2000", defaultUserImageBytes);
+			createUserIfNotExists("sarah@email.com", "Sarah", "", true, "24/08/1987", defaultUserImageBytes);
+			createUserIfNotExists("inaya@email.com", "Inaya", "Singh", false, "07/01/2000", defaultUserImageBytes);
+			createUserIfNotExists("kaia@email.com", "Kaia", "Pene", false, "", defaultUserImageBytes);
+			createUserIfNotExists("lei@email.com", "Lei", "Yuan", false, "27/02/1994", defaultUserImageBytes);
+			createUserIfNotExists("liam@email.com", "Liam", "Müller", false, "", defaultUserImageBytes);
+			createUserIfNotExists("gardenersgrove@email.com", "Gardeners Grove", "Inc", false, "", defaultUserImageBytes);
 
 			// Create default items
 			shopService.populateShopWithPredefinedItems();
 		};
+	}
+
+	private void createUserIfNotExists(String email, String firstName, String lastName, boolean isAdmin, String dob, byte[] defaultUserImageBytes) {
+		if (!userService.emailExists(email)) {
+			Image image = new Image(defaultUserImageBytes, "png", false);
+			User user = new User(firstName, lastName, isAdmin, email, "Password1!", dob, image);
+			user.grantAuthority("ROLE_USER");
+			userService.addUser(user);
+
+			// Check if the user and the user's image are not null (For tests)
+			if (user != null && user.getImage() != null && user.getUserId() != null) {
+				// Retrieve the user from the database
+				user = userService.getUserByID(user.getUserId());
+				// init user with uploaded image id
+				user.setUploadedImageId(user.getImage().getId());
+				userService.saveUser(user);
+			}
+		}
 	}
 }
