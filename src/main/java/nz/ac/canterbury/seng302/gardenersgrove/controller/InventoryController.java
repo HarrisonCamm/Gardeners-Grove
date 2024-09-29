@@ -104,12 +104,18 @@ public class InventoryController {
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
 
-        try {
-            // Gets item, then casts to ImageItem
-            ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
+        // Get inventory
+        List<Item> inventory = currentUser.getInventory();
 
-            // Get the image id of imageItem
-            Long itemImageId = imageItem.getImage().getId();
+        try {
+            // Find item in inventory
+            Optional<Item> matchingItem = inventory.stream()
+                    .filter(item -> item.getId().equals(itemId))
+                    .findFirst();
+
+            if (matchingItem.isPresent()) {
+                // Gets item, then casts to ImageItem
+                ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
 
             // Get image from Image Table
             Optional<Image> image = imageService.findImage(itemImageId);
@@ -126,7 +132,6 @@ public class InventoryController {
             // Persis change to user
             userService.saveUser(currentUser);
 
-            logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
         } catch (IllegalArgumentException e) {
             logger.error("Error applying item: {}", e.getMessage());
         }

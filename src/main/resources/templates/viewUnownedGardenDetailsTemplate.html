@@ -95,6 +95,15 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Owner Profile Picture and Name -->
+                <h1> Garden Owner:</h1>
+                <div class="align-left">
+                    <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${gardenOwner.userId})}" alt="">
+                    &nbsp;
+                    <h3 th:text="${gardenOwner.firstName + ' ' + gardenOwner.lastName}"></h3>
+                </div>
+
             </div>
 
             <div class="col container pt-5">
