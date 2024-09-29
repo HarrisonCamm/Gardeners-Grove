@@ -197,7 +197,6 @@ public class ViewGardenController {
                          HttpSession session) {
         logger.info("POST /add-tag");
 
-//        Optional<Garden> garden = gardenService.findGarden(gardenID);
         User currentUser = userService.getAuthenticatedUser();
         Garden garden = authoriseAction(gardenID, currentUser, false);
 
