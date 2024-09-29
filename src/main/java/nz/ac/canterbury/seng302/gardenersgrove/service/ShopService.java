@@ -24,7 +24,7 @@ public class ShopService {
     private ItemRepository itemRepository;
     private ResourceLoader resourceLoader;
     private UserService userService;
-    private InventoryService inventoryService;
+    private InventoryItemService inventoryService;
 
     // Injecting EntityManager
     @PersistenceContext
@@ -36,7 +36,7 @@ public class ShopService {
                        ItemRepository itemRepository,
                        ShopRepository shopRepository,
                        ResourceLoader resourceLoader,
-                       UserService userService, InventoryService inventoryService) {
+                       UserService userService, InventoryItemService inventoryService) {
         this.transactionRepository = transactionRepository;
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
@@ -90,13 +90,13 @@ public class ShopService {
     @Transactional
     public boolean purchaseItem(User user, Shop shop, Item item) {
         boolean successfulPurchase = false;
-        Inventory itemInInventory = inventoryService.getInventory(user, item);
+        InventoryItem itemInInventory = inventoryService.getInventory(user, item);
         if (shop.hasItem(item) && userService.canAfford(user, item)) {
             if (itemInInventory != null) {
                 itemInInventory.setQuantity(itemInInventory.getQuantity() + 1);
             } else {
                 // add item to user inventory
-                Inventory inventory = new Inventory(user, item, 1);
+                InventoryItem inventory = new InventoryItem(user, item, 1);
                 inventoryService.save(inventory);
             }
 

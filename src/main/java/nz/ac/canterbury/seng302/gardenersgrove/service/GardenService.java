@@ -127,4 +127,9 @@ public class GardenService {
         garden.setUnclaimedBlooms(garden.getUnclaimedBlooms() + tipAmount);
         gardenRepository.save(garden);
     }
+
+    public void removeUnclaimedBloomTips(Garden garden) {
+        garden.setUnclaimedBlooms(0);
+        gardenRepository.save(garden);
+    }
 }

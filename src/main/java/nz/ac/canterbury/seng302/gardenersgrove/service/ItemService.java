@@ -1,9 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.ItemRepository;
-import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +18,6 @@ public class ItemService {
 
     public void saveItem(Item item) {
         itemRepository.save(item);
-    }
-
-    public void deleteItem(Item item) {
-        itemRepository.delete(item);
     }
 
     public Item getItemById(Long id) {
@@ -49,4 +43,5 @@ public class ItemService {
     public List<Item> getImages() {
         return itemRepository.findImages();
     }
+
 }
