@@ -5,10 +5,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -23,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -191,8 +189,10 @@ public class UnlockableContentSteps {
     }
 
     @When("I view my inventory")
-    public void i_view_my_inventory() {
-        // TODO: Implement logic for viewing inventory
+    public void i_view_my_inventory() throws Exception {
+        resultActions = mockMvc.perform(get("/inventory"));
+        mvcResult = resultActions.andExpect(status().isOk())
+                .andReturn();
     }
 
     @Then("the quantity is displayed alongside the item rather than displaying multiple instances of the item")
@@ -201,13 +201,36 @@ public class UnlockableContentSteps {
     }
 
     @When("I click on an item")
-    public void i_click_on_an_item() {
-        // TODO: Implement logic for clicking on an item
+    public void i_click_on_an_item() throws Exception {
+        //TODO change this so that it checks the item the user already has in their inventory, rather than
+        // adding it manually as below
+
+        currentUser = userService.getAuthenticatedUser();
+
+        List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
+
+        if (imageItems.isEmpty()) {
+            currentUser.addItem(itemService.getItemByName("Cat Fall"));
+            userService.saveUser(currentUser);
+        }
+        imageItems = itemService.getImagesByOwner(currentUser.getUserId());
+
+        Item tempItemInInventory = imageItems.getFirst();
+
+        resultActions = mockMvc.perform(get("/item?itemID=" + tempItemInInventory.getId()));
+        mvcResult = resultActions.andExpect(status().isOk())
+                .andReturn();
     }
 
-    @Then("I am taken to a page for that item which displays more information on the item including picture, name, description, original price, and resale price")
-    public void i_am_taken_to_a_page_for_that_item_which_displays_more_information_on_the_item_including_picture_name_description_original_price_and_resale_price() {
-        // TODO: Implement logic for displaying detailed item page
+    @Then("I am taken to a page for that item which displays more information on the item including picture, name, original price, and resale price")
+    public void i_am_taken_to_a_page_for_that_item_which_displays_more_information_on_the_item_including_picture_name_description_original_price_and_resale_price() throws Exception {
+        mvcResult = resultActions.andExpect(status().isOk())
+                .andExpect(view().name("itemDetailsTemplate"))
+                .andReturn();
+
+        Item itemToSee = (Item) mvcResult.getModelAndView().getModel().get("item");
+
+        Assertions.assertNotNull(itemToSee);
     }
 
     @Given("I am viewing an item in my inventory")
