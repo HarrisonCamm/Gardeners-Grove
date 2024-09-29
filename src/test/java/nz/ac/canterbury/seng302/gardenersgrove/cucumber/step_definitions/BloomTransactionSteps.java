@@ -237,5 +237,6 @@ public class BloomTransactionSteps {
     public void there_are_existing_transactions() {
         User currentUser = userService.getAuthenticatedUser();
         transaction = transactionService.addTransaction(100, "blooms from Gardener's Grove.","reward", currentUser.getUserId(), gardenersGroveUser.getUserId());
+        transactionService.setClaimed(transaction.getTransactionId(), true);
     }
 }
