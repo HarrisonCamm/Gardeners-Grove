@@ -82,9 +82,6 @@ public class InventoryController {
                     .findFirst();
 
             if (matchingItem.isPresent()) {
-                // Extract item, and cast to ImageItem
-                ImageItem item = (ImageItem) matchingItem.get();
-
                 // Gets item, then casts to ImageItem
                 ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
 
