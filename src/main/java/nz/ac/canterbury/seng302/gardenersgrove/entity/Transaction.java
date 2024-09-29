@@ -48,6 +48,12 @@ public class Transaction {
     @Column
     private boolean claimed;
 
+    //This column is only currently used for garden tips to determine which garden it is for
+    //Explicitly set to optional but not sure if this is necessary
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "tipped_garden", referencedColumnName = "id")
+    private Garden tippedGarden;
+
     public Transaction() {
         // JPA empty constructor
     }
@@ -75,7 +81,6 @@ public class Transaction {
         return receiver;
     }
 
-
     public Integer getAmount() {
         return amount;
     }
@@ -94,6 +99,8 @@ public class Transaction {
 
     // Not sure if JPA requires naming of getters to be getClaimed I want to do isClaimed
     public boolean getClaimed() { return claimed; }
+
+    public Garden getTippedGarden() { return tippedGarden; }
 
     public void setSender(User sender) {
         this.sender = sender;
@@ -122,4 +129,6 @@ public class Transaction {
     }
 
     public void setClaimed(boolean claimed) { this.claimed = claimed; }
+
+    public void setTippedGarden(Garden tippedGarden) { this.tippedGarden = tippedGarden; }
 }
