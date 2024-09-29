@@ -47,4 +47,8 @@ public class InventoryService {
         return items;
     }
 
+    public Inventory getInventoryByOwnerIdAndImageId(Long ownerId, Long imageId) {
+        return inventoryRepository.findInventoryByOwnerIdAndImageId(ownerId, imageId);
+    }
+
 }
