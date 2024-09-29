@@ -58,10 +58,10 @@ class ItemServiceTests {
     void setUp() {
         itemService = new ItemService(itemRepository, userRepository);
 
-        happyBadge = new BadgeItem("Happy1", 1000, "😀", 1);
-        eggplantBadge = new BadgeItem("Eggplant1", 2000, "\uD83C\uDF46", 1);
-        loveBadge = new BadgeItem("Love1", 3000, "\uD83E\uDE77", 1);
-        diamondBadge = new BadgeItem("Diamond1", 4000, "\uD83D\uDC8E", 1);
+        happyBadge = new BadgeItem("Happy1", 1000, "😀");
+        eggplantBadge = new BadgeItem("Eggplant1", 2000, "\uD83C\uDF46");
+        loveBadge = new BadgeItem("Love1", 3000, "\uD83E\uDE77");
+        diamondBadge = new BadgeItem("Diamond1", 4000, "\uD83D\uDC8E");
         itemService.saveItem(happyBadge);
         itemService.saveItem(eggplantBadge);
         itemService.saveItem(loveBadge);
@@ -70,15 +70,15 @@ class ItemServiceTests {
         try {
             Path catFallImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/cat-fall.gif").getURI());
             Image image1 = new Image(Files.readAllBytes(catFallImagePath), "gif", false);
-            catFallImage = new ImageItem("Cat Fall1", 5000, image1, 1);
+            catFallImage = new ImageItem("Cat Fall1", 5000, image1);
 
             Path catTypingImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/cat-typing.gif").getURI());
             Image image2 = new Image(Files.readAllBytes(catTypingImagePath), "gif", false);
-            catTypingImage = new ImageItem("Cat Typing1",6000, image2, 1);
+            catTypingImage = new ImageItem("Cat Typing1",6000, image2);
 
             Path fabianIntensifiesImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/fabian-intensifies.gif").getURI());
             Image image3 = new Image(Files.readAllBytes(fabianIntensifiesImagePath), "gif", false);
-            fabianIntensifiesImage = new ImageItem("Fabian Intensifies1",7000, image3, 1);
+            fabianIntensifiesImage = new ImageItem("Fabian Intensifies1",7000, image3);
 
             itemService.saveItem(catFallImage);
             itemService.saveItem(catTypingImage);

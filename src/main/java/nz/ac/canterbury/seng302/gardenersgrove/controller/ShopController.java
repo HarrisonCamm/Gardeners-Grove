@@ -23,7 +23,6 @@ public class ShopController {
     private final ItemService itemService;
     private final UserService userService;
     private final TransactionService transactionService;
-    private final User gardenGroveUser;
 
 
     @Autowired
@@ -32,7 +31,6 @@ public class ShopController {
         this.itemService = itemService;
         this.userService = userService;
         this.transactionService = transactionService;
-        this.gardenGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
     }
 
     /**
@@ -46,19 +44,7 @@ public class ShopController {
     public String shopPage(Model model) {
         logger.info("GET /shop");
         RedirectService.addEndpoint("/shop");
-        Set<Item> availableItems = shopService.getItemsInShop();
-
-        // Filter BadgeItem and ImageItem
-        Set<Item> badgeItems = availableItems.stream()
-                .filter(BadgeItem.class::isInstance)
-                .collect(Collectors.toSet());
-
-        Set<Item> imageItems = availableItems.stream()
-                .filter(ImageItem.class::isInstance)
-                .collect(Collectors.toSet());
-
-        model.addAttribute("badgeItems", badgeItems);
-        model.addAttribute("imageItems", imageItems);
+        addShopItems(model);
 
         return "shopTemplate";  // This will return the shopTemplate.html from the templates folder
     }
@@ -76,6 +62,8 @@ public class ShopController {
         RedirectService.addEndpoint("/shop");
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
+        User gardenGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
+        addShopItems(model);
 
         // Validate the item exists
         Item item = itemService.getItemById(itemId);
@@ -91,15 +79,34 @@ public class ShopController {
         // Redirect based on the purchase result
         if (isPurchased) {
             // Add a new transaction for the purchase
-            Transaction transaction = transactionService.addTransaction(item.getPrice(),
+            transactionService.addTransaction(item.getPrice(),
                     "Purchased '" + item.getName() + "' item from the Shop",
                     "Shop Purchase",
                     gardenGroveUser.getUserId(),
                     currentUser.getUserId());
-
-            return "redirect:/shop?success=true";
+            currentUser = userService.getAuthenticatedUser();
+            model.addAttribute("bloomBalance", currentUser.getBloomBalance());
+            model.addAttribute("purchaseSuccessful", "Purchase successful");
+            return "shopTemplate";
         } else {
-            return "redirect:/shop?error=Insufficient Bloom balance";
+            model.addAttribute("purchaseNotSuccessful", "Insufficient Bloom balance");
+            return "shopTemplate";
         }
+    }
+
+    public void addShopItems(Model model) {
+        Set<Item> availableItems = shopService.getItemsInShop();
+
+        // Filter BadgeItem and ImageItem
+        Set<Item> badgeItems = availableItems.stream()
+                .filter(BadgeItem.class::isInstance)
+                .collect(Collectors.toSet());
+
+        Set<Item> imageItems = availableItems.stream()
+                .filter(ImageItem.class::isInstance)
+                .collect(Collectors.toSet());
+
+        model.addAttribute("badgeItems", badgeItems);
+        model.addAttribute("imageItems", imageItems);
     }
 }

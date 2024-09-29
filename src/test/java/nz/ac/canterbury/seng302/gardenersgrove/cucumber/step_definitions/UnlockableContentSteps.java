@@ -9,6 +9,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.service.InventoryService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -23,8 +24,10 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,9 +45,14 @@ public class UnlockableContentSteps {
     private UserService userService;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private InventoryService inventoryService;
     private ResultActions resultActions;
     private MvcResult mvcResult;
     private User currentUser;
+    private Item item;
+    private List<Map.Entry<Item,Integer>> ownedItems;
+    private int oldBloomBalance;
 
     @Before
     public void setup() throws IOException {
@@ -63,15 +71,26 @@ public class UnlockableContentSteps {
     @Then("I am shown my inventory of items")
     public void i_am_shown_my_inventory_of_items() {
         // Retrieve items from the model
-        List<Item> badgeItems = (List<Item>) mvcResult.getModelAndView().getModel().get("badgeItems");
-        List<Item> imageItems = (List<Item>) mvcResult.getModelAndView().getModel().get("imageItems");
+        List<Map.Entry<Item,Integer>> badgeItems = (List<Map.Entry<Item,Integer>>) mvcResult.getModelAndView().getModel().get("badgeItems");
+        List<Map.Entry<Item,Integer>> imageItems = (List<Map.Entry<Item,Integer>>) mvcResult.getModelAndView().getModel().get("imageItems");
 
         // Retrieve the current user
-        User currentUser = userService.getAuthenticatedUser();
+        currentUser = userService.getAuthenticatedUser();
 
-        // Fetch expected owned items from the services
-        List<Item> expectedOwnedBadgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
-        List<Item> expectedOwnedImageItems = itemService.getImagesByOwner(currentUser.getUserId());
+        List<Map.Entry<Item,Integer>> expectedOwnedItems = inventoryService.getItems(currentUser);
+
+        List<Map.Entry<Item,Integer>> expectedOwnedBadgeItems = new ArrayList<>();
+        List<Map.Entry<Item,Integer>> expectedOwnedImageItems = new ArrayList<>();
+
+        for (Map.Entry<Item,Integer> item: expectedOwnedItems) {
+            if (item.getKey() instanceof BadgeItem) {
+                expectedOwnedBadgeItems.add(item);
+            }
+            if (item.getKey() instanceof ImageItem) {
+                expectedOwnedImageItems.add(item);
+            }
+        }
+
 
         // Assertions to verify the inventory
         Assertions.assertEquals(expectedOwnedBadgeItems.size(), badgeItems.size(), "Badge items count does not match.");
@@ -102,6 +121,9 @@ public class UnlockableContentSteps {
     @Given("I am in the shop")
     public void i_am_in_the_shop() throws Exception {
         i_click_shop();
+        currentUser = userService.getAuthenticatedUser();
+        ownedItems = inventoryService.getItems(currentUser);
+        oldBloomBalance = currentUser.getBloomBalance();
     }
 
     // AC3
@@ -146,116 +168,81 @@ public class UnlockableContentSteps {
         // TODO: Implement logic for displaying purchased items
     }
 
+//    AC 5
     @When("I attempt to buy an item costing more than my current Blooms balance")
     public void i_attempt_to_buy_an_item_costing_more_than_my_current_blooms_balance() throws Exception {
-        User currentUser = userService.getAuthenticatedUser();
 
-        Item item = itemService.getAllItems().iterator().next();
-        currentUser.setBloomBalance(100);
-        userService.saveUser(currentUser);
-        item.setPrice(200);
+        item = itemService.getAllItems().iterator().next();
+        item.setPrice(2000);
         itemService.saveItem(item);
 
         // Perform the POST request
         mvcResult = mockMvc.perform(post("/shop")
                         .param("itemId", item.getId().toString()))
-                .andExpect(status().is3xxRedirection())
+                .andExpect(status().isOk())
                 .andReturn();
     }
-
+//AC 5
     @Then("I am shown the error message {string}")
     public void i_am_shown_the_error_message(String expectedMessage) {
 
-        String redirectedUrl = mvcResult.getResponse().getRedirectedUrl();
-        assert redirectedUrl != null;
+        String message = (String) mvcResult.getModelAndView().getModel().get("purchaseNotSuccessful");
 
-        assertTrue(redirectedUrl.contains(expectedMessage));
+        assertEquals(expectedMessage, message);
 
     }
-
+//AC 5
     @And("the item is not added to my items")
-    public void the_item_is_not_added_to_my_items() throws Exception {
+    public void the_item_is_not_added_to_my_items() {
 
-        User currentUser = userService.getAuthenticatedUser();
-        Item item = itemService.getAllItems().iterator().next();
-
-        List<Item> ownedItems = itemService.getItemsByOwner(currentUser.getUserId());
-
-        mockMvc.perform(post("/shop")
-                        .param("itemId", item.getId().toString()))
-                .andExpect(status().is3xxRedirection());
-
-        List<Item> newOwnedItems = itemService.getItemsByOwner(currentUser.getUserId());
-        assertEquals(ownedItems.size(), newOwnedItems.size());
+        List<Map.Entry<Item,Integer>> newOwnedItems = inventoryService.getItems(currentUser);
+        assertSame(ownedItems.size(), newOwnedItems.size());
 
     }
 
+//    AC 6
     @When("I buy an item costing less than or equal to my current Blooms balance")
     public void i_buy_an_item_costing_less_than_or_equal_to_my_current_blooms_balance() throws Exception {
-
-        User currentUser = userService.getAuthenticatedUser();
-
-        Item item = itemService.getAllItems().iterator().next();
-        currentUser.setBloomBalance(1000);
+        item = itemService.getAllItems().iterator().next();
         item.setPrice(100);
-        itemService.purchaseItem(item.getId(), currentUser.getUserId());
+        itemService.saveItem(item);
 
         mvcResult = mockMvc.perform(post("/shop")
                         .param("itemId", item.getId().toString()))
-                .andExpect(status().is3xxRedirection())
+                .andExpect(status().isOk())
                 .andReturn();
 
-
     }
 
+//    AC 6
     @Then("that item is added to my inventory")
-    public void that_item_is_added_to_my_inventory() throws Exception {
+    public void that_item_is_added_to_my_inventory() {
+        currentUser = userService.getAuthenticatedUser();
+        List<Map.Entry<Item,Integer>> newOwnedItems = inventoryService.getItems(currentUser);
 
-        User currentUser = userService.getAuthenticatedUser();
-        Item item = itemService.getAllItems().iterator().next();
-
-        List<Item> ownedItems = itemService.getItemsByOwner(currentUser.getUserId());
-
-        mockMvc.perform(post("/shop")
-                        .param("itemId", item.getId().toString()))
-                .andExpect(status().is3xxRedirection());
-
-        List<Item> newOwnedItems = itemService.getItemsByOwner(currentUser.getUserId());
         assertNotSame(newOwnedItems, ownedItems);
+        IntStream.range(0, newOwnedItems.size())
+                .forEach(i -> {
+                    Item ownedItem = newOwnedItems.get(i).getKey();
+                    boolean containsItem = ownedItem.getName().equals(item.getName());
+                    Assertions.assertTrue(containsItem);
+                });
     }
 
+//    AC 6
     @And("the items cost in Blooms is deducted from my account")
-    public void the_items_cost_in_blooms_is_deducted_from_my_account() throws Exception {
+    public void the_items_cost_in_blooms_is_deducted_from_my_account() {
 
-        User currentUser = userService.getAuthenticatedUser();
-        Item item = itemService.getAllItems().iterator().next();
-
-        int oldBloomBalance = currentUser.getBloomBalance();
         int itemPrice = item.getPrice();
-
-
-
-        mockMvc.perform(post("/shop")
-                        .param("itemId", item.getId().toString()))
-                .andExpect(status().is3xxRedirection());
-
-        userService.saveUser(currentUser);
-
-        currentUser = userService.getAuthenticatedUser();
-
         int newBloomBalance = currentUser.getBloomBalance();
-
         assertEquals(oldBloomBalance - itemPrice, newBloomBalance);
 
     }
 
     @And("I am shown a confirmation message {string}")
-    public void i_am_shown_a_confirmation_message(String expectedMessage) throws Exception {
-
-        String redirectedUrl = mvcResult.getResponse().getRedirectedUrl();
-        assert redirectedUrl != null;
-
-        assertTrue(redirectedUrl.contains("success"));
+    public void i_am_shown_a_confirmation_message(String expectedMessage) {
+        String message = (String) mvcResult.getModelAndView().getModel().get("purchaseSuccessful");
+        assertEquals(expectedMessage, message);
     }
 
     @Given("I have more than one of the same item")

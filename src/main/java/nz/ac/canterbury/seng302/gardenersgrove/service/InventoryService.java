@@ -10,7 +10,10 @@ import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRelationshipReposi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class InventoryService {
@@ -34,6 +37,16 @@ public class InventoryService {
 
     public Inventory getInventory(User owner, Item item) {
         return inventoryRepository.findInventoryByOwnerAndItem(owner, item);
+    }
+
+    public List<Map.Entry<Item,Integer>> getItems(User owner) {
+        List<Inventory> inventoryItems = getUserInventory(owner);
+        List<Map.Entry<Item,Integer>> items = new ArrayList<>();
+        for (Inventory inventoryItem: inventoryItems) {
+            Map.Entry<Item,Integer> item =new AbstractMap.SimpleEntry<>(inventoryItem.getItem(), inventoryItem.getQuantity());
+            items.add(item);
+        }
+        return items;
     }
 //    public void remove(UserRelationship userRelationship) {
 //        userRelationshipRepository.delete(userRelationship);

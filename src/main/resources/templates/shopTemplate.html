@@ -10,13 +10,13 @@
     <div class="container p-0">
 
         <!-- Display error message if present -->
-        <div th:if="${param.error}" class="alert alert-danger" role="alert">
-            <span th:text="${param.error}"></span>
+        <div th:if="${purchaseNotSuccessful}" class="alert alert-danger" role="alert">
+            <span th:text="${purchaseNotSuccessful}"></span>
         </div>
 
         <!-- Display success message if present -->
-        <div th:if="${param.success}" class="alert alert-success" role="alert">
-            Purchase successful! Your item has been added to the inventory.
+        <div th:if="${purchaseSuccessful}" class="alert alert-success" role="alert">
+            <span th:text="${purchaseSuccessful}"></span>
         </div>
 
         <!-- This row will display the shop's badge items it has -->
