@@ -149,7 +149,7 @@ public class InventoryController {
      * @param itemId The ID of the item to unapply
      * @return Redirect to the inventory page
      */
-    @PostMapping("/inventory/unapply/{itemId}")
+    @PostMapping("/inventory/gif/unapply/{itemId}")
     public String unapplyImageItem(@PathVariable Long itemId) {
         logger.info("POST /inventory/unapply/{}", itemId);
 
