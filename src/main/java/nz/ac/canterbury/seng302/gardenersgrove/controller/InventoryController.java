@@ -143,8 +143,6 @@ public class InventoryController {
 
     /**
      * Unapply an inventory image item from the user's profile
-     * @param itemId The ID of the item to unapply
-     * @return Redirect to the inventory page
      *
      * @param itemId The ID of the item to unapply
      * @return Redirect to the inventory page
