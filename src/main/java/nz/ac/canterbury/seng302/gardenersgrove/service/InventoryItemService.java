@@ -58,4 +58,13 @@ public class InventoryItemService {
         inventoryRepository.delete(inventoryItem);
     }
 
+    public void removeInventoryItem(InventoryItem inventoryItem) {
+        Integer quantity = inventoryItem.getQuantity();
+        if (quantity > 1) {
+            inventoryItem.setQuantity(quantity - 1);
+            save(inventoryItem);
+        } else {
+            deleteInventoryItem(inventoryItem);
+        }
+    }
 }
