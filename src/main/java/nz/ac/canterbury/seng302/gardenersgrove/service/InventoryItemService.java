@@ -1,25 +1,24 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 
-import nz.ac.canterbury.seng302.gardenersgrove.entity.InventoryItem;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.InventoryItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class InventoryItemService {
     private final InventoryItemRepository inventoryRepository;
+    private final ImageService imageService;
+    private final UserService userService;
 
     @Autowired
-    public InventoryItemService(InventoryItemRepository inventoryRepository) {
+    public InventoryItemService(InventoryItemRepository inventoryRepository, ImageService imageService, UserService userService) {
         this.inventoryRepository = inventoryRepository;
+        this.imageService = imageService;
+        this.userService = userService;
     }
 
     /**
@@ -73,6 +72,30 @@ public class InventoryItemService {
         return items;
     }
 
+    public void deleteInventoryItem(InventoryItem inventoryItem) {
+        inventoryRepository.delete(inventoryItem);
+    }
+
+    public void removeInventoryItem(InventoryItem inventoryItem, User currentUser) {
+        Integer quantity = inventoryItem.getQuantity();
+        if (quantity > 1) {
+            inventoryItem.setQuantity(quantity - 1);
+            save(inventoryItem);
+        } else {
+            if (inventoryItem.getItem() instanceof BadgeItem) {
+                currentUser.setAppliedBadge(null);
+                userService.saveUser(currentUser);
+            }
+            if (inventoryItem.getItem() instanceof ImageItem) {
+                Optional<Image> imageOpt = imageService.findImage(currentUser.getUploadedImageId());
+                if (imageOpt.isPresent()) {
+                    currentUser.setImage(imageOpt.get());
+                    userService.saveUser(currentUser);
+                }
+            }
+            deleteInventoryItem(inventoryItem);
+        }
+    }
     public InventoryItem getInventoryByOwnerIdAndImageId(Long ownerId, Long imageId) {
         return inventoryRepository.findInventoryByOwnerIdAndImageId(ownerId, imageId);
     }

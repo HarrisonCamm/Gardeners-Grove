@@ -22,12 +22,15 @@ public class InventoryController {
     private final InventoryItemService inventoryService;
     private final ImageService imageService;
 
+    private final TransactionService transactionService;
+
     @Autowired
-    public InventoryController(ItemService itemService, UserService userService, InventoryItemService inventoryService, ImageService imageService) {
+    public InventoryController(ItemService itemService, UserService userService, InventoryItemService inventoryService, ImageService imageService, TransactionService transactionService) {
         this.itemService = itemService;
         this.userService = userService;
         this.inventoryService = inventoryService;
         this.imageService = imageService;
+        this.transactionService = transactionService;
     }
 
     @GetMapping("/inventory")
@@ -192,5 +195,56 @@ public class InventoryController {
 
         return "redirect:/inventory";
     }
+
+
+    @PostMapping("/inventory/sell/item/{itemId}")
+    public String sellItem(@PathVariable Long itemId) {
+        logger.info("POST /inventory/sell/item/{}", itemId);
+        User currentUser = userService.getAuthenticatedUser();
+
+        User gardenGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
+
+        // Get inventory
+        List<InventoryItem> inventory = inventoryService.getUserInventory(currentUser);
+
+        // Find item in inventory
+        Optional<InventoryItem> matchingItemInInventory = inventory.stream()
+                .filter(item -> item.getItem().getId().equals(itemId))
+                .findFirst();
+
+        if (matchingItemInInventory.isPresent()) {
+            // Get the item
+            Item item = matchingItemInInventory.get().getItem();
+
+            // Calculate the resale price
+            Integer resalePrice = (int) (item.getPrice() * 0.9); // 90% of the original price
+
+            // Update user's balance
+            currentUser.setBloomBalance(currentUser.getBloomBalance() + resalePrice);
+
+            transactionService.addTransaction(resalePrice,
+                    "Sold '" + item.getName() + "' item back to the Shop",
+                    "Shop Sale",
+                    currentUser.getUserId(),
+                    gardenGroveUser.getUserId());
+            currentUser = userService.getAuthenticatedUser();
+
+
+            // Remove the item from the inventory
+            inventoryService.removeInventoryItem(matchingItemInInventory.get(), currentUser);
+
+            // Save the updated user
+            userService.saveUser(currentUser);
+
+            // Log success
+            logger.info("User {} sold item {}", currentUser.getFirstName(), itemId);
+        } else {
+            // Item is not found
+            logger.error("Item with ID {} not found", itemId);
+        }
+
+        return "redirect:/inventory";
+    }
+
 
 }
