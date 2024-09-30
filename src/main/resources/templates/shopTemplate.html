@@ -6,15 +6,14 @@
 <!-- Navigation Bar Fragment -->
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 <div class="appBody">
-    <div class="container p-0">
-
+    <div class="container-fluid pt-1 p-5">
         <!-- This row will display the shop's badge items it has -->
+        <h3 class="mb-3 mt-1">Badges</h3>
         <div class="row item-row mb-4">
-            <h3 class="mb-3 mt-1">Badges</h3>
             <!-- Iterate through the badgeItems list and display each badge item-->
             <div class="col content card ms-2 me-2 fixed-width-card" th:each="item: ${badgeItems}">
                 <div class="h-25 w-100 mt-3 inventory-card-title">
-                    <h3 class="p-2" th:text="${item.name}"></h3>
+                    <h5 class="p-2" th:text="${item.name}"></h5>
                     <p class="item-quantity" th:text="${item.price} + '฿'"></p>
                 </div>
                 <!-- Display the badge item's icon -->
@@ -46,17 +45,17 @@
         </div>
 
         <!-- This row will display the shop's image items -->
+        <h3 class="mb-3">Profile Pictures</h3>
         <div class="row item-row mb-3">
-            <h3 class="mb-3">Profile Pictures</h3>
             <!-- Iterate through the imageItems list and display each image item-->
-            <div class="col content card ms-2 me-2 fixed-width-card" th:each="item: ${imageItems}">
+            <div class="col content card ms-2 me-2 fixed-width-card item" th:each="item: ${imageItems}">
                 <div class="h-25 w-100 mt-3 inventory-card-title">
-                    <h3 class="p-2" th:text="${item.name}"></h3>
+                    <h5 class="p-2" th:text="${item.name}"></h5>
                     <p class="item-quantity" th:text="${item.price} + '฿'"></p>
                 </div>
                 <!-- Display the image item's gif -->
                 <div class="mb-5">
-                    <img type="gif" class="shop-image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.image.id})}" alt="Item Image">
+                    <img type="gif" class="shop-image mt-3" th:src="@{/get-image?imageItem=true(imageID=${item.image.id})}" alt="Item Image">
                     <div class="mt-5">
                         <!-- Purchase Form -->
                         <form th:action="@{/shop}" method="post">
@@ -66,8 +65,12 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
+
 </div>
+
+
 </body>
 </html>
