@@ -6,15 +6,15 @@
     <!-- Navigation Bar Fragment -->
     <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
     <div class="appBody">
-        <div class="container p-0">
+        <div class="container-fluid pt-1 p-5">
 
             <!-- This row will display the user's inventory badge items it has -->
+            <h3 class="mb-3 mt-1">Badges</h3>
             <div class="row item-row mt-5">
-                <h3 class="mb-3">Badges</h3>
                 <!-- Iterate through the badgeItems list and display each badge item-->
                 <div class="col content card ms-2 me-2 fixed-width-card" th:each="item: ${badgeItems}">
                     <div class="h-25 w-100 mt-3 inventory-card-title">
-                        <h3 class="p-2" th:text="${item.getKey().name}"></h3>
+                        <h5 class="p-2" th:text="${item.getKey().name}"></h5>
                         <p class="item-quantity" th:text="${item.getValue()} + 'x'"></p>
                     </div>
                     <div class="mb-5 mt-4" >
@@ -24,12 +24,12 @@
                 </div>
             </div>
             <!-- This row will display the user's inventory image items it has -->
+            <h3 class="mb-3 mt-5">Profile Pictures</h3>
             <div class="row item-row mt-5">
-                <h3 class="mb-3 mt-5">Profile Pictures</h3>
                 <!-- Iterate through the imageItem list and display each image item-->
                 <div class="col content card ms-2 me-2 fixed-width-card" th:each="item: ${imageItems}">
                     <div class="h-25 w-100 mt-3 inventory-card-title">
-                        <h3 class="p-2" th:text="${item.getKey().name}"></h3>
+                        <h5 class="p-2" th:text="${item.getKey().name}"></h5>
                         <p class="item-quantity" th:text="${item.getValue()} + 'x'"></p>
                     </div>
                     <div class="mb-5" >

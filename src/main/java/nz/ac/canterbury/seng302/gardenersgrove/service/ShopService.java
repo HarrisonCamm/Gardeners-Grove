@@ -142,9 +142,35 @@ public class ShopService {
             Image image3 = new Image(fabianIntensifiesImageBytes, "gif", false);
             ImageItem imageItem3 = new ImageItem("Fabian Intensifies",10, image3);
 
+            Path catJamCryImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/cat-jam-cry.gif").getURI());
+            byte[] catJamCryImageBytes = Files.readAllBytes(catJamCryImagePath);
+            Image image4 = new Image(catJamCryImageBytes, "gif", false);
+            ImageItem imageItem4 = new ImageItem("Cat Jam Cry",20, image4);
+
+            Path disintegrateImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/disintegrate.gif").getURI());
+            byte[] disintegrateImageBytes = Files.readAllBytes(disintegrateImagePath);
+            Image image5 = new Image(disintegrateImageBytes, "gif", false);
+            ImageItem imageItem5 = new ImageItem("Disintegrate",40, image5);
+
+            Path elmoFireImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/elmo-fire.gif").getURI());
+            byte[] elmoFireImageBytes = Files.readAllBytes(elmoFireImagePath);
+            Image image6 = new Image(elmoFireImageBytes, "gif", false);
+            ImageItem imageItem6 = new ImageItem("Elmo Fire",20, image6);
+
+            Path harrisonIntensifiesImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/harrison-intensifies.gif").getURI());
+            byte[] harrisonIntensifiesImageBytes = Files.readAllBytes(harrisonIntensifiesImagePath);
+            Image image7 = new Image(harrisonIntensifiesImageBytes, "gif", false);
+            ImageItem imageItem7 = new ImageItem("Harrison Intensifies",20, image7);
+
+
             addItemToShop(imageItem1);
             addItemToShop(imageItem2);
             addItemToShop(imageItem3);
+            addItemToShop(imageItem4);
+            addItemToShop(imageItem5);
+            addItemToShop(imageItem6);
+            addItemToShop(imageItem7);
+//            addItemToShop(imageItem8);
         }
     }
 
