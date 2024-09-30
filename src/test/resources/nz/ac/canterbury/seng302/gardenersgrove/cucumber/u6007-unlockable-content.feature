@@ -44,7 +44,7 @@ Feature: U6007 - Unlockable content
   Scenario: AC8 - Item details
     Given I view my inventory
     When I click on an item
-    Then I am taken to a page for that item which displays more information on the item including picture, name, description, original price, and resale price
+    Then I am taken to a page for that item which displays more information on the item including picture, name, original price, and resale price
 
   Scenario: AC9 - Sell Button
     Given I am viewing an item in my inventory

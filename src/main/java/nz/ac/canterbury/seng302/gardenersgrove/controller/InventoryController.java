@@ -22,12 +22,15 @@ public class InventoryController {
     private final InventoryItemService inventoryService;
     private final ImageService imageService;
 
+    private final TransactionService transactionService;
+
     @Autowired
-    public InventoryController(ItemService itemService, UserService userService, InventoryItemService inventoryService, ImageService imageService) {
+    public InventoryController(ItemService itemService, UserService userService, InventoryItemService inventoryService, ImageService imageService, TransactionService transactionService) {
         this.itemService = itemService;
         this.userService = userService;
         this.inventoryService = inventoryService;
         this.imageService = imageService;
+        this.transactionService = transactionService;
     }
 
     @GetMapping("/inventory")
@@ -64,6 +67,10 @@ public class InventoryController {
             model.addAttribute("unapplyItemId", inventoryService.getInventoryByOwnerIdAndImageId(currentUser.getUserId(), currentUser.getImage().getId()).getItem().getId());
         }
 
+        if (currentUser.getAppliedBadge() != null) {
+            model.addAttribute("unapplyBadgeId", currentUser.getAppliedBadge().getId());
+        }
+
         model.addAttribute("badgeItems", badgeItems);
         model.addAttribute("imageItems", imageItems);
         model.addAttribute("user", currentUser);
@@ -73,7 +80,7 @@ public class InventoryController {
 
     @PostMapping("/inventory/badge/use/{itemId}")
     public String useBadgeItem(@PathVariable Long itemId) {
-        logger.info("POST /inventory/use/{}", itemId);
+        logger.info("POST /inventory/badge/use/{}", itemId);
 
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
@@ -98,7 +105,7 @@ public class InventoryController {
 
     @PostMapping("/inventory/gif/use/{itemId}")
     public String useGifItem(@PathVariable Long itemId) {
-        logger.info("POST /inventory/use/{}", itemId);
+        logger.info("POST /inventory/gif/use/{}", itemId);
 
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
@@ -149,7 +156,7 @@ public class InventoryController {
      */
     @PostMapping("/inventory/gif/unapply/{itemId}")
     public String unapplyImageItem(@PathVariable Long itemId) {
-        logger.info("POST /inventory/unapply/{}", itemId);
+        logger.info("POST /inventory/gif/unapply/{}", itemId);
 
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
@@ -165,5 +172,79 @@ public class InventoryController {
 
         return "redirect:/inventory";
     }
+
+    /**
+     * Unapply an inventory badge item from the user's name
+     *
+     * @param itemId The ID of the item to unapply
+     * @return Redirect to the inventory page
+     */
+    @PostMapping("/inventory/badge/unapply/{itemId}")
+    public String unapplyBadgeItem(@PathVariable Long itemId) {
+        logger.info("POST /inventory/badge/unapply/{}", itemId);
+
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+        InventoryItem unapplyItem = inventoryService.getInventoryByOwnerIdAndItemId(currentUser.getUserId(),
+                currentUser.getAppliedBadge().getId());
+
+        if (unapplyItem.getItem().getId().equals(itemId)) {
+            currentUser.setAppliedBadge(null);
+            userService.saveUser(currentUser);
+        }
+
+        return "redirect:/inventory";
+    }
+
+
+    @PostMapping("/inventory/sell/item/{itemId}")
+    public String sellItem(@PathVariable Long itemId) {
+        logger.info("POST /inventory/sell/item/{}", itemId);
+        User currentUser = userService.getAuthenticatedUser();
+
+        User gardenGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
+
+        // Get inventory
+        List<InventoryItem> inventory = inventoryService.getUserInventory(currentUser);
+
+        // Find item in inventory
+        Optional<InventoryItem> matchingItemInInventory = inventory.stream()
+                .filter(item -> item.getItem().getId().equals(itemId))
+                .findFirst();
+
+        if (matchingItemInInventory.isPresent()) {
+            // Get the item
+            Item item = matchingItemInInventory.get().getItem();
+
+            // Calculate the resale price
+            Integer resalePrice = (int) (item.getPrice() * 0.9); // 90% of the original price
+
+            // Update user's balance
+            currentUser.setBloomBalance(currentUser.getBloomBalance() + resalePrice);
+
+            transactionService.addTransaction(resalePrice,
+                    "Sold '" + item.getName() + "' item back to the Shop",
+                    "Shop Sale",
+                    currentUser.getUserId(),
+                    gardenGroveUser.getUserId());
+            currentUser = userService.getAuthenticatedUser();
+
+
+            // Remove the item from the inventory
+            inventoryService.removeInventoryItem(matchingItemInInventory.get(), currentUser);
+
+            // Save the updated user
+            userService.saveUser(currentUser);
+
+            // Log success
+            logger.info("User {} sold item {}", currentUser.getFirstName(), itemId);
+        } else {
+            // Item is not found
+            logger.error("Item with ID {} not found", itemId);
+        }
+
+        return "redirect:/inventory";
+    }
+
 
 }

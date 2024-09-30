@@ -24,16 +24,19 @@ li {
 
 
 .navLink {
-    color: floralwhite;
+
     font-size: 120%;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
     display: inline;
+    color: floralwhite;
+    background-color: #3D7B36;
 }
 
 .navLink:hover {
-    color: #80A444;
+    color: #0A3407;
+    background-color: #80A444;
 }
 
 
@@ -103,5 +106,14 @@ li {
 
     .navBar-logout-button {
         font-size: 200%;
+    }
+    .balanceDisplay {
+        padding-left: 2%;
+    }
+    .navBar-bloom-display {
+        font-size: 200%;
+    }
+    .svg-fragment {
+        width: 300%;
     }
 }
