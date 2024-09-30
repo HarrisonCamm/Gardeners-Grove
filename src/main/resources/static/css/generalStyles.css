@@ -84,7 +84,6 @@ body {
 }
 
 
-
 @media (min-width: 768px) {
     .table-wrapper {
         max-width: 1000px; /* Max width on medium or larger screens */
@@ -131,6 +130,21 @@ textarea:focus {
     overflow-wrap: break-word;
     hyphens: auto;
 }
+
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.badge-image {
+    height: 1em; /* This matches the text height */
+    width: auto;
+}
+
+
+
+
 
 .error {
     border: 1px solid #DE2929;
@@ -203,7 +217,7 @@ h2 {
 /* Flexbox styles */
 .wrapper {
     display: flex;
-    justify-content: space-between; /* Horizontally center the items */
+    justify-content: center; /* Horizontally center the items */
 }
 
 /* Side Bar Container styles (What was container is now SideBarColour)*/
@@ -600,6 +614,7 @@ hr {
     background-color: #72543C !important;
     cursor: pointer;
 }
+
 
 
 @media only screen and (orientation: portrait) {
