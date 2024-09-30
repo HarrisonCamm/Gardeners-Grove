@@ -114,6 +114,7 @@ public class AddTagSteps {
     @Given("I am on the garden details page for a public garden")
     public void iAmOnTheGardenDetailsPageForAPublicGarden() {
         // TODO: Implement this step once the garden details page is implemented
+
     }
 
     @Then("I can see a list of tags that the garden has been marked with by its owner")

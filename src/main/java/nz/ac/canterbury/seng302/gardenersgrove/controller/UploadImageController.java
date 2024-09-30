@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpSession;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -119,6 +120,7 @@ public class UploadImageController {
                                            @RequestParam(value = "view-user-profile", required = false) boolean viewUser,
                                            @RequestParam(value = "edit-user-profile-image", required = false) boolean editUserProfile,
                                            @RequestParam(value = "imageItem", required = false) boolean imageItem,
+                                           @RequestParam(value = "userBadge", required = false) boolean userBadge,
                                            @RequestParam(value = "temporary", required = false) boolean temporary,
                                            @RequestParam(value = "gardenID", required = false) Long gardenID,
                                            @RequestParam(value = "userID", required = false) Long userID,
@@ -143,7 +145,7 @@ public class UploadImageController {
             }
             model.addAttribute("id", imageID);
             model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
-        } else if (!viewUser && !editUserProfile && !imageItem) {
+        } else if (!viewUser && !editUserProfile && !imageItem && !userBadge) {
             Optional<Plant> foundPlant = plantService.findPlant(plantID);
             if (foundPlant.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant not found");
@@ -162,7 +164,14 @@ public class UploadImageController {
             image = foundImage.get();
             model.addAttribute("id", imageID);
             model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
-        } else {
+        } else if (userBadge) {
+            User user = userService.getUserByID(userID);
+            image = user.getAppliedBadge().getIcon();
+            model.addAttribute("id", userID);
+            model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
+
+        }
+        else {
             User user = userService.getUserByID(userID);
             image = user.getImage();
             model.addAttribute("id", userID);

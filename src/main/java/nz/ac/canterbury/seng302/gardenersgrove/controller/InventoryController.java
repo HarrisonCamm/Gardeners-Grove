@@ -62,12 +62,38 @@ public class InventoryController {
 
         model.addAttribute("badgeItems", badgeItems);
         model.addAttribute("imageItems", imageItems);
+        model.addAttribute("user", currentUser);
 
         return "inventoryTemplate";
     }
 
-    @PostMapping("/inventory/use/{itemId}")
-    public String useImageItem(@PathVariable Long itemId) {
+    @PostMapping("/inventory/badge/use/{itemId}")
+    public String useBadgeItem(@PathVariable Long itemId) {
+        logger.info("POST /inventory/use/{}", itemId);
+
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+
+        try {
+            // Gets item, then casts to ImageItem
+            BadgeItem badgeItem = (BadgeItem) itemService.getItemById(itemId);
+
+            // Update Users Badge
+            currentUser.setAppliedBadge(badgeItem);
+
+            // Persis change to user
+            userService.saveUser(currentUser);
+
+            logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+        } catch (IllegalArgumentException e) {
+            logger.error("Error applying item: {}", e.getMessage());
+        }
+
+        return "redirect:/inventory";
+    }
+
+    @PostMapping("/inventory/gif/use/{itemId}")
+    public String useGifItem(@PathVariable Long itemId) {
         logger.info("POST /inventory/use/{}", itemId);
 
         // Get the current user
@@ -110,4 +136,5 @@ public class InventoryController {
 
         return "redirect:/inventory";
     }
+
 }
