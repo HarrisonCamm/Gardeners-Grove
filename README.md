@@ -132,12 +132,12 @@ From the root directory ...
 
 On Linux:
 ```
-./gradlew test
+./gradlew check
 ```
 
 On Windows:
 ```
-gradlew test
+gradlew check 
 ```
 
 ## Contributors
