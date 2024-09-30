@@ -16,10 +16,10 @@ public interface InventoryItemRepository extends CrudRepository<InventoryItem, L
 
     InventoryItem findInventoryByOwnerAndItem(User owner, Item item);
 
-    @Query("SELECT i FROM Inventory i WHERE i.owner.userId = :ownerId AND i.item.itemType = 'image' AND i.item.image.Id = :imageId")
-    Inventory findInventoryByOwnerIdAndImageId(Long ownerId, Long imageId);
+    @Query("SELECT i FROM InventoryItem i WHERE i.owner.userId = :ownerId AND i.item.itemType = 'image' AND i.item.image.Id = :imageId")
+    InventoryItem findInventoryByOwnerIdAndImageId(Long ownerId, Long imageId);
 
-    @Query("SELECT i FROM Inventory i WHERE i.owner.userId = :ownerId AND i.item.id = :itemId")
-    Inventory findInventoryByOwnerIdAndItemId(Long ownerId, Long itemId);
+    @Query("SELECT i FROM InventoryItem i WHERE i.owner.userId = :ownerId AND i.item.id = :itemId")
+    InventoryItem findInventoryByOwnerIdAndItemId(Long ownerId, Long itemId);
 
 }

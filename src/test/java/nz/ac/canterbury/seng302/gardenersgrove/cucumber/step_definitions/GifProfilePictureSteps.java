@@ -324,7 +324,7 @@ public class GifProfilePictureSteps {
 
     @And("I have {string} applied as my profile picture")
     public void iHaveAppliedAsMyProfilePicture(String gifName) throws Exception {
-        Inventory inventoryItem = inventoryService.getInventory(currentUser, itemService.getItemByName(gifName));
+        InventoryItem inventoryItem = inventoryService.getInventory(currentUser, itemService.getItemByName(gifName));
         currentUser = userService.getAuthenticatedUser();
 
         mvcResult = mockMvc.perform(post("/inventory/use/" + inventoryItem.getItem().getId()))
@@ -338,7 +338,7 @@ public class GifProfilePictureSteps {
 
     @When("I click the {string} button on that item")
     public void iClickTheButtonOnThatItem(String unapplyButtonText) throws Exception {
-        Inventory inventoryItem = inventoryService.getInventoryByOwnerIdAndImageId(currentUser.getUserId(), currentUser.getImage().getId());
+        InventoryItem inventoryItem = inventoryService.getInventoryByOwnerIdAndImageId(currentUser.getUserId(), currentUser.getImage().getId());
 
         mvcResult = mockMvc.perform(post("/inventory/unapply/" + inventoryItem.getItem().getId()))
                 .andExpect(status().is3xxRedirection())

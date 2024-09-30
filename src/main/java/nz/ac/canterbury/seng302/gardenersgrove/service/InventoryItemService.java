@@ -73,7 +73,7 @@ public class InventoryItemService {
         return items;
     }
 
-    public Inventory getInventoryByOwnerIdAndImageId(Long ownerId, Long imageId) {
+    public InventoryItem getInventoryByOwnerIdAndImageId(Long ownerId, Long imageId) {
         return inventoryRepository.findInventoryByOwnerIdAndImageId(ownerId, imageId);
     }
 

@@ -129,7 +129,7 @@ public class InventoryController {
 
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
-        Inventory unapplyItem = inventoryService.getInventoryByOwnerIdAndImageId(currentUser.getUserId(), currentUser.getImage().getId());
+        InventoryItem unapplyItem = inventoryService.getInventoryByOwnerIdAndImageId(currentUser.getUserId(), currentUser.getImage().getId());
 
         if (unapplyItem.getItem().getId().equals(itemId)) {
             Optional<Image> imageOpt = imageService.findImage(currentUser.getUploadedImageId());
