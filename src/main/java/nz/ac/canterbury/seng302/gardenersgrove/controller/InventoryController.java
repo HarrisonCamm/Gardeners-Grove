@@ -115,6 +115,14 @@ public class InventoryController {
         return "redirect:/inventory";
     }
 
+    /**
+     * Unapply an inventory image item from the user's profile
+     * @param itemId The ID of the item to unapply
+     * @return Redirect to the inventory page
+     *
+     * @param itemId The ID of the item to unapply
+     * @return Redirect to the inventory page
+     */
     @PostMapping("/inventory/unapply/{itemId}")
     public String unapplyImageItem(@PathVariable Long itemId) {
         logger.info("POST /inventory/unapply/{}", itemId);
