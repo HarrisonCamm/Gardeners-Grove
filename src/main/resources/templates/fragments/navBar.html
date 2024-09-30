@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
     <body>
-        <ul th:fragment="navBar" class="navBar">
+        <ul th:fragment="navBar" class="navBar navbar navbar-expand-lg">
             <!-- NavBar page links -->
-            <div class="navBar-centre">
+            <div class="container-fluid navBar-centre">
                 <li><a class="navLink" th:href="@{main}">Main</a></li>
                 <li><a class="navLink" th:href="@{view-user-profile}">View Profile</a></li>
                 <li><a class="navLink" th:href="@{create-garden}">Create New Garden</a></li>
