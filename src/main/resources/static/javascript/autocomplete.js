@@ -92,6 +92,7 @@ function addressAutocomplete(containerElement, callback, options) {
                     const itemElement = document.createElement("div");
                     // Set formatted address as item value
                     itemElement.innerHTML = result.formatted;
+                    itemElement.setAttribute("class", "autocomplete-item");
                     autocompleteItemsElement.appendChild(itemElement);
 
                     // Set the value for the autocomplete text field and notify
