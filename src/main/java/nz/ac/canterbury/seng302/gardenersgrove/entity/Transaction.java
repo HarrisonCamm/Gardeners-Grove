@@ -14,11 +14,11 @@ public class Transaction {
     private Long transactionId;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sender_id", nullable = true)
     private User sender; // Optional sender
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "receiver_id", nullable = false)
     private User receiver; // Required receiver
 
@@ -46,7 +46,13 @@ public class Transaction {
     // In general, this will be true if you are playing plant guesser and daily spin
     // and false if you are tipping because the receiver has to claim the tip
     @Column
-    private boolean claimed;
+    private Boolean claimed;
+
+    //This column is only currently used for garden tips to determine which garden it is for
+    //Explicitly set to optional but not sure if this is necessary
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "tipped_garden", referencedColumnName = "id")
+    private Garden tippedGarden;
 
     public Transaction() {
         // JPA empty constructor
@@ -75,7 +81,6 @@ public class Transaction {
         return receiver;
     }
 
-
     public Integer getAmount() {
         return amount;
     }
@@ -93,7 +98,9 @@ public class Transaction {
     }
 
     // Not sure if JPA requires naming of getters to be getClaimed I want to do isClaimed
-    public boolean getClaimed() { return claimed; }
+    public Boolean getClaimed() { return claimed; }
+
+    public Garden getTippedGarden() { return tippedGarden; }
 
     public void setSender(User sender) {
         this.sender = sender;
@@ -121,5 +128,7 @@ public class Transaction {
         this.notes = notes;
     }
 
-    public void setClaimed(boolean claimed) { this.claimed = claimed; }
+    public void setClaimed(Boolean claimed) { this.claimed = claimed; }
+
+    public void setTippedGarden(Garden tippedGarden) { this.tippedGarden = tippedGarden; }
 }

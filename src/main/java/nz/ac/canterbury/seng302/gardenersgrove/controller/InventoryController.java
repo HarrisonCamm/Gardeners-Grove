@@ -1,13 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class InventoryController {
@@ -26,12 +19,14 @@ public class InventoryController {
 
     private final ItemService itemService;
     private final UserService userService;
+    private final InventoryItemService inventoryService;
     private final ImageService imageService;
 
     @Autowired
-    public InventoryController(ItemService itemService, UserService userService, ImageService imageService) {
+    public InventoryController(ItemService itemService, UserService userService, InventoryItemService inventoryService, ImageService imageService) {
         this.itemService = itemService;
         this.userService = userService;
+        this.inventoryService = inventoryService;
         this.imageService = imageService;
     }
 
@@ -42,26 +37,27 @@ public class InventoryController {
 
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
-        List<Item> badgeItems = itemService.getBadgesByOwner(currentUser.getUserId());
-        List<Item> imageItems = itemService.getImagesByOwner(currentUser.getUserId());
+        List<InventoryItem> items = inventoryService.getUserInventory(currentUser);
 
-        //TODO delete these 2 if statments before merging ive just updated so they dont mess with tests and I can blackbox test the story
-        // DUMMY DATA
-        if (badgeItems.isEmpty()) {
-            currentUser.addItem(itemService.getItemByName("Happy"));
-            currentUser.addItem(itemService.getItemByName("Eggplant"));
-            badgeItems.add(itemService.getItemByName("Happy"));
-            badgeItems.add(itemService.getItemByName("Eggplant"));
-            userService.saveUser(currentUser);
+        List<Map.Entry<Item,Integer>> ownedItems= new ArrayList<>();
+
+        for (InventoryItem inventory: items) {
+            Item item = inventory.getItem();
+            Integer quantity = inventory.getQuantity();
+            Map.Entry<Item,Integer> itemEntry = new AbstractMap.SimpleEntry<>(item, quantity);
+            ownedItems.add(itemEntry);
         }
-        if (imageItems.isEmpty()) {
-            currentUser.addItem(itemService.getItemByName("Cat Fall"));
-            currentUser.addItem(itemService.getItemByName("Cat Typing"));
-            currentUser.addItem(itemService.getItemByName("Fabian Intensifies"));
-            imageItems.add(itemService.getItemByName("Cat Fall"));
-            imageItems.add(itemService.getItemByName("Cat Typing"));
-            imageItems.add(itemService.getItemByName("Fabian Intensifies"));
-            userService.saveUser(currentUser);
+
+        List<Map.Entry<Item,Integer>> badgeItems = new ArrayList<>();
+        List<Map.Entry<Item,Integer>> imageItems = new ArrayList<>();
+
+        for (Map.Entry<Item,Integer> item: ownedItems) {
+            if (item.getKey() instanceof BadgeItem) {
+                badgeItems.add(item);
+            }
+            if (item.getKey() instanceof ImageItem) {
+                imageItems.add(item);
+            }
         }
 
         model.addAttribute("badgeItems", badgeItems);
@@ -77,23 +73,37 @@ public class InventoryController {
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
 
+        // Get inventory
+        List<InventoryItem> inventory = inventoryService.getUserInventory(currentUser);
+
         try {
-            // Gets item, then casts to ImageItem
-            ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
+            // Find item in inventory
+            Optional<InventoryItem> matchingItemInInventory = inventory.stream()
+                    .filter(item -> item.getItem().getId().equals(itemId))
+                    .findFirst();
+            if (matchingItemInInventory.isPresent()) {
+                // Gets item, then casts to ImageItem
+                ImageItem imageItem = (ImageItem) itemService.getItemById(itemId);
 
-            // Get the image id of imageItem
-            Long itemImageId = imageItem.getImage().getId();
+                // Get the image id of imageItem
+                Long itemImageId = imageItem.getImage().getId();
 
-            // Get image from Image Table
-            Optional<Image> imageOpt = imageService.findImage(itemImageId);
+                // Get image from Image Table
+                Optional<Image> imageOpt = imageService.findImage(itemImageId);
 
-            // Update Users Image to ItemsImage
-            imageOpt.ifPresent(currentUser::setImage);
+                // Update Users Image to ItemsImage
+                imageOpt.ifPresent(currentUser::setImage);
 
-            // Persist change to user
-            userService.saveUser(currentUser);
+                // Persist change to user
+                userService.saveUser(currentUser);
 
-            logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+                // Log success
+                logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+            } else {
+                // Item is not found
+                logger.error("Item with ID {} not found", itemId);
+            }
+
         } catch (IllegalArgumentException e) {
             logger.error("Error applying item: {}", e.getMessage());
         }

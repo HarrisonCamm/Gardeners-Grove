@@ -7,33 +7,34 @@
     <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
     <div class="appBody">
         <div class="container p-0">
+
             <!-- This row will display the user's inventory badge items it has -->
-            <div class="row mt-5">
+            <div class="row item-row mt-5">
                 <h3 class="mb-3">Badges</h3>
                 <!-- Iterate through the badgeItems list and display each badge item-->
-                <a class="col content card ms-2 me-2 text-decoration-none" th:each="item: ${badgeItems}" th:href="@{'/item?itemID=' + ${item.id}}">
+                <a class="col content card ms-2 me-2 fixed-width-card text-decoration-none" th:each="item: ${badgeItems}" th:href="@{'/item?itemID=' + ${item.id}}">
                     <div class="h-25 w-100 mt-3 inventory-card-title">
-                        <h3 class="p-2" th:text="${item.name}"></h3>
-                        <p class="item-quantity" th:text="${item.quantity} + 'x'"></p>
+                        <h3 class="p-2" th:text="${item.getKey().name}"></h3>
+                        <p class="item-quantity" th:text="${item.getValue()} + 'x'"></p>
                     </div>
                     <div class="mb-5 mt-4" >
-                        <span class="shop-emoji mt-5" th:text="${item.emoji}"></span>
+                        <span class="shop-emoji mt-5" th:text="${item.getKey().emoji}"></span>
                         <button class="item-use-button button">Use</button>
                     </div>
                 </a>
             </div>
             <!-- This row will display the user's inventory image items it has -->
-            <div class="row mt-5">
+            <div class="row item-row mt-5">
                 <h3 class="mb-3 mt-5">Profile Pictures</h3>
                 <!-- Iterate through the imageItem list and display each image item -->
-                <a th:each="item : ${imageItems}" th:href="@{'/item?itemID=' + ${item.id}}" class="col content card ms-2 me-2 text-decoration-none">
+                <a th:each="item : ${imageItems}" th:href="@{'/item?itemID=' + ${item.id}}" class="col content card ms-2 me-2 text-decoration-none fixed-width-card">
                     <div class="h-25 w-100 mt-3 inventory-card-title">
-                        <h3 class="p-2" th:text="${item.name}"></h3>
-                        <p class="item-quantity" th:text="${item.quantity} + 'x'"></p>
+                        <h3 class="p-2" th:text="${item.getKey().name}"></h3>
+                        <p class="item-quantity" th:text="${item.getValue()} + 'x'"></p>
                     </div>
-                    <div class="mb-5">
-                        <img type="gif" class="shop-image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.image.id})}" alt="Item Image">
-                        <form th:action="@{'/inventory/use/' + ${item.id}}" method="post">
+                    <div class="mb-5" >
+                        <img type="gif" class="shop-image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.getKey().image.id})}" alt="Item Image">
+                        <form th:action="@{'/inventory/use/' + ${item.getKey().id}}" method="post">
                             <button type="submit" class="item-use-button button">Use</button>
                         </form>
                     </div>
