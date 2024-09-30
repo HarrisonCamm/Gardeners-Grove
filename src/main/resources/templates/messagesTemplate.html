@@ -41,9 +41,15 @@
                                                 <div class="d-flex align-items-center">
                                                     <img class="image-small" th:src="@{/get-image?view-user-profile=true(userID=${friend.userId})}" alt="">
                                                     <div class="ms-3">
-                                                        <h6 class="mb-0" th:text="${friend.firstName + ' ' + friend.lastName}"></h6>
-                                                        <!-- Last message sent or received-->
-                                                        <small th:id="'friend-last-message-' + ${friend.email}" class="text-muted" th:text="${lastMessages[iterStat.index]}"></small>
+                                                        <!-- User's name with the badge right after it -->
+                                                        <div class="d-flex align-items-center">
+                                                            <h6 class="mb-0 d-inline">
+                                                                <span th:text="${friend.firstName + ' ' + friend.lastName}"></span>
+                                                            </h6>
+                                                            <div th:replace="fragments/badgeFragment :: badgeImage(${friend})"></div>
+                                                        </div>
+                                                        <!-- Last message sent or received, positioned beneath the name and badge -->
+                                                        <small th:id="'friend-last-message-' + ${friend.email}" class="text-muted d-block mt-1" th:text="${lastMessages[iterStat.index]}"></small>
                                                     </div>
                                                 </div>
                                             </div>
@@ -66,8 +72,10 @@
                                 <div class="d-flex align-items-center">
                                     <img th:id="'friendImage-' + ${friend.userId}" class="image-small me-3" src="" alt="">
                                     <div>
-                                        <h5 th:id="'friendName-' + ${friend.userId}" class="mb-0"></h5>
-                                        <small class="text-muted">Verified</small>
+                                        <div class="d-flex align-items-center">
+                                            <h5 th:id="'friendName-' + ${friend.userId}" class="mb-0"></h5>
+                                            <div th:replace="fragments/badgeFragment :: badgeImage(${friend})"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

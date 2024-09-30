@@ -9,7 +9,7 @@ import java.util.List;
 
 @Service
 public class ItemService {
-    private ItemRepository itemRepository;
+    private final ItemRepository itemRepository;
 
     @Autowired
     public ItemService(ItemRepository itemRepository) {
@@ -18,10 +18,6 @@ public class ItemService {
 
     public void saveItem(Item item) {
         itemRepository.save(item);
-    }
-
-    public void deleteItem(Item item) {
-        itemRepository.delete(item);
     }
 
     public Item getItemById(Long id) {
@@ -46,22 +42,6 @@ public class ItemService {
 
     public List<Item> getImages() {
         return itemRepository.findImages();
-    }
-
-    public List<Item> getEquippedByOwner(Long userId) {
-        return itemRepository.findIsEquippedByOwnerUserId(userId);
-    }
-
-    public List<Item> getBadgesByOwner(Long userId) {
-        return itemRepository.findBadgesByOwnerUserId(userId);
-    }
-
-    public List<Item> getImagesByOwner(Long userId) {
-        return itemRepository.findImagesByOwnerUserId(userId);
-    }
-
-    public List<Item> getItemsByOwner(Long userId) {
-        return itemRepository.findByOwnerUserId(userId);
     }
 
 }

@@ -108,9 +108,6 @@ public class TipPublicGardenSteps {
                 .param("gardenID", testCreatedGarden.getId().toString())
                 .param("isPublic", "true")
                 .with(csrf()));
-
-        // Log out
-        SecurityContextHolder.clearContext();
     }
 
     // Background

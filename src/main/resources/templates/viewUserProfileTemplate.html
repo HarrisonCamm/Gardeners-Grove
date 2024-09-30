@@ -30,8 +30,10 @@
                         <div id="imageError" class="error-message"></div>
                         <br/>
                         <div class="background">
-                            <label th:text="'Name: ' + ${displayName}"></label>
-                            <br/>
+                            <div class="d-flex align-items-center">
+                                <label th:text="'Name: ' + ${displayName}"></label>
+                                <div th:replace="fragments/badgeFragment :: badgeImage(${user})"></div>
+                            </div>
                             <br/>
                             <label th:text="'Email: ' + ${email}"></label>
                             <br/>
@@ -41,6 +43,7 @@
                             </div>
                             <br/>
                             <label th:text="'Blooms: ' + ${bloomBalance}"></label>
+                            <br/>
                         </div>
                         <br/>
                         <div class="buttons-centre">

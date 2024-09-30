@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
 
+import nz.ac.canterbury.seng302.gardenersgrove.controller.InventoryController;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.MessagesController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
@@ -117,6 +118,9 @@ public class ViewGardenTests {
 
     @MockBean
     private MessagesController messagesController;
+
+    @MockBean
+    private InventoryController inventoryController;
 
     @MockBean
     private Random random;

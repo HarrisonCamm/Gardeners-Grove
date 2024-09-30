@@ -84,7 +84,6 @@ body {
 }
 
 
-
 @media (min-width: 768px) {
     .table-wrapper {
         max-width: 1000px; /* Max width on medium or larger screens */
@@ -131,6 +130,21 @@ textarea:focus {
     overflow-wrap: break-word;
     hyphens: auto;
 }
+
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.badge-image {
+    height: 1em; /* This matches the text height */
+    width: auto;
+}
+
+
+
+
 
 .error {
     border: 1px solid #DE2929;
@@ -602,6 +616,7 @@ hr {
 }
 
 
+
 @media only screen and (orientation: portrait) {
     h2 {
         font-size: 300%;
@@ -849,3 +864,10 @@ h2 {
     border-radius: 100px;
     border: #3D7B36 solid 1px;
 }
+
+.fixed-width-card {
+    max-width: 400px;
+}
+ .item-row {
+     justify-content: center;
+ }
