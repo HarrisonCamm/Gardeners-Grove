@@ -19,14 +19,10 @@ public class ItemController {
     Logger logger = LoggerFactory.getLogger(ItemController.class);
 
     private final ItemService itemService;
-    private final UserService userService;
-    private final ImageService imageService;
 
     @Autowired
-    public ItemController(ItemService itemService, UserService userService, ImageService imageService) {
+    public ItemController(ItemService itemService) {
         this.itemService = itemService;
-        this.userService = userService;
-        this.imageService = imageService;
     }
 
     @GetMapping("/item")
