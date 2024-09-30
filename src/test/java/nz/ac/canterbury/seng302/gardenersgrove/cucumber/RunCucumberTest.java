@@ -72,6 +72,7 @@ public class RunCucumberTest {
     private static ForecastResponse mockedValidForecast;
     private static WeatherResponse mockedNullCityWeather;
     private static ForecastResponse mockedNullCityForecast;
+    private static List<PlantData> plantList;
     private static PlantData plant1;
     private static PlantData plant2;
     private static List<String> fourOptions1;
@@ -121,7 +122,7 @@ public class RunCucumberTest {
 
             //To mock plant api
             PlantGuesserList mockedPlantPage = objectMapper.readValue(plantPageJsonString, PlantGuesserList.class);
-            List<PlantData> plantList = new ArrayList<>(Arrays.stream(mockedPlantPage.getPlantGuesserList()).toList());
+            plantList = new ArrayList<>(Arrays.stream(mockedPlantPage.getPlantGuesserList()).toList());
             plant1 = plantList.get(0);
             plant2 = plantList.get(1);
 
@@ -215,16 +216,7 @@ public class RunCucumberTest {
         when(moderationService.isContentAppropriate("DelayedEvaluated")).thenReturn(true);
         when(moderationService.isContentAppropriate("InappropriateEvaluated")).thenReturn(false);
 
-
-        when(plantGuesserService.getPlant(anyInt())).thenAnswer(invocation -> {
-            int argument = invocation.getArgument(0);
-            if (argument == 0) {
-                return plant1;
-            } else if (argument >= 1) {
-                return plant2;
-            }
-            return null;
-        });
+        when(plantGuesserService.getPlantRound()).thenReturn(plantList);
 
         when(plantGuesserService.getMultichoicePlantNames(plant1.family, plant1.common_name, plant1.getCommonAndScientificName()))
                 .thenReturn(fourOptions1);

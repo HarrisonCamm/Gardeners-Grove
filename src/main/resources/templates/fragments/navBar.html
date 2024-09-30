@@ -1,18 +1,20 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
     <body>
-        <ul th:fragment="navBar" class="navBar">
+        <ul th:fragment="navBar" class="navBar navbar navbar-expand-lg">
             <!-- NavBar page links -->
-            <div class="navBar-centre">
-                <li><a class="navLink" th:href="@{main}">Main</a></li>
-                <li><a class="navLink" th:href="@{view-user-profile}">View Profile</a></li>
-                <li><a class="navLink" th:href="@{create-garden}">Create New Garden</a></li>
-                <li><a class="navLink" th:href="@{view-gardens}">View Gardens</a></li>
-                <li><a class="navLink" th:href="@{manage-friends}">Manage Friends</a></li>
-                <li><a class="navLink" th:href="@{browse-gardens}">Browse Gardens</a></li>
-                <li><a class="navLink" th:href="@{messages}">Messages</a></li>
-                <li><a class="navLink" th:href="@{games}">Games</a></li>
-                <li><a class="navLink" th:href="@{daily-spin}">Daily Spin</a></li>
+            <div class="container-fluid navBar-centre">
+                <li class="pt-3"><a class="card navLink" th:href="@{main}">Main</a></li>
+                <li class="pt-3"><a class="card navLink" th:href="@{view-user-profile}">View Profile</a></li>
+                <li class="pt-3"><a class="card navLink" th:href="@{create-garden}">Create New Garden</a></li>
+                <li class="pt-3"><a class="card navLink" th:href="@{view-gardens}">View Gardens</a></li>
+                <li class="pt-3"><a class="card navLink" th:href="@{manage-friends}">Manage Friends</a></li>
+                <li class="pt-3"><a class="card navLink" th:href="@{browse-gardens}">Browse Gardens</a></li>
+                <li class="pt-3"><a class="card navLink" th:href="@{messages}">Messages</a></li>
+                <li class="pt-3"><a class="card navLink" th:href="@{shop}">Shop</a></li>
+                <li class="pt-3"><a class="card navLink" th:href="@{games}">Games</a></li>
+                <li class="pt-3"><a class="card navLink" th:href="@{daily-spin}">Daily Spin</a></li>
+                <li class="pt-3"><a class="card navLink" th:href="@{inventory}">Inventory</a></li>
             </div>
 
             <!--            Displays user's Bloom currency -->

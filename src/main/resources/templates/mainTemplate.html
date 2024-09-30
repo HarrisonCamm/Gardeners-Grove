@@ -1,21 +1,57 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Gardener's Grove</title>
-        <!-- Bootstrap CSS -->
-        <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
-        <!-- Navbar styling -->
-        <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
-        <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
-    </head>
-    <body>
-        <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
-        <div class="content appBody">
-            <div>
-                <h1>Main Page</h1>
-                <br/>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Gardener's Grove</title>
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Navbar styling -->
+    <link th:href="@{/css/navBar.css}" rel="stylesheet"/>
+    <link th:href="@{/css/homeMainStyles.css}" rel="stylesheet"/>
+</head>
+<body>
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+    <div class="container mt-4">
+        <div class="leaderboard-container">
+            <div class="leaderboard-header">Gamers Grove Leaderboard</div>
+            <table class="leaderboard-table">
+                <thead>
+                <tr>
+                    <th>Ranking</th>
+                    <th>Profile & Name</th>
+                    <th>
+                        <span class="icon-text">
+                            <div class="svg">
+                                <div class="svg-fragment" th:replace="~{fragments/iconFragment.html :: iconFragment}"></div>
+                            </div>
+                            Blooms
+                        </span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user, index : ${topUsers}"
+                    th:classappend="${user.userId == currentUserId} ? 'highlight-user' : ''">
+                    <td th:text="${index.index + 1}"></td>
+                    <td class="profile-info">
+                        <div class="d-flex align-items-center">
+                            <img class="leaderboard-image"
+                                 th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="Profile Picture">
+                            <span class="profile-name ms-2" th:text="${user.firstName} + ' ' + ${user.lastName}"></span>
+                            <div th:replace="fragments/badgeFragment :: badgeImage(${user})"></div>
+                        </div>
+                    </td>
+                    <td th:text="${user.bloomBalance}"></td>
+                </tr>
+                </tbody>
+
+
+            </table>
+            <div th:if="${userRank > 10}" class="user-rank-container">
+                <h4>Your Ranking</h4>
+                <p th:text="'You are ranked ' + ${userRank} + ' out of all users.'"></p>
             </div>
         </div>
-    </body>
+    </div>
+</body>
 </html>

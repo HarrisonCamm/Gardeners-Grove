@@ -1,10 +1,12 @@
 package nz.ac.canterbury.seng302.gardenersgrove.integration.controller;
 
+import nz.ac.canterbury.seng302.gardenersgrove.controller.InventoryController;
 import nz.ac.canterbury.seng302.gardenersgrove.controller.MessagesController;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.ShopRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +44,15 @@ public class CreatePlantTests {
 
     @MockBean
     private MailService mailService;
+
+    @MockBean
+    private ItemService itemService;
+
+    @MockBean
+    private ShopService shopService;
+
+    @MockBean
+    private ShopRepository shopRepository;
 
     @MockBean
     private PlantService plantService;
@@ -94,6 +105,9 @@ public class CreatePlantTests {
 
     @MockBean
     private MessagesController messagesController;
+
+    @MockBean
+    private InventoryController inventoryController;
 
     @MockBean
     private Random random;

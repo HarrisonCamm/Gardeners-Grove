@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * User class that contains all the values a user should have
@@ -15,7 +12,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "USERS") //revise later, ask tutor about style
 public class User {
-
     public static final Integer DEFAULT_BALANCE = 500;
 
     @Id
@@ -61,19 +57,24 @@ public class User {
     )
     private List<User> nonFriendContacts = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn
     private Image image;
+
+    @JoinColumn(name = "uploaded_image_id")
+    private Long uploadedImageId;
 
     @Column()
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private List<Authority> userRoles;
 
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Transaction> transactions = new ArrayList<>();
 
-
+    @ManyToOne // BadgeItem ID
+    @JoinColumn(name = "applied_badge_id")
+    private BadgeItem appliedBadge;
 
     @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer inappropriateTagCount = 0;
@@ -97,7 +98,6 @@ public class User {
     public User(Long id, String firstName, String lastName, boolean noLastName, String email, String password, String dateOfBirth) {
         this.userId = id;
         this.password = password;
-        this.bloomBalance = DEFAULT_BALANCE;
         this.setValues(firstName, lastName, noLastName, email, dateOfBirth);
     }
 
@@ -109,7 +109,6 @@ public class User {
         this.password = password;
         this.dateOfBirth = dateOfBirth;
         this.image = image;
-        this.bloomBalance = DEFAULT_BALANCE;
     }
 
     public User setValues(String firstName, String lastName, boolean noLastName, String email, String dateOfBirth) {
@@ -118,7 +117,7 @@ public class User {
         this.noLastName = noLastName;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
-        this.bloomBalance = DEFAULT_BALANCE;
+        this.appliedBadge = null;
         return this;
     }
 
@@ -174,6 +173,10 @@ public class User {
         return noLastName;
     }
 
+    public BadgeItem getAppliedBadge() {
+        return appliedBadge;
+    }
+
     public void setEmail(String newEmail) {
         this.email = newEmail;
     }
@@ -181,6 +184,7 @@ public class User {
     public String getEmail() {
         return email;
     }
+
 
     public void setDateOfBirth(String newDateOfBirth) {
         this.dateOfBirth = newDateOfBirth;
@@ -197,9 +201,17 @@ public class User {
     public String setPassword(String newPassword) {
         return this.password = newPassword;
     }
+
     public String getPassword() {
         return password;
     }
+
+
+    public void setAppliedBadge(BadgeItem badge) {
+        this.appliedBadge = badge;
+    }
+
+
 
     public void setImage(Image image) {
         this.image = image;
@@ -207,6 +219,14 @@ public class User {
 
     public Image getImage() {
         return image;
+    }
+
+    public Long getUploadedImageId() {
+        return uploadedImageId;
+    }
+
+    public void setUploadedImageId(Long previousImageId) {
+        this.uploadedImageId = previousImageId;
     }
 
     public List<FriendRequest> getSentFriendRequests() {
@@ -287,7 +307,6 @@ public class User {
     public void removeContact(User contact) {
         nonFriendContacts.removeIf(c -> c.equals(contact));
     }
-
 
     /**
      * Gets an immutable list of non-friend contacts

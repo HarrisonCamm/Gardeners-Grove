@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.PlantData;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -39,12 +38,12 @@ public class PlantGuesserController {
     private static final int NUM_OPTIONS = 4;
     private static final int NUM_ROUNDS = 10;
     private static final int BLOOM_BONUS = 100;
-    private static final int MAX_TRIES = 25;
+    private static final int MAX_TRIES = 5;
     private static final String PAGE_URL = "/plant-guesser";
     private static final String SESSION_SCORE = "plantGuesserScore";
     private static final String SESSION_ROUND = "plantGuesserRound";
-
-    private User gardenersGroveUser; //represents the sender for transactions from games
+    private static final String SESSION_TRY = "plantGuesserTry";
+    private static final String CORRECT_OPTION = "correctOption";
 
     @Autowired
     public PlantGuesserController(PlantGuesserService plantGuesserService, PlantFamilyService plantFamilyService, TransactionService transactionService, UserService userService, UserRepository userRepository, Random random) {
@@ -57,32 +56,34 @@ public class PlantGuesserController {
     }
     public void setRandom(Random random) {
         // This is used for testing purposes, so the shuffling of the answers in not random and can stay consistent for testing
-        // This setter is so it can be set to a fixed random during testing, otherwise it is always truly random
+        // This setter is, so it can be set to a fixed random during testing, otherwise it is always truly random
         this.random = random;
     }
     public void resetRound(HttpSession session) {
 
         session.setAttribute(SESSION_SCORE, 0);
         session.setAttribute(SESSION_ROUND, 0);
+        session.setAttribute(SESSION_TRY, 0);
+        List<PlantData> plantList = plantGuesserService.getPlantRound();
+        session.setAttribute("plantList", plantList);
     }
     /**
      * Gets the thymeleaf page showing the plant guesser page
      */
     @GetMapping("/plant-guesser")
     public String getTemplate(HttpSession session,
-                              HttpServletRequest request,
                               Model model) {
         logger.info("GET /plant-guesser");
         if (!Objects.equals(RedirectService.getPreviousPage(), PAGE_URL)) {
             resetRound(session);
         }
         RedirectService.addEndpoint(PAGE_URL);
-        int roundNumber = (int) session.getAttribute(SESSION_ROUND);
+        int tryNumber = (int) session.getAttribute(SESSION_TRY);
+        List<PlantData> plantList = (List<PlantData>) session.getAttribute("plantList");
 
         try {
             session.removeAttribute("guesserGameError");
-            PlantData plant = plantGuesserService.getPlant(roundNumber);
-            playGameRound(model, plant, session);
+            playGameRound(model, plantList, tryNumber, session);
             return "plantGuesserTemplate";
         } catch (Exception e){
             // if there is an error in creating the game, the app will redirect back to the games page and display an error message
@@ -101,16 +102,15 @@ public class PlantGuesserController {
                                @RequestParam("quizOption4") String quizOption4,
                                @RequestParam("plantImage") String plantImage,
                                @RequestParam("imageCredit") String imageCredit,
-                               @RequestParam("correctOption") int correctOption,
                                @RequestParam("score") int score,
                                HttpSession session,
-                               HttpServletRequest request,
                               Model model) {
         logger.info("POST /plant-guesser");
         RedirectService.addEndpoint(PAGE_URL);
         User currentUser = userService.getAuthenticatedUser();
         int currentBloomBalance = currentUser.getBloomBalance();
         int roundNumber = (int) session.getAttribute(SESSION_ROUND) + 1;
+        int correctOption = (int) session.getAttribute(CORRECT_OPTION);
 
         String[] quizOptions = {quizOption1, quizOption2, quizOption3, quizOption4};
         List<String[]> splitQuizOptions = new ArrayList<>();
@@ -126,7 +126,7 @@ public class PlantGuesserController {
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit);
         model.addAttribute("roundNumber", roundNumber);
-        model.addAttribute("correctOption", correctOption);
+        model.addAttribute(CORRECT_OPTION, correctOption);
         model.addAttribute("selectedOption", selectedOption);
         model.addAttribute("bloomBonus", BLOOM_BONUS);
 
@@ -150,10 +150,10 @@ public class PlantGuesserController {
             currentUser.setBloomBalance(currentBloomBalance + BLOOM_BONUS + (score*NUM_ROUNDS));
             userRepository.save(currentUser);
             model.addAttribute("bloomBalance", currentUser.getBloomBalance());
-            Integer bloomsToAdd = BLOOM_BONUS + (score*NUM_ROUNDS);
+            int bloomsToAdd = BLOOM_BONUS + (score*NUM_ROUNDS);
 
-            gardenersGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
-            transactionService.addTransaction(bloomsToAdd, "Plant guesser game.","type", currentUser.getUserId(), gardenersGroveUser.getUserId());
+            User gardenersGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
+            transactionService.addTransaction(bloomsToAdd, "Plant guesser game.","Game", currentUser.getUserId(), gardenersGroveUser.getUserId());
             gameOver = true;
             resetRound(session);
         }
@@ -162,7 +162,8 @@ public class PlantGuesserController {
         return "plantGuesserTemplate";
     }
 
-    public void playGameRound(Model model, PlantData plant, HttpSession session) {
+    public void playGameRound(Model model, List<PlantData> plantList, int tryNumber, HttpSession session) {
+        PlantData plant = null;
         String plantName = null;
         String plantScientificName = null;
         String plantImage = null;
@@ -176,7 +177,8 @@ public class PlantGuesserController {
         int score = (int) session.getAttribute(SESSION_SCORE);
         int roundNumber = (int) session.getAttribute(SESSION_ROUND);
 
-        while (listSize != NUM_OPTIONS && attempt < MAX_TRIES) {
+        while (listSize != NUM_OPTIONS && attempt < MAX_TRIES && !Objects.equals(imageCredit, "bs.plantnet.org")) {
+            plant = plantList.get(tryNumber);
             plantName = plant.common_name;
             plantScientificName = plant.scientific_name;
             plantImage = plant.image_url;
@@ -192,8 +194,10 @@ public class PlantGuesserController {
             plantCommonAndScientificName = plantName + ",\n(" + plantScientificName + ")";
             quizOptions = plantGuesserService.getMultichoicePlantNames(plantFamily, plantName, plantCommonAndScientificName);
             listSize = quizOptions.size();
+            tryNumber ++;
             attempt++;
         }
+        session.setAttribute(SESSION_TRY, tryNumber);
 
         // to throw list size error in get mapping, since otherwise the error won't be caught until the thymeleaf parsing
         if (quizOptions.size() != NUM_OPTIONS || plantName==null || plantScientificName==null
@@ -204,7 +208,7 @@ public class PlantGuesserController {
 
         Collections.shuffle(quizOptions, random); // set random while testing, otherwise true random
 
-        // The quiz options list has a string that contains both the common and scientific name of a plant so they can be shuffled together, then they need to be split up to display the scientific name on a new line
+        // The quiz options list has a string that contains both the common and scientific name of a plant, so they can be shuffled together, then they need to be split up to display the scientific name on a new line
         List<String[]> splitQuizOptions = new ArrayList<>();
         for (String option: quizOptions) {
             String[] options = option.split(",");
@@ -225,7 +229,8 @@ public class PlantGuesserController {
         model.addAttribute("plantImage", plantImage);
         model.addAttribute("imageCredit", imageCredit + " via Trefle");
         model.addAttribute("roundNumber", roundNumber + 1);
-        model.addAttribute("correctOption", correctOption);
+        session.setAttribute(CORRECT_OPTION, correctOption);
+        model.addAttribute(CORRECT_OPTION, "");
         model.addAttribute("selectedOption", -1);
         model.addAttribute("answerSubmitted", false);
         model.addAttribute("gameOver", false);

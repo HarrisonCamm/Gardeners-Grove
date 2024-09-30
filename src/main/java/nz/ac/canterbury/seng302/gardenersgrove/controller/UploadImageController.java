@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
 import jakarta.servlet.http.HttpSession;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Plant;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
@@ -29,12 +30,11 @@ import java.util.Optional;
  */
 @Controller
 public class UploadImageController {
-
     Logger logger = LoggerFactory.getLogger(UploadImageController.class);
-
     private final PlantService plantService;
     private final UserService userService;
     private final ImageService imageService;
+    private static final String PICTURE_ATTRIBUTE = "picture";
 
     @Autowired
     public UploadImageController(PlantService plantService, UserService userService, ImageService imageService) {
@@ -119,6 +119,8 @@ public class UploadImageController {
                                            @RequestParam(value = "edit-plant", required = false) boolean editPlant,
                                            @RequestParam(value = "view-user-profile", required = false) boolean viewUser,
                                            @RequestParam(value = "edit-user-profile-image", required = false) boolean editUserProfile,
+                                           @RequestParam(value = "imageItem", required = false) boolean imageItem,
+                                           @RequestParam(value = "userBadge", required = false) boolean userBadge,
                                            @RequestParam(value = "temporary", required = false) boolean temporary,
                                            @RequestParam(value = "gardenID", required = false) Long gardenID,
                                            @RequestParam(value = "userID", required = false) Long userID,
@@ -142,8 +144,8 @@ public class UploadImageController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image is not temporary");
             }
             model.addAttribute("id", imageID);
-            model.addAttribute("picture", image.getData());
-        } else if (!viewUser && !editUserProfile) {
+            model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
+        } else if (!viewUser && !editUserProfile && !imageItem && !userBadge) {
             Optional<Plant> foundPlant = plantService.findPlant(plantID);
             if (foundPlant.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plant not found");
@@ -151,12 +153,29 @@ public class UploadImageController {
             Plant plant = foundPlant.get();
             image = plant.getImage();
             model.addAttribute("id", plantID);
-            model.addAttribute("picture", image.getData());
-        } else {
+            model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
+
+        } else if (imageItem) {
+            Optional<Image> foundImage = imageService.findImage(imageID);
+            if (foundImage.isEmpty()) {
+                logger.error("Image with ID {} not found for item", imageID);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found");
+            }
+            image = foundImage.get();
+            model.addAttribute("id", imageID);
+            model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
+        } else if (userBadge) {
+            User user = userService.getUserByID(userID);
+            image = user.getAppliedBadge().getIcon();
+            model.addAttribute("id", userID);
+            model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
+
+        }
+        else {
             User user = userService.getUserByID(userID);
             image = user.getImage();
             model.addAttribute("id", userID);
-            model.addAttribute("picture", image.getData());
+            model.addAttribute(PICTURE_ATTRIBUTE, image.getData());
         }
 
         switch (image.getContentType()) {

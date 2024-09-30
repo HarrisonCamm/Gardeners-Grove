@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragments/head :: head(title='Inventory')}">
+</head>
+<body>
+    <!-- Navigation Bar Fragment -->
+    <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+    <div class="appBody">
+        <div class="container-fluid pt-1 p-5">
+            <!-- Profile Card to display user's profile information -->
+            <div class="row justify-content-center mt-3">
+                <div class="col content card ms-2 me-2 fixed-width-card">
+                    <div class="mb-5 mt-5">
+                        <!-- Example profile picture -->
+                        <img class="shop-image"
+                             th:data-user-id="${user.userId}"
+                             th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="">
+                        <div class="user-info d-flex align-items-center mt-3">
+                            <h3 class="mt-3" th:text="${user.firstName} + ' ' + ${user.lastName}"></h3>
+                            <!-- Badge image to the right of the username -->
+                            <div th:replace="fragments/badgeFragment :: badgeImage(${user})"></div>
+                        </div>
+                    </div>
+                </div>
+
+            <!-- This row will display the user's inventory badge items it has -->
+            <h3 class="mb-3 mt-1">Badges</h3>
+            <div class="row item-row mt-5">
+                <!-- Iterate through the badgeItems list and display each badge item-->
+                <a class="col content card ms-2 me-2 fixed-width-card text-decoration-none" th:each="item: ${badgeItems}" th:href="@{'/item?itemID=' + ${item.getKey().id}}">
+                    <div class="h-25 w-100 mt-3 inventory-card-title">
+                        <h5 class="p-2" th:text="${item.key.name}"></h5>
+                        <p class="item-quantity" th:text="${item.value} + 'x'"></p>
+                    </div>
+                    <!-- Display the badge item's icon -->
+                    <div class="mb-5" >
+                        <img type="png" class="shop-image mt-3" th:src="@{/get-image?imageItem=true(imageID=${item.key.icon.id})}">
+
+                        <form th:if="${unapplyBadgeId != item.key.id}" th:action="@{'/inventory/badge/use/' + ${item.key.id}}" method="post">
+                            <input type="hidden" name="userId" th:value="${user.userId}">
+                            <input type="hidden" name="badgeURL" th:src="@{/get-image?imageItem=true(imageID=${item.key.icon.id})}">
+                            <button class="item-use-button button" type="submit">Use</button>
+                        </form>
+
+                        <form th:if="${unapplyBadgeId == item.key.id}" th:action="@{'/inventory/badge/unapply/' + ${item.key.id}}" method="post">
+                            <input type="hidden" name="userId" th:value="${user.userId}">
+                            <input type="hidden" name="badgeURL" th:src="@{/get-image?imageItem=true(imageID=${item.key.icon.id})}">
+                            <button class="item-use-button button" type="submit">Unapply</button>
+                        </form>
+                    </div>
+                </a>
+            </div>
+            <!-- This row will display the user's inventory image items it has -->
+            <h3 class="mb-3 mt-5">Profile Pictures</h3>
+            <div class="row item-row mt-5">
+                <!-- Iterate through the imageItem list and display each image item-->
+                <a th:each="item : ${imageItems}" th:href="@{'/item?itemID=' + ${item.getKey().id}}" class="col content card ms-2 me-2 text-decoration-none fixed-width-card">
+                    <div class="h-25 w-100 mt-3 inventory-card-title">
+                        <h5 class="p-2" th:text="${item.key.name}"></h5>
+                        <p class="item-quantity" th:text="${item.value} + 'x'"></p>
+                    </div>
+                    <div class="mb-5" >
+                        <img type="gif" class="shop-image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.getKey().image.id})}" alt="Item Image">
+                        <form th:if="${unapplyItemId != item.key.id}" th:action="@{'/inventory/gif/use/' + ${item.key.id}}" method="post">
+                            <button type="submit" class="item-use-button button">Use</button>
+                        </form>
+                        <form th:if="${unapplyItemId == item.key.id}" th:action="@{'/inventory/gif/unapply/' + ${item.key.id}}" method="post">
+                            <button type="submit" class="item-use-button button">Unapply</button>
+                        </form>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

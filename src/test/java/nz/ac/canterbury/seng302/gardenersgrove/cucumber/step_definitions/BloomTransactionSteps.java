@@ -10,21 +10,14 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.TransactionService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.VerificationTokenService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -32,7 +25,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -62,6 +54,9 @@ public class BloomTransactionSteps {
 
     @Autowired
     private TransactionService transactionService;
+
+    @Autowired
+    private ItemService itemService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -95,7 +90,7 @@ public class BloomTransactionSteps {
 
     @Before
     public void setUp() throws IOException {
-        userProfileController = new UserProfileController(userService, userRepository, imageService, transactionService);
+        userProfileController = new UserProfileController(userService, userRepository, imageService, transactionService, itemService);
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         mockMvcUserProfile = MockMvcBuilders.standaloneSetup(userProfileController).build();
 

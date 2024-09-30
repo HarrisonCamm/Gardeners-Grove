@@ -5,10 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.MailService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,16 +36,19 @@ public class EditProfileController {
     private final AuthenticationManager authenticationManager;
     private final MailService mailService;
     private final ImageService imageService;
+    private final ItemService itemService;
 
 
     @Autowired
     public EditProfileController(UserService userService, UserRepository newUserRepository,
-                                 AuthenticationManager authenticationManager, MailService mailService, ImageService imageService) {
+                                 AuthenticationManager authenticationManager, MailService mailService,
+                                 ImageService imageService, ItemService itemService) {
         this.userService = userService;
         this.userRepository = newUserRepository;
         this.authenticationManager = authenticationManager;
         this.mailService = mailService;
         this.imageService = imageService;
+        this.itemService = itemService;
     }
 
     /**
@@ -237,7 +237,7 @@ public class EditProfileController {
                               @RequestParam(value = "file") MultipartFile file,
                               HttpSession session,
                               Model model) throws IOException {
-        logger.info("PUT /edit-user-profile");
+        logger.info("POST /edit-user-profile-image");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -251,8 +251,15 @@ public class EditProfileController {
             Image oldImage = userToEdit.getImage();
             userToEdit.setImage(image);
             userRepository.save(userToEdit);
-            if (oldImage != null)
+            if (oldImage != null && itemService.getImageItemsByImageId(oldImage.getId()).isEmpty()) {
                 imageService.deleteImage(oldImage);
+            }
+
+            // Retrieve the user from the database
+            userToEdit = userService.getUserByID(userToEdit.getUserId());
+            // init user with uploaded image id
+            userToEdit.setUploadedImageId(userToEdit.getImage().getId());
+            userService.saveUser(userToEdit);
         }
 
         return "redirect:/edit-user-profile";

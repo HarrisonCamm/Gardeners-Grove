@@ -56,17 +56,32 @@ body {
     -webkit-box-shadow: 0 0 0 1000px #E2F1CA inset;
 }
 
+.form-control-tips {
+    font-size: 180%;
+    border: 2px solid #BEE186;
+    background-color: #E2F1CA;
+    padding: 5px;
+    border-radius: 4px;
+    outline: 1px solid #BEE186;
+}
+.form-control-tips:focus {
+    outline: 4px solid #3D7B36;
+    background-color: #E2F1CA;
+    border: 1px solid #3D7B36;
+}
+.form-control-tips:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #E2F1CA inset;
+}
+
 .required-input {
     color: #DE2929;
 }
-
 
 .table-wrapper {
     max-width: 100%; /* Full width on smaller screens */
     margin: 0 auto;
     overflow-x: auto;
 }
-
 
 
 @media (min-width: 768px) {
@@ -115,6 +130,21 @@ textarea:focus {
     overflow-wrap: break-word;
     hyphens: auto;
 }
+
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.badge-image {
+    height: 1em; /* This matches the text height */
+    width: auto;
+}
+
+
+
+
 
 .error {
     border: 1px solid #DE2929;
@@ -187,7 +217,7 @@ h2 {
 /* Flexbox styles */
 .wrapper {
     display: flex;
-    justify-content: space-between; /* Horizontally center the items */
+    justify-content: center; /* Horizontally center the items */
 }
 
 /* Side Bar Container styles (What was container is now SideBarColour)*/
@@ -403,7 +433,15 @@ h2 {
 }
 
 .suggestions {
-    padding: 0;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    max-width: 300px;
+    background-color: rgb(226, 241, 202);
+    border-radius: 10px;
+    border: 1px solid #BEE186;
 }
 
 .autocomplete-items div {
@@ -545,6 +583,48 @@ hr {
     resize: none;
 }
 
+/*Used to style item quantity for inventory item cards*/
+.item-quantity {
+    position: absolute;
+    right: 25px;
+    top: 25px;
+}
+
+/*Used to style item title for inventory item cards*/
+.inventory-card-title {
+    background-color: #BEE186;
+    border-radius: 10px;
+    border: solid black 1px;
+    text-align: center;
+}
+
+/*Used to style item use button for inventory item cards*/
+.item-use-button {
+    position: absolute;
+    right: 7.5%;
+    bottom: 7.5%
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    background: none;
+    opacity: 0.1;
+}
+
+.tip-model-button {
+    background-color: #3D7B36 !important;
+    color: floralwhite;
+    border-radius: 10px;
+    border-width: 0;
+    padding: 5px 10px 5px 10px;
+    margin: 2px;
+}
+.tip-model-button:hover {
+    background-color: #72543C !important;
+    cursor: pointer;
+}
+
+
 
 @media only screen and (orientation: portrait) {
     h2 {
@@ -570,6 +650,24 @@ hr {
     }
     .form-control:disabled {
         border: 2px solid #C4C3C1;
+    }
+
+    .form-control-tips {
+        font-size: 180%;
+        /*width: 540px;*/
+        border: 2px solid #BEE186;
+        background-color: #E2F1CA;
+        padding: 5px;
+        border-radius: 4px;
+        outline: 1px solid #BEE186;
+    }
+    .form-control-tips:focus {
+        outline: 4px solid #3D7B36;
+        background-color: #E2F1CA;
+        border: 1px solid #3D7B36;
+    }
+    .form-control-tips:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 1000px #E2F1CA inset;
     }
 
     textarea {
@@ -758,5 +856,33 @@ h2 {
     margin-bottom: 1.5rem;
 }
 
+/* Shop CSS */
+.shop-emoji {
+    width: 200px;
+    height: 200px;
+    border-radius: 100px;
+    border: #3D7B36 solid 1px;
+    font-size: xxx-large;
+    font-family: var(--bs-body-font-family);
+    padding: 15px 15px 15px 15px;
+}
 
+.shop-image {
+    width: 200px;
+    aspect-ratio: 1/1;
+    border-radius: 100px;
+    border: #3D7B36 solid 1px;
+}
+
+.fixed-width-card {
+    max-width: 24%;
+    min-width: 24%;
+}
+.item-row {
+     flex-wrap: nowrap;
+     position: relative;
+     margin: 0 auto;
+     overflow: scroll;
+     padding: 2px;
+}
 

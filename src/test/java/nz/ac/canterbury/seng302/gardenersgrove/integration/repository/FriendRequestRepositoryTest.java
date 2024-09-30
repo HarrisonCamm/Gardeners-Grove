@@ -5,9 +5,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.FriendRequest;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.FriendRequestRepository;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
-import nz.ac.canterbury.seng302.gardenersgrove.service.FriendRequestService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -32,6 +30,12 @@ public class FriendRequestRepositoryTest {
 
     @MockBean
     private FriendRequestService friendRequestService;
+
+    @MockBean
+    private ItemService itemService;
+
+    @MockBean
+    private ShopService ShopService;
 
     @MockBean
     private UserService userService;

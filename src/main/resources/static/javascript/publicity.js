@@ -26,9 +26,11 @@ function publicityHandler(checkbox){
 function switchBadge(isPublic) {
     const publicBadge = document.getElementById("publicBadge")
     const privateBadge = document.getElementById("privateBadge")
+    const makeGardenPublicMessage = document.getElementById("makeGardenPublicMessage")
 
     publicBadge.hidden = !isPublic;
     privateBadge.hidden = isPublic;
+    makeGardenPublicMessage.hidden = isPublic;
 }
 
 function getCsrfToken() {

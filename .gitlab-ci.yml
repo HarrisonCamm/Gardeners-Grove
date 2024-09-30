@@ -36,7 +36,7 @@ sonarqube-report:
   script:
     ./gradlew sonarqube
 
-# builds all branches, except dev and main
+# builds all branches, except dev and main 
 branch-build:
   stage: build
   script:

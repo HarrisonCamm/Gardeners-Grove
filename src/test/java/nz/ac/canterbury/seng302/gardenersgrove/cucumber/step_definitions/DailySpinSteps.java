@@ -63,7 +63,7 @@ public class DailySpinSteps {
     public void i_see_a_daily_spin_button_prominently_displayed_on_the_navbar(String expectedText) throws UnsupportedEncodingException {
         String content = mvcResult.getResponse().getContentAsString(); //getting the html content
 
-        boolean found = content.contains("<a class=\"navLink\"") && content.contains(">" + expectedText + "</a>"); //checking the Daily Spin text is in an anchor tag
+        boolean found = content.contains("<a class=\"card navLink\"") && content.contains(">" + expectedText + "</a>"); //checking the Daily Spin text is in an anchor tag
 
         Assertions.assertTrue(found, "Expected to find a '" + expectedText + "' button in the navbar");
     }
@@ -198,7 +198,7 @@ public class DailySpinSteps {
                 .andExpect(view().name("dailySpinTemplate"))
                 .andReturn();
         mvcResult = mockMvc.perform(post("/daily-spin").session(session)
-                        .param("buttonAction", "PAYED_SPINNING"))
+                        .param("buttonAction", "PAID_SPINNING"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("dailySpinTemplate"))
                 .andReturn();
