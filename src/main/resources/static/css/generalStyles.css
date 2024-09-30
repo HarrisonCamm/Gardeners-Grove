@@ -217,7 +217,7 @@ h2 {
 /* Flexbox styles */
 .wrapper {
     display: flex;
-    justify-content: space-between; /* Horizontally center the items */
+    justify-content: center; /* Horizontally center the items */
 }
 
 /* Side Bar Container styles (What was container is now SideBarColour)*/
@@ -587,6 +587,7 @@ hr {
     background-color: #BEE186;
     border-radius: 10px;
     border: solid black 1px;
+    text-align: center;
 }
 
 /*Used to style item use button for inventory item cards*/
@@ -866,8 +867,14 @@ h2 {
 }
 
 .fixed-width-card {
-    max-width: 400px;
+    max-width: 24%;
+    min-width: 24%;
 }
- .item-row {
-     justify-content: center;
- }
+.item-row {
+     flex-wrap: nowrap;
+     position: relative;
+     margin: 0 auto;
+     overflow: scroll;
+     padding: 2px;
+}
+

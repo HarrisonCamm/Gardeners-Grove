@@ -22,8 +22,27 @@ public class InventoryItemService {
         this.inventoryRepository = inventoryRepository;
     }
 
+    /**
+     * Save the inventory, if the inventory already exists when trying to save a brand-new inventory,
+     *      then increment the quantity
+     * @param inventory the inventory to save
+     */
     public void save(InventoryItem inventory) {
-        inventoryRepository.save(inventory);
+        InventoryItem existing = null;
+
+        // If the inventory is a new inventory, check if the inventory already exists and not unique
+        if (inventory.getId() == null) {
+            existing = inventoryRepository.findInventoryByOwnerIdAndItemId(
+                    inventory.getOwner().getUserId(), inventory.getItem().getId());
+        }
+
+        // If the inventory already exists, increment the quantity
+        if (existing != null) {
+            existing.setQuantity(existing.getQuantity() + inventory.getQuantity());
+            inventoryRepository.save(existing);
+        } else {
+            inventoryRepository.save(inventory);
+        }
     }
 
     public List<InventoryItem> getAllInventory() {
@@ -67,4 +86,8 @@ public class InventoryItemService {
             deleteInventoryItem(inventoryItem);
         }
     }
+    public InventoryItem getInventoryByOwnerIdAndImageId(Long ownerId, Long imageId) {
+        return inventoryRepository.findInventoryByOwnerIdAndImageId(ownerId, imageId);
+    }
+
 }

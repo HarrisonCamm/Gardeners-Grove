@@ -31,7 +31,7 @@ public class ItemController {
 
     @GetMapping("/item")
     public String getTemplate(@RequestParam("itemID") Long itemID,
-                              Model model) {
+            Model model) {
         logger.info("GET /item");
         RedirectService.addEndpoint("/item");
 

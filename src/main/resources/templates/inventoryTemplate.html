@@ -37,7 +37,7 @@
             </div>
         </div>
 
-        <div class="container p-0">
+        <div class="container-fluid pt-1 p-5">
 
 <!--             Profile Card to display user's profile information -->
             <div class="row mt-5">
@@ -52,20 +52,20 @@
                             <!-- Badge image to the right of the username -->
                             <div th:replace="fragments/badgeFragment :: badgeImage(${user})"></div>
                         </div>
+                    </div>
                 </div>
-            </div>
 
-<!--            This row will display the user's badge items they have-->
-            <div class="row mt-5">
-                <h3 class="mb-3">Badges</h3>
+            <!-- This row will display the user's inventory badge items it has -->
+            <h3 class="mb-3 mt-1">Badges</h3>
+            <div class="row item-row mt-5">
                 <!-- Iterate through the badgeItems list and display each badge item-->
-                <div class="col content card ms-2 me-2 fixed-width-card" th:each="item: ${badgeItems}" th:href="@{'/item?itemID=' + ${item.getKey().id}}">
+                <a class="col content card ms-2 me-2 fixed-width-card text-decoration-none" th:each="item: ${badgeItems}" th:href="@{'/item?itemID=' + ${item.getKey().id}}">
                     <div class="h-25 w-100 mt-3 inventory-card-title">
-                        <h3 class="p-2" th:text="${item.getKey().name}"></h3>
-                        <p class="item-quantity" th:text="${item.getValue()} + 'x'"></p>
+                        <h3 class="p-2" th:text="${item.key.name}"></h3>
+                        <p class="item-quantity" th:text="${item.value} + 'x'"></p>
                     </div>
                     <!-- Display the badge item's icon -->
-                    <div class="mb-5" >
+                    <div class="mb-5 mt-4" >
                         <img type="png" class="image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.getKey().icon.id})}">
                         <form th:action="@{'/inventory/badge/use/' + ${item.getKey().id}}" method="post">
                             <input type="hidden" name="userId" th:value="${user.userId}">
@@ -73,24 +73,27 @@
                             <button class="item-use-button button" type="submit">Use</button>
                         </form>
                     </div>
-                </div>
+                </a>
             </div>
             <!-- This row will display the user's inventory image items it has -->
+            <h3 class="mb-3 mt-5">Profile Pictures</h3>
             <div class="row item-row mt-5">
-                <h3 class="mb-3 mt-5">Profile Pictures</h3>
                 <!-- Iterate through the imageItem list and display each image item-->
-                <div class="col content card ms-2 me-2 fixed-width-card" th:each="item: ${imageItems}">
+                <a th:each="item : ${imageItems}" th:href="@{'/item?itemID=' + ${item.getKey().id}}" class="col content card ms-2 me-2 text-decoration-none fixed-width-card">
                     <div class="h-25 w-100 mt-3 inventory-card-title">
-                        <h3 class="p-2" th:text="${item.getKey().name}"></h3>
-                        <p class="item-quantity" th:text="${item.getValue()} + 'x'"></p>
+                        <h5 class="p-2" th:text="${item.key.name}"></h5>
+                        <p class="item-quantity" th:text="${item.value} + 'x'"></p>
                     </div>
                     <div class="mb-5" >
                         <img type="gif" class="shop-image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.getKey().image.id})}" alt="Item Image">
-                        <form th:action="@{'/inventory/gif/use/' + ${item.getKey().id}}" method="post">
+                        <form th:if="${unapplyItemId != item.key.id}" th:action="@{'/inventory/gif/use/' + ${item.key.id}}" method="post">
                             <button type="submit" class="item-use-button button">Use</button>
                         </form>
+                        <form th:if="${unapplyItemId == item.key.id}" th:action="@{'/inventory/gif/unapply/' + ${item.key.id}}" method="post">
+                            <button type="submit" class="item-use-button button">Unapply</button>
+                        </form>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
