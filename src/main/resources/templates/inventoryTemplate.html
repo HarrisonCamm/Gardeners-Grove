@@ -12,7 +12,7 @@
                 <div class="col content card ms-2 me-2 fixed-width-card">
                     <div class="mb-5 mt-5">
                         <!-- Example profile picture -->
-                        <img class="image "
+                        <img class="shop-image"
                              th:data-user-id="${user.userId}"
                              th:src="@{/get-image?view-user-profile=true(userID=${user.userId})}" alt="">
                         <div class="user-info d-flex align-items-center mt-3">
@@ -33,8 +33,8 @@
                         <p class="item-quantity" th:text="${item.value} + 'x'"></p>
                     </div>
                     <!-- Display the badge item's icon -->
-                    <div class="mb-5 mt-4" >
-                        <img type="png" class="image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.key.icon.id})}">
+                    <div class="mb-5" >
+                        <img type="png" class="shop-image mt-3" th:src="@{/get-image?imageItem=true(imageID=${item.key.icon.id})}">
 
                         <form th:if="${unapplyBadgeId != item.key.id}" th:action="@{'/inventory/badge/use/' + ${item.key.id}}" method="post">
                             <input type="hidden" name="userId" th:value="${user.userId}">

@@ -17,8 +17,8 @@
                     <p class="item-quantity" th:text="${item.price} + '฿'"></p>
                 </div>
                 <!-- Display the badge item's icon -->
-                <div class="mb-5 mt-4" >
-                    <img type="png" class="image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.icon.id})}">
+                <div class="mb-5" >
+                    <img type="png" class="shop-image mt-3" th:src="@{/get-image?imageItem=true(imageID=${item.icon.id})}">
                     <div class="mt-5">
                         <!-- Purchase Form -->
                         <form th:action="@{/shop}" method="post">
