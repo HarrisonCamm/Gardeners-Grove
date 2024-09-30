@@ -215,7 +215,6 @@ public class UnlockableContentSteps {
                         .param("itemId", item.getId().toString()))
                 .andExpect(status().isOk())
                 .andReturn();
-
     }
 
 //    AC 6
@@ -290,13 +289,10 @@ public class UnlockableContentSteps {
     }
 
     // AC8
-
     @When("I click on an item")
     public void i_click_on_an_item() throws Exception {
         i_buy_an_item_costing_less_than_or_equal_to_my_current_blooms_balance();
-
         resultActions = mockMvc.perform(get("/item?itemID=" + item.getId()));
-
     }
 
 
