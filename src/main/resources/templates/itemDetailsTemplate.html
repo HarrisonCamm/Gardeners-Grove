@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="en">
+<head th:replace="fragments/head :: head(title='Item Details')">
+</head>
+<body>
+<!-- Navigation Bar Fragment -->
+<ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
+<div class="appBody">
+    <div class="container mt-5">
+        <div class="col content card">
+            <div class="h-25 w-75 mt-3 inventory-card-title">
+                <h3 class="p-2" th:text="${item.name}"></h3>
+            </div>
+            </br>
+            <div th:if="${!isBadge}" class="mb-5">
+                <img type="gif" class="shop-image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.image.id})}" alt="Item Image">
+            </div>
+            <div th:if="${isBadge}" class="mb-5 mt-4" >
+                <img type="png" class="image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.icon.id})}">
+            </div>
+            <div class="text-start mb-5">
+                <div class="d-flex align-items-left mt-2">
+                    <p th:if="${!isBadge}" class="card-text">This is a GIF Profile Picture item that you can use to customise your profile! </p>
+                </div>
+                <div class="d-flex align-items-left mt-2">
+                    <p th:if="${isBadge}" class="card-text">This is a Badge item that you can use to add a Badge next to your name and express your personality! </p>
+                </div>
+                <div class="d-flex align-items-left mt-2">
+                    <p class="card-text">Original Price: </p>
+                    <p class="card-text ms-1" th:text="${originalPriceText}"></p>
+                </div>
+                <div class="d-flex align-items-left mt-2">
+                    <p class="card-text">Resale Price: </p>
+                    <p class="card-text ms-1" th:text="${resalePriceText}"></p> <!-- TODO get resale price of item from AC9-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
