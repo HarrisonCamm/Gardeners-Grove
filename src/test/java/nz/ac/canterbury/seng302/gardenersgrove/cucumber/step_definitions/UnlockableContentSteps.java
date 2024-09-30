@@ -254,7 +254,8 @@ public class UnlockableContentSteps {
     @Given("I have more than one of the same item")
     public void i_have_more_than_one_of_the_same_item() throws Exception {
         item = itemService.getItemByName("Cat Typing");
-
+        item.setPrice(10);
+        itemService.saveItem(item);
         // Perform the POST request
         mvcResult = mockMvc.perform(post("/shop")
                         .param("itemId", item.getId().toString()))
