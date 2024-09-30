@@ -6,10 +6,6 @@
 <!-- Navigation Bar Fragment -->
 <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
 <div class="appBody">
-    <!-- Button to trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal">
-        Sell Tim Tam
-    </button>
 
     <!-- Modal -->
     <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
@@ -23,14 +19,10 @@
                     Are you sure you want to sell this item?
                 </div>
                 <div class="modal-footer">
-
-                    <form th:action="@{'/inventory/sell/item/' + 1}" method="post">
+                    <form th:action="@{'/inventory/sell/item/' + ${item.id}}" method="post">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-danger">Sell</button>
                     </form>
-                    <!--                        <form th:action="@{'/inventory/item/sell/' + ${item.getKey().id}}" method="post">-->
-                    <!--                            <button type="button" class="btn btn-danger">Sell</button>-->
-                    <!--                        </form>-->
                 </div>
             </div>
         </div>
@@ -62,6 +54,9 @@
                     <p class="card-text">Resale Price: </p>
                     <p class="card-text ms-1" th:text="${resalePriceText}"></p> <!-- TODO get resale price of item from AC9-->
                 </div>
+                <button type="button" class="button" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                    Sell
+                </button>
             </div>
         </div>
     </div>
