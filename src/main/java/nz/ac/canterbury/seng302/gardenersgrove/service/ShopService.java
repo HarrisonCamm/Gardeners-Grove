@@ -167,15 +167,10 @@ public class ShopService {
             Image image8 = new Image(polarWalkImageBytes, "gif", false);
             ImageItem imageItem8 = new ImageItem("Polar Walk",20, image8);
 
-            Path scrumMasterHarrisonImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/scrum_master_harrison.gif").getURI());
-            byte[] scrumMasterHarrisonImageBytes = Files.readAllBytes(scrumMasterHarrisonImagePath);
-            Image image9 = new Image(scrumMasterHarrisonImageBytes, "gif", false);
-            ImageItem imageItem9 = new ImageItem("Scrum Master Harrison",20, image9);
-
             Path stickManImagePath = Paths.get(resourceLoader.getResource("classpath:static/images/stick_man.gif").getURI());
             byte[] stickManImageBytes = Files.readAllBytes(stickManImagePath);
-            Image image10 = new Image(stickManImageBytes, "gif", false);
-            ImageItem imageItem10 = new ImageItem("Stick Man",20, image10);
+            Image image9 = new Image(stickManImageBytes, "gif", false);
+            ImageItem imageItem9 = new ImageItem("Stick Man",20, image9);
 
 
             addItemToShop(imageItem1);
@@ -187,7 +182,6 @@ public class ShopService {
             addItemToShop(imageItem7);
             addItemToShop(imageItem8);
             addItemToShop(imageItem9);
-            addItemToShop(imageItem10);
         }
     }
 
