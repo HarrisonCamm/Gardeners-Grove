@@ -307,7 +307,6 @@ public class UnlockableContentSteps {
                 .andReturn();
 
         Item item = (Item) mvcResult.getModelAndView().getModel().get("item");
-        boolean isBadge = (boolean) mvcResult.getModelAndView().getModel().get("isBadge");
         String originalPriceText = (String) mvcResult.getModelAndView().getModel().get("originalPriceText");
         String resalePriceText = (String) mvcResult.getModelAndView().getModel().get("resalePriceText");
 
