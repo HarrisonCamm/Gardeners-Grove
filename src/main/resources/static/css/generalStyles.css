@@ -433,7 +433,15 @@ h2 {
 }
 
 .suggestions {
-    padding: 0;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    max-width: 300px;
+    background-color: rgb(226, 241, 202);
+    border-radius: 10px;
+    border: 1px solid #BEE186;
 }
 
 .autocomplete-items div {
@@ -587,6 +595,7 @@ hr {
     background-color: #BEE186;
     border-radius: 10px;
     border: solid black 1px;
+    text-align: center;
 }
 
 /*Used to style item use button for inventory item cards*/
