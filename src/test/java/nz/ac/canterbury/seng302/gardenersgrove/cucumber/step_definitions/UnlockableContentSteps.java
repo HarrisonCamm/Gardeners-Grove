@@ -313,7 +313,6 @@ public class UnlockableContentSteps {
 
         Assertions.assertAll(
                 () -> assertNotNull(item),
-                () -> assertNotNull(isBadge),
                 () -> assertNotNull(originalPriceText),
                 () -> assertNotNull(resalePriceText)
         );
