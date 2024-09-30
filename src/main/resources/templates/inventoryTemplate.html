@@ -36,7 +36,8 @@
                     <!-- Display the badge item's icon -->
                     <div class="mb-5" >
                         <img type="png" class="image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.getKey().icon.id})}">
-                        <form th:action="@{'/inventory/badge/use/' + ${item.getKey().id}}" method="post">                            <input type="hidden" name="userId" th:value="${user.userId}">
+                        <form th:action="@{'/inventory/badge/use/' + ${item.getKey().id}}" method="post">
+                            <input type="hidden" name="userId" th:value="${user.userId}">
                             <input type="hidden" name="badgeURL" th:src="@{/get-image?imageItem=true(imageID=${item.getKey().icon.id})}">
                             <button class="item-use-button button" type="submit">Use</button>
                         </form>
