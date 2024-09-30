@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -147,7 +149,7 @@ public class GifProfilePictureSteps {
     }
 
     //AC2
-    @And("I views {string} profile image on the {string} page")
+    @And("I view {string} profile image on the {string} page")
     public void iViewsUsersProfileImageOnTheEndpointPage(String profileEmail, String endpoint) throws Exception {
         mvcResult = mockMvc.perform(get(endpoint))
                 .andExpect(status().isOk())
@@ -310,5 +312,43 @@ public class GifProfilePictureSteps {
         Assertions.assertEquals(expectedImage.getId(), this.displayedImage.getId(),
                 "The displayed profile picture should be the GIF image applied by the owner");
 
+    }
+
+    @Given("I am viewing my inventory")
+    public void iAmViewingMyInventory() throws Exception {
+        mvcResult = mockMvc.perform(get("/inventory"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("inventoryTemplate"))
+                .andReturn();
+    }
+
+    @And("I have {string} applied as my profile picture")
+    public void iHaveAppliedAsMyProfilePicture(String gifName) throws Exception {
+        InventoryItem inventoryItem = inventoryService.getInventory(currentUser, itemService.getItemByName(gifName));
+        currentUser = userService.getAuthenticatedUser();
+
+        mvcResult = mockMvc.perform(post("/inventory/gif/use/" + inventoryItem.getItem().getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/inventory"))
+                .andReturn();
+
+        currentUser = userService.getAuthenticatedUser();
+        assertEquals(((ImageItem) inventoryItem.getItem()).getImage().getId(), currentUser.getImage().getId());
+    }
+
+    @When("I click the {string} button on that item")
+    public void iClickTheButtonOnThatItem(String unapplyButtonText) throws Exception {
+        InventoryItem inventoryItem = inventoryService.getInventoryByOwnerIdAndImageId(currentUser.getUserId(), currentUser.getImage().getId());
+
+        mvcResult = mockMvc.perform(post("/inventory/gif/unapply/" + inventoryItem.getItem().getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/inventory"))
+                .andReturn();
+    }
+
+    @Then("My profile picture will revert to the image I had before selecting the gif image")
+    public void myProfilePictureWillRevertToTheImageIHadBeforeSelectingTheGifImage() {
+        currentUser = userService.getAuthenticatedUser();
+        assertEquals(currentUser.getUploadedImageId(), currentUser.getImage().getId());
     }
 }

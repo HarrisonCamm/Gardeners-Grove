@@ -5,10 +5,7 @@ import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Transaction;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.repository.UserRepository;
-import nz.ac.canterbury.seng302.gardenersgrove.service.ImageService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.RedirectService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.TransactionService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -42,13 +38,16 @@ public class UserProfileController {
 
     private final UserRepository userRepository;
     private final ImageService imageService;
+    private final ItemService itemService;
 
     @Autowired
-    public UserProfileController(UserService newUserService, UserRepository newUserRepository, ImageService imageService, TransactionService transactionService) {
+    public UserProfileController(UserService newUserService, UserRepository newUserRepository, ImageService imageService,
+                                 TransactionService transactionService, ItemService itemService) {
         this.userService = newUserService;
         this.userRepository = newUserRepository;
         this.imageService = imageService;
         this.transactionService = transactionService;
+        this.itemService = itemService;
     }
 
     /**
@@ -140,7 +139,7 @@ public class UserProfileController {
             Image oldImage = userToEdit.getImage();
             userToEdit.setImage(image);
             userRepository.save(userToEdit);
-            if (oldImage != null) {
+            if (oldImage != null && itemService.getImageItemsByImageId(oldImage.getId()).isEmpty()) {
                 imageService.deleteImage(oldImage);
             }
 
