@@ -22,12 +22,15 @@ public class InventoryController {
     private final InventoryItemService inventoryService;
     private final ImageService imageService;
 
+    private final TransactionService transactionService;
+
     @Autowired
-    public InventoryController(ItemService itemService, UserService userService, InventoryItemService inventoryService, ImageService imageService) {
+    public InventoryController(ItemService itemService, UserService userService, InventoryItemService inventoryService, ImageService imageService, TransactionService transactionService) {
         this.itemService = itemService;
         this.userService = userService;
         this.inventoryService = inventoryService;
         this.imageService = imageService;
+        this.transactionService = transactionService;
     }
 
     @GetMapping("/inventory")
@@ -199,6 +202,8 @@ public class InventoryController {
         logger.info("POST /inventory/sell/item/{}", itemId);
         User currentUser = userService.getAuthenticatedUser();
 
+        User gardenGroveUser = userService.getUserByEmail("gardenersgrove@email.com");
+
         // Get inventory
         List<InventoryItem> inventory = inventoryService.getUserInventory(currentUser);
 
@@ -216,6 +221,14 @@ public class InventoryController {
 
             // Update user's balance
             currentUser.setBloomBalance(currentUser.getBloomBalance() + resalePrice);
+
+            transactionService.addTransaction(resalePrice,
+                    "Sold '" + item.getName() + "' item back to the Shop",
+                    "Shop Sale",
+                    currentUser.getUserId(),
+                    gardenGroveUser.getUserId());
+            currentUser = userService.getAuthenticatedUser();
+
 
             // Remove the item from the inventory
             inventoryService.removeInventoryItem(matchingItemInInventory.get(), currentUser);
