@@ -44,4 +44,8 @@ public class ItemService {
         return itemRepository.findImages();
     }
 
+    public List<Item> getImageItemsByImageId(Long imageId) {
+        return itemRepository.findImageItemsByImageId(imageId);
+    }
+
 }

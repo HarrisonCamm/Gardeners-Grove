@@ -22,5 +22,6 @@ public interface ItemRepository extends CrudRepository<Item, Long> {
     @Query("SELECT i FROM Item i WHERE i.itemType = 'image'")
     List<Item> findImages();
 
-
+    @Query("SELECT i FROM Item i WHERE i.itemType = 'image' AND i.image.Id = :imageId")
+    List<Item> findImageItemsByImageId(Long imageId);
 }
