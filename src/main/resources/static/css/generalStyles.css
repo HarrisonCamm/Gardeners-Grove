@@ -203,7 +203,7 @@ h2 {
 /* Flexbox styles */
 .wrapper {
     display: flex;
-    justify-content: space-between; /* Horizontally center the items */
+    justify-content: center; /* Horizontally center the items */
 }
 
 /* Side Bar Container styles (What was container is now SideBarColour)*/
