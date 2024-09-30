@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="badgeImage (user)">
+    <img type="gif" class="badge-image ms-2" th:if="${user.appliedBadge != null}" th:src="@{/get-image?userBadge=true(userID=${user.userId})}"/>
+</div>
+</body>
+</html>
