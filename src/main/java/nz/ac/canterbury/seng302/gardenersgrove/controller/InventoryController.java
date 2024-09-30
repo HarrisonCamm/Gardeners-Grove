@@ -218,7 +218,7 @@ public class InventoryController {
             currentUser.setBloomBalance(currentUser.getBloomBalance() + resalePrice);
 
             // Remove the item from the inventory
-            inventoryService.removeInventoryItem(matchingItemInInventory.get());
+            inventoryService.removeInventoryItem(matchingItemInInventory.get(), currentUser);
 
             // Save the updated user
             userService.saveUser(currentUser);
