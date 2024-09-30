@@ -296,6 +296,7 @@ public class UnlockableContentSteps {
     }
 
 
+    // AC8
     @Then("I am taken to a page for that item which displays more information on the item including picture, name, original price, and resale price")
     public void i_am_taken_to_a_page_for_that_item_which_displays_more_information_on_the_item_including_picture_name_description_original_price_and_resale_price() throws Exception {
         mvcResult = resultActions.andExpect(status().isOk())
@@ -313,16 +314,19 @@ public class UnlockableContentSteps {
         );
     }
 
+    // AC9
     @Given("I am viewing an item in my inventory")
     public void i_am_viewing_an_item_in_my_inventory() {
         // TODO: Setup context for viewing an item in inventory
     }
 
+    // AC9
     @When("I click the Sell button for that item")
     public void i_click_the_sell_button_for_that_item() {
         // TODO: Implement logic for selling an item
     }
 
+    // AC9
     @Then("a confirmation popup with a cancel button and confirm button is shown with the message {string}")
     public void a_confirmation_popup_with_a_cancel_button_and_confirm_button_is_shown_with_the_message(String arg0) {
         // TODO: Display confirmation popup for selling an item
