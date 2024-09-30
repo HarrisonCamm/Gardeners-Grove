@@ -25,6 +25,8 @@ public class ShopController {
     private final UserService userService;
     private final TransactionService transactionService;
 
+    private static final String SHOP_TEMPLATE = "shopTemplate";
+
 
     @Autowired
     public ShopController(ShopService shopService, ItemService itemService, UserService userService, TransactionService transactionService) {
@@ -47,7 +49,7 @@ public class ShopController {
         RedirectService.addEndpoint("/shop");
         addShopItems(model);
 
-        return "shopTemplate";  // This will return the shopTemplate.html from the templates folder
+        return SHOP_TEMPLATE;  // This will return the shopTemplate.html from the templates folder
     }
 
     /**
@@ -88,10 +90,10 @@ public class ShopController {
             currentUser = userService.getAuthenticatedUser();
             model.addAttribute("bloomBalance", currentUser.getBloomBalance());
             model.addAttribute("purchaseSuccessful", "Purchase successful");
-            return "shopTemplate";
+            return SHOP_TEMPLATE;
         } else {
             model.addAttribute("purchaseNotSuccessful", "Insufficient Bloom balance");
-            return "shopTemplate";
+            return SHOP_TEMPLATE;
         }
     }
 
