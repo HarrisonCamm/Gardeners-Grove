@@ -1,6 +1,9 @@
 package nz.ac.canterbury.seng302.gardenersgrove.controller;
 
-import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.BadgeItem;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +24,8 @@ public class ShopController {
     private final ItemService itemService;
     private final UserService userService;
     private final TransactionService transactionService;
+
+    private static final String SHOP_TEMPLATE = "shopTemplate";
 
 
     @Autowired
@@ -44,7 +49,7 @@ public class ShopController {
         RedirectService.addEndpoint("/shop");
         addShopItems(model);
 
-        return "shopTemplate";  // This will return the shopTemplate.html from the templates folder
+        return SHOP_TEMPLATE;  // This will return the shopTemplate.html from the templates folder
     }
 
     /**
@@ -85,10 +90,10 @@ public class ShopController {
             currentUser = userService.getAuthenticatedUser();
             model.addAttribute("bloomBalance", currentUser.getBloomBalance());
             model.addAttribute("purchaseSuccessful", "Purchase successful");
-            return "shopTemplate";
+            return SHOP_TEMPLATE;
         } else {
             model.addAttribute("purchaseNotSuccessful", "Insufficient Bloom balance");
-            return "shopTemplate";
+            return SHOP_TEMPLATE;
         }
     }
 

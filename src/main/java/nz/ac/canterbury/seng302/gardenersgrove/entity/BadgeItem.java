@@ -1,31 +1,26 @@
 package nz.ac.canterbury.seng302.gardenersgrove.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 
 // Badge class extending Item
 @Entity
 @DiscriminatorValue("badge")
 public class BadgeItem extends Item {
 
-    @Column(nullable = false)
-    private String emoji;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn
+    private Image icon;
 
     protected BadgeItem() {
     }
 
-    public BadgeItem(String name, Integer price, String emoji) {
+    public BadgeItem(String name, Integer price, Image icon) {
         super(name, price);
-        this.emoji = emoji;
+        this.icon = icon;
     }
 
-    public String getEmoji() {
-        return emoji;
-    }
-
-    public void setEmoji(String emoji) {
-        this.emoji = emoji;
+    public Image getIcon() {
+        return this.icon;
     }
 
     @Override
@@ -35,11 +30,11 @@ public class BadgeItem extends Item {
         if (!(o instanceof BadgeItem badge))
             return false;
 
-        return getEmoji().equals(badge.getEmoji());
+        return getIcon().equals(badge.getIcon());
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode() + getEmoji().hashCode();
+        return super.hashCode() + getIcon().hashCode();
     }
 }

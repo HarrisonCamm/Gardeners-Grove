@@ -251,6 +251,4 @@ public class UserService {
         return userRepository.findUserRank(userId);
     }
 
-
-
 }

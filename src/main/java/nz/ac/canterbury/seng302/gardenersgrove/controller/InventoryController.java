@@ -39,9 +39,9 @@ public class InventoryController {
         User currentUser = userService.getAuthenticatedUser();
         List<InventoryItem> items = inventoryService.getUserInventory(currentUser);
 
-        List<Map.Entry<Item,Integer>> ownedItems= new ArrayList<>();
+        List<Map.Entry<Item,Integer>> ownedItems = new ArrayList<>();
 
-        for (InventoryItem inventory: items) {
+        for (InventoryItem inventory : items) {
             Item item = inventory.getItem();
             Integer quantity = inventory.getQuantity();
             Map.Entry<Item,Integer> itemEntry = new AbstractMap.SimpleEntry<>(item, quantity);
@@ -51,7 +51,7 @@ public class InventoryController {
         List<Map.Entry<Item,Integer>> badgeItems = new ArrayList<>();
         List<Map.Entry<Item,Integer>> imageItems = new ArrayList<>();
 
-        for (Map.Entry<Item,Integer> item: ownedItems) {
+        for (Map.Entry<Item,Integer> item : ownedItems) {
             if (item.getKey() instanceof BadgeItem) {
                 badgeItems.add(item);
             }
@@ -60,14 +60,44 @@ public class InventoryController {
             }
         }
 
+        if (currentUser.getImage() != null && !currentUser.getUploadedImageId().equals(currentUser.getImage().getId())) {
+            model.addAttribute("unapplyItemId", inventoryService.getInventoryByOwnerIdAndImageId(currentUser.getUserId(), currentUser.getImage().getId()).getItem().getId());
+        }
+
         model.addAttribute("badgeItems", badgeItems);
         model.addAttribute("imageItems", imageItems);
+        model.addAttribute("user", currentUser);
 
         return "inventoryTemplate";
     }
 
-    @PostMapping("/inventory/use/{itemId}")
-    public String useImageItem(@PathVariable Long itemId) {
+    @PostMapping("/inventory/badge/use/{itemId}")
+    public String useBadgeItem(@PathVariable Long itemId) {
+        logger.info("POST /inventory/use/{}", itemId);
+
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+
+        try {
+            // Gets item, then casts to ImageItem
+            BadgeItem badgeItem = (BadgeItem) itemService.getItemById(itemId);
+
+            // Update Users Badge
+            currentUser.setAppliedBadge(badgeItem);
+
+            // Persis change to user
+            userService.saveUser(currentUser);
+
+            logger.info("User {} applied item {}", currentUser.getFirstName(), itemId);
+        } catch (IllegalArgumentException e) {
+            logger.error("Error applying item: {}", e.getMessage());
+        }
+
+        return "redirect:/inventory";
+    }
+
+    @PostMapping("/inventory/gif/use/{itemId}")
+    public String useGifItem(@PathVariable Long itemId) {
         logger.info("POST /inventory/use/{}", itemId);
 
         // Get the current user
@@ -110,4 +140,30 @@ public class InventoryController {
 
         return "redirect:/inventory";
     }
+
+    /**
+     * Unapply an inventory image item from the user's profile
+     *
+     * @param itemId The ID of the item to unapply
+     * @return Redirect to the inventory page
+     */
+    @PostMapping("/inventory/gif/unapply/{itemId}")
+    public String unapplyImageItem(@PathVariable Long itemId) {
+        logger.info("POST /inventory/unapply/{}", itemId);
+
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+        InventoryItem unapplyItem = inventoryService.getInventoryByOwnerIdAndImageId(currentUser.getUserId(), currentUser.getImage().getId());
+
+        if (unapplyItem.getItem().getId().equals(itemId)) {
+            Optional<Image> imageOpt = imageService.findImage(currentUser.getUploadedImageId());
+            if (imageOpt.isPresent()) {
+                currentUser.setImage(imageOpt.get());
+                userService.saveUser(currentUser);
+            }
+        }
+
+        return "redirect:/inventory";
+    }
+
 }
