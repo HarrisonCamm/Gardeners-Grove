@@ -64,6 +64,10 @@ public class InventoryController {
             model.addAttribute("unapplyItemId", inventoryService.getInventoryByOwnerIdAndImageId(currentUser.getUserId(), currentUser.getImage().getId()).getItem().getId());
         }
 
+        if (currentUser.getAppliedBadge() != null) {
+            model.addAttribute("unapplyBadgeId", currentUser.getAppliedBadge().getId());
+        }
+
         model.addAttribute("badgeItems", badgeItems);
         model.addAttribute("imageItems", imageItems);
         model.addAttribute("user", currentUser);
@@ -73,7 +77,7 @@ public class InventoryController {
 
     @PostMapping("/inventory/badge/use/{itemId}")
     public String useBadgeItem(@PathVariable Long itemId) {
-        logger.info("POST /inventory/use/{}", itemId);
+        logger.info("POST /inventory/badge/use/{}", itemId);
 
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
@@ -98,7 +102,7 @@ public class InventoryController {
 
     @PostMapping("/inventory/gif/use/{itemId}")
     public String useGifItem(@PathVariable Long itemId) {
-        logger.info("POST /inventory/use/{}", itemId);
+        logger.info("POST /inventory/gif/use/{}", itemId);
 
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
@@ -149,7 +153,7 @@ public class InventoryController {
      */
     @PostMapping("/inventory/gif/unapply/{itemId}")
     public String unapplyImageItem(@PathVariable Long itemId) {
-        logger.info("POST /inventory/unapply/{}", itemId);
+        logger.info("POST /inventory/gif/unapply/{}", itemId);
 
         // Get the current user
         User currentUser = userService.getAuthenticatedUser();
@@ -161,6 +165,29 @@ public class InventoryController {
                 currentUser.setImage(imageOpt.get());
                 userService.saveUser(currentUser);
             }
+        }
+
+        return "redirect:/inventory";
+    }
+
+    /**
+     * Unapply an inventory badge item from the user's name
+     *
+     * @param itemId The ID of the item to unapply
+     * @return Redirect to the inventory page
+     */
+    @PostMapping("/inventory/badge/unapply/{itemId}")
+    public String unapplyBadgeItem(@PathVariable Long itemId) {
+        logger.info("POST /inventory/badge/unapply/{}", itemId);
+
+        // Get the current user
+        User currentUser = userService.getAuthenticatedUser();
+        InventoryItem unapplyItem = inventoryService.getInventoryByOwnerIdAndItemId(currentUser.getUserId(),
+                currentUser.getAppliedBadge().getId());
+
+        if (unapplyItem.getItem().getId().equals(itemId)) {
+            currentUser.setAppliedBadge(null);
+            userService.saveUser(currentUser);
         }
 
         return "redirect:/inventory";

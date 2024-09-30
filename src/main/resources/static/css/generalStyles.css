@@ -433,7 +433,15 @@ h2 {
 }
 
 .suggestions {
-    padding: 0;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    max-width: 300px;
+    background-color: rgb(226, 241, 202);
+    border-radius: 10px;
+    border: 1px solid #BEE186;
 }
 
 .autocomplete-items div {
