@@ -54,4 +54,8 @@ public class InventoryItemService {
         return items;
     }
 
+    public void deleteInventoryItem(InventoryItem inventoryItem) {
+        inventoryRepository.delete(inventoryItem);
+    }
+
 }

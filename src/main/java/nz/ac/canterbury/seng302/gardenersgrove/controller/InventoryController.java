@@ -137,4 +137,45 @@ public class InventoryController {
         return "redirect:/inventory";
     }
 
+
+    @PostMapping("/inventory/sell/item/{itemId}")
+    public String sellItem(@PathVariable Long itemId) {
+        logger.info("POST /inventory/sell/item/{}", itemId);
+        User currentUser = userService.getAuthenticatedUser();
+
+        // Get inventory
+        List<InventoryItem> inventory = inventoryService.getUserInventory(currentUser);
+
+        // Find item in inventory
+        Optional<InventoryItem> matchingItemInInventory = inventory.stream()
+                .filter(item -> item.getItem().getId().equals(itemId))
+                .findFirst();
+
+        if (matchingItemInInventory.isPresent()) {
+            // Get the item
+            Item item = matchingItemInInventory.get().getItem();
+
+            // Calculate the resale price
+            Integer resalePrice = (int) (item.getPrice() * 0.9); // 90% of the original price
+
+            // Update user's balance
+            currentUser.setBloomBalance(currentUser.getBloomBalance() + resalePrice);
+
+            // Remove the item from the inventory
+            inventoryService.deleteInventoryItem(matchingItemInInventory.get());
+
+            // Save the updated user
+            userService.saveUser(currentUser);
+
+            // Log success
+            logger.info("User {} sold item {}", currentUser.getFirstName(), itemId);
+        } else {
+            // Item is not found
+            logger.error("Item with ID {} not found", itemId);
+        }
+
+        return "redirect:/inventory";
+    }
+
+
 }

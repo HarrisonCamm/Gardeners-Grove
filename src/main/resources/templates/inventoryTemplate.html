@@ -6,6 +6,37 @@
     <!-- Navigation Bar Fragment -->
     <ul th:insert="~{fragments/navBar.html :: navBar}"></ul>
     <div class="appBody">
+
+        <!-- Button to trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal">
+            Sell Tim Tam
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel">Confirm Action</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to sell this item?
+                    </div>
+                    <div class="modal-footer">
+
+                        <form th:action="@{'/inventory/sell/item/' + 1}" method="post">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Sell</button>
+                        </form>
+<!--                        <form th:action="@{'/inventory/item/sell/' + ${item.getKey().id}}" method="post">-->
+<!--                            <button type="button" class="btn btn-danger">Sell</button>-->
+<!--                        </form>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="container p-0">
 
 <!--             Profile Card to display user's profile information -->
@@ -28,7 +59,7 @@
             <div class="row mt-5">
                 <h3 class="mb-3">Badges</h3>
                 <!-- Iterate through the badgeItems list and display each badge item-->
-                <div class="col content card ms-2 me-2 fixed-width-card" th:each="item: ${badgeItems}">
+                <div class="col content card ms-2 me-2 fixed-width-card" th:each="item: ${badgeItems}" th:href="@{'/item?itemID=' + ${item.getKey().id}}">
                     <div class="h-25 w-100 mt-3 inventory-card-title">
                         <h3 class="p-2" th:text="${item.getKey().name}"></h3>
                         <p class="item-quantity" th:text="${item.getValue()} + 'x'"></p>
@@ -36,7 +67,8 @@
                     <!-- Display the badge item's icon -->
                     <div class="mb-5" >
                         <img type="png" class="image mt-5" th:src="@{/get-image?imageItem=true(imageID=${item.getKey().icon.id})}">
-                        <form th:action="@{'/inventory/badge/use/' + ${item.getKey().id}}" method="post">                            <input type="hidden" name="userId" th:value="${user.userId}">
+                        <form th:action="@{'/inventory/badge/use/' + ${item.getKey().id}}" method="post">
+                            <input type="hidden" name="userId" th:value="${user.userId}">
                             <input type="hidden" name="badgeURL" th:src="@{/get-image?imageItem=true(imageID=${item.getKey().icon.id})}">
                             <button class="item-use-button button" type="submit">Use</button>
                         </form>
@@ -62,5 +94,7 @@
             </div>
         </div>
     </div>
+        <!-- Scripts fragment, contains bootstrap scripts -->
+        <div th:replace="~{fragments/scripts :: scripts}"></div>
 </body>
 </html>
