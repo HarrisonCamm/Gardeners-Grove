@@ -327,7 +327,7 @@ public class GifProfilePictureSteps {
         InventoryItem inventoryItem = inventoryService.getInventory(currentUser, itemService.getItemByName(gifName));
         currentUser = userService.getAuthenticatedUser();
 
-        mvcResult = mockMvc.perform(post("/inventory/use/" + inventoryItem.getItem().getId()))
+        mvcResult = mockMvc.perform(post("/inventory/gif/use/" + inventoryItem.getItem().getId()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/inventory"))
                 .andReturn();
@@ -340,7 +340,7 @@ public class GifProfilePictureSteps {
     public void iClickTheButtonOnThatItem(String unapplyButtonText) throws Exception {
         InventoryItem inventoryItem = inventoryService.getInventoryByOwnerIdAndImageId(currentUser.getUserId(), currentUser.getImage().getId());
 
-        mvcResult = mockMvc.perform(post("/inventory/unapply/" + inventoryItem.getItem().getId()))
+        mvcResult = mockMvc.perform(post("/inventory/gif/unapply/" + inventoryItem.getItem().getId()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/inventory"))
                 .andReturn();
