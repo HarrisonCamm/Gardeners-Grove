@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.TagValidator.*;
 import static nz.ac.canterbury.seng302.gardenersgrove.validation.TipValidator.doTipValidations;
@@ -47,6 +49,8 @@ public class ViewGardenController {
     private static final String TAG_EVALUATION_ERROR = "tagEvaluationError";
 
     private static final String WEATHER_ERROR_MESSAGE = "weatherErrorMessage";
+
+    private static final String CLAIMED_TIPS_MESSAGE = "claimedTipsMessage";
 
     @Autowired
     public ViewGardenController(GardenService gardenService, PlantService plantService,
@@ -88,6 +92,9 @@ public class ViewGardenController {
 
         addAttributes(currentUser, gardenID, model, plantService, gardenService, session);
         session.removeAttribute(TAG_EVALUATION_ERROR);
+
+        model.addAttribute(CLAIMED_TIPS_MESSAGE, session.getAttribute(CLAIMED_TIPS_MESSAGE));
+        session.removeAttribute(CLAIMED_TIPS_MESSAGE);
 
         if (isOwner) {
             return "viewGardenDetailsTemplate";
@@ -139,9 +146,7 @@ public class ViewGardenController {
 
     @PatchMapping("/view-garden")
     public ResponseEntity<Void> changePublicity(@RequestParam("gardenID") Long gardenID,
-                                          @RequestParam("isPublic") Boolean isPublic,
-                                          Model model,
-                                          HttpSession session){
+                                          @RequestParam("isPublic") Boolean isPublic){
         logger.info("PATCH /view-garden");
 
         User currentUser = userService.getAuthenticatedUser();
@@ -171,21 +176,47 @@ public class ViewGardenController {
         // Charge the user the tip they gave the tip has already been validated.
         userService.chargeBlooms(currentUser, tipAmount);
 
-        User owner = gardenService.findGarden(gardenID).get().getOwner();
-        Garden garden = gardenService.findGarden(gardenID).get();
+        Garden curGarden = gardenService.findGarden(gardenID)
+                .orElseThrow(() -> new NoSuchElementException("Garden not found with ID: " + gardenID));
+        User owner = curGarden.getOwner();
 
         // Add a new transaction for the tip
-        Transaction transaction = transactionService.addTransaction(tipAmount,
-                "Tipped " +garden.getName()+ " (unclaimed by " + owner.getFirstName() + ")",
+        transactionService.addTransaction(tipAmount,
+                "Tipped " +curGarden.getName()+ " (unclaimed by " + owner.getFirstName() + ")",
                 "Garden Tip",
                 owner.getUserId(),
-                currentUser.getUserId());
-
-        // Set the transaction to unclaimed so that it doesn't show on the receiver side
-        transactionService.setClaimed(transaction.getTransactionId(), false);
+                currentUser.getUserId(),
+                false,
+                curGarden);
 
         //Add unclaimed blooms to the garden that was tipped
         gardenService.addUnclaimedBloomTips(gardenID, tipAmount);
+
+        return REDIRECT_VIEW_GARDEN + gardenID;
+    }
+
+    @Transactional
+    @PostMapping("/claim-tips")
+    public String claimTips(@RequestParam("gardenID") Long gardenID, HttpSession session) {
+        logger.info("POST /claim-tips");
+
+        User currentUser = userService.getAuthenticatedUser();
+        Garden curGarden = authoriseAction(gardenID, currentUser, false);
+
+        List<Transaction> transactions = transactionService.retrieveGardenTips(curGarden);
+        int totalUnclaimedBlooms = transactionService.totalUnclaimedTips(curGarden);
+
+        // If no tips to claim exit
+        if (transactions.isEmpty()) return REDIRECT_VIEW_GARDEN + gardenID;
+
+        // Pay the user the total amount of unclaimed tips and remove them from the gardens unclaimed amount
+        userService.addBlooms(currentUser, totalUnclaimedBlooms);
+        gardenService.removeUnclaimedBloomTips(curGarden);
+
+        // Set all garden's tips transactions to claimed
+        transactionService.claimAllGardenTips(transactions);
+
+        session.setAttribute(CLAIMED_TIPS_MESSAGE, "You have claimed " + totalUnclaimedBlooms + " Blooms! \uD83C\uDF31");
 
         return REDIRECT_VIEW_GARDEN + gardenID;
     }
@@ -326,11 +357,8 @@ public class ViewGardenController {
         boolean isOwner = garden.getOwner().equals(currentUser);
         if (isOwner) {
             Integer unclaimedBlooms = garden.getUnclaimedBlooms();
-            boolean hasBloomsToClaim = unclaimedBlooms > 0;
-            model.addAttribute("hasBloomsToClaim", hasBloomsToClaim);
-            if (hasBloomsToClaim) {
-                model.addAttribute("unclaimedBloomsMessage", "You have " + unclaimedBlooms + " Blooms to claim!");
-            }
+            model.addAttribute("unclaimedBlooms", unclaimedBlooms);
+            model.addAttribute("claimBloomsButtonText", "Claim " + unclaimedBlooms + " Blooms");
         }
         model.addAttribute("userBloomBalance", currentUser.getBloomBalance());
         return model;

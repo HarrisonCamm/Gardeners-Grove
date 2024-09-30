@@ -9,21 +9,11 @@
 <div class="appBody">
     <div class="container p-0">
 
-        <!-- Display error message if present -->
-        <div th:if="${purchaseNotSuccessful}" class="alert alert-danger" role="alert">
-            <span th:text="${purchaseNotSuccessful}"></span>
-        </div>
-
-        <!-- Display success message if present -->
-        <div th:if="${purchaseSuccessful}" class="alert alert-success" role="alert">
-            <span th:text="${purchaseSuccessful}"></span>
-        </div>
-
         <!-- This row will display the shop's badge items it has -->
-        <div class="row mt-5">
-            <h3 class="mb-3">Badges</h3>
+        <div class="row item-row mb-4">
+            <h3 class="mb-3 mt-1">Badges</h3>
             <!-- Iterate through the badgeItems list and display each badge item-->
-            <div class="col content card ms-2 me-2" th:each="item: ${badgeItems}">
+            <div class="col content card ms-2 me-2 fixed-width-card" th:each="item: ${badgeItems}">
                 <div class="h-25 w-100 mt-3 inventory-card-title">
                     <h3 class="p-2" th:text="${item.name}"></h3>
                     <p class="item-quantity" th:text="${item.price} + '฿'"></p>
@@ -41,11 +31,25 @@
             </div>
         </div>
 
+        <!-- Display error message if present -->
+        <div th:if="${purchaseNotSuccessful}" class="alert alert-danger" role="alert">
+            <span th:text="${purchaseNotSuccessful}"></span>
+        </div>
+
+        <!-- Display success message if present -->
+        <div th:if="${purchaseSuccessful}" class="alert alert-success" role="alert">
+            <span th:text="${purchaseSuccessful}"></span>
+        </div>
+
+        <div th:if="${#bools.isFalse(purchaseSuccessful)} and ${#bools.isFalse(purchaseNotSuccessful)}" class="alert alert-info invisible" role="alert">
+            <span>&nbsp;</span>
+        </div>
+
         <!-- This row will display the shop's image items -->
-        <div class="row mt-5">
-            <h3 class="mb-3 mt-5">Profile Pictures</h3>
+        <div class="row item-row mb-3">
+            <h3 class="mb-3">Profile Pictures</h3>
             <!-- Iterate through the imageItems list and display each image item-->
-            <div class="col content card ms-2 me-2" th:each="item: ${imageItems}">
+            <div class="col content card ms-2 me-2 fixed-width-card" th:each="item: ${imageItems}">
                 <div class="h-25 w-100 mt-3 inventory-card-title">
                     <h3 class="p-2" th:text="${item.name}"></h3>
                     <p class="item-quantity" th:text="${item.price} + '฿'"></p>

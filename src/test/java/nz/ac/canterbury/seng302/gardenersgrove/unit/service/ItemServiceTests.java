@@ -51,12 +51,10 @@ class ItemServiceTests {
     private ImageItem catFallImage;
     private ImageItem catTypingImage;
     private ImageItem fabianIntensifiesImage;
-    @Autowired
-    private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
-        itemService = new ItemService(itemRepository, userRepository);
+        itemService = new ItemService(itemRepository);
 
         happyBadge = new BadgeItem("Happy1", 1000, "😀");
         eggplantBadge = new BadgeItem("Eggplant1", 2000, "\uD83C\uDF46");

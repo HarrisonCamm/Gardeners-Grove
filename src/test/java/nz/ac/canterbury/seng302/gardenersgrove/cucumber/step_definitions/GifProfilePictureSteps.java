@@ -8,13 +8,13 @@ import io.cucumber.java.en.When;
 import jakarta.transaction.Transactional;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Image;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.ImageItem;
-import nz.ac.canterbury.seng302.gardenersgrove.entity.Inventory;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.InventoryItem;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Garden;
 import nz.ac.canterbury.seng302.gardenersgrove.entity.Location;
 import nz.ac.canterbury.seng302.gardenersgrove.service.GardenService;
-import nz.ac.canterbury.seng302.gardenersgrove.service.InventoryService;
+import nz.ac.canterbury.seng302.gardenersgrove.service.InventoryItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.ItemService;
 import nz.ac.canterbury.seng302.gardenersgrove.service.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -46,7 +46,7 @@ public class GifProfilePictureSteps {
     @Autowired
     private GardenService gardenService;
     @Autowired
-    private InventoryService inventoryService;
+    private InventoryItemService inventoryService;
     private MockMvc mockMvc;
     private MvcResult mvcResult;
     private User currentUser;
@@ -69,7 +69,7 @@ public class GifProfilePictureSteps {
         // Set the image item
         item = itemService.getItemByName(string);
         // Add the image item to the user's inventory
-        Inventory inventory = new Inventory(currentUser, item, 1);
+        InventoryItem inventory = new InventoryItem(currentUser, item, 1);
 
         inventoryService.save(inventory);
 
@@ -105,7 +105,7 @@ public class GifProfilePictureSteps {
     public void theGifReplacesMyCurrentProfilePicture(String expectedImageName) {
         // Verify that the current profile picture matches the expected image
         Assertions.assertNotNull(currentUser.getImage(), "Current user should have a profile image");
-        assertEquals(expectedImageName, item.getName(),
+        Assertions.assertEquals(expectedImageName, item.getName(),
                 "Profile picture should be updated to the selected GIF");
     }
 
@@ -172,7 +172,7 @@ public class GifProfilePictureSteps {
             }
         }
         Assertions.assertTrue(expectedFriendIsShown, "True if the expected friend is displayed on the page");
-        assertEquals(expectedItem.getImage().getId(), displayedImageId, "The correct image is displayed");
+        Assertions.assertEquals(expectedItem.getImage().getId(), displayedImageId, "The correct image is displayed");
     }
 
     //AC3
@@ -194,7 +194,7 @@ public class GifProfilePictureSteps {
     @Then("I can see the {string} GIF image as my profile picture")
     public void iCanSeeTheGIFImageAsMyProfilePicture(String itemName) {
         ImageItem expectedItem = (ImageItem) itemService.getItemByName(itemName);
-        assertEquals(expectedItem.getImage().getId(), displayedImage.getId(), "The gif items 'image' Id is the same Id as user in models image");
+        Assertions.assertEquals(expectedItem.getImage().getId(), displayedImage.getId(), "The gif items 'image' Id is the same Id as user in models image");
     }
 
 
@@ -211,11 +211,11 @@ public class GifProfilePictureSteps {
         Item itemCatTyping = this.item;
 
         // Add the image item to the user's inventory
-        Inventory inventory = new Inventory(friend, itemCatTyping, 1);
+        InventoryItem inventory = new InventoryItem(friend, itemCatTyping, 1);
         inventoryService.save(inventory);
 
         // Get the image items from sarah inventory (Emulating post-mapping)
-        List<Inventory> sarahItems = inventoryService.getUserInventory(friend);
+        List<InventoryItem> sarahItems = inventoryService.getUserInventory(friend);
 
         // Extract the image item (Only one item)
         ImageItem item = (ImageItem) sarahItems.get(0).getItem();
@@ -263,7 +263,7 @@ public class GifProfilePictureSteps {
         Long imageItemId = imageItem.getImage().getId();
 
         // Check that friends' image ID matches cat-typing image id
-        assertEquals(imageItemId, friend.getImage().getId(),
+        Assertions.assertEquals(imageItemId, friend.getImage().getId(),
                 "Friend's profile picture should be set to the GIF item: " + imageItemName);
     }
 
@@ -309,7 +309,7 @@ public class GifProfilePictureSteps {
         // Get the expected image (GIF image that Sarah applied)
         Image expectedImage = friend.getImage();
         // Compare the displayed image with the expected image
-        assertEquals(expectedImage.getId(), this.displayedImage.getId(),
+        Assertions.assertEquals(expectedImage.getId(), this.displayedImage.getId(),
                 "The displayed profile picture should be the GIF image applied by the owner");
 
     }

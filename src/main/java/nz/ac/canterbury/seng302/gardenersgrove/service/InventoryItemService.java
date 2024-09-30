@@ -1,8 +1,10 @@
 package nz.ac.canterbury.seng302.gardenersgrove.service;
 
 
-import nz.ac.canterbury.seng302.gardenersgrove.entity.*;
-import nz.ac.canterbury.seng302.gardenersgrove.repository.InventoryRepository;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.InventoryItem;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.Item;
+import nz.ac.canterbury.seng302.gardenersgrove.entity.User;
+import nz.ac.canterbury.seng302.gardenersgrove.repository.InventoryItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class InventoryService {
-    private final InventoryRepository inventoryRepository;
+public class InventoryItemService {
+    private final InventoryItemRepository inventoryRepository;
 
     @Autowired
-    public InventoryService(InventoryRepository inventoryRepository) {
+    public InventoryItemService(InventoryItemRepository inventoryRepository) {
         this.inventoryRepository = inventoryRepository;
     }
 
@@ -25,8 +27,8 @@ public class InventoryService {
      *      then increment the quantity
      * @param inventory the inventory to save
      */
-    public void save(Inventory inventory) {
-        Inventory existing = null;
+    public void save(InventoryItem inventory) {
+        InventoryItem existing = null;
 
         // If the inventory is a new inventory, check if the inventory already exists and not unique
         if (inventory.getId() == null) {
@@ -43,21 +45,28 @@ public class InventoryService {
         }
     }
 
-    public List<Inventory> getAllInventory() {
+    public List<InventoryItem> getAllInventory() {
         return inventoryRepository.findAll();
     }
-    public List<Inventory> getUserInventory(User owner) {
+    public List<InventoryItem> getUserInventory(User owner) {
         return inventoryRepository.findInventoryByOwner(owner);
     }
 
-    public Inventory getInventory(User owner, Item item) {
+    public InventoryItem getInventory(User owner, Item item) {
         return inventoryRepository.findInventoryByOwnerAndItem(owner, item);
     }
 
+    /**
+     * Get the items in the inventory of a user
+     * @param owner The user to get the inventory of
+     * @return A list of items in the inventory
+     */
     public List<Map.Entry<Item,Integer>> getItems(User owner) {
-        List<Inventory> inventoryItems = getUserInventory(owner);
+        List<InventoryItem> inventoryItems = getUserInventory(owner);
+        // Convert the inventory items to a list of items
         List<Map.Entry<Item,Integer>> items = new ArrayList<>();
-        for (Inventory inventoryItem: inventoryItems) {
+        for (InventoryItem inventoryItem: inventoryItems) {
+            // Create a map entry of the item and its quantity
             Map.Entry<Item,Integer> item =new AbstractMap.SimpleEntry<>(inventoryItem.getItem(), inventoryItem.getQuantity());
             items.add(item);
         }
